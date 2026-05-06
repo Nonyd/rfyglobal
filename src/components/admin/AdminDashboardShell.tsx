@@ -10,7 +10,7 @@ export function AdminDashboardShell({ children }: { children: React.ReactNode })
 
   return (
     <>
-      <div className="flex h-screen bg-black overflow-hidden">
+      <div className="flex h-screen overflow-hidden" style={{ background: 'var(--admin-bg)' }}>
         <AdminSidebar mobileOpen={mobileNavOpen} onMobileClose={() => setMobileNavOpen(false)} />
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
           <AdminTopbar onMenuClick={() => setMobileNavOpen(true)} />
@@ -21,14 +21,14 @@ export function AdminDashboardShell({ children }: { children: React.ReactNode })
         position="bottom-center"
         toastOptions={{
           style: {
-            background: '#111',
-            color: '#FAFAFA',
-            border: '1px solid rgba(201,168,76,0.3)',
-            fontFamily: 'var(--font-inter)',
+            background: '#fff',
+            color: '#1a1a1a',
+            border: '1px solid var(--admin-border)',
+            fontFamily: 'General Sans, sans-serif',
             fontSize: '14px',
           },
-          success: { iconTheme: { primary: '#C9A84C', secondary: '#0A0A0A' } },
-          error: { iconTheme: { primary: '#D0021B', secondary: '#FAFAFA' } },
+          success: { iconTheme: { primary: '#D4A847', secondary: '#FFFFFF' } },
+          error: { iconTheme: { primary: '#D0021B', secondary: '#FFFFFF' } },
         }}
       />
     </>

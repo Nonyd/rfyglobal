@@ -98,6 +98,7 @@ const SERVICES: ServiceConfig[] = [
     fields: [{ key: 'minimumGiftAmount', label: 'Minimum Gift Amount (Naira)', type: 'text' }],
   },
 ]
+const PAYMENT_SERVICE_IDS = ['paystack', 'flutterwave', 'payaza']
 
 interface IntegrationsManagerProps {
   initialData: Record<string, Record<string, unknown>>
@@ -109,9 +110,14 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
     Object.fromEntries(
       SERVICES.map((service) => [
         service.id,
-        Object.fromEntries(
-          service.fields.map((field) => [field.key, String(initialData[service.id]?.[field.key] ?? '')])
-        ),
+        {
+          ...Object.fromEntries(
+            service.fields.map((field) => [field.key, String(initialData[service.id]?.[field.key] ?? '')])
+          ),
+          ...(PAYMENT_SERVICE_IDS.includes(service.id)
+            ? { mode: String(initialData[service.id]?.mode ?? 'test') }
+            : {}),
+        },
       ])
     )
   )
@@ -197,6 +203,34 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
                 </div>
 
                 <div className="flex items-center gap-3 shrink-0">
+                  {PAYMENT_SERVICE_IDS.includes(service.id) ? (
+                    <div className="mr-2 flex items-center gap-1">
+                      <button
+                        onClick={() => updateValue(service.id, 'mode', 'test')}
+                        className="px-2.5 py-1 text-[10px] font-body font-medium tracking-widest transition-all"
+                        style={{
+                          background: values[service.id]?.mode !== 'live' ? 'rgba(234,179,8,0.15)' : 'transparent',
+                          color: values[service.id]?.mode !== 'live' ? '#CA8A04' : 'var(--admin-text-muted)',
+                          borderColor: values[service.id]?.mode !== 'live' ? 'rgba(234,179,8,0.4)' : 'var(--admin-border)',
+                          border: '1px solid',
+                        }}
+                      >
+                        TEST
+                      </button>
+                      <button
+                        onClick={() => updateValue(service.id, 'mode', 'live')}
+                        className="px-2.5 py-1 text-[10px] font-body font-medium tracking-widest transition-all"
+                        style={{
+                          background: values[service.id]?.mode === 'live' ? 'rgba(34,197,94,0.15)' : 'transparent',
+                          color: values[service.id]?.mode === 'live' ? '#16A34A' : 'var(--admin-text-muted)',
+                          borderColor: values[service.id]?.mode === 'live' ? 'rgba(34,197,94,0.4)' : 'var(--admin-border)',
+                          border: '1px solid',
+                        }}
+                      >
+                        LIVE
+                      </button>
+                    </div>
+                  ) : null}
                   <button
                     type="button"
                     onClick={() => void toggleActive(service.id)}

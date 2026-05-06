@@ -57,11 +57,13 @@ export function PartnershipClientPage({
   gateways,
   bankDetails,
   minimumAmount,
+  isTestMode,
 }: {
   content: Record<string, string>
   gateways: GatewayFlags
   bankDetails: BankDetails
   minimumAmount: number
+  isTestMode: boolean
 }) {
   const enabledGateways = GATEWAYS.filter((gw) =>
     gw.id === 'PAYSTACK' ? gateways.paystack : gw.id === 'FLUTTERWAVE' ? gateways.flutterwave : gateways.payaza
@@ -136,6 +138,13 @@ export function PartnershipClientPage({
 
   return (
     <div className="pt-24">
+      {isTestMode ? (
+        <div className="border border-yellow-500/30 bg-yellow-500/10 px-6 py-3 text-center">
+          <p className="font-body text-sm text-yellow-600">
+            Payment gateways are in <strong>TEST MODE</strong> — no real charges will be made. Admin: switch to Live mode in Integrations when ready.
+          </p>
+        </div>
+      ) : null}
       <section className="max-w-4xl mx-auto px-6 text-center py-20">
         <p className="text-[10px] tracking-[0.35em] uppercase text-gold font-body mb-6">Partner With Us</p>
         <h1 className="font-display text-5xl lg:text-7xl text-white mb-6 leading-none">

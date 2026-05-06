@@ -11,6 +11,9 @@ const pageTitles: Record<string, string> = {
   '/admin/study': 'Study Portal',
   '/admin/events': 'Events',
   '/admin/partner': 'Partnership',
+  '/admin/gallery': 'Gallery',
+  '/admin/integrations': 'Integrations',
+  '/admin/cms': 'Site CMS',
 }
 
 export function AdminTopbar({ onMenuClick }: { onMenuClick?: () => void }) {
@@ -22,25 +25,33 @@ export function AdminTopbar({ onMenuClick }: { onMenuClick?: () => void }) {
 
   return (
     <header
-      className="border-b px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between shrink-0 gap-4"
-      style={{ borderColor: 'rgba(201,168,76,0.15)', background: '#0A0A0A' }}
+      className="flex h-16 shrink-0 items-center justify-between gap-4 border-b px-4 sm:px-6 lg:px-8"
+      style={{ borderColor: 'var(--admin-border)', background: 'var(--admin-surface)' }}
     >
       <div className="flex items-center gap-3 min-w-0">
         <button
           type="button"
-          className="p-2 -ml-2 text-white/60 hover:text-gold lg:hidden"
+          className="p-2 -ml-2 lg:hidden"
+          style={{ color: 'var(--admin-text-muted)' }}
           aria-label="Open navigation"
           onClick={onMenuClick}
         >
           <Menu size={22} />
         </button>
-        <h1 className="font-display text-xl text-white truncate">{title}</h1>
+        <h1 className="truncate font-display text-2xl" style={{ color: 'var(--admin-text)' }}>
+          {title}
+        </h1>
       </div>
-      <div className="flex items-center gap-2 shrink-0">
-        <div className="w-2 h-2 rounded-full bg-gold animate-pulse" />
-        <span className="text-xs text-white/40 font-body tracking-wide hidden sm:inline">
-          Room For You
-        </span>
+      <div className="flex shrink-0 items-center gap-4">
+        <a href="https://rfyglobal.org" target="_blank" rel="noreferrer" className="hidden items-center gap-2 sm:flex">
+          <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
+          <span className="font-body text-xs tracking-wide" style={{ color: 'var(--admin-text-muted)' }}>
+            rfyglobal.org
+          </span>
+        </a>
+        <div className="flex h-9 w-9 items-center justify-center rounded-full font-body text-sm font-semibold text-white" style={{ background: 'var(--admin-gold)' }}>
+          AD
+        </div>
       </div>
     </header>
   )

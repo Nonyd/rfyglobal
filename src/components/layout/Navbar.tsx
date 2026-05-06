@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { motion, AnimatePresence, useScroll } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { ThemeToggle } from '@/components/shared/ThemeToggle'
 
 const navLinks = [
   { label: 'Word', href: '/word' },
@@ -38,7 +39,7 @@ export function Navbar() {
         transition={{ duration: 0.6, ease: 'easeOut' }}
         className={cn(
           'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
-          scrolled ? 'bg-black border-b border-gold-subtle py-3' : 'bg-transparent py-5',
+          scrolled ? 'bg-bg/95 backdrop-blur-md border-b border-theme py-3' : 'bg-transparent py-5',
         )}
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6">
@@ -58,7 +59,7 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="font-body text-sm uppercase tracking-widest text-white/70 transition-colors duration-300 hover:text-gold"
+                className="font-body text-sm uppercase tracking-widest text-text-secondary transition-colors duration-300 hover:text-gold"
               >
                 {link.label}
               </Link>
@@ -66,16 +67,17 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-4">
+            <ThemeToggle className="hidden md:flex" />
             <Link
               href="/forms/join-room-for-you"
-              className="hidden md:inline-flex items-center border border-gold px-5 py-2 font-body text-sm uppercase tracking-widest text-gold transition-all duration-300 hover:bg-gold hover:text-black"
+              className="hidden md:inline-flex items-center border border-gold px-5 py-2 font-body text-sm uppercase tracking-widest text-gold transition-all duration-300 hover:bg-gold hover:text-charcoal"
             >
               Join Us
             </Link>
             <button
               type="button"
               onClick={() => setIsOpen(true)}
-              className="text-white md:hidden"
+              className="text-text-primary md:hidden"
               aria-label="Open menu"
             >
               <Menu size={24} />
@@ -91,7 +93,7 @@ export function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[100] flex flex-col bg-black"
+            className="fixed inset-0 z-[100] flex flex-col bg-bg"
           >
             <div className="flex items-center justify-between px-6 py-5">
               <Image
@@ -102,7 +104,7 @@ export function Navbar() {
                 priority
                 className="h-10 w-auto object-contain"
               />
-              <button type="button" onClick={() => setIsOpen(false)} className="text-white">
+              <button type="button" onClick={() => setIsOpen(false)} className="text-text-primary">
                 <X size={24} />
               </button>
             </div>
@@ -118,7 +120,7 @@ export function Navbar() {
                   <Link
                     href={link.href}
                     onClick={() => setIsOpen(false)}
-                    className="font-display text-4xl font-light text-white transition-colors hover:text-gold"
+                    className="font-display text-4xl font-light text-text-primary transition-colors hover:text-gold"
                   >
                     {link.label}
                   </Link>
@@ -132,7 +134,7 @@ export function Navbar() {
                 <Link
                   href="/forms/join-room-for-you"
                   onClick={() => setIsOpen(false)}
-                  className="border border-gold px-8 py-3 font-body text-sm uppercase tracking-widest text-gold transition-all duration-300 hover:bg-gold hover:text-black"
+                  className="border border-gold px-8 py-3 font-body text-sm uppercase tracking-widest text-gold transition-all duration-300 hover:bg-gold hover:text-charcoal"
                 >
                   Join Us
                 </Link>

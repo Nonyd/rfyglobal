@@ -13,19 +13,19 @@ const activities = [
 
 export function VisionSection({ content }: { content: Record<string, string> }) {
   return (
-    <section className="relative bg-black-soft py-24 noise-overlay">
+    <section className="relative surface py-24">
       <div className="mx-auto grid max-w-7xl gap-16 px-6 lg:grid-cols-2 lg:gap-16">
+        <div className="section-number absolute left-8 top-6 opacity-25">01</div>
         <motion.div
           initial={{ opacity: 0, y: 32 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.8 }}
         >
-          <h2 className="font-display text-display-lg text-white">
-            {content['landing.vision.heading']}
-            <span className="mt-2 block text-gradient-gold italic">
-              {content['landing.vision.subheading']}
-            </span>
+          <h2 className="font-display text-display-lg text-text-primary">
+            <span className="block">Building a community</span>
+            <span className="block text-display-md text-text-secondary">of young men &amp; women</span>
+            <span className="mt-2 block text-gradient-gold">singing songs of salvation.</span>
           </h2>
         </motion.div>
 
@@ -34,15 +34,17 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: 0.8, delay: 0.1 }}
-          className="lg:border-l lg:border-gold-subtle lg:pl-16"
+          className="lg:border-l lg:border-theme lg:pl-16"
         >
-          <p className="font-body text-lg leading-relaxed text-white/70">
-            {content['landing.vision.text']}
+          <p className="font-display text-3xl text-text-primary">JESUS TO NATIONS</p>
+          <p className="mt-2 font-body text-sm italic text-gold">2 Cor 5:17-21</p>
+          <p className="mt-6 font-body text-lg leading-relaxed text-text-secondary">
+            {content['landing.vision.text'] || content['landing.vision.subheading']}
           </p>
           <p className="mt-6 font-body text-sm uppercase tracking-widest text-gold">
             2 Corinthians 5:17–21
           </p>
-          <ul className="mt-10 space-y-4 font-body text-white/60">
+          <ul className="mt-10 space-y-4 font-body text-text-secondary">
             {activities.map((item) => (
               <li key={item} className="flex gap-3">
                 <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
@@ -58,6 +60,7 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
           </Link>
         </motion.div>
       </div>
+      <div className="section-divider mx-auto mt-16 max-w-7xl" />
     </section>
   )
 }

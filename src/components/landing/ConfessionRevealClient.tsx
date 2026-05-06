@@ -85,7 +85,7 @@ export function ConfessionRevealClient() {
   return (
     <section
       ref={sectionRef}
-      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-black px-6 py-24"
+      className="relative flex min-h-screen items-center justify-center overflow-hidden bg-bg px-6 py-24"
     >
       <div
         ref={glowRef}
@@ -95,7 +95,7 @@ export function ConfessionRevealClient() {
             'radial-gradient(circle at 50% 42%, rgba(201,168,76,0.45) 0%, rgba(201,168,76,0.12) 35%, transparent 62%)',
         }}
       />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,rgba(201,168,76,0.06),transparent_55%)]" />
+      <div className="section-number absolute left-8 top-8 opacity-20">02</div>
 
       <div className="relative z-10 mx-auto max-w-2xl text-center">
         <p className="mb-10 font-body text-[10px] uppercase tracking-[0.35em] text-gold">The confession</p>
@@ -106,7 +106,12 @@ export function ConfessionRevealClient() {
               ref={(el) => {
                 lineRefs.current[i] = el
               }}
-              className="font-display text-lg leading-snug text-white md:text-xl"
+              className={`font-display leading-snug md:text-xl ${
+                i === LINES.length - 1
+                  ? 'text-gradient-gold text-3xl'
+                  : 'text-lg border-l-2 border-gold pl-3 text-text-primary'
+              }`}
+              style={{ opacity: i < LINES.length - 1 ? undefined : 1 }}
             >
               {line}
             </p>
@@ -114,7 +119,7 @@ export function ConfessionRevealClient() {
         </div>
         <Link
           href="/confession"
-          className="mt-14 inline-block border border-gold bg-gold px-8 py-3 font-body text-sm font-medium uppercase tracking-widest text-black transition-colors hover:bg-gold-light"
+          className="mt-14 inline-block border border-gold bg-gold px-8 py-3 font-body text-sm font-medium uppercase tracking-widest text-charcoal transition-colors hover:bg-gold-light"
         >
           Make This Your Confession
         </Link>

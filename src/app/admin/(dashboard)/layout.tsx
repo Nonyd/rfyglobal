@@ -10,5 +10,5 @@ export default async function AdminDashboardLayout({
   const session = await auth()
   if (!session) redirect('/admin/login')
 
-  return <AdminDashboardShell>{children}</AdminDashboardShell>
+  return <div className="admin-layout"><AdminDashboardShell>{children}</AdminDashboardShell></div>
 }

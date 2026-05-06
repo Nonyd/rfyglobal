@@ -9,6 +9,7 @@ export interface PaystackCredentials {
   monthlyPlanCode: string
   annualPlanCode: string
   isActive: boolean
+  mode: 'test' | 'live'
 }
 
 export interface FlutterwaveCredentials {
@@ -18,12 +19,14 @@ export interface FlutterwaveCredentials {
   monthlyPlanId: string
   annualPlanId: string
   isActive: boolean
+  mode: 'test' | 'live'
 }
 
 export interface PayazaCredentials {
   secretKey: string
   publicKey: string
   isActive: boolean
+  mode: 'test' | 'live'
 }
 
 export interface BankTransferCredentials {

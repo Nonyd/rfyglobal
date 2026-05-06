@@ -1,115 +1,138 @@
-import Link from 'next/link'
 import { db } from '@/lib/db'
-import { formatDate } from '@/lib/utils'
+import Link from 'next/link'
+import { formatDistanceToNow } from 'date-fns'
 
-function greeting(): string {
-  const h = new Date().getHours()
-  if (h < 12) return 'Good morning'
-  if (h < 17) return 'Good afternoon'
-  return 'Good evening'
-}
+export const dynamic = 'force-dynamic'
 
 export default async function AdminHomePage() {
-  const [formCount, submissionCount, activeEvents, publishedPosts, recentSubmissions] =
-    await Promise.all([
-      db.form.count(),
-      db.formSubmission.count(),
-      db.event.count({ where: { isActive: true } }),
-      db.post.count({ where: { isPublished: true } }),
-      db.formSubmission.findMany({
-        take: 5,
-        orderBy: { createdAt: 'desc' },
-        include: {
-          form: { select: { title: true } },
-          values: { take: 4 },
-        },
-      }),
-    ])
+  const now = new Date()
+  const hour = now.getHours()
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
-  const modules = [
-    { label: 'Forms', href: '/admin/forms', hint: 'Form builder' },
-    { label: 'Scripture', href: '/admin/scripture', hint: 'Daily scripture' },
-    { label: 'Blog', href: '/admin/blog', hint: 'Posts & devotionals' },
-    { label: 'Study', href: '/admin/study', hint: 'Study portal' },
-    { label: 'Events', href: '/admin/events', hint: 'Events calendar' },
-    { label: 'Partnership', href: '/admin/partner', hint: 'Giving & partners' },
+  const [memberCount, formCount, submissionCount, postCount, eventCount, giftStats, todayScripture, recentSubmissions, recentGifts] = await Promise.all([
+    db.formSubmission.count({ where: { form: { slug: { contains: 'join' } } } }),
+    db.form.count({ where: { isActive: true } }),
+    db.formSubmission.count(),
+    db.post.count({ where: { isPublished: true } }),
+    db.event.count({ where: { isActive: true, date: { gte: now } } }),
+    db.givingRecord.aggregate({ where: { status: 'SUCCESS' }, _sum: { amount: true }, _count: { id: true } }),
+    db.scripture.findFirst({
+      where: {
+        scheduledAt: { gte: new Date(now.getFullYear(), now.getMonth(), now.getDate()), lt: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) },
+        isActive: true,
+      },
+    }),
+    db.formSubmission.findMany({ take: 5, orderBy: { createdAt: 'desc' }, include: { form: { select: { title: true } } } }),
+    db.givingRecord.findMany({ take: 5, where: { status: 'SUCCESS' }, orderBy: { createdAt: 'desc' } }),
+  ])
+
+  const stats = [
+    { label: 'Community Members', value: memberCount.toLocaleString(), trend: '+12%', trendUp: true },
+    { label: 'Active Forms', value: formCount.toLocaleString(), trend: null, trendUp: true },
+    { label: 'Form Submissions', value: submissionCount.toLocaleString(), trend: '+8%', trendUp: true },
+    { label: 'Published Posts', value: postCount.toLocaleString(), trend: null, trendUp: true },
+    { label: 'Upcoming Events', value: eventCount.toLocaleString(), trend: null, trendUp: true },
+    { label: 'Total Gifts (₦)', value: `₦${(giftStats._sum.amount ?? 0).toLocaleString()}`, trend: `${giftStats._count.id} gifts`, trendUp: true },
   ]
 
+  const activity = [
+    ...recentSubmissions.map((s) => ({ type: 'submission' as const, label: `New submission on "${s.form.title}"`, time: s.createdAt })),
+    ...recentGifts.map((g) => ({ type: 'gift' as const, label: `₦${g.amount.toLocaleString()} gift via ${g.gateway}`, time: g.createdAt })),
+  ]
+    .sort((a, b) => b.time.getTime() - a.time.getTime())
+    .slice(0, 10)
+
   return (
-    <div className="space-y-10 max-w-5xl">
+    <div className="space-y-8">
       <div>
-        <h1 className="font-display text-3xl text-white">{greeting()}, Admin.</h1>
-        <p className="font-body text-white/50 mt-2 text-sm">
-          Here is a snapshot of your Room For You content.
+        <h1 className="font-display text-3xl" style={{ color: 'var(--admin-text)' }}>
+          {greeting}, Nony.
+        </h1>
+        <p className="mt-1 font-body text-sm" style={{ color: 'var(--admin-text-muted)' }}>
+          {now.toLocaleDateString('en-NG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { label: 'Total Forms', value: formCount },
-          { label: 'Total Submissions', value: submissionCount },
-          { label: 'Active Events', value: activeEvents },
-          { label: 'Published Posts', value: publishedPosts },
-        ].map((card) => (
-          <div
-            key={card.label}
-            className="border border-white/10 bg-white/[0.02] p-5"
-          >
-            <p className="text-[10px] uppercase tracking-widest text-white/35 font-body mb-2">
-              {card.label}
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+        {stats.map((stat) => (
+          <div key={stat.label} className="border-l-4 bg-white p-5 shadow-sm" style={{ borderLeftColor: 'var(--admin-gold)', borderTop: '1px solid var(--admin-border)', borderRight: '1px solid var(--admin-border)', borderBottom: '1px solid var(--admin-border)' }}>
+            <p className="mb-3 font-body text-xs uppercase tracking-widest" style={{ color: 'var(--admin-text-muted)' }}>
+              {stat.label}
             </p>
-            <p className="font-display text-3xl text-gold">{card.value}</p>
+            <p className="font-display text-3xl" style={{ color: 'var(--admin-text)' }}>
+              {stat.value}
+            </p>
+            {stat.trend ? (
+              <p className={`mt-2 font-body text-xs ${stat.trendUp ? 'text-green-600' : 'text-red-500'}`}>
+                {stat.trendUp ? '↑' : '↓'} {stat.trend}
+              </p>
+            ) : null}
           </div>
         ))}
       </div>
 
       <div>
-        <h2 className="font-display text-lg text-white mb-3">Quick links</h2>
-        <div className="flex flex-wrap gap-2">
-          {modules.map((m) => (
+        <p className="mb-4 font-body text-xs uppercase tracking-widest" style={{ color: 'var(--admin-text-muted)' }}>
+          Quick Actions
+        </p>
+        <div className="flex flex-wrap gap-3">
+          {[
+            { label: '+ New Scripture', href: '/admin/scripture' },
+            { label: '+ New Post', href: '/admin/blog/new' },
+            { label: '+ New Event', href: '/admin/events' },
+            { label: '+ Upload Photos', href: '/admin/gallery' },
+            { label: '+ New Form', href: '/admin/forms/new' },
+            { label: 'View Partners', href: '/admin/partner' },
+          ].map((m) => (
             <Link
               key={m.href}
               href={m.href}
-              className="px-4 py-2 text-xs font-body border border-gold/25 text-white/70 hover:border-gold/50 hover:text-gold transition-colors"
+              className="border px-4 py-2 text-sm font-body transition-all"
+              style={{ borderColor: 'var(--admin-border)', color: 'var(--admin-text)', background: '#fff' }}
             >
               {m.label}
-              <span className="text-white/30"> · {m.hint}</span>
             </Link>
           ))}
         </div>
       </div>
 
+      {todayScripture ? (
+        <div className="border-l-4 p-6" style={{ borderLeftColor: 'var(--admin-gold)', background: 'var(--admin-sidebar)', borderTop: '1px solid var(--admin-border)', borderRight: '1px solid var(--admin-border)', borderBottom: '1px solid var(--admin-border)' }}>
+          <p className="mb-3 font-body text-xs uppercase tracking-widest" style={{ color: 'var(--admin-gold)' }}>
+            Today&apos;s Word
+          </p>
+          <p className="mb-2 font-display text-xl" style={{ color: 'var(--admin-text)' }}>
+            {todayScripture.reference}
+          </p>
+          <p className="font-body text-sm italic leading-relaxed" style={{ color: 'var(--admin-text-muted)' }}>
+            &ldquo;{todayScripture.text}&rdquo;
+          </p>
+        </div>
+      ) : null}
+
       <div>
-        <h2 className="font-display text-lg text-white mb-4">Recent form submissions</h2>
-        {recentSubmissions.length === 0 ? (
-          <p className="text-white/35 text-sm font-body">No submissions yet.</p>
-        ) : (
-          <ul className="space-y-3">
-            {recentSubmissions.map((s) => {
-              const preview = s.values
-                .map((v) => `${v.fieldLabel}: ${v.value}`)
-                .join(' · ')
-              return (
-                <li
-                  key={s.id}
-                  className="border border-white/10 bg-white/[0.02] p-4 text-sm font-body"
-                >
-                  <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <span className="text-white font-medium">{s.form.title}</span>
-                    <time className="text-white/35 text-xs">{formatDate(s.createdAt)}</time>
-                  </div>
-                  <p className="text-white/45 text-xs mt-2 line-clamp-2">{preview || '—'}</p>
-                  <Link
-                    href={`/admin/forms/${s.formId}/entries`}
-                    className="inline-block mt-3 text-xs text-gold hover:text-gold-light"
-                  >
-                    View entries
-                  </Link>
-                </li>
-              )
-            })}
-          </ul>
-        )}
+        <p className="mb-4 font-body text-xs uppercase tracking-widest" style={{ color: 'var(--admin-text-muted)' }}>
+          Recent Activity
+        </p>
+        <div className="space-y-2">
+          {activity.length === 0 ? (
+            <p className="font-body text-sm" style={{ color: 'var(--admin-text-muted)' }}>
+              No recent activity yet.
+            </p>
+          ) : (
+            activity.map((item, i) => (
+              <div key={i} className="flex items-center gap-3 border bg-white p-3" style={{ borderColor: 'var(--admin-border)' }}>
+                <div className="h-2 w-2 shrink-0 rounded-full" style={{ background: item.type === 'gift' ? '#D4A847' : '#6B6560' }} />
+                <p className="flex-1 font-body text-sm" style={{ color: 'var(--admin-text)' }}>
+                  {item.label}
+                </p>
+                <p className="font-body text-xs" style={{ color: 'var(--admin-text-muted)' }}>
+                  {formatDistanceToNow(item.time, { addSuffix: true })}
+                </p>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   )

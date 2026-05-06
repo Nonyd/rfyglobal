@@ -2,7 +2,7 @@ import dynamic from 'next/dynamic'
 
 const ConfessionRevealClient = dynamic(
   () => import('./ConfessionRevealClient').then((m) => m.ConfessionRevealClient),
-  { ssr: false, loading: () => <div className="min-h-screen bg-black" aria-hidden /> },
+  { ssr: false, loading: () => <div className="min-h-screen bg-bg" aria-hidden /> },
 )
 
 export function ConfessionReveal() {

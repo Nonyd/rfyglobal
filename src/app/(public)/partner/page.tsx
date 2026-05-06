@@ -41,11 +41,15 @@ export default async function PartnerPage() {
     getBankTransferCredentials(),
     getPaymentSettings(),
   ])
+  const isTestMode =
+    (paystack?.isActive && paystack?.mode === 'test') ||
+    (flutterwave?.isActive && flutterwave?.mode === 'test') ||
+    (payaza?.isActive && payaza?.mode === 'test')
 
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-black">
+      <main className="min-h-screen bg-bg">
         <PartnershipClientPage
           content={content}
           gateways={{
@@ -55,6 +59,7 @@ export default async function PartnerPage() {
           }}
           bankDetails={bank ?? null}
           minimumAmount={settings?.minimumGiftAmount ?? 100}
+          isTestMode={Boolean(isTestMode)}
         />
       </main>
       <Footer />

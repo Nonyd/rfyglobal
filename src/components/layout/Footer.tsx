@@ -39,59 +39,41 @@ export async function Footer() {
   ]
 
   return (
-    <footer className="border-t border-gold-subtle bg-black">
-      <div className="mx-auto max-w-7xl px-6 py-16">
-        <div className="flex flex-col gap-12 lg:flex-row lg:items-start lg:justify-between">
-          <Image
-            src="/images/logo-white.svg"
-            alt="Room For You"
-            width={140}
-            height={48}
-            className="h-12 w-auto object-contain"
-          />
-          <nav className="flex flex-wrap gap-x-6 gap-y-3">
+    <footer className="bg-charcoal border-t-4 border-gold">
+      <div className="mx-auto max-w-7xl px-6 py-16 text-cream">
+        <div className="grid gap-10 md:grid-cols-3">
+          <div>
+            <Image src="/images/logo-white.svg" alt="Room For You" width={140} height={48} className="h-12 w-auto object-contain" />
+            <p className="mt-5 font-body text-sm text-cream/70">{c['footer.tagline']}</p>
+            <p className="mt-3 font-body text-xs uppercase tracking-widest text-gold">Jesus to Nations</p>
+          </div>
+
+          <nav className="grid grid-cols-2 gap-x-6 gap-y-3 self-start">
             {footerLinks.map((l) => (
-              <Link
-                key={l.href}
-                href={l.href}
-                className="font-body text-xs uppercase tracking-widest text-white/50 transition-colors hover:text-gold"
-              >
+              <Link key={l.href} href={l.href} className="font-body text-xs uppercase tracking-widest text-cream/70 transition-colors hover:text-gold">
                 {l.label}
               </Link>
             ))}
           </nav>
+
+          <div className="justify-self-start md:justify-self-end">
+            <div className="flex items-center gap-6 text-cream/70">
+              <a href={c['footer.instagram']} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-gold" aria-label="Room For You on Instagram">
+                <Instagram className="h-5 w-5" />
+              </a>
+              <a href={c['footer.youtube']} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-gold" aria-label="Room For You on YouTube">
+                <Youtube className="h-5 w-5" />
+              </a>
+              <a href={c['footer.twitter']} target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-gold" aria-label="Room For You on X">
+                <XIcon className="h-5 w-5" />
+              </a>
+            </div>
+            <p className="mt-6 font-body text-xs uppercase tracking-widest text-cream/50">A SonsHub Media Initiative</p>
+          </div>
         </div>
-        <p className="mt-10 max-w-md font-body text-sm text-white/50">{c['footer.tagline']}</p>
-        <div className="mt-8 flex items-center gap-6 text-white/50">
-          <a
-            href={c['footer.instagram']}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition-colors hover:text-gold"
-            aria-label="Room For You on Instagram"
-          >
-            <Instagram className="h-5 w-5" />
-          </a>
-          <a
-            href={c['footer.youtube']}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition-colors hover:text-gold"
-            aria-label="Room For You on YouTube"
-          >
-            <Youtube className="h-5 w-5" />
-          </a>
-          <a
-            href={c['footer.twitter']}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="transition-colors hover:text-gold"
-            aria-label="Room For You on X"
-          >
-            <XIcon className="h-5 w-5" />
-          </a>
+        <div className="mt-12 border-t border-cream/20 pt-6 text-center">
+          <p className="font-body text-xs text-cream/50">{c['footer.copyright']}</p>
         </div>
-        <p className="mt-10 font-body text-xs text-white/50">{c['footer.copyright']}</p>
       </div>
     </footer>
   )
