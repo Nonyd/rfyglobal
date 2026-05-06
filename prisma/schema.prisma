@@ -1,0 +1,225 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── AUTH ─────────────────────────────────────────────────────────────
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  role      Role     @default(ADMIN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  SUPER_ADMIN
+}
+
+// ─── DAILY SCRIPTURE ──────────────────────────────────────────────────
+
+model Scripture {
+  id          String    @id @default(cuid())
+  reference   String
+  text        String    @db.Text
+  translation String    @default("KJV")
+  audioUrl    String?
+  scheduledAt DateTime?
+  isActive    Boolean   @default(true)
+  displayedOn DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// ─── FORM BUILDER ─────────────────────────────────────────────────────
+
+model Form {
+  id          String             @id @default(cuid())
+  title       String
+  description String?            @db.Text
+  slug        String             @unique
+  isActive    Boolean            @default(false)
+  notifyEmail String?
+  fields      FormField[]
+  submissions FormSubmission[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+model FormField {
+  id          String    @id @default(cuid())
+  formId      String
+  form        Form      @relation(fields: [formId], references: [id], onDelete: Cascade)
+  label       String
+  type        FieldType
+  placeholder String?
+  required    Boolean   @default(false)
+  options     Json?
+  order       Int
+  createdAt   DateTime  @default(now())
+}
+
+enum FieldType {
+  SHORT_TEXT
+  LONG_TEXT
+  EMAIL
+  PHONE
+  NUMBER
+  DROPDOWN
+  RADIO
+  CHECKBOXES
+  DATE
+  FILE_UPLOAD
+  LOCATION
+}
+
+model FormSubmission {
+  id        String                @id @default(cuid())
+  formId    String
+  form      Form                  @relation(fields: [formId], references: [id], onDelete: Cascade)
+  values    FormSubmissionValue[]
+  ipAddress String?
+  createdAt DateTime              @default(now())
+}
+
+model FormSubmissionValue {
+  id           String         @id @default(cuid())
+  submissionId String
+  submission   FormSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  fieldId      String
+  fieldLabel   String
+  value        String         @db.Text
+}
+
+// ─── BLOG / DEVOTIONALS ───────────────────────────────────────────────
+
+model Post {
+  id          String   @id @default(cuid())
+  title       String
+  slug        String   @unique
+  excerpt     String?  @db.Text
+  content     String   @db.Text
+  coverImage  String?
+  isPublished Boolean  @default(false)
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ─── STUDY PORTAL ─────────────────────────────────────────────────────
+
+model StudySeries {
+  id          String          @id @default(cuid())
+  title       String
+  description String?         @db.Text
+  order       Int             @default(0)
+  materials   StudyMaterial[]
+  tasks       StudyTask[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model StudyMaterial {
+  id        String      @id @default(cuid())
+  seriesId  String
+  series    StudySeries @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  title     String
+  fileUrl   String
+  fileType  String
+  order     Int         @default(0)
+  createdAt DateTime    @default(now())
+}
+
+model StudyTask {
+  id          String      @id @default(cuid())
+  seriesId    String
+  series      StudySeries @relation(fields: [seriesId], references: [id], onDelete: Cascade)
+  title       String
+  description String?     @db.Text
+  dueDate     DateTime?
+  order       Int         @default(0)
+  createdAt   DateTime    @default(now())
+}
+
+// ─── EVENTS ───────────────────────────────────────────────────────────
+
+model Event {
+  id          String   @id @default(cuid())
+  title       String
+  description String?  @db.Text
+  city        String
+  venue       String
+  date        DateTime
+  time        String?
+  imageUrl    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ─── PARTNERSHIP / GIVING ─────────────────────────────────────────────
+
+model GivingRecord {
+  id         String         @id @default(cuid())
+  donorName  String?
+  donorEmail String?
+  amount     Float
+  currency   String         @default("NGN")
+  gateway    PaymentGateway
+  reference  String         @unique
+  status     PaymentStatus  @default(PENDING)
+  meta       Json?
+  createdAt  DateTime       @default(now())
+}
+
+enum PaymentGateway {
+  PAYSTACK
+  FLUTTERWAVE
+  PAYAZA
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+// ─── GALLERY ─────────────────────────────────────────────────────────
+
+model GalleryImage {
+  id        String    @id @default(cuid())
+  url       String
+  caption   String?
+  eventName String?
+  city      String?
+  takenAt   DateTime?
+  order     Int       @default(0)
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// ─── SITE CMS ───────────────────────────────────────────────────────
+
+model SiteContent {
+  id        String      @id @default(cuid())
+  key       String      @unique
+  value     String      @db.Text
+  type      ContentType @default(TEXT)
+  updatedAt DateTime    @updatedAt
+}
+
+enum ContentType {
+  TEXT
+  RICHTEXT
+  IMAGE
+  JSON
+}

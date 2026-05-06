@@ -1,0 +1,121 @@
+'use client'
+
+import { useState } from 'react'
+import { AudioPlayer } from '@/components/shared/AudioPlayer'
+import { ShareButton } from '@/components/shared/ShareButton'
+import { cn, formatDate } from '@/lib/utils'
+import type { Scripture } from '@prisma/client'
+
+interface WordClientPageProps {
+  today: Scripture | null
+  allScriptures: Scripture[]
+}
+
+export function WordClientPage({ today, allScriptures }: WordClientPageProps) {
+  const [view, setView] = useState<'today' | 'archive'>('today')
+
+  return (
+    <div className="mx-auto max-w-4xl px-6">
+      <div className="mb-12 flex justify-center gap-2">
+        {(['today', 'archive'] as const).map((v) => (
+          <button
+            key={v}
+            type="button"
+            onClick={() => setView(v)}
+            className={cn(
+              'border px-6 py-2 font-body text-sm uppercase tracking-widest transition-all',
+              view === v
+                ? 'border-gold bg-gold text-black'
+                : 'border-white/20 text-white/50 hover:border-gold/40 hover:text-white',
+            )}
+          >
+            {v === 'today' ? "Today's Word" : 'Archive'}
+          </button>
+        ))}
+      </div>
+
+      {view === 'today' ? (
+        <div className="mx-auto max-w-2xl">
+          {today ? (
+            <div className="space-y-8">
+              <div className="text-center">
+                <span className="font-body text-[10px] uppercase tracking-[0.35em] text-gold/70">
+                  {today.translation}
+                </span>
+                <h2 className="mt-2 font-display text-3xl text-gold lg:text-4xl">{today.reference}</h2>
+              </div>
+
+              <div className="h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
+
+              <blockquote className="text-center font-display text-xl italic leading-relaxed text-white/90 lg:text-2xl">
+                &ldquo;{today.text}&rdquo;
+              </blockquote>
+
+              <div className="h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
+
+              {today.audioUrl ? (
+                <div className="space-y-3">
+                  <p className="text-center font-body text-xs uppercase tracking-widest text-white/30">
+                    Audio Explanation
+                  </p>
+                  <AudioPlayer src={today.audioUrl} />
+                </div>
+              ) : null}
+
+              <div className="flex justify-center pt-4">
+                <ShareButton scriptureId={today.id} reference={today.reference} />
+              </div>
+            </div>
+          ) : (
+            <div className="py-24 text-center">
+              <p className="font-display text-2xl italic text-white/30">No scripture for today yet.</p>
+              <p className="mt-2 font-body text-sm text-white/20">Check back soon.</p>
+            </div>
+          )}
+        </div>
+      ) : null}
+
+      {view === 'archive' ? (
+        <div className="space-y-4">
+          {allScriptures.length === 0 ? (
+            <div className="py-24 text-center">
+              <p className="font-display text-2xl italic text-white/30">No scriptures yet.</p>
+            </div>
+          ) : (
+            allScriptures.map((s) => (
+              <div
+                key={s.id}
+                className="border border-white/10 p-6 transition-colors hover:border-gold/20"
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <div className="mb-2 flex flex-wrap items-center gap-3">
+                      <span className="font-display text-lg text-gold">{s.reference}</span>
+                      <span className="font-body text-[10px] uppercase tracking-widest text-white/30">
+                        {s.translation}
+                      </span>
+                      {s.scheduledAt ? (
+                        <span className="font-body text-[10px] text-gold/40">
+                          {formatDate(s.scheduledAt)}
+                        </span>
+                      ) : null}
+                    </div>
+                    <p className="line-clamp-2 font-body text-sm italic leading-relaxed text-white/60">
+                      &ldquo;{s.text}&rdquo;
+                    </p>
+                    {s.audioUrl ? (
+                      <div className="mt-4">
+                        <AudioPlayer src={s.audioUrl} />
+                      </div>
+                    ) : null}
+                  </div>
+                  <ShareButton scriptureId={s.id} reference={s.reference} compact />
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      ) : null}
+    </div>
+  )
+}

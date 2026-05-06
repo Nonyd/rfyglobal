@@ -1,0 +1,75 @@
+import NextAuth from 'next-auth'
+import Credentials from 'next-auth/providers/credentials'
+import { db } from '@/lib/db'
+
+export const { handlers, auth, signIn, signOut } = NextAuth({
+  trustHost: true,
+  pages: {
+    signIn: '/admin/login',
+  },
+  session: {
+    strategy: 'jwt',
+  },
+  providers: [
+    Credentials({
+      name: 'credentials',
+      credentials: {
+        email: { label: 'Email', type: 'email' },
+        password: { label: 'Password', type: 'password' },
+      },
+      async authorize(credentials) {
+        const email = credentials?.email
+        const password = credentials?.password
+        if (typeof email !== 'string' || typeof password !== 'string') return null
+
+        const user = await db.user.findUnique({ where: { email } })
+        if (user) {
+          const { compare } = await import('bcryptjs')
+          const valid = await compare(password, user.password)
+          if (!valid) return null
+          return {
+            id: user.id,
+            email: user.email,
+            name: user.name ?? undefined,
+            role: user.role,
+          }
+        }
+
+        const adminEmail = process.env.ADMIN_EMAIL
+        const adminPassword = process.env.ADMIN_PASSWORD
+        if (
+          adminEmail &&
+          adminPassword &&
+          email === adminEmail &&
+          password === adminPassword
+        ) {
+          return {
+            id: 'env-admin',
+            email,
+            name: 'Admin',
+            role: 'ADMIN' as const,
+          }
+        }
+
+        return null
+      },
+    }),
+  ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user && 'role' in user && user.role) {
+        token.role = user.role
+      }
+      return token
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.sub ?? ''
+        if (typeof token.role === 'string') {
+          session.user.role = token.role
+        }
+      }
+      return session
+    },
+  },
+})

@@ -1,0 +1,48 @@
+import type { Prisma } from '@prisma/client'
+import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@/lib/auth'
+import { db } from '@/lib/db'
+import { CreateEventSchema } from '@/lib/validations/event'
+
+export const runtime = 'nodejs'
+
+export async function GET(req: NextRequest) {
+  const session = await auth()
+  const { searchParams } = new URL(req.url)
+  const city = searchParams.get('city')
+
+  const where: Prisma.EventWhereInput = {}
+  if (!session) {
+    where.isActive = true
+    where.date = { gte: new Date() }
+  }
+  if (city) {
+    where.city = { contains: city, mode: 'insensitive' }
+  }
+
+  const events = await db.event.findMany({
+    where,
+    orderBy: { date: 'asc' },
+  })
+
+  return NextResponse.json(events)
+}
+
+export async function POST(req: NextRequest) {
+  const session = await auth()
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const body = await req.json()
+  const parsed = CreateEventSchema.safeParse(body)
+  if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+
+  const { imageUrl, date, ...rest } = parsed.data
+  const event = await db.event.create({
+    data: {
+      ...rest,
+      date: new Date(date),
+      imageUrl: imageUrl && imageUrl.length > 0 ? imageUrl : null,
+    },
+  })
+  return NextResponse.json(event, { status: 201 })
+}
