@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import type { EventRegistration } from '@prisma/client'
-import { Plus, Pencil, Trash2, X, Loader2, Users, Download } from 'lucide-react'
+import type { EventFormField, EventRegistration } from '@prisma/client'
+import { Plus, Pencil, Trash2, X, Loader2, Users, Download, Settings } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { formatDate } from '@/lib/utils'
 import { cn } from '@/lib/utils'
@@ -33,6 +33,14 @@ const emptyForm = {
   isActive: true,
 }
 
+const emptyNewField = {
+  label: '',
+  type: 'SHORT_TEXT',
+  placeholder: '',
+  required: false,
+  optionsText: '',
+}
+
 export function EventsManager() {
   const [events, setEvents] = useState<EventRow[]>([])
   const [loading, setLoading] = useState(true)
@@ -41,20 +49,98 @@ export function EventsManager() {
   const [form, setForm] = useState(emptyForm)
   const [registrationsEvent, setRegistrationsEvent] = useState<EventRow | null>(null)
   const [registrations, setRegistrations] = useState<EventRegistration[]>([])
+  const [registrationFormFields, setRegistrationFormFields] = useState<EventFormField[]>([])
   const [loadingRegs, setLoadingRegs] = useState(false)
+  const [fieldsEvent, setFieldsEvent] = useState<EventRow | null>(null)
+  const [eventFields, setEventFields] = useState<EventFormField[]>([])
+  const [loadingFields, setLoadingFields] = useState(false)
+  const [newField, setNewField] = useState(emptyNewField)
+  const [addingField, setAddingField] = useState(false)
 
   const openRegistrations = async (ev: EventRow) => {
     setRegistrationsEvent(ev)
     setLoadingRegs(true)
     try {
       const slugOrId = encodeURIComponent(ev.slug ?? ev.id)
-      const res = await fetch(`/api/events/${slugOrId}/registrations`)
-      const data = (await res.json()) as { registrations?: EventRegistration[] }
+      const [regsRes, fieldsRes] = await Promise.all([
+        fetch(`/api/events/${slugOrId}/registrations`),
+        fetch(`/api/events/${ev.id}/fields`),
+      ])
+      const data = (await regsRes.json()) as { registrations?: EventRegistration[] }
+      const fieldsData = (await fieldsRes.json()) as EventFormField[] | { error?: string }
       setRegistrations(data.registrations ?? [])
+      setRegistrationFormFields(
+        Array.isArray(fieldsData) ? fieldsData.filter((f) => f.isActive) : []
+      )
     } catch {
       toast.error('Failed to load registrations')
     } finally {
       setLoadingRegs(false)
+    }
+  }
+
+  const openFields = async (ev: EventRow) => {
+    setFieldsEvent(ev)
+    setLoadingFields(true)
+    try {
+      const res = await fetch(`/api/events/${ev.id}/fields`)
+      const data = (await res.json()) as EventFormField[] | { error?: string }
+      setEventFields(Array.isArray(data) ? data : [])
+    } catch {
+      toast.error('Failed to load fields')
+    } finally {
+      setLoadingFields(false)
+    }
+  }
+
+  const addField = async () => {
+    if (!newField.label.trim() || !fieldsEvent) return
+    const options =
+      newField.type === 'DROPDOWN'
+        ? newField.optionsText
+            .split('\n')
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : undefined
+    if (newField.type === 'DROPDOWN' && (!options || options.length === 0)) {
+      toast.error('Add at least one dropdown option (one per line)')
+      return
+    }
+    setAddingField(true)
+    try {
+      const res = await fetch(`/api/events/${fieldsEvent.id}/fields`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          label: newField.label.trim(),
+          type: newField.type,
+          placeholder: newField.placeholder.trim() || null,
+          required: newField.required,
+          ...(options && options.length > 0 ? { options } : {}),
+        }),
+      })
+      if (!res.ok) throw new Error('Failed')
+      const field = (await res.json()) as EventFormField
+      setEventFields((prev) => [...prev, field])
+      setNewField({ ...emptyNewField })
+      toast.success('Field added')
+    } catch {
+      toast.error('Failed to add field')
+    } finally {
+      setAddingField(false)
+    }
+  }
+
+  const deleteField = async (fieldId: string) => {
+    if (!confirm('Remove this field?') || !fieldsEvent) return
+    const res = await fetch(`/api/events/${fieldsEvent.id}/fields/${fieldId}`, {
+      method: 'DELETE',
+    })
+    if (res.ok) {
+      setEventFields((prev) => prev.filter((f) => f.id !== fieldId))
+      toast.success('Field removed')
+    } else {
+      toast.error('Failed to remove')
     }
   }
 
@@ -243,6 +329,23 @@ export function EventsManager() {
                 >
                   <Users size={12} />
                   Registrations
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void openFields(e)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-body border transition-all"
+                  style={{ borderColor: 'var(--a-border)', color: 'var(--a-text-secondary)' }}
+                  onMouseEnter={(ev) => {
+                    ev.currentTarget.style.borderColor = 'var(--a-gold-border)'
+                    ev.currentTarget.style.color = 'var(--a-gold)'
+                  }}
+                  onMouseLeave={(ev) => {
+                    ev.currentTarget.style.borderColor = 'var(--a-border)'
+                    ev.currentTarget.style.color = 'var(--a-text-secondary)'
+                  }}
+                >
+                  <Settings size={12} />
+                  Form Fields
                 </button>
                 <button
                   type="button"
@@ -474,7 +577,7 @@ export function EventsManager() {
                               borderBottom: `1px solid var(--a-border)`,
                             }}
                           >
-                            {['Name', 'Email', 'Phone', 'Location', 'When'].map((h) => (
+                            {(['Name', 'Email', 'Phone', 'Location'] as const).map((h) => (
                               <th
                                 key={h}
                                 className="text-left px-3 py-2.5 text-xs uppercase tracking-widest"
@@ -483,6 +586,21 @@ export function EventsManager() {
                                 {h}
                               </th>
                             ))}
+                            {registrationFormFields.map((f) => (
+                              <th
+                                key={f.id}
+                                className="text-left px-3 py-2.5 text-xs uppercase tracking-widest"
+                                style={{ color: 'var(--a-gold)' }}
+                              >
+                                {f.label}
+                              </th>
+                            ))}
+                            <th
+                              className="text-left px-3 py-2.5 text-xs uppercase tracking-widest"
+                              style={{ color: 'var(--a-gold)' }}
+                            >
+                              When
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
@@ -506,6 +624,20 @@ export function EventsManager() {
                               <td className="px-3 py-2.5" style={{ color: 'var(--a-text-secondary)' }}>
                                 {r.location}
                               </td>
+                              {registrationFormFields.map((f) => {
+                                const extra = r.extraFields as Record<string, string> | null
+                                const val = extra?.[f.id]
+                                return (
+                                  <td
+                                    key={f.id}
+                                    className="px-3 py-2.5 max-w-[140px] truncate"
+                                    style={{ color: 'var(--a-text-secondary)' }}
+                                    title={val ?? ''}
+                                  >
+                                    {val ?? '—'}
+                                  </td>
+                                )
+                              })}
                               <td className="px-3 py-2.5" style={{ color: 'var(--a-text-muted)' }}>
                                 {formatDate(r.createdAt)}
                               </td>
@@ -516,6 +648,200 @@ export function EventsManager() {
                     </div>
                   </div>
                 )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {fieldsEvent && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setFieldsEvent(null)}
+              className="fixed inset-0 z-[57]"
+              style={{ background: 'rgba(0,0,0,0.4)' }}
+            />
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="fixed right-0 top-0 bottom-0 z-[58] w-full max-w-lg overflow-y-auto"
+              style={{ background: 'var(--a-surface)', borderLeft: '1px solid var(--a-border)' }}
+            >
+              <div className="space-y-6 p-8">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p
+                      className="mb-1 font-body text-xs uppercase tracking-widest"
+                      style={{ color: 'var(--a-gold)' }}
+                    >
+                      Registration Form Fields
+                    </p>
+                    <h3 className="font-display text-lg font-semibold" style={{ color: 'var(--a-text)' }}>
+                      {fieldsEvent.title}
+                    </h3>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setFieldsEvent(null)}
+                    style={{ color: 'var(--a-text-muted)' }}
+                    aria-label="Close"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                <div className="h-px" style={{ background: 'var(--a-border)' }} />
+
+                <p className="font-body text-xs leading-relaxed" style={{ color: 'var(--a-text-muted)' }}>
+                  Core fields (Name, Email, Phone, Location, Expectations) are always included. Add extra fields
+                  below for this event only.
+                </p>
+
+                <div className="space-y-2">
+                  {['Full Name *', 'Email Address *', 'Phone Number *', 'Location *', 'Expectations'].map((f) => (
+                    <div
+                      key={f}
+                      className="flex items-center gap-2 border px-3 py-2"
+                      style={{ borderColor: 'var(--a-border)', background: 'var(--a-bg)', opacity: 0.6 }}
+                    >
+                      <span className="font-body text-xs" style={{ color: 'var(--a-text-secondary)' }}>
+                        {f}
+                      </span>
+                      <span className="ml-auto font-body text-[10px]" style={{ color: 'var(--a-text-muted)' }}>
+                        core field
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {loadingFields ? (
+                  <p className="py-4 text-center font-body text-sm" style={{ color: 'var(--a-text-muted)' }}>
+                    Loading…
+                  </p>
+                ) : eventFields.length > 0 ? (
+                  <div className="space-y-2">
+                    <p className="font-body text-xs uppercase tracking-widest" style={{ color: 'var(--a-text-muted)' }}>
+                      Custom Fields
+                    </p>
+                    {eventFields.map((field) => (
+                      <div
+                        key={field.id}
+                        className="flex items-center gap-3 border px-3 py-2.5"
+                        style={{
+                          borderColor: 'var(--a-gold-border)',
+                          background: 'var(--a-gold-light)',
+                          opacity: field.isActive ? 1 : 0.55,
+                        }}
+                      >
+                        <div className="min-w-0 flex-1">
+                          <p className="font-body text-sm font-medium" style={{ color: 'var(--a-text)' }}>
+                            {field.label}
+                            {field.required ? ' *' : ''}
+                            {!field.isActive ? ' (inactive)' : ''}
+                          </p>
+                          <p className="font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
+                            {field.type.replace(/_/g, ' ').toLowerCase()}
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => void deleteField(field.id)}
+                          className="p-1.5 transition-colors"
+                          style={{ color: 'var(--a-text-muted)' }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.color = '#ef4444'
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.color = 'var(--a-text-muted)'
+                          }}
+                          aria-label="Delete field"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+
+                <div className="space-y-3 border p-4" style={{ borderColor: 'var(--a-border)', background: 'var(--a-bg)' }}>
+                  <p className="font-body text-xs uppercase tracking-widest" style={{ color: 'var(--a-text-muted)' }}>
+                    Add Custom Field
+                  </p>
+
+                  <input
+                    value={newField.label}
+                    onChange={(e) => setNewField((p) => ({ ...p, label: e.target.value }))}
+                    placeholder="Field label"
+                    className="w-full border px-3 py-2.5 font-body text-sm focus:outline-none"
+                    style={{ background: 'var(--a-surface)', borderColor: 'var(--a-border)', color: 'var(--a-text)' }}
+                    onFocus={(e) => (e.target.style.borderColor = 'var(--a-gold)')}
+                    onBlur={(e) => (e.target.style.borderColor = 'var(--a-border)')}
+                  />
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <select
+                      value={newField.type}
+                      onChange={(e) => setNewField((p) => ({ ...p, type: e.target.value }))}
+                      className="border px-3 py-2.5 font-body text-sm focus:outline-none"
+                      style={{ background: 'var(--a-surface)', borderColor: 'var(--a-border)', color: 'var(--a-text)' }}
+                    >
+                      <option value="SHORT_TEXT">Short Text</option>
+                      <option value="LONG_TEXT">Long Text</option>
+                      <option value="PHONE">Phone</option>
+                      <option value="NUMBER">Number</option>
+                      <option value="EMAIL">Email</option>
+                      <option value="DROPDOWN">Dropdown</option>
+                    </select>
+
+                    <input
+                      value={newField.placeholder}
+                      onChange={(e) => setNewField((p) => ({ ...p, placeholder: e.target.value }))}
+                      placeholder="Placeholder (optional)"
+                      className="border px-3 py-2.5 font-body text-sm focus:outline-none"
+                      style={{ background: 'var(--a-surface)', borderColor: 'var(--a-border)', color: 'var(--a-text)' }}
+                    />
+                  </div>
+
+                  {newField.type === 'DROPDOWN' && (
+                    <textarea
+                      value={newField.optionsText}
+                      onChange={(e) => setNewField((p) => ({ ...p, optionsText: e.target.value }))}
+                      placeholder="Dropdown options — one per line"
+                      rows={3}
+                      className="w-full border px-3 py-2.5 font-body text-sm focus:outline-none"
+                      style={{ background: 'var(--a-surface)', borderColor: 'var(--a-border)', color: 'var(--a-text)' }}
+                    />
+                  )}
+
+                  <div className="flex items-center justify-between">
+                    <label className="flex cursor-pointer items-center gap-2 font-body text-xs" style={{ color: 'var(--a-text-secondary)' }}>
+                      <input
+                        type="checkbox"
+                        checked={newField.required}
+                        onChange={(e) => setNewField((p) => ({ ...p, required: e.target.checked }))}
+                        className="accent-gold"
+                      />
+                      Required
+                    </label>
+
+                    <button
+                      type="button"
+                      onClick={() => void addField()}
+                      disabled={addingField || !newField.label.trim()}
+                      className="flex items-center gap-1.5 px-4 py-2 font-body text-xs font-medium text-black transition-all disabled:opacity-40"
+                      style={{ background: 'var(--a-gold)' }}
+                    >
+                      <Plus size={12} />
+                      {addingField ? 'Adding…' : 'Add Field'}
+                    </button>
+                  </div>
+                </div>
               </div>
             </motion.div>
           </>

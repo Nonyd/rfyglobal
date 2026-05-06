@@ -182,6 +182,21 @@ model Event {
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
   registrations  EventRegistration[]
+  formFields     EventFormField[]
+}
+
+model EventFormField {
+  id          String    @id @default(cuid())
+  eventId     String
+  event       Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  label       String
+  type        FieldType
+  placeholder String?
+  required    Boolean   @default(false)
+  options     Json?
+  order       Int       @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
 }
 
 model EventRegistration {
@@ -193,6 +208,7 @@ model EventRegistration {
   phone        String
   location     String
   expectations String?  @db.Text
+  extraFields  Json?
   createdAt    DateTime @default(now())
 
   @@unique([eventId, email])

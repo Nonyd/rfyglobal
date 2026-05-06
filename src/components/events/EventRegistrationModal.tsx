@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, CheckCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
+import type { EventFormField } from '@prisma/client'
 
 interface EventRegistrationModalProps {
   isOpen: boolean
@@ -12,6 +13,13 @@ interface EventRegistrationModalProps {
   eventTitle: string
   eventDate: string
   eventCity: string
+  customFields?: EventFormField[]
+}
+
+function jsonStringList(options: unknown): string[] {
+  if (!options) return []
+  if (Array.isArray(options)) return options.filter((x): x is string => typeof x === 'string')
+  return []
 }
 
 function messageFromApiError(error: unknown): string {
@@ -32,6 +40,7 @@ export function EventRegistrationModal({
   eventTitle,
   eventDate,
   eventCity,
+  customFields = [],
 }: EventRegistrationModalProps) {
   const [form, setForm] = useState({
     name: '',
@@ -40,6 +49,7 @@ export function EventRegistrationModal({
     location: '',
     expectations: '',
   })
+  const [extraValues, setExtraValues] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
 
@@ -56,7 +66,7 @@ export function EventRegistrationModal({
       const res = await fetch(`/api/events/${encodeURIComponent(eventSlug)}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, extraFields: extraValues }),
       })
 
       const data = await res.json()
@@ -83,6 +93,7 @@ export function EventRegistrationModal({
     setTimeout(() => {
       setSubmitted(false)
       setForm({ name: '', email: '', phone: '', location: '', expectations: '' })
+      setExtraValues({})
     }, 300)
   }
 
@@ -222,6 +233,125 @@ export function EventRegistrationModal({
                         onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
                       />
                     </div>
+
+                    {customFields.map((field) => (
+                      <div key={field.id}>
+                        <label style={labelStyle}>
+                          {field.label}
+                          {field.required ? ' *' : ''}
+                        </label>
+                        {field.type === 'LONG_TEXT' ? (
+                          <textarea
+                            value={extraValues[field.id] ?? ''}
+                            onChange={(ev) =>
+                              setExtraValues((p) => ({ ...p, [field.id]: ev.target.value }))
+                            }
+                            placeholder={field.placeholder ?? ''}
+                            required={field.required}
+                            rows={3}
+                            style={{ ...inputStyle, resize: 'none' }}
+                            onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+                            onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
+                          />
+                        ) : field.type === 'DROPDOWN' ? (
+                          <select
+                            value={extraValues[field.id] ?? ''}
+                            onChange={(ev) =>
+                              setExtraValues((p) => ({ ...p, [field.id]: ev.target.value }))
+                            }
+                            required={field.required}
+                            style={{ ...inputStyle, cursor: 'pointer' }}
+                          >
+                            <option value="">Select an option</option>
+                            {jsonStringList(field.options).map((opt) => (
+                              <option
+                                key={opt}
+                                value={opt}
+                                style={{ background: '#1A1A1A', color: '#F8F8F8' }}
+                              >
+                                {opt}
+                              </option>
+                            ))}
+                          </select>
+                        ) : field.type === 'NUMBER' ? (
+                          <input
+                            type="number"
+                            value={extraValues[field.id] ?? ''}
+                            onChange={(ev) =>
+                              setExtraValues((p) => ({
+                                ...p,
+                                [field.id]: ev.target.value,
+                              }))
+                            }
+                            placeholder={field.placeholder ?? ''}
+                            required={field.required}
+                            style={inputStyle}
+                            onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+                            onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
+                          />
+                        ) : field.type === 'EMAIL' ? (
+                          <input
+                            type="email"
+                            value={extraValues[field.id] ?? ''}
+                            onChange={(ev) =>
+                              setExtraValues((p) => ({ ...p, [field.id]: ev.target.value }))
+                            }
+                            placeholder={field.placeholder ?? ''}
+                            required={field.required}
+                            style={inputStyle}
+                            onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+                            onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
+                          />
+                        ) : field.type === 'DATE' ? (
+                          <input
+                            type="date"
+                            value={extraValues[field.id] ?? ''}
+                            onChange={(ev) =>
+                              setExtraValues((p) => ({ ...p, [field.id]: ev.target.value }))
+                            }
+                            required={field.required}
+                            style={inputStyle}
+                            onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+                            onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
+                          />
+                        ) : field.type === 'RADIO' && jsonStringList(field.options).length > 0 ? (
+                          <div className="space-y-2">
+                            {jsonStringList(field.options).map((opt) => (
+                              <label
+                                key={opt}
+                                className="flex cursor-pointer items-center gap-2 font-body text-sm text-mist"
+                              >
+                                <input
+                                  type="radio"
+                                  name={field.id}
+                                  value={opt}
+                                  checked={(extraValues[field.id] ?? '') === opt}
+                                  onChange={() =>
+                                    setExtraValues((p) => ({ ...p, [field.id]: opt }))
+                                  }
+                                  required={field.required}
+                                  className="accent-[#C9A84C]"
+                                />
+                                {opt}
+                              </label>
+                            ))}
+                          </div>
+                        ) : (
+                          <input
+                            value={extraValues[field.id] ?? ''}
+                            onChange={(ev) =>
+                              setExtraValues((p) => ({ ...p, [field.id]: ev.target.value }))
+                            }
+                            placeholder={field.placeholder ?? ''}
+                            required={field.required}
+                            type={field.type === 'PHONE' ? 'tel' : 'text'}
+                            style={inputStyle}
+                            onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+                            onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
+                          />
+                        )}
+                      </div>
+                    ))}
 
                     <button
                       type="submit"

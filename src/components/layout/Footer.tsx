@@ -29,9 +29,9 @@ export async function Footer() {
             <Image
               src="/images/brand-logo-on-dark.png"
               alt="Room For You — with Yadah"
-              width={160}
-              height={52}
-              className="h-10 w-auto mb-4 object-contain object-left"
+              width={280}
+              height={93}
+              className="h-14 w-auto mb-4 object-contain object-left sm:h-16 md:h-[72px] md:max-h-[72px]"
             />
             <p className="label-text opacity-40">
               {content['footer.tagline'] || 'Jesus to Nations — 2 Cor 5:17-21'}

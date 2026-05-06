@@ -10,8 +10,11 @@ export async function generateMetadata({
 }: {
   params: { slug: string }
 }): Promise<Metadata> {
-  const event = await db.event.findUnique({
-    where: { slug: params.slug, isActive: true },
+  const event = await db.event.findFirst({
+    where: {
+      isActive: true,
+      OR: [{ slug: params.slug }, { id: params.slug }],
+    },
   })
   return {
     title: event ? `${event.title} — Room For You` : 'Event',
@@ -25,26 +28,35 @@ export default async function SingleEventPage({
 }: {
   params: { slug: string }
 }) {
-  const event = await db.event.findUnique({
-    where: { slug: params.slug, isActive: true },
+  const event = await db.event.findFirst({
+    where: {
+      isActive: true,
+      OR: [{ slug: params.slug }, { id: params.slug }],
+    },
   })
 
   if (!event) notFound()
 
-  const otherEvents = await db.event.findMany({
-    where: {
-      isActive: true,
-      date: { gte: new Date() },
-      id: { not: event.id },
-    },
-    orderBy: { date: 'asc' },
-    take: 3,
-  })
+  const [otherEvents, formFields] = await Promise.all([
+    db.event.findMany({
+      where: {
+        isActive: true,
+        date: { gte: new Date() },
+        id: { not: event.id },
+      },
+      orderBy: { date: 'asc' },
+      take: 3,
+    }),
+    db.eventFormField.findMany({
+      where: { eventId: event.id, isActive: true },
+      orderBy: { order: 'asc' },
+    }),
+  ])
 
   return (
     <>
       <Navbar />
-      <SingleEventClient event={event} otherEvents={otherEvents} />
+      <SingleEventClient event={event} otherEvents={otherEvents} formFields={formFields} />
       <Footer />
     </>
   )

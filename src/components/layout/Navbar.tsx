@@ -45,10 +45,9 @@ export function Navbar() {
             <BrandLogo
               variant="onDark"
               href={null}
-              width={120}
-              height={40}
-              className="h-8"
-              imgClassName="h-8 max-h-8 w-auto"
+              width={280}
+              height={93}
+              imgClassName="h-14 max-h-14 w-auto sm:h-16 sm:max-h-16 md:h-[72px] md:max-h-[72px]"
               priority
             />
           </Link>
@@ -95,7 +94,13 @@ export function Navbar() {
             className="fixed inset-0 z-[100] bg-void flex flex-col"
           >
             <div className="flex items-center justify-between px-6 py-6">
-              <BrandLogo variant="onDark" href={null} width={120} height={40} imgClassName="h-8 max-h-8 w-auto" />
+              <BrandLogo
+                variant="onDark"
+                href={null}
+                width={280}
+                height={93}
+                imgClassName="h-14 max-h-14 w-auto sm:h-16 sm:max-h-16 md:h-[72px] md:max-h-[72px]"
+              />
               <button
               type="button"
                 aria-label="Close menu"

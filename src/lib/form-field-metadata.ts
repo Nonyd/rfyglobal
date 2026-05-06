@@ -40,7 +40,16 @@ export const NO_PLACEHOLDER: AppFieldType[] = [
   'RADIO',
 ]
 
-export const FIELD_TYPES_UI: { type: AppFieldType; label: string; icon: string }[] = [
+export type FieldTypeUiItem = {
+  type: AppFieldType
+  label: string
+  icon: string
+  /** When set, new fields get this label instead of the generic default */
+  defaultLabel?: string
+}
+
+export const FIELD_TYPES_UI: FieldTypeUiItem[] = [
+  { type: 'SHORT_TEXT', label: 'Name', icon: '👤', defaultLabel: 'Name' },
   { type: 'SHORT_TEXT', label: 'Short Text', icon: 'T' },
   { type: 'LONG_TEXT', label: 'Long Text', icon: '¶' },
   { type: 'EMAIL', label: 'Email', icon: '@' },

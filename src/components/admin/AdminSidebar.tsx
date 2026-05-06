@@ -100,9 +100,9 @@ export function AdminSidebar({ theme, userRole }: AdminSidebarProps) {
           <Image
             src={theme === 'dark' ? '/images/brand-logo-on-dark.png' : '/images/brand-logo-on-light.png'}
             alt="Room For You"
-            width={180}
-            height={48}
-            className="h-9 w-auto max-w-full object-contain object-left"
+            width={240}
+            height={80}
+            className="h-12 w-auto max-w-full object-contain object-left sm:h-14"
           />
           <p
             className="font-body text-[10px] uppercase tracking-widest"

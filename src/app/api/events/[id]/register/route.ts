@@ -12,6 +12,7 @@ const RegisterSchema = z.object({
   phone: z.string().min(7).max(20),
   location: z.string().min(1, 'Location is required').max(200),
   expectations: z.string().max(1000).optional(),
+  extraFields: z.record(z.string(), z.string()).optional(),
 })
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
@@ -45,6 +46,17 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
+  const customFields = await db.eventFormField.findMany({
+    where: { eventId: event.id, isActive: true, required: true },
+  })
+
+  for (const field of customFields) {
+    const value = parsed.data.extraFields?.[field.id]
+    if (!value || value.trim() === '') {
+      return NextResponse.json({ error: `"${field.label}" is required.` }, { status: 400 })
+    }
+  }
+
   const { name, email, phone, location, expectations } = parsed.data
 
   const existing = await db.eventRegistration.findUnique({
@@ -61,8 +73,20 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     )
   }
 
+  const extras = parsed.data.extraFields
+  const extraPayload =
+    extras && Object.keys(extras).length > 0 ? extras : undefined
+
   const registration = await db.eventRegistration.create({
-    data: { eventId: event.id, name, email, phone, location, expectations },
+    data: {
+      eventId: event.id,
+      name,
+      email,
+      phone,
+      location,
+      expectations,
+      extraFields: extraPayload,
+    },
   })
 
   try {

@@ -91,10 +91,10 @@ export function FormBuilderEditor({ mode, initialData }: FormBuilderEditorProps)
     }
   }
 
-  const addField = (type: AppFieldType) => {
+  const addField = (type: AppFieldType, defaultLabel?: string) => {
     const newField: FormFieldInput & { _key: string } = {
       _key: `field-${Date.now()}-${Math.random().toString(36).slice(2)}`,
-      label: `${type.replace(/_/g, ' ').toLowerCase()} field`,
+      label: defaultLabel ?? `${type.replace(/_/g, ' ').toLowerCase()} field`,
       type,
       placeholder: '',
       required: false,

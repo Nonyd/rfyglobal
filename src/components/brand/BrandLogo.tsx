@@ -34,8 +34,8 @@ export function BrandLogo({
   variant = 'auto',
   className,
   imgClassName,
-  width = 160,
-  height = 52,
+  width = 280,
+  height = 93,
   priority = false,
   href = '/',
   alt = 'Room For You — with Yadah',
@@ -56,8 +56,11 @@ export function BrandLogo({
       width={width}
       height={height}
       priority={priority}
-      className={cn('h-auto w-auto max-h-[52px] object-contain object-left md:max-h-[56px]', imgClassName)}
-      sizes="(max-width: 768px) 140px, 180px"
+      className={cn(
+        'h-auto w-auto max-h-14 object-contain object-left sm:max-h-16 md:max-h-[72px]',
+        imgClassName
+      )}
+      sizes="(max-width: 768px) 200px, 280px"
     />
   )
 

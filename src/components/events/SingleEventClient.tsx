@@ -6,15 +6,16 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { MapPin, Clock, Calendar, ArrowLeft, ArrowRight } from 'lucide-react'
 import { format } from 'date-fns'
-import type { Event } from '@prisma/client'
+import type { Event, EventFormField } from '@prisma/client'
 import { EventRegistrationModal } from '@/components/events/EventRegistrationModal'
 
 interface SingleEventClientProps {
   event: Event
   otherEvents: Event[]
+  formFields: EventFormField[]
 }
 
-export function SingleEventClient({ event, otherEvents }: SingleEventClientProps) {
+export function SingleEventClient({ event, otherEvents, formFields }: SingleEventClientProps) {
   const [registrationOpen, setRegistrationOpen] = useState(false)
   const dateFormatted = format(new Date(event.date), 'EEEE, MMMM do yyyy')
   const monthShort = format(new Date(event.date), 'MMM').toUpperCase()
@@ -23,12 +24,14 @@ export function SingleEventClient({ event, otherEvents }: SingleEventClientProps
 
   return (
     <main className="min-h-screen bg-void">
-      <section className="min-h-screen grid grid-cols-1 lg:grid-cols-2 pt-20 lg:pt-0">
+      <div className="h-20 lg:hidden" aria-hidden />
+
+      <section className="grid grid-cols-1 lg:grid-cols-2 lg:min-h-screen">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
-          className="relative min-h-[50vh] lg:min-h-screen lg:sticky lg:top-0 lg:pt-20"
+          className="relative min-h-[60vh] lg:min-h-screen lg:sticky lg:top-0"
         >
           {event.imageUrl ? (
             <>
@@ -67,7 +70,7 @@ export function SingleEventClient({ event, otherEvents }: SingleEventClientProps
             </div>
           )}
 
-          <div className="absolute top-8 left-8 lg:top-12 lg:left-12 z-10">
+          <div className="absolute top-24 left-8 lg:top-24 lg:left-12 z-10">
             <div className="border border-gold/40 bg-void/80 backdrop-blur-sm px-4 py-3 text-center">
               <p className="font-display text-4xl text-gold font-bold leading-none">{dayNum}</p>
               <p className="label-text opacity-70 mt-1">{monthShort}</p>
@@ -88,7 +91,7 @@ export function SingleEventClient({ event, otherEvents }: SingleEventClientProps
           initial={{ opacity: 0, x: 32 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col justify-center px-8 lg:px-16 xl:px-20 py-24 lg:py-32 lg:pt-28"
+          className="flex flex-col justify-center px-8 lg:px-16 xl:px-20 pt-28 pb-16 lg:pt-32 lg:pb-32"
           style={{ borderLeft: '1px solid rgba(255,255,255,0.06)' }}
         >
           <motion.div
@@ -311,6 +314,7 @@ export function SingleEventClient({ event, otherEvents }: SingleEventClientProps
         eventTitle={event.title}
         eventDate={dateFormatted}
         eventCity={event.city}
+        customFields={formFields}
       />
     </main>
   )
