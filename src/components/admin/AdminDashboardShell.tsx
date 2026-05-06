@@ -8,12 +8,18 @@ interface AdminDashboardShellProps {
   children: React.ReactNode
   toggleTheme: () => void
   theme: 'light' | 'dark'
+  userRole: string
 }
 
-export function AdminDashboardShell({ children, toggleTheme, theme }: AdminDashboardShellProps) {
+export function AdminDashboardShell({
+  children,
+  toggleTheme,
+  theme,
+  userRole,
+}: AdminDashboardShellProps) {
   return (
     <div className="flex h-full w-full overflow-hidden">
-      <AdminSidebar theme={theme} />
+      <AdminSidebar theme={theme} userRole={userRole} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <AdminTopbar toggleTheme={toggleTheme} theme={theme} />
         <main

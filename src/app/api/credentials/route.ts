@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { logActivity } from '@/lib/activity'
 import { decrypt, encrypt, maskSecret } from '@/lib/encryption'
 
 export const runtime = 'nodejs'
@@ -77,6 +78,13 @@ export async function POST(req: NextRequest) {
     where: { service },
     update: { data: encrypted, isActive: isActive ?? true },
     create: { service, data: encrypted, isActive: isActive ?? true },
+  })
+
+  await logActivity({
+    userId: session.user.id,
+    action: `Updated credentials: ${service}`,
+    module: 'Integrations',
+    targetTitle: service,
   })
 
   return NextResponse.json({ service: record.service, isActive: record.isActive })

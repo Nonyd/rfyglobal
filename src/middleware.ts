@@ -1,6 +1,28 @@
 import { NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
+import { canAccess } from '@/lib/permissions'
 import { limitAdminLoginByIp } from '@/lib/rate-limit-login'
+
+const ROUTE_PERMISSIONS: Record<string, string> = {
+  '/admin/cms': 'cms',
+  '/admin/integrations': 'integrations',
+  '/admin/automation': 'automation',
+  '/admin/partner': 'partnership',
+  '/admin/demo': 'demo',
+  '/admin/users': 'users',
+  '/admin/events': 'events',
+  '/admin/forms': 'forms',
+  '/admin/members': 'members',
+  '/admin/gallery': 'gallery',
+  '/admin/scripture': 'scripture',
+  '/admin/blog': 'blog',
+  '/admin/study': 'study',
+  '/admin/activity': 'activity',
+}
+
+const SORTED_ADMIN_ROUTES = Object.entries(ROUTE_PERMISSIONS).sort(
+  (a, b) => b[0].length - a[0].length,
+)
 
 export default auth(async (req) => {
   const { pathname } = req.nextUrl
@@ -38,6 +60,21 @@ export default auth(async (req) => {
       const loginUrl = new URL('/admin/login', req.url)
       loginUrl.searchParams.set('callbackUrl', pathname)
       return NextResponse.redirect(loginUrl)
+    }
+
+    const role = req.auth.user?.role ?? 'ADMIN'
+
+    const pathForAcl = pathname.startsWith('/api/admin')
+      ? pathname.replace(/^\/api\/admin/, '/admin')
+      : pathname
+
+    for (const [route, moduleKey] of SORTED_ADMIN_ROUTES) {
+      if (pathForAcl.startsWith(route)) {
+        if (!canAccess(role, moduleKey)) {
+          return NextResponse.redirect(new URL('/admin?unauthorized=1', req.url))
+        }
+        break
+      }
     }
   }
 

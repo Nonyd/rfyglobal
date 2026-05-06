@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { AdminThemeWrapper } from '@/components/admin/AdminThemeWrapper'
+import { AdminSessionProvider } from '@/components/admin/AdminSessionProvider'
 
 export default async function AdminDashboardLayout({
   children,
@@ -10,5 +11,9 @@ export default async function AdminDashboardLayout({
   const session = await auth()
   if (!session) redirect('/admin/login')
 
-  return <AdminThemeWrapper>{children}</AdminThemeWrapper>
+  return (
+    <AdminSessionProvider>
+      <AdminThemeWrapper>{children}</AdminThemeWrapper>
+    </AdminSessionProvider>
+  )
 }

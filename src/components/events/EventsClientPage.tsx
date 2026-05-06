@@ -2,12 +2,14 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { format } from 'date-fns'
 import { MapPin } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export interface PublicEvent {
   id: string
+  slug: string
   title: string
   description?: string | null
   city: string
@@ -59,9 +61,10 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
       ) : (
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((event, index) => (
-            <div
+            <Link
               key={event.id}
-              className="rfy-card group overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-elevated"
+              href={`/events/${event.slug}`}
+              className="rfy-card group block overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-elevated cursor-pointer"
             >
               <div className="relative h-48 overflow-hidden bg-charcoal-soft">
                 {event.imageUrl ? (
@@ -109,7 +112,7 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
                   </span>
                 </div>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

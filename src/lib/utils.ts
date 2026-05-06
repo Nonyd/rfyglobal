@@ -5,6 +5,10 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function eventSlug(title: string, city: string): string {
+  return slugify(`${title}-${city}`)
+}
+
 export function slugify(text: string): string {
   return text
     .toLowerCase()

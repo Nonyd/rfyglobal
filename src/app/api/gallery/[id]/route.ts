@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { logActivity } from '@/lib/activity'
 
 export const runtime = 'nodejs'
 
@@ -39,6 +40,18 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   const session = await auth()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  const existing = await db.galleryImage.findUnique({ where: { id: params.id } })
   await db.galleryImage.delete({ where: { id: params.id } })
+
+  if (existing) {
+    await logActivity({
+      userId: session.user.id,
+      action: `Deleted gallery image${existing.caption ? `: ${existing.caption}` : ''}`,
+      module: 'Gallery',
+      targetId: params.id,
+      targetTitle: existing.caption ?? existing.eventName ?? params.id,
+    })
+  }
+
   return NextResponse.json({ success: true })
 }

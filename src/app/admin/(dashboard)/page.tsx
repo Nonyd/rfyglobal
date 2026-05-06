@@ -1,10 +1,19 @@
 import { db } from '@/lib/db'
 import { formatDistanceToNow } from 'date-fns'
+import { auth } from '@/lib/auth'
 import { QuickActions } from '@/components/admin/QuickActions'
 
 export const dynamic = 'force-dynamic'
 
-export default async function AdminHomePage() {
+export default async function AdminHomePage({
+  searchParams,
+}: {
+  searchParams?: { unauthorized?: string }
+}) {
+  const session = await auth()
+  const isSuperAdmin = session?.user?.role === 'SUPER_ADMIN'
+  const unauthorized = searchParams?.unauthorized === '1'
+
   const now = new Date()
   const hour = now.getHours()
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
@@ -59,7 +68,16 @@ export default async function AdminHomePage() {
     { label: 'Form Submissions', value: submissionCount.toLocaleString(), trend: '+8%', trendUp: true },
     { label: 'Published Posts', value: postCount.toLocaleString(), trend: null, trendUp: true },
     { label: 'Upcoming Events', value: eventCount.toLocaleString(), trend: null, trendUp: true },
-    { label: 'Total Gifts (₦)', value: `₦${(giftStats._sum.amount ?? 0).toLocaleString()}`, trend: `${giftStats._count.id} gifts`, trendUp: true },
+    ...(isSuperAdmin
+      ? [
+          {
+            label: 'Total Gifts (₦)',
+            value: `₦${(giftStats._sum.amount ?? 0).toLocaleString()}`,
+            trend: `${giftStats._count.id} gifts`,
+            trendUp: true,
+          },
+        ]
+      : []),
   ]
 
   const activity = [
@@ -71,6 +89,18 @@ export default async function AdminHomePage() {
 
   return (
     <div className="space-y-8">
+      {unauthorized ? (
+        <div
+          className="rounded-sm border px-4 py-3 font-body text-sm"
+          style={{
+            background: 'rgba(248, 81, 73, 0.08)',
+            borderColor: 'var(--a-red)',
+            color: 'var(--a-text)',
+          }}
+        >
+          You don&apos;t have access to that section. Use the sidebar for your available tools.
+        </div>
+      ) : null}
       <div>
         <h1 className="font-display text-3xl font-semibold" style={{ color: 'var(--a-text)' }}>
           {greeting}, Nony.

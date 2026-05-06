@@ -100,8 +100,10 @@ export function GalleryManager({ initialImages }: GalleryManagerProps) {
     <div className="relative">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h2 className="font-display text-2xl text-white">Gallery</h2>
-          <p className="mt-1 font-body text-sm text-white/40">
+          <h2 className="font-display text-2xl font-semibold" style={{ color: 'var(--a-text)' }}>
+            Gallery
+          </h2>
+          <p className="mt-1 font-body text-sm" style={{ color: 'var(--a-text-muted)' }}>
             {images.length} photo{images.length !== 1 ? 's' : ''} · Past Room For You events
           </p>
         </div>
@@ -119,9 +121,13 @@ export function GalleryManager({ initialImages }: GalleryManagerProps) {
           className="border border-dashed py-24 text-center"
           style={{ borderColor: 'rgba(201,168,76,0.2)' }}
         >
-          <Images size={32} className="mx-auto mb-4 text-white/20" />
-          <p className="font-display text-2xl italic text-white/30">No photos yet</p>
-          <p className="mt-2 font-body text-sm text-white/20">Upload your first batch of event photos</p>
+          <Images size={32} className="mx-auto mb-4" style={{ color: 'var(--a-text-muted)' }} />
+          <p className="font-display text-2xl italic" style={{ color: 'var(--a-text-muted)' }}>
+            No photos yet
+          </p>
+          <p className="mt-2 font-body text-sm" style={{ color: 'var(--a-text-muted)' }}>
+            Upload your first batch of event photos
+          </p>
         </div>
       ) : (
         <div className="columns-1 gap-4 space-y-4 md:columns-2 lg:columns-3">
@@ -201,15 +207,26 @@ export function GalleryManager({ initialImages }: GalleryManagerProps) {
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 30, stiffness: 300 }}
               className="fixed bottom-0 right-0 top-0 z-50 w-full max-w-lg overflow-y-auto"
-              style={{ background: '#0A0A0A', borderLeft: '1px solid rgba(201,168,76,0.2)' }}
+              style={{
+                background: 'var(--a-surface)',
+                borderLeft: '1px solid var(--a-border)',
+              }}
             >
               <div className="space-y-6 p-8">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-display text-xl text-white">Upload Photos</h3>
+                  <div>
+                    <h3 className="font-display text-xl font-semibold" style={{ color: 'var(--a-text)' }}>
+                      Upload Photos
+                    </h3>
+                    <p className="mt-0.5 font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
+                      Add images to the gallery
+                    </p>
+                  </div>
                   <button
                     type="button"
                     onClick={() => setUploadPanelOpen(false)}
-                    className="text-white/40 transition-colors hover:text-white"
+                    className="transition-colors"
+                    style={{ color: 'var(--a-text-muted)' }}
                   >
                     <X size={20} />
                   </button>
@@ -238,51 +255,83 @@ export function GalleryManager({ initialImages }: GalleryManagerProps) {
                     </p>
 
                     <div>
-                      <label className="mb-2 block font-body text-xs uppercase tracking-widest text-white/40">
+                      <label
+                        className="mb-2 block font-body text-xs uppercase tracking-widest"
+                        style={{ color: 'var(--a-text-secondary)' }}
+                      >
                         Event Name
                       </label>
                       <input
                         value={eventName}
                         onChange={(e) => setEventName(e.target.value)}
                         placeholder="e.g. Abuja Monthly Meeting"
-                        className="w-full border border-white/10 bg-white/5 px-4 py-3 font-body text-sm text-white transition-colors placeholder:text-white/20 focus:border-gold focus:outline-none"
+                        className="w-full border px-4 py-3 font-body text-sm transition-colors focus:border-gold focus:outline-none"
+                        style={{
+                          background: 'var(--a-bg)',
+                          borderColor: 'var(--a-border)',
+                          color: 'var(--a-text)',
+                        }}
                       />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="mb-2 block font-body text-xs uppercase tracking-widest text-white/40">
+                        <label
+                          className="mb-2 block font-body text-xs uppercase tracking-widest"
+                          style={{ color: 'var(--a-text-secondary)' }}
+                        >
                           City
                         </label>
                         <input
                           value={city}
                           onChange={(e) => setCity(e.target.value)}
                           placeholder="e.g. Abuja"
-                          className="w-full border border-white/10 bg-white/5 px-4 py-3 font-body text-sm text-white transition-colors placeholder:text-white/20 focus:border-gold focus:outline-none"
+                          className="w-full border px-4 py-3 font-body text-sm transition-colors focus:border-gold focus:outline-none"
+                          style={{
+                            background: 'var(--a-bg)',
+                            borderColor: 'var(--a-border)',
+                            color: 'var(--a-text)',
+                          }}
                         />
                       </div>
                       <div>
-                        <label className="mb-2 block font-body text-xs uppercase tracking-widest text-white/40">
+                        <label
+                          className="mb-2 block font-body text-xs uppercase tracking-widest"
+                          style={{ color: 'var(--a-text-secondary)' }}
+                        >
                           Date Taken
                         </label>
                         <input
                           type="date"
                           value={takenAt}
                           onChange={(e) => setTakenAt(e.target.value)}
-                          className="w-full border border-white/10 bg-white/5 px-4 py-3 font-body text-sm text-white transition-colors focus:border-gold focus:outline-none"
+                          className="w-full border px-4 py-3 font-body text-sm transition-colors focus:border-gold focus:outline-none"
+                          style={{
+                            background: 'var(--a-bg)',
+                            borderColor: 'var(--a-border)',
+                            color: 'var(--a-text)',
+                          }}
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="mb-2 block font-body text-xs uppercase tracking-widest text-white/40">
+                      <label
+                        className="mb-2 block font-body text-xs uppercase tracking-widest"
+                        style={{ color: 'var(--a-text-secondary)' }}
+                      >
                         Caption (optional)
                       </label>
                       <input
                         value={caption}
                         onChange={(e) => setCaption(e.target.value)}
                         placeholder="A short caption for these photos"
-                        className="w-full border border-white/10 bg-white/5 px-4 py-3 font-body text-sm text-white transition-colors placeholder:text-white/20 focus:border-gold focus:outline-none"
+                        className="w-full border px-4 py-3 font-body text-sm transition-colors focus:border-gold focus:outline-none"
+                        style={{
+                          background: 'var(--a-bg)',
+                          borderColor: 'var(--a-border)',
+                          color: 'var(--a-text)',
+                        }}
                       />
                     </div>
 
@@ -349,15 +398,21 @@ function EditImagePanel({
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
         className="fixed bottom-0 right-0 top-0 z-50 w-full max-w-md overflow-y-auto"
-        style={{ background: '#0A0A0A', borderLeft: '1px solid rgba(201,168,76,0.2)' }}
+        style={{
+          background: 'var(--a-surface)',
+          borderLeft: '1px solid var(--a-border)',
+        }}
       >
         <div className="space-y-6 p-8">
           <div className="flex items-center justify-between">
-            <h3 className="font-display text-lg text-white">Edit Photo</h3>
+            <h3 className="font-display text-lg font-semibold" style={{ color: 'var(--a-text)' }}>
+              Edit Photo
+            </h3>
             <button
               type="button"
               onClick={onClose}
-              className="text-white/40 transition-colors hover:text-white"
+              className="transition-colors"
+              style={{ color: 'var(--a-text-muted)' }}
             >
               <X size={20} />
             </button>
@@ -386,26 +441,42 @@ function EditImagePanel({
             },
           ].map((field) => (
             <div key={field.label}>
-              <label className="mb-2 block font-body text-xs uppercase tracking-widest text-white/40">
+              <label
+                className="mb-2 block font-body text-xs uppercase tracking-widest"
+                style={{ color: 'var(--a-text-secondary)' }}
+              >
                 {field.label}
               </label>
               <input
                 value={field.value}
                 onChange={(e) => field.set(e.target.value)}
                 placeholder={field.placeholder}
-                className="w-full border border-white/10 bg-white/5 px-4 py-3 font-body text-sm text-white transition-colors placeholder:text-white/20 focus:border-gold focus:outline-none"
+                className="w-full border px-4 py-3 font-body text-sm transition-colors focus:border-gold focus:outline-none"
+                style={{
+                  background: 'var(--a-bg)',
+                  borderColor: 'var(--a-border)',
+                  color: 'var(--a-text)',
+                }}
               />
             </div>
           ))}
           <div>
-            <label className="mb-2 block font-body text-xs uppercase tracking-widest text-white/40">
+            <label
+              className="mb-2 block font-body text-xs uppercase tracking-widest"
+              style={{ color: 'var(--a-text-secondary)' }}
+            >
               Date Taken
             </label>
             <input
               type="date"
               value={takenAt}
               onChange={(e) => setTakenAt(e.target.value)}
-              className="w-full border border-white/10 bg-white/5 px-4 py-3 font-body text-sm text-white transition-colors focus:border-gold focus:outline-none"
+              className="w-full border px-4 py-3 font-body text-sm transition-colors focus:border-gold focus:outline-none"
+              style={{
+                background: 'var(--a-bg)',
+                borderColor: 'var(--a-border)',
+                color: 'var(--a-text)',
+              }}
             />
           </div>
           <div className="flex items-center gap-3">
@@ -424,7 +495,9 @@ function EditImagePanel({
                 )}
               />
             </button>
-            <span className="font-body text-sm text-white/60">{isActive ? 'Visible' : 'Hidden'}</span>
+            <span className="font-body text-sm" style={{ color: 'var(--a-text-secondary)' }}>
+              {isActive ? 'Visible' : 'Hidden'}
+            </span>
           </div>
           <button
             type="button"

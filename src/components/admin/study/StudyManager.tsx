@@ -221,7 +221,7 @@ export function StudyManager() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-24 text-white/40">
+      <div className="flex justify-center py-24" style={{ color: 'var(--a-text-muted)' }}>
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     )
@@ -231,8 +231,12 @@ export function StudyManager() {
     <div className="relative">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h2 className="font-display text-2xl text-white">Study Portal</h2>
-          <p className="mt-1 font-body text-sm text-white/40">Series, materials, and tasks</p>
+          <h2 className="font-display text-2xl font-semibold" style={{ color: 'var(--a-text)' }}>
+            Study Portal
+          </h2>
+          <p className="mt-1 font-body text-sm" style={{ color: 'var(--a-text-muted)' }}>
+            Series, materials, and tasks
+          </p>
         </div>
         <button
           type="button"
@@ -248,7 +252,9 @@ export function StudyManager() {
           className="border border-dashed py-20 text-center"
           style={{ borderColor: 'rgba(201,168,76,0.2)' }}
         >
-          <p className="font-display text-xl italic text-white/30">No study series yet.</p>
+          <p className="font-display text-xl italic" style={{ color: 'var(--a-text-muted)' }}>
+            No study series yet.
+          </p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -257,8 +263,12 @@ export function StudyManager() {
             return (
               <div
                 key={s.id}
-                className="border transition-colors"
-                style={{ borderColor: 'rgba(201,168,76,0.2)' }}
+                className="border transition-all"
+                style={{
+                  background: 'var(--a-surface)',
+                  borderColor: 'var(--a-border)',
+                  boxShadow: 'var(--a-shadow)',
+                }}
               >
                 <div className="flex items-start gap-2 p-4">
                   <button
@@ -275,13 +285,23 @@ export function StudyManager() {
                         <input
                           value={editTitle}
                           onChange={(e) => setEditTitle(e.target.value)}
-                          className="w-full border border-white/10 bg-black px-3 py-2 font-body text-white focus:border-gold/50 focus:outline-none"
+                          className="w-full border px-3 py-2 font-body focus:border-gold/50 focus:outline-none"
+                          style={{
+                            background: 'var(--a-bg)',
+                            borderColor: 'var(--a-border)',
+                            color: 'var(--a-text)',
+                          }}
                         />
                         <textarea
                           value={editDescription}
                           onChange={(e) => setEditDescription(e.target.value)}
                           rows={2}
-                          className="w-full border border-white/10 bg-black px-3 py-2 font-body text-sm text-white/80 focus:border-gold/50 focus:outline-none"
+                          className="w-full border px-3 py-2 font-body text-sm focus:border-gold/50 focus:outline-none"
+                          style={{
+                            background: 'var(--a-bg)',
+                            borderColor: 'var(--a-border)',
+                            color: 'var(--a-text-secondary)',
+                          }}
                         />
                         <div className="flex gap-2">
                           <button
@@ -294,7 +314,8 @@ export function StudyManager() {
                           <button
                             type="button"
                             onClick={() => setEditingId(null)}
-                            className="border border-white/20 px-4 py-1.5 font-body text-xs text-white/60"
+                            className="border px-4 py-1.5 font-body text-xs"
+                            style={{ borderColor: 'var(--a-border)', color: 'var(--a-text-muted)' }}
                           >
                             Cancel
                           </button>
@@ -303,11 +324,17 @@ export function StudyManager() {
                     ) : (
                       <>
                         <div className="flex flex-wrap items-center gap-2">
-                          <h3 className="font-display text-lg text-white">{s.title}</h3>
-                          <span className="font-mono text-[10px] text-white/30">order {s.order}</span>
+                          <h3 className="font-display text-lg font-semibold" style={{ color: 'var(--a-text)' }}>
+                            {s.title}
+                          </h3>
+                          <span className="font-mono text-[10px]" style={{ color: 'var(--a-text-muted)' }}>
+                            order {s.order}
+                          </span>
                         </div>
                         {s.description && (
-                          <p className="mt-1 font-body text-sm text-white/45">{s.description}</p>
+                          <p className="mt-1 font-body text-sm" style={{ color: 'var(--a-text-secondary)' }}>
+                            {s.description}
+                          </p>
                         )}
                       </>
                     )}
@@ -321,7 +348,8 @@ export function StudyManager() {
                           setEditTitle(s.title)
                           setEditDescription(s.description ?? '')
                         }}
-                        className="p-2 text-white/40 hover:text-gold"
+                        className="p-2 hover:text-gold"
+                        style={{ color: 'var(--a-text-muted)' }}
                         title="Edit"
                       >
                         <Pencil size={16} />
@@ -329,7 +357,8 @@ export function StudyManager() {
                       <button
                         type="button"
                         onClick={() => deleteSeries(s.id, s.title)}
-                        className="p-2 text-white/40 hover:text-red-brand"
+                        className="p-2 hover:text-red-brand"
+                        style={{ color: 'var(--a-text-muted)' }}
                         title="Delete"
                       >
                         <Trash2 size={16} />
@@ -341,11 +370,14 @@ export function StudyManager() {
                 {open && (
                   <div
                     className="space-y-6 border-t px-4 pb-5 pt-2 pl-12"
-                    style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+                    style={{ borderColor: 'var(--a-border)' }}
                   >
                     <div>
                       <div className="mb-3 flex items-center justify-between">
-                        <h4 className="font-body text-xs uppercase tracking-widest text-gold/70">
+                        <h4
+                          className="font-body text-xs uppercase tracking-widest font-semibold mb-0"
+                          style={{ color: 'var(--a-gold)' }}
+                        >
                           Materials
                         </h4>
                         <button
@@ -359,7 +391,10 @@ export function StudyManager() {
                         </button>
                       </div>
                       {materialSeriesId === s.id && (
-                        <div className="mb-4 rounded border border-gold/25 bg-white/[0.02] p-4">
+                        <div
+                          className="mb-4 rounded border border-gold/25 p-4"
+                          style={{ background: 'var(--a-bg)' }}
+                        >
                           <UploadZone
                             folder="studyMaterial"
                             accept="document"
@@ -380,7 +415,8 @@ export function StudyManager() {
                           <button
                             type="button"
                             onClick={() => setMaterialSeriesId(null)}
-                            className="mt-2 font-body text-xs text-white/40 hover:text-white"
+                            className="mt-2 font-body text-xs hover:opacity-80"
+                            style={{ color: 'var(--a-text-muted)' }}
                           >
                             Close
                           </button>
@@ -390,34 +426,45 @@ export function StudyManager() {
                         {s.materials.map((m) => (
                           <li
                             key={m.id}
-                            className="flex items-center justify-between gap-2 border border-white/10 px-3 py-2 font-body text-sm"
+                            className="flex items-center gap-3 p-3 border font-body text-sm"
+                            style={{
+                              borderColor: 'var(--a-border)',
+                              background: 'var(--a-bg)',
+                            }}
                           >
                             <a
                               href={m.fileUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="min-w-0 flex-1 truncate text-white/70 hover:text-gold"
+                              className="min-w-0 flex-1 truncate hover:text-gold"
+                              style={{ color: 'var(--a-text-secondary)' }}
                             >
                               {m.title}
                             </a>
                             <button
                               type="button"
                               onClick={() => deleteMaterial(m.id)}
-                              className="shrink-0 text-white/35 hover:text-red-brand"
+                              className="shrink-0 hover:text-red-brand"
+                              style={{ color: 'var(--a-text-muted)' }}
                             >
                               <Trash2 size={14} />
                             </button>
                           </li>
                         ))}
                         {s.materials.length === 0 && (
-                          <p className="font-body text-xs text-white/25">No files yet.</p>
+                          <p className="font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
+                            No files yet.
+                          </p>
                         )}
                       </ul>
                     </div>
 
                     <div>
                       <div className="mb-3 flex items-center justify-between">
-                        <h4 className="font-body text-xs uppercase tracking-widest text-gold/70">
+                        <h4
+                          className="font-body text-xs uppercase tracking-widest font-semibold mb-0"
+                          style={{ color: 'var(--a-gold)' }}
+                        >
                           Tasks
                         </h4>
                         <button
@@ -429,25 +476,43 @@ export function StudyManager() {
                         </button>
                       </div>
                       {taskSeriesId === s.id && (
-                        <div className="mb-4 space-y-2 rounded border border-gold/25 bg-white/[0.02] p-4">
+                        <div
+                          className="mb-4 space-y-2 rounded border border-gold/25 p-4"
+                          style={{ background: 'var(--a-bg)' }}
+                        >
                           <input
                             value={taskTitle}
                             onChange={(e) => setTaskTitle(e.target.value)}
                             placeholder="Task title"
-                            className="w-full border border-white/10 bg-black px-3 py-2 font-body text-sm text-white focus:border-gold/50 focus:outline-none"
+                            className="w-full border px-3 py-2 font-body text-sm focus:border-gold/50 focus:outline-none"
+                            style={{
+                              background: 'var(--a-bg)',
+                              borderColor: 'var(--a-border)',
+                              color: 'var(--a-text)',
+                            }}
                           />
                           <textarea
                             value={taskDescription}
                             onChange={(e) => setTaskDescription(e.target.value)}
                             placeholder="Description (optional)"
                             rows={2}
-                            className="w-full border border-white/10 bg-black px-3 py-2 font-body text-sm text-white/80 focus:border-gold/50 focus:outline-none"
+                            className="w-full border px-3 py-2 font-body text-sm focus:border-gold/50 focus:outline-none"
+                            style={{
+                              background: 'var(--a-bg)',
+                              borderColor: 'var(--a-border)',
+                              color: 'var(--a-text-secondary)',
+                            }}
                           />
                           <input
                             type="datetime-local"
                             value={taskDue}
                             onChange={(e) => setTaskDue(e.target.value)}
-                            className="w-full border border-white/10 bg-black px-3 py-2 font-body text-sm text-white focus:border-gold/50 focus:outline-none"
+                            className="w-full border px-3 py-2 font-body text-sm focus:border-gold/50 focus:outline-none"
+                            style={{
+                              background: 'var(--a-bg)',
+                              borderColor: 'var(--a-border)',
+                              color: 'var(--a-text)',
+                            }}
                           />
                           <div className="flex gap-2">
                             <button
@@ -465,7 +530,8 @@ export function StudyManager() {
                                 setTaskDescription('')
                                 setTaskDue('')
                               }}
-                              className="font-body text-xs text-white/40 hover:text-white"
+                              className="font-body text-xs hover:opacity-80"
+                              style={{ color: 'var(--a-text-muted)' }}
                             >
                               Cancel
                             </button>
@@ -476,12 +542,23 @@ export function StudyManager() {
                         {s.tasks.map((t) => (
                           <li
                             key={t.id}
-                            className="flex items-start justify-between gap-2 border border-white/10 p-3"
+                            className="flex items-start justify-between gap-3 p-3 border"
+                            style={{
+                              borderColor: 'var(--a-border)',
+                              background: 'var(--a-bg)',
+                            }}
                           >
                             <div className="min-w-0">
-                              <p className="font-body text-sm text-white">{t.title}</p>
+                              <p className="font-body text-sm" style={{ color: 'var(--a-text-secondary)' }}>
+                                {t.title}
+                              </p>
                               {t.description && (
-                                <p className="mt-1 font-body text-xs text-white/45">{t.description}</p>
+                                <p
+                                  className="mt-1 font-body text-xs"
+                                  style={{ color: 'var(--a-text-secondary)' }}
+                                >
+                                  {t.description}
+                                </p>
                               )}
                               {t.dueDate && (
                                 <p className="mt-1 font-body text-[10px] text-gold/50">
@@ -492,14 +569,17 @@ export function StudyManager() {
                             <button
                               type="button"
                               onClick={() => deleteTask(t.id)}
-                              className="shrink-0 text-white/35 hover:text-red-brand"
+                              className="shrink-0 hover:text-red-brand"
+                              style={{ color: 'var(--a-text-muted)' }}
                             >
                               <Trash2 size={14} />
                             </button>
                           </li>
                         ))}
                         {s.tasks.length === 0 && (
-                          <p className="font-body text-xs text-white/25">No tasks yet.</p>
+                          <p className="font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
+                            No tasks yet.
+                          </p>
                         )}
                       </ul>
                     </div>
@@ -526,45 +606,71 @@ export function StudyManager() {
         />
         <div
           className={cn(
-            'absolute right-0 top-0 flex h-full w-full max-w-md flex-col border-l bg-black shadow-xl transition-transform',
+            'absolute right-0 top-0 flex h-full w-full max-w-md flex-col border-l shadow-xl transition-transform',
             panelOpen ? 'translate-x-0' : 'translate-x-full'
           )}
-          style={{ borderColor: 'rgba(201,168,76,0.25)' }}
+          style={{
+            background: 'var(--a-surface)',
+            borderLeft: '1px solid var(--a-border)',
+            boxShadow: 'var(--a-shadow-md)',
+          }}
         >
-          <div className="flex items-center justify-between border-b p-4" style={{ borderColor: 'rgba(201,168,76,0.15)' }}>
-            <h3 className="font-display text-lg text-white">New Series</h3>
+          <div
+            className="flex items-center justify-between border-b p-4"
+            style={{ borderColor: 'var(--a-border)' }}
+          >
+            <h3 className="font-display text-lg font-semibold" style={{ color: 'var(--a-text)' }}>
+              New Series
+            </h3>
             <button
               type="button"
               onClick={() => setPanelOpen(false)}
-              className="p-2 text-white/40 hover:text-white"
+              className="p-2 hover:opacity-80"
+              style={{ color: 'var(--a-text-muted)' }}
             >
               <X size={18} />
             </button>
           </div>
           <div className="flex-1 space-y-4 overflow-y-auto p-4">
             <div>
-              <label className="mb-1 block font-body text-xs uppercase tracking-widest text-white/40">
+              <label
+                className="mb-1 block font-body text-xs uppercase tracking-widest"
+                style={{ color: 'var(--a-text-secondary)' }}
+              >
                 Title
               </label>
               <input
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
-                className="w-full border border-white/10 bg-white/[0.03] px-3 py-2 font-body text-sm text-white focus:border-gold/50 focus:outline-none"
+                className="w-full border px-3 py-2 font-body text-sm focus:border-gold/50 focus:outline-none"
+                style={{
+                  background: 'var(--a-bg)',
+                  borderColor: 'var(--a-border)',
+                  color: 'var(--a-text)',
+                }}
               />
             </div>
             <div>
-              <label className="mb-1 block font-body text-xs uppercase tracking-widest text-white/40">
+              <label
+                className="mb-1 block font-body text-xs uppercase tracking-widest"
+                style={{ color: 'var(--a-text-secondary)' }}
+              >
                 Description
               </label>
               <textarea
                 value={newDescription}
                 onChange={(e) => setNewDescription(e.target.value)}
                 rows={4}
-                className="w-full border border-white/10 bg-white/[0.03] px-3 py-2 font-body text-sm text-white/80 focus:border-gold/50 focus:outline-none"
+                className="w-full border px-3 py-2 font-body text-sm focus:border-gold/50 focus:outline-none"
+                style={{
+                  background: 'var(--a-bg)',
+                  borderColor: 'var(--a-border)',
+                  color: 'var(--a-text-secondary)',
+                }}
               />
             </div>
           </div>
-          <div className="border-t p-4" style={{ borderColor: 'rgba(201,168,76,0.15)' }}>
+          <div className="border-t p-4" style={{ borderColor: 'var(--a-border)' }}>
             <button
               type="button"
               onClick={() => void createSeries()}

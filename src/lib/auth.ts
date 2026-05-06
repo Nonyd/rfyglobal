@@ -26,9 +26,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         try {
           const user = await db.user.findUnique({ where: { email } })
           if (user) {
+            if (!user.isActive) return null
             const { compare } = await import('bcryptjs')
             const valid = await compare(password, user.password)
             if (!valid) return null
+            await db.user
+              .update({
+                where: { id: user.id },
+                data: { lastLoginAt: new Date() },
+              })
+              .catch(() => {})
             return {
               id: user.id,
               email: user.email,
@@ -62,16 +69,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user }) {
-      if (user && 'role' in user && user.role) {
-        token.role = user.role
+      if (user) {
+        token.sub = user.id
+        if ('role' in user && user.role) {
+          token.role = user.role
+        }
       }
       return token
     },
     async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.sub ?? ''
-        if (typeof token.role === 'string') {
-          session.user.role = token.role
+      if (session.user && token.sub) {
+        if (token.sub === 'env-admin') {
+          session.user.id = 'env-admin'
+          session.user.role = 'ADMIN'
+          return session
+        }
+        const user = await db.user.findUnique({
+          where: { id: token.sub },
+          select: { id: true, role: true, name: true, email: true, isActive: true },
+        })
+        if (user?.isActive) {
+          session.user.id = user.id
+          session.user.role = user.role
+          session.user.name = user.name ?? undefined
+          session.user.email = user.email ?? undefined
         }
       }
       return session

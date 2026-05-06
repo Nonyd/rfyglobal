@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { logActivity } from '@/lib/activity'
 import { CreateScriptureSchema } from '@/lib/validations/scripture'
 
 export const runtime = 'nodejs'
@@ -35,6 +36,14 @@ export async function POST(req: NextRequest) {
       audioUrl: audioUrl || null,
       scheduledAt: scheduledAt ? new Date(scheduledAt) : null,
     },
+  })
+
+  await logActivity({
+    userId: session.user.id,
+    action: `Created scripture: ${scripture.reference}`,
+    module: 'Scripture',
+    targetId: scripture.id,
+    targetTitle: scripture.reference,
   })
 
   return NextResponse.json(scripture, { status: 201 })

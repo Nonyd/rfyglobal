@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { logActivity } from '@/lib/activity'
 import { CreateFormSchema } from '@/lib/validations/form'
 
 export const runtime = 'nodejs'
@@ -53,6 +54,14 @@ export async function POST(req: NextRequest) {
       },
     },
     include: { fields: { orderBy: { order: 'asc' } } },
+  })
+
+  await logActivity({
+    userId: session.user.id,
+    action: `Created form: ${title}`,
+    module: 'Forms',
+    targetId: form.id,
+    targetTitle: title,
   })
 
   return NextResponse.json(form, { status: 201 })

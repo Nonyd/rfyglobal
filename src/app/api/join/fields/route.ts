@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { FieldType } from '@prisma/client'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { logActivity } from '@/lib/activity'
 import { z } from 'zod'
 
 export const runtime = 'nodejs'
@@ -45,5 +46,14 @@ export async function POST(req: NextRequest) {
       isActive: parsed.data.isActive ?? true,
     },
   })
+
+  await logActivity({
+    userId: session.user.id,
+    action: `Added field to join form: ${parsed.data.label}`,
+    module: 'Members',
+    targetId: field.id,
+    targetTitle: parsed.data.label,
+  })
+
   return NextResponse.json(field, { status: 201 })
 }

@@ -4,18 +4,43 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
+import type { LucideIcon } from 'lucide-react'
 import {
-  LayoutDashboard, BookOpen, FileText, GraduationCap,
-  Calendar, Images, ClipboardList, Settings2, Plug,
-  Heart, Database, LogOut, Users, Zap,
+  LayoutDashboard,
+  BookOpen,
+  FileText,
+  GraduationCap,
+  Calendar,
+  Images,
+  ClipboardList,
+  Settings2,
+  Plug,
+  Heart,
+  Database,
+  LogOut,
+  Users,
+  Zap,
+  UserCog,
+  History,
 } from 'lucide-react'
+import { canAccess } from '@/lib/permissions'
 
-const NAV_GROUPS = [
+type NavItem = {
+  label: string
+  href: string
+  icon: LucideIcon
+  exact?: boolean
+}
+
+type NavGroup = { label: string; items: NavItem[] }
+
+const NAV_GROUPS: NavGroup[] = [
   {
     label: 'OVERVIEW',
     items: [
       { label: 'Dashboard', href: '/admin', icon: LayoutDashboard, exact: true },
       { label: 'Members', href: '/admin/members', icon: Users },
+      { label: 'Activity', href: '/admin/activity', icon: History },
     ],
   },
   {
@@ -37,16 +62,30 @@ const NAV_GROUPS = [
       { label: 'Integrations', href: '/admin/integrations', icon: Plug },
       { label: 'Partnership', href: '/admin/partner', icon: Heart },
       { label: 'Demo Data', href: '/admin/demo', icon: Database },
+      { label: 'Users', href: '/admin/users', icon: UserCog },
     ],
   },
 ]
 
-interface AdminSidebarProps {
-  theme: 'light' | 'dark'
+function navItemVisible(item: NavItem, userRole: string): boolean {
+  if (item.href === '/admin') return true
+  if (item.href === '/admin/users') return userRole === 'SUPER_ADMIN'
+  const moduleKey = item.href.replace('/admin/', '').split('/')[0]
+  return canAccess(userRole, moduleKey)
 }
 
-export function AdminSidebar({ theme }: AdminSidebarProps) {
+interface AdminSidebarProps {
+  theme: 'light' | 'dark'
+  userRole: string
+}
+
+export function AdminSidebar({ theme, userRole }: AdminSidebarProps) {
   const pathname = usePathname()
+
+  const visibleGroups = NAV_GROUPS.map((group) => ({
+    ...group,
+    items: group.items.filter((item) => navItemVisible(item, userRole)),
+  })).filter((group) => group.items.length > 0)
 
   return (
     <aside
@@ -77,7 +116,10 @@ export function AdminSidebar({ theme }: AdminSidebarProps) {
             <p className="font-display text-sm font-semibold" style={{ color: 'var(--a-text)' }}>
               Room For You
             </p>
-            <p className="font-body text-[10px] uppercase tracking-widest" style={{ color: 'var(--a-text-muted)' }}>
+            <p
+              className="font-body text-[10px] uppercase tracking-widest"
+              style={{ color: 'var(--a-text-muted)' }}
+            >
               Admin
             </p>
           </div>
@@ -85,7 +127,7 @@ export function AdminSidebar({ theme }: AdminSidebarProps) {
       </div>
 
       <nav className="flex-1 p-3 space-y-6 pt-4">
-        {NAV_GROUPS.map((group) => (
+        {visibleGroups.map((group) => (
           <div key={group.label}>
             <p
               className="px-3 mb-1 text-[10px] font-body font-semibold tracking-[0.12em] uppercase"
@@ -95,9 +137,8 @@ export function AdminSidebar({ theme }: AdminSidebarProps) {
             </p>
             <div className="space-y-0.5">
               {group.items.map((item) => {
-                const isActive = ('exact' in item && item.exact)
-                  ? pathname === item.href
-                  : pathname.startsWith(item.href)
+                const isActive =
+                  'exact' in item && item.exact ? pathname === item.href : pathname.startsWith(item.href)
                 const Icon = item.icon
 
                 return (
@@ -135,7 +176,10 @@ export function AdminSidebar({ theme }: AdminSidebarProps) {
 
       <div className="p-4 border-t" style={{ borderColor: 'var(--a-border)' }}>
         <div className="flex items-center justify-between">
-          <p className="font-body text-xs truncate flex-1 mr-2" style={{ color: 'var(--a-text-muted)' }}>
+          <p
+            className="font-body text-xs truncate flex-1 mr-2"
+            style={{ color: 'var(--a-text-muted)' }}
+          >
             admin@rfyglobal.org
           </p>
           <button

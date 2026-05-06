@@ -155,10 +155,12 @@ export function UploadZone({
           onDrop={onDrop}
           className={cn(
             'flex flex-col items-center justify-center gap-3 p-8 border-2 border-dashed cursor-pointer transition-all duration-200',
-            isDragging
-              ? 'border-gold bg-gold/10'
-              : 'border-white/15 hover:border-gold/40 hover:bg-white/2',
+            isDragging ? 'border-gold' : 'border-theme',
           )}
+          style={{
+            borderColor: isDragging ? 'var(--a-gold, #C9A84C)' : 'var(--a-border, rgba(255,255,255,0.15))',
+            background: isDragging ? 'var(--a-gold-light, rgba(201,168,76,0.08))' : 'transparent',
+          }}
         >
           <input
             type="file"
@@ -167,19 +169,24 @@ export function UploadZone({
             onChange={onFileInput}
             className="hidden"
           />
-          <div className={cn(
-            'w-12 h-12 rounded-full border flex items-center justify-center transition-colors',
-            isDragging ? 'border-gold text-gold' : 'border-white/20 text-white/30',
-          )}>
+          <div
+            className="w-12 h-12 rounded-full border flex items-center justify-center transition-colors"
+            style={{
+              borderColor: isDragging ? 'var(--a-gold, #C9A84C)' : 'var(--a-border, rgba(255,255,255,0.2))',
+              color: isDragging ? 'var(--a-gold, #C9A84C)' : 'var(--a-text-muted, rgba(255,255,255,0.3))',
+            }}
+          >
             <Upload size={20} />
           </div>
           <div className="text-center">
-            <p className="font-body text-sm text-white/60">
+            <p className="font-body text-sm" style={{ color: 'var(--a-text-secondary, rgba(255,255,255,0.6))' }}>
               {label ?? (maxFiles > 1
                 ? `Drop up to ${maxFiles} files here`
                 : `Drop a ${accept} file here`)}
             </p>
-            <p className="font-body text-xs text-white/25 mt-1">or click to browse</p>
+            <p className="font-body text-xs mt-1" style={{ color: 'var(--a-text-muted, rgba(255,255,255,0.25))' }}>
+              or click to browse
+            </p>
           </div>
         </label>
       )}
@@ -187,7 +194,14 @@ export function UploadZone({
       {fileStates.length > 0 && (
         <div className="space-y-2">
           {fileStates.map((f, i) => (
-            <div key={i} className="border border-white/10 p-3">
+            <div
+              key={i}
+              className="border p-3"
+              style={{
+                borderColor: 'var(--a-border, rgba(255,255,255,0.1))',
+                background: 'var(--a-surface, transparent)',
+              }}
+            >
               <div className="flex items-center gap-3 mb-2">
                 <div className="shrink-0">
                   {f.status === 'done' && f.url && preview && accept === 'image' ? (
@@ -199,7 +213,16 @@ export function UploadZone({
                       f.status === 'done' ? 'border-gold/40 text-gold' :
                       f.status === 'error' ? 'border-red-brand/40 text-red-brand' :
                       'border-white/10 text-white/30',
-                    )}>
+                    )}
+                    style={
+                      f.status !== 'done' && f.status !== 'error'
+                        ? {
+                            borderColor: 'var(--a-border, rgba(255,255,255,0.1))',
+                            color: 'var(--a-text-muted, rgba(255,255,255,0.3))',
+                          }
+                        : undefined
+                    }
+                    >
                       {f.status === 'done' ? <CheckCircle size={16} /> :
                        f.status === 'error' ? <AlertCircle size={16} /> :
                        accept === 'audio' ? <Music size={16} /> :
@@ -209,21 +232,34 @@ export function UploadZone({
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-body text-xs text-white/70 truncate">{f.file.name}</p>
-                  <p className={cn(
-                    'font-body text-[10px] mt-0.5',
-                    f.status === 'done' ? 'text-gold/70' :
-                    f.status === 'error' ? 'text-red-brand/70' :
-                    'text-white/30',
-                  )}>
+                  <p
+                    className="font-body text-xs truncate"
+                    style={{ color: 'var(--a-text-secondary, rgba(255,255,255,0.7))' }}
+                  >
+                    {f.file.name}
+                  </p>
+                  <p
+                    className="font-body text-[10px] mt-0.5"
+                    style={{
+                      color:
+                        f.status === 'done'
+                          ? 'var(--a-gold, #C9A84C)'
+                          : f.status === 'error'
+                            ? 'var(--a-red, #F85149)'
+                            : 'var(--a-text-muted, rgba(255,255,255,0.3))',
+                    }}
+                  >
                     {f.status === 'done' ? 'Uploaded ✓' :
                      f.status === 'error' ? (f.error ?? 'Failed') :
                      `${f.progress}%`}
                   </p>
                 </div>
                 {(f.status === 'done' || f.status === 'error') && (
-                  <button onClick={() => removeFile(i)}
-                    className="text-white/20 hover:text-white/60 transition-colors">
+                  <button
+                    onClick={() => removeFile(i)}
+                    className="transition-colors"
+                    style={{ color: 'var(--a-text-muted, rgba(255,255,255,0.3))' }}
+                  >
                     <X size={14} />
                   </button>
                 )}
@@ -241,8 +277,17 @@ export function UploadZone({
           ))}
 
           {(allDone || hasError) && (
-            <button onClick={reset}
-              className="text-xs text-white/30 hover:text-gold font-body transition-colors">
+            <button
+              onClick={reset}
+              className="text-xs font-body transition-colors"
+              style={{ color: 'var(--a-text-muted)' }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = 'var(--a-gold)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = 'var(--a-text-muted)'
+              }}
+            >
               + Upload {maxFiles > 1 ? 'more files' : 'different file'}
             </button>
           )}

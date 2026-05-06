@@ -2,6 +2,8 @@ import type { Prisma } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { logActivity } from '@/lib/activity'
+import { slugFromTitleCity } from '@/lib/event-slug'
 import { CreateEventSchema } from '@/lib/validations/event'
 
 export const runtime = 'nodejs'
@@ -37,12 +39,24 @@ export async function POST(req: NextRequest) {
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
 
   const { imageUrl, date, ...rest } = parsed.data
+  const slug = await slugFromTitleCity(rest.title, rest.city)
+
   const event = await db.event.create({
     data: {
       ...rest,
+      slug,
       date: new Date(date),
       imageUrl: imageUrl && imageUrl.length > 0 ? imageUrl : null,
     },
   })
+
+  await logActivity({
+    userId: session.user.id,
+    action: `Created event: ${event.title}`,
+    module: 'Events',
+    targetId: event.id,
+    targetTitle: event.title,
+  })
+
   return NextResponse.json(event, { status: 201 })
 }

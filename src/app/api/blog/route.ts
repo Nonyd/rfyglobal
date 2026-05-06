@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { logActivity } from '@/lib/activity'
 import { CreatePostSchema } from '@/lib/validations/blog'
 
 export const runtime = 'nodejs'
@@ -62,6 +63,14 @@ export async function POST(req: NextRequest) {
       coverImage: coverImage && coverImage.length > 0 ? coverImage : null,
       publishedAt: isPublished ? new Date() : null,
     },
+  })
+
+  await logActivity({
+    userId: session.user.id,
+    action: `Created post: ${parsed.data.title}`,
+    module: 'Blog',
+    targetId: post.id,
+    targetTitle: parsed.data.title,
   })
 
   return NextResponse.json(post, { status: 201 })

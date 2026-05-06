@@ -14,7 +14,7 @@ async function main() {
   if (!existingUser) {
     const hashed = await bcrypt.hash(password, 12)
     await db.user.create({
-      data: { email, password: hashed, name: 'Admin', role: 'ADMIN' },
+      data: { email, password: hashed, name: 'Admin', role: 'SUPER_ADMIN' },
     })
     console.log('✅ Admin user created:', email)
   } else {
@@ -229,6 +229,7 @@ async function main() {
     await db.event.createMany({
       data: [
         {
+          slug: 'abuja-monthly-gathering-abuja',
           title: 'Room For You — Abuja Monthly Gathering',
           description: 'Our monthly community gathering in Abuja. Come ready to worship, pray, study the Word, and connect with other believers. There is room for you.',
           city: 'Abuja',
@@ -239,6 +240,7 @@ async function main() {
           imageUrl: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&h=400&fit=crop',
         },
         {
+          slug: 'lagos-monthly-gathering-lagos',
           title: 'Room For You — Lagos Monthly Gathering',
           description: 'The Lagos community comes together for worship, the Word, and fellowship. If you are in Lagos, this is your room.',
           city: 'Lagos',
@@ -249,6 +251,7 @@ async function main() {
           imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=400&fit=crop',
         },
         {
+          slug: 'port-harcourt-gathering-port-harcourt',
           title: 'Room For You — Port Harcourt Gathering',
           description: 'Port Harcourt, there is room for you too. Join us for our monthly gathering — worship, prayer, and the Word.',
           city: 'Port Harcourt',
@@ -259,6 +262,7 @@ async function main() {
           imageUrl: 'https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=800&h=400&fit=crop',
         },
         {
+          slug: 'online-prayer-night-online',
           title: 'Room For You — Online Prayer Night',
           description: "Join us online for a corporate prayer night. All locations, one voice. We carry each other's burdens before the throne.",
           city: 'Online',
@@ -268,6 +272,7 @@ async function main() {
           isActive: true,
         },
         {
+          slug: 'abuja-outreach-abuja',
           title: 'Room For You — Abuja Outreach',
           description: 'Foot evangelism in the streets of Abuja. We take the Gospel to the people. Come ready to share your faith.',
           city: 'Abuja',
@@ -277,6 +282,7 @@ async function main() {
           isActive: true,
         },
         {
+          slug: 'lagos-bible-study-marathon-lagos',
           title: 'Room For You — Lagos Bible Study Marathon',
           description: 'A full-day Bible study event in Lagos. Bring your Bible, your notebook, and your hunger for the Word.',
           city: 'Lagos',

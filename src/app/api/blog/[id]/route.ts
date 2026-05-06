@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { logActivity } from '@/lib/activity'
 import { UpdatePostSchema } from '@/lib/validations/blog'
 
 export const runtime = 'nodejs'
@@ -43,6 +44,14 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     data,
   })
 
+  await logActivity({
+    userId: session.user.id,
+    action: `Updated post: ${post.title}`,
+    module: 'Blog',
+    targetId: params.id,
+    targetTitle: post.title,
+  })
+
   return NextResponse.json(post)
 }
 
@@ -50,6 +59,18 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
   const session = await auth()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  const existing = await db.post.findUnique({ where: { id: params.id } })
   await db.post.delete({ where: { id: params.id } })
+
+  if (existing) {
+    await logActivity({
+      userId: session.user.id,
+      action: `Deleted post: ${existing.title}`,
+      module: 'Blog',
+      targetId: params.id,
+      targetTitle: existing.title,
+    })
+  }
+
   return NextResponse.json({ success: true })
 }
