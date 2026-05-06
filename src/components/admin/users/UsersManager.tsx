@@ -86,6 +86,10 @@ export function UsersManager({ initialUsers, currentUserId }: UsersManagerProps)
 
   const saveEdit = async () => {
     if (!editUser) return
+    if (editPassword && editPassword.length < 8) {
+      toast.error('New password must be at least 8 characters')
+      return
+    }
     const res = await fetch(`/api/admin/users/${editUser.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -398,16 +402,31 @@ export function UsersManager({ initialUsers, currentUserId }: UsersManagerProps)
                 />
                 Active
               </label>
-              <Field label="New password (optional)">
+              <div>
+                <label
+                  className="block text-xs uppercase tracking-widest font-body font-medium mb-2"
+                  style={{ color: 'var(--a-text-secondary)' }}
+                >
+                  Reset Password (optional)
+                </label>
                 <input
                   type="password"
                   value={editPassword}
                   onChange={(e) => setEditPassword(e.target.value)}
-                  placeholder="Leave blank to keep current"
-                  className="w-full border px-3 py-2 font-body text-sm"
-                  style={inputStyle}
+                  placeholder="Leave blank to keep current password"
+                  className="w-full border px-4 py-3 font-body text-sm focus:outline-none"
+                  style={{
+                    background: 'var(--a-bg)',
+                    borderColor: 'var(--a-border)',
+                    color: 'var(--a-text)',
+                  }}
+                  onFocus={(e) => (e.target.style.borderColor = 'var(--a-gold)')}
+                  onBlur={(e) => (e.target.style.borderColor = 'var(--a-border)')}
                 />
-              </Field>
+                <p className="font-body text-xs mt-1" style={{ color: 'var(--a-text-muted)' }}>
+                  Minimum 8 characters if setting a new password
+                </p>
+              </div>
               <button
                 type="button"
                 onClick={() => void saveEdit()}

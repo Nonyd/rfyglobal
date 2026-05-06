@@ -22,6 +22,7 @@ import {
   Zap,
   UserCog,
   History,
+  Settings,
 } from 'lucide-react'
 import { canAccess } from '@/lib/permissions'
 
@@ -162,6 +163,27 @@ export function AdminSidebar({ theme, userRole }: AdminSidebarProps) {
       </nav>
 
       <div className="p-4 border-t" style={{ borderColor: 'var(--a-border)' }}>
+        <Link
+          href="/admin/settings"
+          className="flex items-center gap-2 px-3 py-2 text-sm font-body transition-all mb-1 rounded"
+          style={{
+            color: pathname === '/admin/settings' ? 'var(--a-gold)' : 'var(--a-text-muted)',
+            background: pathname === '/admin/settings' ? 'var(--a-gold-active)' : 'transparent',
+          }}
+          onMouseEnter={(e) => {
+            if (pathname !== '/admin/settings') {
+              e.currentTarget.style.color = 'var(--a-text)'
+            }
+          }}
+          onMouseLeave={(e) => {
+            if (pathname !== '/admin/settings') {
+              e.currentTarget.style.color = 'var(--a-text-muted)'
+            }
+          }}
+        >
+          <Settings size={14} />
+          Account Settings
+        </Link>
         <div className="flex items-center justify-between">
           <p
             className="font-body text-xs truncate flex-1 mr-2"

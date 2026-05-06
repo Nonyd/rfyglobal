@@ -24,14 +24,13 @@ export function SingleEventClient({ event, otherEvents, formFields }: SingleEven
 
   return (
     <main className="min-h-screen bg-void">
-      <div className="h-20 lg:hidden" aria-hidden />
-
-      <section className="grid grid-cols-1 lg:grid-cols-2 lg:min-h-screen">
+      {/* Offset below fixed Navbar on all breakpoints (was mobile-only spacer). */}
+      <section className="grid grid-cols-1 lg:grid-cols-2 pt-24 lg:pt-32">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
-          className="relative min-h-[60vh] lg:min-h-screen lg:sticky lg:top-0"
+          className="relative min-h-[60vh] lg:min-h-[calc(100vh-8rem)] lg:sticky lg:top-28 lg:self-start"
         >
           {event.imageUrl ? (
             <>
@@ -70,7 +69,7 @@ export function SingleEventClient({ event, otherEvents, formFields }: SingleEven
             </div>
           )}
 
-          <div className="absolute top-24 left-8 lg:top-24 lg:left-12 z-10">
+          <div className="absolute top-8 left-8 lg:top-10 lg:left-12 z-10">
             <div className="border border-gold/40 bg-void/80 backdrop-blur-sm px-4 py-3 text-center">
               <p className="font-display text-4xl text-gold font-bold leading-none">{dayNum}</p>
               <p className="label-text opacity-70 mt-1">{monthShort}</p>
@@ -91,7 +90,7 @@ export function SingleEventClient({ event, otherEvents, formFields }: SingleEven
           initial={{ opacity: 0, x: 32 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col justify-center px-8 lg:px-16 xl:px-20 pt-28 pb-16 lg:pt-32 lg:pb-32"
+          className="flex flex-col justify-center px-8 lg:px-16 xl:px-20 pt-12 pb-16 lg:pt-16 lg:pb-32"
           style={{ borderLeft: '1px solid rgba(255,255,255,0.06)' }}
         >
           <motion.div
