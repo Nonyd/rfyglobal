@@ -13,7 +13,7 @@ interface EventRegistrationModalProps {
   eventTitle: string
   eventDate: string
   eventCity: string
-  customFields?: EventFormField[]
+  fields: EventFormField[]
 }
 
 function jsonStringList(options: unknown): string[] {
@@ -40,24 +40,17 @@ export function EventRegistrationModal({
   eventTitle,
   eventDate,
   eventCity,
-  customFields = [],
+  fields,
 }: EventRegistrationModalProps) {
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    location: '',
-    expectations: '',
-  })
-  const [extraValues, setExtraValues] = useState<Record<string, string>>({})
+  const [fieldValues, setFieldValues] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!form.name || !form.email || !form.phone || !form.location) {
-      toast.error('Please fill in all required fields')
+    if (fields.length === 0) {
+      toast.error('Registration form is not available.')
       return
     }
 
@@ -66,7 +59,7 @@ export function EventRegistrationModal({
       const res = await fetch(`/api/events/${encodeURIComponent(eventSlug)}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, extraFields: extraValues }),
+        body: JSON.stringify({ fields: fieldValues }),
       })
 
       const data = await res.json()
@@ -92,8 +85,7 @@ export function EventRegistrationModal({
     onClose()
     setTimeout(() => {
       setSubmitted(false)
-      setForm({ name: '', email: '', phone: '', location: '', expectations: '' })
-      setExtraValues({})
+      setFieldValues({})
     }, 300)
   }
 
@@ -120,6 +112,124 @@ export function EventRegistrationModal({
     fontFamily: 'General Sans, sans-serif',
   }
 
+  const renderFieldControl = (field: EventFormField) => {
+    const value = fieldValues[field.id] ?? ''
+    const onChange = (val: string) => setFieldValues((p) => ({ ...p, [field.id]: val }))
+
+    if (field.type === 'LONG_TEXT') {
+      return (
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={field.placeholder ?? ''}
+          required={field.required}
+          rows={3}
+          style={{ ...inputStyle, resize: 'none' }}
+          onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+          onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
+        />
+      )
+    }
+
+    if (field.type === 'DROPDOWN') {
+      return (
+        <select
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          required={field.required}
+          style={{ ...inputStyle, cursor: 'pointer' }}
+        >
+          <option value="">Select an option</option>
+          {jsonStringList(field.options).map((opt) => (
+            <option key={opt} value={opt} style={{ background: '#1A1A1A', color: '#F8F8F8' }}>
+              {opt}
+            </option>
+          ))}
+        </select>
+      )
+    }
+
+    if (field.type === 'NUMBER') {
+      return (
+        <input
+          type="number"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={field.placeholder ?? ''}
+          required={field.required}
+          style={inputStyle}
+          onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+          onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
+        />
+      )
+    }
+
+    if (field.type === 'DATE') {
+      return (
+        <input
+          type="date"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          required={field.required}
+          style={inputStyle}
+          onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+          onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
+        />
+      )
+    }
+
+    if (field.type === 'RADIO' && jsonStringList(field.options).length > 0) {
+      return (
+        <div className="space-y-2">
+          {jsonStringList(field.options).map((opt) => (
+            <label key={opt} className="flex cursor-pointer items-center gap-2 font-body text-sm text-mist">
+              <input
+                type="radio"
+                name={field.id}
+                value={opt}
+                checked={value === opt}
+                onChange={() => onChange(opt)}
+                required={field.required}
+                className="accent-[#C9A84C]"
+              />
+              {opt}
+            </label>
+          ))}
+        </div>
+      )
+    }
+
+    if (field.type === 'CHECKBOXES' || field.type === 'FILE_UPLOAD') {
+      return (
+        <textarea
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={field.placeholder ?? ''}
+          required={field.required}
+          rows={field.type === 'FILE_UPLOAD' ? 2 : 3}
+          style={{ ...inputStyle, resize: 'none' }}
+          onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+          onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
+        />
+      )
+    }
+
+    const inputType = field.type === 'EMAIL' ? 'email' : field.type === 'PHONE' ? 'tel' : 'text'
+
+    return (
+      <input
+        type={inputType}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder={field.placeholder ?? ''}
+        required={field.required}
+        style={inputStyle}
+        onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+        onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
+      />
+    )
+  }
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -142,23 +252,23 @@ export function EventRegistrationModal({
             onClick={(ev) => ev.stopPropagation()}
           >
             <div
-              className="w-full max-w-lg max-h-[90vh] overflow-y-auto"
+              className="max-h-[90vh] w-full max-w-lg overflow-y-auto"
               style={{ background: '#0F0F0F', border: '1px solid rgba(201,168,76,0.2)' }}
             >
               {!submitted ? (
                 <div className="p-8">
-                  <div className="flex items-start justify-between mb-6">
+                  <div className="mb-6 flex items-start justify-between">
                     <div>
                       <p className="label-text mb-2">Register to Attend</p>
-                      <h2 className="font-display text-snow text-xl font-bold leading-tight">{eventTitle}</h2>
-                      <p className="font-body text-mist text-sm mt-1">
+                      <h2 className="font-display text-xl font-bold leading-tight text-snow">{eventTitle}</h2>
+                      <p className="mt-1 font-body text-sm text-mist">
                         {eventDate} · {eventCity}
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={handleClose}
-                      className="text-mist hover:text-snow transition-colors ml-4 mt-1 shrink-0"
+                      className="ml-4 mt-1 shrink-0 text-mist transition-colors hover:text-snow"
                     >
                       <X size={20} />
                     </button>
@@ -166,229 +276,57 @@ export function EventRegistrationModal({
 
                   <div className="gold-line mb-8 opacity-30" />
 
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div>
-                      <label style={labelStyle}>Full Name *</label>
-                      <input
-                        value={form.name}
-                        onChange={(ev) => setForm((p) => ({ ...p, name: ev.target.value }))}
-                        placeholder="Your full name"
-                        required
-                        style={inputStyle}
-                        onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
-                        onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
-                      />
-                    </div>
+                  {fields.length === 0 ? (
+                    <p className="font-body text-sm text-mist">Registration form is not configured yet.</p>
+                  ) : (
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      {fields.map((field) => (
+                        <div key={field.id}>
+                          <label style={labelStyle}>
+                            {field.label}
+                            {field.required ? ' *' : ''}
+                          </label>
+                          {renderFieldControl(field)}
+                        </div>
+                      ))}
 
-                    <div>
-                      <label style={labelStyle}>Email Address *</label>
-                      <input
-                        type="email"
-                        value={form.email}
-                        onChange={(ev) => setForm((p) => ({ ...p, email: ev.target.value }))}
-                        placeholder="your@email.com"
-                        required
-                        style={inputStyle}
-                        onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
-                        onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
-                      />
-                    </div>
+                      <button
+                        type="submit"
+                        disabled={submitting}
+                        className="mt-2 w-full py-4 font-body text-xs font-semibold uppercase tracking-widest transition-all duration-300 disabled:opacity-50"
+                        style={{ background: '#C9A84C', color: '#0F0F0F' }}
+                      >
+                        {submitting ? 'Registering…' : 'Complete Registration →'}
+                      </button>
 
-                    <div>
-                      <label style={labelStyle}>Phone Number *</label>
-                      <input
-                        type="tel"
-                        value={form.phone}
-                        onChange={(ev) => setForm((p) => ({ ...p, phone: ev.target.value }))}
-                        placeholder="+234..."
-                        required
-                        style={inputStyle}
-                        onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
-                        onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
-                      />
-                    </div>
-
-                    <div>
-                      <label style={labelStyle}>Location (City, Country) *</label>
-                      <input
-                        value={form.location}
-                        onChange={(ev) => setForm((p) => ({ ...p, location: ev.target.value }))}
-                        placeholder="e.g. Abuja, Nigeria"
-                        required
-                        style={inputStyle}
-                        onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
-                        onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
-                      />
-                    </div>
-
-                    <div>
-                      <label style={labelStyle}>Expectations (Optional)</label>
-                      <textarea
-                        value={form.expectations}
-                        onChange={(ev) => setForm((p) => ({ ...p, expectations: ev.target.value }))}
-                        placeholder="What are you expecting from this gathering?"
-                        rows={3}
-                        style={{ ...inputStyle, resize: 'none' }}
-                        onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
-                        onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
-                      />
-                    </div>
-
-                    {customFields.map((field) => (
-                      <div key={field.id}>
-                        <label style={labelStyle}>
-                          {field.label}
-                          {field.required ? ' *' : ''}
-                        </label>
-                        {field.type === 'LONG_TEXT' ? (
-                          <textarea
-                            value={extraValues[field.id] ?? ''}
-                            onChange={(ev) =>
-                              setExtraValues((p) => ({ ...p, [field.id]: ev.target.value }))
-                            }
-                            placeholder={field.placeholder ?? ''}
-                            required={field.required}
-                            rows={3}
-                            style={{ ...inputStyle, resize: 'none' }}
-                            onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
-                            onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
-                          />
-                        ) : field.type === 'DROPDOWN' ? (
-                          <select
-                            value={extraValues[field.id] ?? ''}
-                            onChange={(ev) =>
-                              setExtraValues((p) => ({ ...p, [field.id]: ev.target.value }))
-                            }
-                            required={field.required}
-                            style={{ ...inputStyle, cursor: 'pointer' }}
-                          >
-                            <option value="">Select an option</option>
-                            {jsonStringList(field.options).map((opt) => (
-                              <option
-                                key={opt}
-                                value={opt}
-                                style={{ background: '#1A1A1A', color: '#F8F8F8' }}
-                              >
-                                {opt}
-                              </option>
-                            ))}
-                          </select>
-                        ) : field.type === 'NUMBER' ? (
-                          <input
-                            type="number"
-                            value={extraValues[field.id] ?? ''}
-                            onChange={(ev) =>
-                              setExtraValues((p) => ({
-                                ...p,
-                                [field.id]: ev.target.value,
-                              }))
-                            }
-                            placeholder={field.placeholder ?? ''}
-                            required={field.required}
-                            style={inputStyle}
-                            onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
-                            onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
-                          />
-                        ) : field.type === 'EMAIL' ? (
-                          <input
-                            type="email"
-                            value={extraValues[field.id] ?? ''}
-                            onChange={(ev) =>
-                              setExtraValues((p) => ({ ...p, [field.id]: ev.target.value }))
-                            }
-                            placeholder={field.placeholder ?? ''}
-                            required={field.required}
-                            style={inputStyle}
-                            onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
-                            onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
-                          />
-                        ) : field.type === 'DATE' ? (
-                          <input
-                            type="date"
-                            value={extraValues[field.id] ?? ''}
-                            onChange={(ev) =>
-                              setExtraValues((p) => ({ ...p, [field.id]: ev.target.value }))
-                            }
-                            required={field.required}
-                            style={inputStyle}
-                            onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
-                            onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
-                          />
-                        ) : field.type === 'RADIO' && jsonStringList(field.options).length > 0 ? (
-                          <div className="space-y-2">
-                            {jsonStringList(field.options).map((opt) => (
-                              <label
-                                key={opt}
-                                className="flex cursor-pointer items-center gap-2 font-body text-sm text-mist"
-                              >
-                                <input
-                                  type="radio"
-                                  name={field.id}
-                                  value={opt}
-                                  checked={(extraValues[field.id] ?? '') === opt}
-                                  onChange={() =>
-                                    setExtraValues((p) => ({ ...p, [field.id]: opt }))
-                                  }
-                                  required={field.required}
-                                  className="accent-[#C9A84C]"
-                                />
-                                {opt}
-                              </label>
-                            ))}
-                          </div>
-                        ) : (
-                          <input
-                            value={extraValues[field.id] ?? ''}
-                            onChange={(ev) =>
-                              setExtraValues((p) => ({ ...p, [field.id]: ev.target.value }))
-                            }
-                            placeholder={field.placeholder ?? ''}
-                            required={field.required}
-                            type={field.type === 'PHONE' ? 'tel' : 'text'}
-                            style={inputStyle}
-                            onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
-                            onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
-                          />
-                        )}
-                      </div>
-                    ))}
-
-                    <button
-                      type="submit"
-                      disabled={submitting}
-                      className="w-full py-4 font-body font-semibold text-xs tracking-widest uppercase transition-all duration-300 disabled:opacity-50 mt-2"
-                      style={{ background: '#C9A84C', color: '#0F0F0F' }}
-                    >
-                      {submitting ? 'Registering…' : 'Complete Registration →'}
-                    </button>
-
-                    <p className="font-body text-xs text-center" style={{ color: '#585858' }}>
-                      A confirmation email will be sent to you.
-                    </p>
-                  </form>
+                      <p className="text-center font-body text-xs" style={{ color: '#585858' }}>
+                        A confirmation email will be sent to you.
+                      </p>
+                    </form>
+                  )}
                 </div>
               ) : (
                 <div className="p-8 text-center">
                   <div
-                    className="w-16 h-16 rounded-full border-2 flex items-center justify-center mx-auto mb-6"
+                    className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border-2"
                     style={{ borderColor: '#C9A84C' }}
                   >
                     <CheckCircle size={28} className="text-gold" />
                   </div>
 
-                  <div className="gold-line max-w-[60px] mx-auto mb-6 opacity-40" />
+                  <div className="gold-line mx-auto mb-6 max-w-[60px] opacity-40" />
 
-                  <h2 className="font-display text-snow text-3xl font-bold mb-3">{"You're in!"}</h2>
-                  <p className="font-body text-mist text-sm leading-relaxed mb-2">You are registered for</p>
-                  <p className="font-display text-gold text-lg mb-6">{eventTitle}</p>
-                  <p className="font-body text-mist text-sm leading-relaxed mb-8">
+                  <h2 className="font-display mb-3 text-3xl font-bold text-snow">{"You're in!"}</h2>
+                  <p className="mb-2 font-body text-sm leading-relaxed text-mist">You are registered for</p>
+                  <p className="font-display mb-6 text-lg text-gold">{eventTitle}</p>
+                  <p className="mb-8 font-body text-sm leading-relaxed text-mist">
                     {`Check your email for confirmation and event details. We'll see you there. 🙌`}
                   </p>
 
                   <button
                     type="button"
                     onClick={handleClose}
-                    className="px-8 py-3 font-body text-xs tracking-widest uppercase border transition-all"
+                    className="border px-8 py-3 font-body text-xs uppercase tracking-widest transition-all"
                     style={{ borderColor: 'rgba(201,168,76,0.4)', color: '#C9A84C' }}
                   >
                     Close

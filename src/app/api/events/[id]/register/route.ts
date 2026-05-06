@@ -2,18 +2,43 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { strictRatelimit } from '@/lib/ratelimit'
 import { sendEventRegistrationEmail } from '@/lib/emails/event-registration'
+import type { EventFormField } from '@prisma/client'
 import { z } from 'zod'
 
 export const runtime = 'nodejs'
 
 const RegisterSchema = z.object({
-  name: z.string().min(1, 'Name is required').max(200),
-  email: z.string().email('Valid email required'),
-  phone: z.string().min(7).max(20),
-  location: z.string().min(1, 'Location is required').max(200),
-  expectations: z.string().max(1000).optional(),
-  extraFields: z.record(z.string(), z.string()).optional(),
+  fields: z.record(z.string(), z.string()),
 })
+
+function extractMappedValues(formFields: EventFormField[], fieldValues: Record<string, string>) {
+  const emailField = formFields.find((f) => f.type === 'EMAIL')
+  const email = emailField ? (fieldValues[emailField.id] ?? '').trim() : ''
+
+  const nameField =
+    formFields.find((f) => f.type === 'SHORT_TEXT' && f.order === 0) ??
+    formFields.find((f) => f.type === 'SHORT_TEXT' && f.label.toLowerCase().includes('name'))
+
+  const name = nameField ? (fieldValues[nameField.id] ?? '').trim() : ''
+
+  const phoneField = formFields.find((f) => f.type === 'PHONE')
+  const phone = phoneField ? (fieldValues[phoneField.id] ?? '').trim() : ''
+
+  const locationField =
+    formFields.find((f) => f.type === 'LOCATION') ??
+    formFields.find((f) => f.label.toLowerCase().includes('location'))
+
+  const location = locationField ? (fieldValues[locationField.id] ?? '').trim() : ''
+
+  const expectationsField =
+    formFields.find((f) => f.type === 'LONG_TEXT') ??
+    formFields.find((f) => f.label.toLowerCase().includes('expect'))
+
+  const expectationsRaw = expectationsField ? (fieldValues[expectationsField.id] ?? '').trim() : ''
+  const expectations = expectationsRaw || null
+
+  return { email, name, phone, location, expectations }
+}
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const ip =
@@ -43,21 +68,35 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   const body = await req.json()
   const parsed = RegisterSchema.safeParse(body)
   if (!parsed.success) {
-    return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid submission' }, { status: 400 })
   }
 
-  const customFields = await db.eventFormField.findMany({
-    where: { eventId: event.id, isActive: true, required: true },
+  const fieldValues = parsed.data.fields
+
+  const formFields = await db.eventFormField.findMany({
+    where: { eventId: event.id, isActive: true },
+    orderBy: { order: 'asc' },
   })
 
-  for (const field of customFields) {
-    const value = parsed.data.extraFields?.[field.id]
-    if (!value || value.trim() === '') {
-      return NextResponse.json({ error: `"${field.label}" is required.` }, { status: 400 })
-    }
+  if (formFields.length === 0) {
+    return NextResponse.json({ error: 'Registration is not available for this event.' }, { status: 400 })
   }
 
-  const { name, email, phone, location, expectations } = parsed.data
+  const { email, name, phone, location, expectations } = extractMappedValues(formFields, fieldValues)
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!email || !emailRegex.test(email)) {
+    return NextResponse.json({ error: 'A valid email is required.' }, { status: 400 })
+  }
+
+  for (const field of formFields) {
+    if (field.required) {
+      const value = fieldValues[field.id]
+      if (!value || value.trim() === '') {
+        return NextResponse.json({ error: `"${field.label}" is required.` }, { status: 400 })
+      }
+    }
+  }
 
   const existing = await db.eventRegistration.findUnique({
     where: { eventId_email: { eventId: event.id, email } },
@@ -73,24 +112,20 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     )
   }
 
-  const extras = parsed.data.extraFields
-  const extraPayload =
-    extras && Object.keys(extras).length > 0 ? extras : undefined
-
   const registration = await db.eventRegistration.create({
     data: {
       eventId: event.id,
-      name,
+      name: name || email,
       email,
-      phone,
-      location,
+      phone: phone || 'N/A',
+      location: location || 'N/A',
       expectations,
-      extraFields: extraPayload,
+      extraFields: fieldValues,
     },
   })
 
   try {
-    await sendEventRegistrationEmail({ name, email, event })
+    await sendEventRegistrationEmail({ name: name || email, email, event })
   } catch (err) {
     console.error('[EventReg] Failed to send confirmation email:', err)
   }

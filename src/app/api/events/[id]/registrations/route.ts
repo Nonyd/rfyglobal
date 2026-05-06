@@ -21,7 +21,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
   if (!event) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
-  const [registrations, formFields] = await Promise.all([
+  const [registrations, formFieldsAll] = await Promise.all([
     db.eventRegistration.findMany({
       where: { eventId: event.id },
       orderBy: { createdAt: 'desc' },
@@ -31,6 +31,9 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       orderBy: { order: 'asc' },
     }),
   ])
+
+  /** Core mapped columns already cover seeded fields — extra columns only for non-core custom fields */
+  const formFields = formFieldsAll.filter((f) => !f.isCore)
 
   if (format === 'csv') {
     const baseHeaders = ['Name', 'Email', 'Phone', 'Location', 'Expectations']

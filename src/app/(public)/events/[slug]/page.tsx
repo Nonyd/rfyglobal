@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { db } from '@/lib/db'
+import { ensureDefaultEventFields } from '@/lib/event-form-fields'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { SingleEventClient } from '@/components/events/SingleEventClient'
@@ -37,7 +38,9 @@ export default async function SingleEventPage({
 
   if (!event) notFound()
 
-  const [otherEvents, formFields] = await Promise.all([
+  await ensureDefaultEventFields(event.id)
+
+  const [otherEvents, fields] = await Promise.all([
     db.event.findMany({
       where: {
         isActive: true,
@@ -56,7 +59,7 @@ export default async function SingleEventPage({
   return (
     <>
       <Navbar />
-      <SingleEventClient event={event} otherEvents={otherEvents} formFields={formFields} />
+      <SingleEventClient event={event} otherEvents={otherEvents} fields={fields} />
       <Footer />
     </>
   )

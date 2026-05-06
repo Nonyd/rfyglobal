@@ -196,6 +196,8 @@ model EventFormField {
   options     Json?
   order       Int       @default(0)
   isActive    Boolean   @default(true)
+  // Seeded defaults; also used to skip duplicate CSV columns for core fields
+  isCore      Boolean   @default(false)
   createdAt   DateTime  @default(now())
 }
 

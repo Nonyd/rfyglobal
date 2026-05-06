@@ -2,6 +2,7 @@ import type { FieldType } from '@prisma/client'
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { ensureDefaultEventFields } from '@/lib/event-form-fields'
 import { z } from 'zod'
 
 export const runtime = 'nodejs'
@@ -30,18 +31,24 @@ const PostBodySchema = z.object({
 
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await auth()
+
   const event = await db.event.findFirst({
     where: { OR: [{ slug: params.id }, { id: params.id }] },
   })
   if (!event) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
+  await ensureDefaultEventFields(event.id)
+
   const fields = await db.eventFormField.findMany({
-    where: {
-      eventId: event.id,
-      ...(session ? {} : { isActive: true }),
-    },
+    where: { eventId: event.id },
     orderBy: { order: 'asc' },
   })
+
+  // Public requests get only active fields
+  // Authenticated admin requests get all fields
+  if (!session) {
+    return NextResponse.json(fields.filter((f) => f.isActive))
+  }
 
   return NextResponse.json(fields)
 }
@@ -55,6 +62,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   })
   if (!event) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
+  await ensureDefaultEventFields(event.id)
+
   const raw = await req.json()
   const parsed = PostBodySchema.safeParse(raw)
   if (!parsed.success) {
@@ -64,7 +73,11 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   const { label, placeholder, required, options } = parsed.data
   const type = (parsed.data.type ?? 'SHORT_TEXT') as FieldType
 
-  const maxOrder = await db.eventFormField.count({ where: { eventId: event.id } })
+  const maxOrderAgg = await db.eventFormField.aggregate({
+    where: { eventId: event.id },
+    _max: { order: true },
+  })
+  const nextOrder = (maxOrderAgg._max.order ?? -1) + 1
 
   const field = await db.eventFormField.create({
     data: {
@@ -73,8 +86,9 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       type,
       placeholder: placeholder ?? null,
       required: required ?? false,
+      isCore: false,
       ...(options && options.length > 0 ? { options } : {}),
-      order: maxOrder,
+      order: nextOrder,
     },
   })
 

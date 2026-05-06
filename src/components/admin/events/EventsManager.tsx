@@ -4,7 +4,19 @@ import { useCallback, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
 import type { EventFormField, EventRegistration } from '@prisma/client'
-import { Plus, Pencil, Trash2, X, Loader2, Users, Download, Settings } from 'lucide-react'
+import {
+  Plus,
+  Pencil,
+  Trash2,
+  X,
+  Loader2,
+  Users,
+  Download,
+  Settings,
+  Lock,
+  ChevronUp,
+  ChevronDown,
+} from 'lucide-react'
 import toast from 'react-hot-toast'
 import { formatDate } from '@/lib/utils'
 import { cn } from '@/lib/utils'
@@ -58,6 +70,7 @@ export function EventsManager() {
   const [loadingFields, setLoadingFields] = useState(false)
   const [newField, setNewField] = useState(emptyNewField)
   const [addingField, setAddingField] = useState(false)
+  const [fieldEdits, setFieldEdits] = useState<Record<string, Partial<EventFormField>>>({})
 
   const openRegistrations = async (ev: EventRow) => {
     setRegistrationsEvent(ev)
@@ -72,7 +85,9 @@ export function EventsManager() {
       const fieldsData = (await fieldsRes.json()) as EventFormField[] | { error?: string }
       setRegistrations(data.registrations ?? [])
       setRegistrationFormFields(
-        Array.isArray(fieldsData) ? fieldsData.filter((f) => f.isActive) : []
+        Array.isArray(fieldsData)
+          ? fieldsData.filter((f) => f.isActive && !f.isCore)
+          : []
       )
     } catch {
       toast.error('Failed to load registrations')
@@ -83,6 +98,7 @@ export function EventsManager() {
 
   const openFields = async (ev: EventRow) => {
     setFieldsEvent(ev)
+    setFieldEdits({})
     setLoadingFields(true)
     try {
       const res = await fetch(`/api/events/${ev.id}/fields`)
@@ -138,11 +154,89 @@ export function EventsManager() {
     const res = await fetch(`/api/events/${fieldsEvent.id}/fields/${fieldId}`, {
       method: 'DELETE',
     })
+    const data = (await res.json().catch(() => ({}))) as { error?: string }
     if (res.ok) {
       setEventFields((prev) => prev.filter((f) => f.id !== fieldId))
+      setFieldEdits((prev) => {
+        const next = { ...prev }
+        delete next[fieldId]
+        return next
+      })
       toast.success('Field removed')
     } else {
-      toast.error('Failed to remove')
+      toast.error(typeof data.error === 'string' ? data.error : 'Failed to remove')
+    }
+  }
+
+  const updateFieldLocally = (fieldId: string, updates: Partial<EventFormField>) => {
+    setFieldEdits((prev) => ({ ...prev, [fieldId]: { ...prev[fieldId], ...updates } }))
+  }
+
+  const saveFieldChanges = async (fieldId: string, explicit?: Partial<EventFormField>) => {
+    const edits = explicit ?? fieldEdits[fieldId]
+    if (!edits || Object.keys(edits).length === 0 || !fieldsEvent) return
+    try {
+      const res = await fetch(`/api/events/${fieldsEvent.id}/fields/${fieldId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(edits),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        toast.error(typeof data.error === 'string' ? data.error : 'Failed to save')
+        return
+      }
+      const updated = data as EventFormField
+      setEventFields((prev) => prev.map((f) => (f.id === fieldId ? updated : f)))
+      setFieldEdits((prev) => {
+        const next = { ...prev }
+        delete next[fieldId]
+        return next
+      })
+      if (!explicit) toast.success('Field updated')
+    } catch {
+      toast.error('Failed to save field')
+    }
+  }
+
+  const moveFieldOrder = async (fieldId: string, direction: 'up' | 'down') => {
+    if (!fieldsEvent) return
+    const sorted = [...eventFields].sort((a, b) => a.order - b.order)
+    const idx = sorted.findIndex((f) => f.id === fieldId)
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1
+    if (swapIdx < 0 || swapIdx >= sorted.length) return
+    const a = sorted[idx]
+    const b = sorted[swapIdx]
+    const orderA = a.order
+    const orderB = b.order
+    try {
+      const [resA, resB] = await Promise.all([
+        fetch(`/api/events/${fieldsEvent.id}/fields/${a.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order: orderB }),
+        }),
+        fetch(`/api/events/${fieldsEvent.id}/fields/${b.id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ order: orderA }),
+        }),
+      ])
+      if (!resA.ok || !resB.ok) {
+        toast.error('Failed to reorder')
+        return
+      }
+      const updatedA = (await resA.json()) as EventFormField
+      const updatedB = (await resB.json()) as EventFormField
+      setEventFields((prev) =>
+        prev.map((f) => {
+          if (f.id === updatedA.id) return updatedA
+          if (f.id === updatedB.id) return updatedB
+          return f
+        })
+      )
+    } catch {
+      toast.error('Failed to reorder')
     }
   }
 
@@ -737,75 +831,202 @@ export function EventsManager() {
                 <div className="h-px" style={{ background: 'var(--a-border)' }} />
 
                 <p className="font-body text-xs leading-relaxed" style={{ color: 'var(--a-text-muted)' }}>
-                  Core fields (Name, Email, Phone, Location, Expectations) are always included. Add extra fields
-                  below for this event only.
+                  All registration fields are editable. New events start with default fields; add more below. The
+                  email field cannot be removed — it is used to prevent duplicate registrations.
                 </p>
-
-                <div className="space-y-2">
-                  {['Full Name *', 'Email Address *', 'Phone Number *', 'Location *', 'Expectations'].map((f) => (
-                    <div
-                      key={f}
-                      className="flex items-center gap-2 border px-3 py-2"
-                      style={{ borderColor: 'var(--a-border)', background: 'var(--a-bg)', opacity: 0.6 }}
-                    >
-                      <span className="font-body text-xs" style={{ color: 'var(--a-text-secondary)' }}>
-                        {f}
-                      </span>
-                      <span className="ml-auto font-body text-[10px]" style={{ color: 'var(--a-text-muted)' }}>
-                        core field
-                      </span>
-                    </div>
-                  ))}
-                </div>
 
                 {loadingFields ? (
                   <p className="py-4 text-center font-body text-sm" style={{ color: 'var(--a-text-muted)' }}>
                     Loading…
                   </p>
-                ) : eventFields.length > 0 ? (
-                  <div className="space-y-2">
-                    <p className="font-body text-xs uppercase tracking-widest" style={{ color: 'var(--a-text-muted)' }}>
-                      Custom Fields
-                    </p>
-                    {eventFields.map((field) => (
-                      <div
-                        key={field.id}
-                        className="flex items-center gap-3 border px-3 py-2.5"
-                        style={{
-                          borderColor: 'var(--a-gold-border)',
-                          background: 'var(--a-gold-light)',
-                          opacity: field.isActive ? 1 : 0.55,
-                        }}
-                      >
-                        <div className="min-w-0 flex-1">
-                          <p className="font-body text-sm font-medium" style={{ color: 'var(--a-text)' }}>
-                            {field.label}
-                            {field.required ? ' *' : ''}
-                            {!field.isActive ? ' (inactive)' : ''}
-                          </p>
-                          <p className="font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
-                            {field.type.replace(/_/g, ' ').toLowerCase()}
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => void deleteField(field.id)}
-                          className="p-1.5 transition-colors"
-                          style={{ color: 'var(--a-text-muted)' }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.color = '#ef4444'
+                ) : (
+                  <div className="space-y-3">
+                    {[...eventFields].sort((a, b) => a.order - b.order).map((field, index, arr) => {
+                      const isEmail = field.type === 'EMAIL'
+                      const edits = fieldEdits[field.id] ?? {}
+                      const currentLabel = edits.label ?? field.label
+                      const currentPlaceholder = edits.placeholder ?? field.placeholder ?? ''
+                      const currentRequired = edits.required ?? field.required
+                      const hasEdits = Object.keys(fieldEdits[field.id] ?? {}).length > 0
+
+                      return (
+                        <div
+                          key={field.id}
+                          className="space-y-3 border p-4"
+                          style={{
+                            borderColor: hasEdits ? 'var(--a-gold-border)' : 'var(--a-border)',
+                            background: hasEdits ? 'var(--a-gold-light)' : 'var(--a-surface)',
+                            opacity: field.isActive ? 1 : 0.65,
                           }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.color = 'var(--a-text-muted)'
-                          }}
-                          aria-label="Delete field"
                         >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    ))}
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex min-w-0 flex-1 items-center gap-2">
+                              <div className="flex shrink-0 flex-col gap-0.5">
+                                <button
+                                  type="button"
+                                  aria-label="Move up"
+                                  disabled={index === 0}
+                                  onClick={() => void moveFieldOrder(field.id, 'up')}
+                                  className="rounded p-0.5 transition-colors disabled:opacity-30"
+                                  style={{ color: 'var(--a-text-muted)' }}
+                                >
+                                  <ChevronUp size={14} />
+                                </button>
+                                <button
+                                  type="button"
+                                  aria-label="Move down"
+                                  disabled={index >= arr.length - 1}
+                                  onClick={() => void moveFieldOrder(field.id, 'down')}
+                                  className="rounded p-0.5 transition-colors disabled:opacity-30"
+                                  style={{ color: 'var(--a-text-muted)' }}
+                                >
+                                  <ChevronDown size={14} />
+                                </button>
+                              </div>
+                              <span
+                                className="text-[10px] px-2 py-0.5 font-body uppercase tracking-widest"
+                                style={{
+                                  background: 'var(--a-sidebar)',
+                                  color: 'var(--a-text-muted)',
+                                  border: '1px solid var(--a-border)',
+                                }}
+                              >
+                                {field.type.replace(/_/g, ' ').toLowerCase()}
+                              </span>
+                              {isEmail ? (
+                                <span
+                                  className="flex items-center gap-1 text-[10px] font-body"
+                                  style={{ color: 'var(--a-gold)' }}
+                                  title="Required for registration"
+                                >
+                                  <Lock size={12} aria-hidden />
+                                  required for registration
+                                </span>
+                              ) : null}
+                              {!field.isActive ? (
+                                <span className="text-[10px] font-body" style={{ color: 'var(--a-text-muted)' }}>
+                                  (inactive)
+                                </span>
+                              ) : null}
+                            </div>
+                            <div className="flex shrink-0 items-center gap-2">
+                              {hasEdits && (
+                                <button
+                                  type="button"
+                                  onClick={() => void saveFieldChanges(field.id)}
+                                  className="px-3 py-1 font-body text-xs font-medium text-black transition-all"
+                                  style={{ background: 'var(--a-gold)' }}
+                                >
+                                  Save
+                                </button>
+                              )}
+                              {!isEmail && (
+                                <button
+                                  type="button"
+                                  onClick={() => void deleteField(field.id)}
+                                  className="p-1.5 transition-colors"
+                                  style={{ color: 'var(--a-text-muted)' }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.color = '#ef4444'
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.color = 'var(--a-text-muted)'
+                                  }}
+                                  aria-label="Delete field"
+                                >
+                                  <Trash2 size={14} />
+                                </button>
+                              )}
+                            </div>
+                          </div>
+
+                          <div>
+                            <label
+                              className="mb-1 block font-body text-[10px] uppercase tracking-widest"
+                              style={{ color: 'var(--a-text-muted)' }}
+                            >
+                              Label
+                            </label>
+                            <input
+                              value={currentLabel}
+                              onChange={(e) => updateFieldLocally(field.id, { label: e.target.value })}
+                              onBlur={() => hasEdits && void saveFieldChanges(field.id)}
+                              className="w-full border px-3 py-2 font-body text-sm focus:outline-none"
+                              style={{
+                                background: 'var(--a-bg)',
+                                borderColor: 'var(--a-border)',
+                                color: 'var(--a-text)',
+                              }}
+                              onFocus={(e) => (e.target.style.borderColor = 'var(--a-gold)')}
+                            />
+                          </div>
+
+                          <div>
+                            <label
+                              className="mb-1 block font-body text-[10px] uppercase tracking-widest"
+                              style={{ color: 'var(--a-text-muted)' }}
+                            >
+                              Placeholder
+                            </label>
+                            <input
+                              value={currentPlaceholder}
+                              onChange={(e) =>
+                                updateFieldLocally(field.id, { placeholder: e.target.value || null })
+                              }
+                              onBlur={() => hasEdits && void saveFieldChanges(field.id)}
+                              placeholder="Optional placeholder text"
+                              className="w-full border px-3 py-2 font-body text-sm focus:outline-none"
+                              style={{
+                                background: 'var(--a-bg)',
+                                borderColor: 'var(--a-border)',
+                                color: 'var(--a-text)',
+                              }}
+                              onFocus={(e) => (e.target.style.borderColor = 'var(--a-gold)')}
+                            />
+                          </div>
+
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (isEmail) return
+                                  void saveFieldChanges(field.id, { required: !currentRequired })
+                                }}
+                                disabled={isEmail}
+                                className="relative h-4 w-8 rounded-full transition-colors disabled:opacity-50"
+                                style={{
+                                  background: currentRequired ? 'var(--a-gold)' : 'var(--a-border)',
+                                }}
+                              >
+                                <span
+                                  className={`absolute top-0.5 h-3 w-3 rounded-full bg-white transition-transform ${
+                                    currentRequired ? 'translate-x-4' : 'translate-x-0.5'
+                                  }`}
+                                />
+                              </button>
+                              <span className="font-body text-xs" style={{ color: 'var(--a-text-secondary)' }}>
+                                Required
+                              </span>
+                            </div>
+                            <label className="flex cursor-pointer items-center gap-2 font-body text-xs">
+                              <input
+                                type="checkbox"
+                                checked={field.isActive}
+                                disabled={isEmail}
+                                onChange={(e) =>
+                                  void saveFieldChanges(field.id, { isActive: e.target.checked })
+                                }
+                                className="accent-gold disabled:opacity-50"
+                              />
+                              <span style={{ color: 'var(--a-text-secondary)' }}>Active</span>
+                            </label>
+                          </div>
+                        </div>
+                      )
+                    })}
                   </div>
-                ) : null}
+                )}
 
                 <div className="space-y-3 border p-4" style={{ borderColor: 'var(--a-border)', background: 'var(--a-bg)' }}>
                   <p className="font-body text-xs uppercase tracking-widest" style={{ color: 'var(--a-text-muted)' }}>
