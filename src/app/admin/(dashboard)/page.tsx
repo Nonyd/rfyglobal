@@ -9,22 +9,49 @@ export default async function AdminHomePage() {
   const hour = now.getHours()
   const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening'
 
-  const [memberCount, formCount, submissionCount, postCount, eventCount, giftStats, todayScripture, recentSubmissions, recentGifts] = await Promise.all([
-    db.formSubmission.count({ where: { form: { slug: { contains: 'join' } } } }),
-    db.form.count({ where: { isActive: true } }),
-    db.formSubmission.count(),
-    db.post.count({ where: { isPublished: true } }),
-    db.event.count({ where: { isActive: true, date: { gte: now } } }),
-    db.givingRecord.aggregate({ where: { status: 'SUCCESS' }, _sum: { amount: true }, _count: { id: true } }),
-    db.scripture.findFirst({
-      where: {
-        scheduledAt: { gte: new Date(now.getFullYear(), now.getMonth(), now.getDate()), lt: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) },
-        isActive: true,
-      },
-    }),
-    db.formSubmission.findMany({ take: 5, orderBy: { createdAt: 'desc' }, include: { form: { select: { title: true } } } }),
-    db.givingRecord.findMany({ take: 5, where: { status: 'SUCCESS' }, orderBy: { createdAt: 'desc' } }),
-  ])
+  let memberCount = 0
+  let formCount = 0
+  let submissionCount = 0
+  let postCount = 0
+  let eventCount = 0
+  let giftStats: { _sum: { amount: number | null }; _count: { id: number } } = {
+    _sum: { amount: 0 },
+    _count: { id: 0 },
+  }
+  let todayScripture: { reference: string; text: string } | null = null
+  let recentSubmissions: Array<{ form: { title: string }; createdAt: Date }> = []
+  let recentGifts: Array<{ amount: number; gateway: string; createdAt: Date }> = []
+
+  try {
+    ;[
+      memberCount,
+      formCount,
+      submissionCount,
+      postCount,
+      eventCount,
+      giftStats,
+      todayScripture,
+      recentSubmissions,
+      recentGifts,
+    ] = await Promise.all([
+      db.formSubmission.count({ where: { form: { slug: { contains: 'join' } } } }),
+      db.form.count({ where: { isActive: true } }),
+      db.formSubmission.count(),
+      db.post.count({ where: { isPublished: true } }),
+      db.event.count({ where: { isActive: true, date: { gte: now } } }),
+      db.givingRecord.aggregate({ where: { status: 'SUCCESS' }, _sum: { amount: true }, _count: { id: true } }),
+      db.scripture.findFirst({
+        where: {
+          scheduledAt: { gte: new Date(now.getFullYear(), now.getMonth(), now.getDate()), lt: new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1) },
+          isActive: true,
+        },
+      }),
+      db.formSubmission.findMany({ take: 5, orderBy: { createdAt: 'desc' }, include: { form: { select: { title: true } } } }),
+      db.givingRecord.findMany({ take: 5, where: { status: 'SUCCESS' }, orderBy: { createdAt: 'desc' } }),
+    ])
+  } catch (error) {
+    console.error('Admin dashboard data load failed:', error)
+  }
 
   const stats = [
     { label: 'Community Members', value: memberCount.toLocaleString(), trend: '+12%', trendUp: true },

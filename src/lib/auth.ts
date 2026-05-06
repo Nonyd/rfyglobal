@@ -22,17 +22,22 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const password = credentials?.password
         if (typeof email !== 'string' || typeof password !== 'string') return null
 
-        const user = await db.user.findUnique({ where: { email } })
-        if (user) {
-          const { compare } = await import('bcryptjs')
-          const valid = await compare(password, user.password)
-          if (!valid) return null
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name ?? undefined,
-            role: user.role,
+        // If DB is unavailable, still allow env-based emergency admin login.
+        try {
+          const user = await db.user.findUnique({ where: { email } })
+          if (user) {
+            const { compare } = await import('bcryptjs')
+            const valid = await compare(password, user.password)
+            if (!valid) return null
+            return {
+              id: user.id,
+              email: user.email,
+              name: user.name ?? undefined,
+              role: user.role,
+            }
           }
+        } catch (error) {
+          console.error('Admin credential lookup failed:', error)
         }
 
         const adminEmail = process.env.ADMIN_EMAIL
