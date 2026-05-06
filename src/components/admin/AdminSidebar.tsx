@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
+import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
 import {
@@ -55,17 +56,25 @@ export function AdminSidebar({
 }) {
   const pathname = usePathname()
   const { data: session } = useSession()
+  const [logoFailed, setLogoFailed] = useState(false)
 
   const nav = (
     <>
       <div className="p-5 border-b" style={{ borderColor: 'var(--admin-border)' }}>
-        <Image
-          src="/images/logo-mark-dark.png"
-          alt="Room For You"
-          width={48}
-          height={48}
-          className="h-10 w-auto object-contain"
-        />
+        {logoFailed ? (
+          <span className="font-display text-lg" style={{ color: 'var(--admin-text)' }}>
+            RFY
+          </span>
+        ) : (
+          <Image
+            src="/images/logo-mark-dark.png"
+            alt="Room For You"
+            width={48}
+            height={48}
+            className="h-10 w-auto object-contain"
+            onError={() => setLogoFailed(true)}
+          />
+        )}
       </div>
 
       <nav className="flex-1 space-y-5 overflow-y-auto p-3">
