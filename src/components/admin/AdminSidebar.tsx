@@ -96,33 +96,20 @@ export function AdminSidebar({ theme, userRole }: AdminSidebarProps) {
       }}
     >
       <div className="p-5 border-b" style={{ borderColor: 'var(--a-border)' }}>
-        <div className="flex items-center gap-3">
-          <div
-            className="w-9 h-9 flex items-center justify-center rounded"
-            style={{ background: theme === 'dark' ? 'var(--a-gold-active)' : 'var(--a-border)' }}
+        <div className="flex flex-col gap-1">
+          <Image
+            src={theme === 'dark' ? '/images/brand-logo-on-dark.png' : '/images/brand-logo-on-light.png'}
+            alt="Room For You"
+            width={180}
+            height={48}
+            className="h-9 w-auto max-w-full object-contain object-left"
+          />
+          <p
+            className="font-body text-[10px] uppercase tracking-widest"
+            style={{ color: 'var(--a-text-muted)' }}
           >
-            <Image
-              src={theme === 'dark' ? '/images/logo-white.png' : '/images/logo-mark-dark.png'}
-              alt="RFY"
-              width={24}
-              height={24}
-              className="w-5 h-5 object-contain"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none'
-              }}
-            />
-          </div>
-          <div>
-            <p className="font-display text-sm font-semibold" style={{ color: 'var(--a-text)' }}>
-              Room For You
-            </p>
-            <p
-              className="font-body text-[10px] uppercase tracking-widest"
-              style={{ color: 'var(--a-text-muted)' }}
-            >
-              Admin
-            </p>
-          </div>
+            Admin
+          </p>
         </div>
       </div>
 

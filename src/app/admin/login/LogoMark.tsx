@@ -14,11 +14,11 @@ export function LogoMark() {
         </span>
       ) : (
         <Image
-          src="/images/logo-mark-dark.png"
+          src="/images/brand-logo-on-light.png"
           alt="Room For You"
-          width={60}
-          height={60}
-          className="h-14 w-auto"
+          width={160}
+          height={52}
+          className="h-14 w-auto max-w-[200px] object-contain"
           onError={() => setFailed(true)}
         />
       )}

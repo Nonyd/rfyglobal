@@ -27,11 +27,11 @@ export async function Footer() {
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-12 mb-16">
           <div>
             <Image
-              src="/images/logo-white.png"
-              alt="Room For You"
-              width={120}
-              height={60}
-              className="h-10 w-auto mb-4"
+              src="/images/brand-logo-on-dark.png"
+              alt="Room For You — with Yadah"
+              width={160}
+              height={52}
+              className="h-10 w-auto mb-4 object-contain object-left"
             />
             <p className="label-text opacity-40">
               {content['footer.tagline'] || 'Jesus to Nations — 2 Cor 5:17-21'}

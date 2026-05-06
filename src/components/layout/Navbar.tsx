@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
+import { BrandLogo } from '@/components/brand/BrandLogo'
 import { ThemeToggle } from '@/components/shared/ThemeToggle'
 import { cn } from '@/lib/utils'
 
@@ -42,12 +42,14 @@ export function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between">
           <Link href="/" className="shrink-0">
-            <Image
-              src="/images/logo-white.png"
-              alt="Room For You"
-              width={100}
-              height={50}
-              className="h-8 w-auto object-contain"
+            <BrandLogo
+              variant="onDark"
+              href={null}
+              width={120}
+              height={40}
+              className="h-8"
+              imgClassName="h-8 max-h-8 w-auto"
+              priority
             />
           </Link>
 
@@ -93,7 +95,7 @@ export function Navbar() {
             className="fixed inset-0 z-[100] bg-void flex flex-col"
           >
             <div className="flex items-center justify-between px-6 py-6">
-              <Image src="/images/logo-white.png" alt="Room For You" width={100} height={50} className="h-8 w-auto" />
+              <BrandLogo variant="onDark" href={null} width={120} height={40} imgClassName="h-8 max-h-8 w-auto" />
               <button
               type="button"
                 aria-label="Close menu"
