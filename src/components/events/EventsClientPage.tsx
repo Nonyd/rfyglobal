@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 
 export interface PublicEvent {
   id: string
-  slug: string
+  slug: string | null
   title: string
   description?: string | null
   city: string
@@ -63,7 +63,7 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
           {filtered.map((event, index) => (
             <Link
               key={event.id}
-              href={`/events/${event.slug}`}
+              href={event.slug ? `/events/${event.slug}` : '#'}
               className="rfy-card group block overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-elevated cursor-pointer"
             >
               <div className="relative h-48 overflow-hidden bg-charcoal-soft">

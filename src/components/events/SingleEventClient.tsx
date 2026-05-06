@@ -246,7 +246,7 @@ export function SingleEventClient({ event, otherEvents }: SingleEventClientProps
                   transition={{ duration: 0.5, delay: i * 0.1 }}
                 >
                   <Link
-                    href={`/events/${e.slug}`}
+                    href={e.slug ? `/events/${e.slug}` : '#'}
                     className="block border group transition-all duration-300 hover-lift"
                     style={{ borderColor: 'rgba(255,255,255,0.08)' }}
                     onMouseEnter={(el) => (el.currentTarget.style.borderColor = 'rgba(201,168,76,0.3)')}
