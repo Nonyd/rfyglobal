@@ -8,16 +8,8 @@ import { CTASection } from '@/components/landing/CTASection'
 import { Footer } from '@/components/layout/Footer'
 import { getContentMany } from '@/lib/content'
 
-export const dynamic = 'force-dynamic'
-
 export default async function HomePage() {
   const content = await getContentMany([
-    'landing.hero.eyebrow',
-    'landing.hero.headline1',
-    'landing.hero.headline2',
-    'landing.hero.subtext',
-    'landing.hero.cta.primary',
-    'landing.hero.cta.secondary',
     'landing.vision.heading',
     'landing.vision.subheading',
     'landing.vision.text',
@@ -41,7 +33,7 @@ export default async function HomePage() {
 
   return (
     <main>
-      <Hero content={content} />
+      <Hero />
       <ScriptureStrip />
       <VisionSection content={content} />
       <ConfessionReveal />

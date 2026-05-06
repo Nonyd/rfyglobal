@@ -2,13 +2,13 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { motion, AnimatePresence, useScroll } from 'framer-motion'
+import Image from 'next/image'
+import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
-import { cn } from '@/lib/utils'
 import { ThemeToggle } from '@/components/shared/ThemeToggle'
-import { BrandLogo } from '@/components/brand/BrandLogo'
+import { cn } from '@/lib/utils'
 
-const navLinks = [
+const NAV_LINKS = [
   { label: 'Word', href: '/word' },
   { label: 'Study', href: '/study' },
   { label: 'Events', href: '/events' },
@@ -18,120 +18,127 @@ const navLinks = [
 ]
 
 export function Navbar() {
-  const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const { scrollY } = useScroll()
+  const [menuOpen, setMenuOpen] = useState(false)
 
   useEffect(() => {
-    const unsubscribe = scrollY.on('change', (latest) => {
-      setScrolled(latest > 80)
-    })
-    return () => {
-      unsubscribe()
-    }
-  }, [scrollY])
+    const handleScroll = () => setScrolled(window.scrollY > 60)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
 
   return (
     <>
       <motion.nav
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: 'easeOut' }}
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className={cn(
           'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
           scrolled
-            ? 'border-b border-theme/80 bg-bg/95 py-3 shadow-soft backdrop-blur-md'
-            : 'border-b border-transparent bg-transparent py-5',
+            ? 'bg-void/90 backdrop-blur-xl border-b border-ash/40 py-4'
+            : 'bg-transparent py-6'
         )}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-          <BrandLogo variant="auto" width={168} height={56} priority className="min-w-0" />
+        <div className="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between">
+          <Link href="/" className="shrink-0">
+            <Image
+              src="/images/logo-white.png"
+              alt="Room For You"
+              width={100}
+              height={50}
+              className="h-8 w-auto object-contain"
+            />
+          </Link>
 
-          <div className="hidden items-center gap-8 md:flex">
-            {navLinks.map((link) => (
+          <div className="hidden lg:flex items-center gap-10">
+            {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="font-body text-sm font-medium uppercase tracking-[0.2em] text-text-secondary transition-colors duration-300 hover:text-gold"
+                className="text-[11px] font-body font-medium tracking-[0.2em] uppercase text-mist hover:text-snow transition-colors duration-300"
               >
                 {link.label}
               </Link>
             ))}
           </div>
 
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-4">
             <ThemeToggle className="hidden md:flex" />
             <Link
               href="/forms/join-room-for-you"
-              className="rfy-focus hidden border border-gold/90 px-4 py-2.5 font-body text-xs font-semibold uppercase tracking-[0.2em] text-gold transition-all duration-300 hover:border-red-brand hover:bg-gold/10 hover:text-text-primary md:inline-flex md:px-5"
+              className="hidden md:inline-flex items-center px-5 py-2 text-[11px] font-body font-medium tracking-[0.2em] uppercase border border-gold text-gold hover:bg-gold hover:text-void transition-all duration-300"
             >
               Join Us
             </Link>
             <button
               type="button"
-              onClick={() => setIsOpen(true)}
-              className="text-text-primary md:hidden"
               aria-label="Open menu"
+              onClick={() => setMenuOpen(true)}
+              className="lg:hidden text-mist hover:text-snow transition-colors"
             >
-              <Menu size={24} />
+              <Menu size={20} />
             </button>
           </div>
         </div>
       </motion.nav>
 
       <AnimatePresence>
-        {isOpen ? (
+        {menuOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-[100] flex flex-col bg-bg"
+            className="fixed inset-0 z-[100] bg-void flex flex-col"
           >
-            <div className="flex items-center justify-between border-b border-theme px-4 py-5 sm:px-6">
-              <BrandLogo variant="auto" width={160} height={52} />
-              <button type="button" onClick={() => setIsOpen(false)} className="text-text-primary" aria-label="Close menu">
-                <X size={24} />
+            <div className="flex items-center justify-between px-6 py-6">
+              <Image src="/images/logo-white.png" alt="Room For You" width={100} height={50} className="h-8 w-auto" />
+              <button
+              type="button"
+                aria-label="Close menu"
+                onClick={() => setMenuOpen(false)}
+                className="text-mist hover:text-snow"
+            >
+                <X size={20} />
               </button>
             </div>
 
-            <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6">
-              {navLinks.map((link, i) => (
+            <div className="flex flex-col items-center justify-center flex-1 gap-8">
+              {NAV_LINKS.map((link, i) => (
                 <motion.div
                   key={link.href}
-                  initial={{ opacity: 0, y: 20 }}
+                  initial={{ opacity: 0, y: 16 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.06 }}
+                  transition={{ delay: i * 0.06, duration: 0.5 }}
                 >
                   <Link
                     href={link.href}
-                    onClick={() => setIsOpen(false)}
-                    className="font-display text-3xl font-light text-text-primary transition-colors hover:text-gold sm:text-4xl"
+                    onClick={() => setMenuOpen(false)}
+                    className="font-display text-4xl text-snow hover:text-gold transition-colors"
                   >
                     {link.label}
                   </Link>
                 </motion.div>
               ))}
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: navLinks.length * 0.06 }}
-                className="flex flex-col items-center gap-6 pt-4"
+                transition={{ delay: 0.5 }}
               >
-                <ThemeToggle />
                 <Link
                   href="/forms/join-room-for-you"
-                  onClick={() => setIsOpen(false)}
-                  className="border border-gold px-8 py-3 font-body text-sm uppercase tracking-[0.2em] text-gold transition-all duration-300 hover:bg-gold hover:text-charcoal"
+                  onClick={() => setMenuOpen(false)}
+                  className="mt-4 px-8 py-3 border border-gold text-gold text-[11px] font-body tracking-[0.2em] uppercase hover:bg-gold hover:text-void transition-all"
                 >
-                  Join Us
+                  Join the Community
                 </Link>
               </motion.div>
             </div>
 
-            <div className="mx-6 mb-8 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent opacity-80" />
+            <div className="gold-line mx-6 mb-8 opacity-20" />
           </motion.div>
-        ) : null}
+        )}
       </AnimatePresence>
     </>
   )

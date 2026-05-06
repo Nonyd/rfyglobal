@@ -2,85 +2,134 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
+import Image from 'next/image'
 import { Navbar } from '@/components/layout/Navbar'
 
-const stagger = {
-  container: {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.15 } },
-  },
-  item: {
-    hidden: { opacity: 0, y: 30 },
-    show: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.8, ease: [0.25, 0.46, 0.45, 0.94] as const },
-    },
-  },
-}
+const words = [
+  { text: 'THERE IS', style: 'text-outline', delay: 0.2 },
+  { text: 'ROOM', style: 'text-gold-gradient', delay: 0.5 },
+  { text: 'FOR YOU.', style: 'text-snow', delay: 0.8 },
+]
 
-export function Hero({ content }: { content: Record<string, string> }) {
+export function Hero() {
   return (
-    <section className="relative flex min-h-screen flex-col overflow-hidden bg-bg grain">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(212,168,71,0.12),transparent_55%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_100%_50%,rgba(208,2,27,0.06),transparent_45%)]" />
-
+    <section className="relative min-h-screen bg-void overflow-hidden flex flex-col">
       <Navbar />
-      <div className="section-number absolute left-4 top-1/2 hidden -translate-y-1/2 opacity-[0.18] sm:left-8 lg:block">RFY</div>
-      <div className="absolute right-6 top-1/2 hidden -translate-y-1/2 items-center gap-4 lg:flex xl:right-10">
-        <div className="h-32 w-px bg-gradient-to-b from-transparent via-gold/70 to-transparent" />
-        <p className="origin-center -rotate-90 font-body text-[10px] uppercase tracking-[0.35em] text-gold">Jesus to Nations</p>
+
+      <div
+        className="absolute pointer-events-none animate-breathe"
+        style={{
+          width: '600px',
+          height: '600px',
+          borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%)',
+          top: '50%',
+          right: '10%',
+          transform: 'translateY(-50%)',
+        }}
+      />
+
+      <div className="absolute inset-y-0 right-0 w-1/2 pointer-events-none hidden lg:block">
+        <div className="absolute inset-0 cinematic-overlay z-10" />
+        <Image
+          src="/images/yadah-portrait.jpg"
+          alt=""
+          fill
+          className="object-cover object-top opacity-30"
+          priority
+        />
       </div>
 
-      <motion.div
-        variants={stagger.container}
-        initial="hidden"
-        animate="show"
-        className="relative z-10 flex flex-1 flex-col justify-center px-6 pb-24 pt-28 text-left lg:px-12 lg:pb-28 lg:pt-32"
-      >
-        <motion.p variants={stagger.item} className="mb-8 font-body text-[10px] uppercase tracking-[0.35em] text-gold">
-          WORSHIP · PRAYER · COMMUNITY
-        </motion.p>
-
-        <motion.h1
-          variants={stagger.item}
-          className="mb-6 font-display font-bold leading-[0.95] tracking-tight"
-          style={{ fontSize: 'clamp(3rem, 9vw, 8rem)' }}
+      <div className="relative z-10 flex flex-col justify-center flex-1 px-6 lg:px-16 xl:px-24 pt-28 pb-20 max-w-7xl mx-auto w-full">
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.1 }}
+          className="label-text mb-10"
         >
-          <span className="block text-text-primary">THERE IS</span>
-          <span className="text-gradient-gold-electric block">ROOM</span>
-          <span className="text-outlined block text-text-primary">FOR YOU.</span>
-        </motion.h1>
-
-        <motion.p variants={stagger.item} className="mb-12 max-w-xl font-body text-lg leading-relaxed text-text-secondary md:text-xl">
-          {content['landing.hero.subtext']}
+          Worship · Prayer · Study · Community
         </motion.p>
 
-        <motion.div variants={stagger.item} className="flex flex-wrap gap-4">
+        <div className="space-y-2 mb-12">
+          {words.map((word, i) => (
+            <motion.h1
+              key={i}
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, delay: word.delay, ease: [0.16, 1, 0.3, 1] }}
+              className={`font-display font-bold leading-none ${word.style}`}
+              style={{ fontSize: 'clamp(4rem, 11vw, 10rem)' }}
+            >
+              {word.text}
+            </motion.h1>
+          ))}
+        </div>
+
+        <motion.div
+          initial={{ scaleX: 0, opacity: 0 }}
+          animate={{ scaleX: 1, opacity: 1 }}
+          transition={{ duration: 1.2, delay: 1.2, ease: [0.16, 1, 0.3, 1] }}
+          className="gold-line-left w-48 mb-10 origin-left"
+        />
+
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.4 }}
+          className="font-body text-mist text-lg leading-relaxed max-w-lg mb-12"
+        >
+          A community of young men and women singing songs of salvation,
+          studying the Word, and getting others saved.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.6 }}
+          className="flex flex-wrap gap-4"
+        >
           <Link
             href="/forms/join-room-for-you"
-            className="rfy-focus inline-flex bg-gold px-8 py-4 font-body text-sm font-semibold uppercase tracking-[0.2em] text-charcoal shadow-soft transition-all duration-300 hover:bg-gold-light"
+            className="inline-flex items-center px-8 py-4 bg-gold text-void font-body text-[11px] font-semibold tracking-[0.2em] uppercase hover:bg-gold-bright transition-all duration-300"
           >
             Join the Community
           </Link>
           <Link
             href="/about"
-            className="rfy-focus inline-flex border border-theme px-8 py-4 font-body text-sm uppercase tracking-[0.2em] text-text-secondary transition-all duration-300 hover:border-gold hover:text-gold"
+            className="inline-flex items-center px-8 py-4 border border-ash text-mist font-body text-[11px] tracking-[0.2em] uppercase hover:border-gold hover:text-gold transition-all duration-300"
           >
             Our Story
           </Link>
         </motion.div>
-      </motion.div>
 
-      <div className="absolute bottom-6 left-6 right-6 z-10 flex flex-col gap-4 border-t border-theme/80 pt-6 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="h-8 w-px bg-gradient-to-b from-gold/80 to-transparent" />
-          <p className="font-body text-xs uppercase tracking-[0.25em] text-text-muted">Scroll</p>
-        </div>
-        <p className="font-body text-xs uppercase tracking-[0.2em] text-text-secondary sm:text-right">
-          100M+ Streams · 600K+ Followers · Jesus to Nations
-        </p>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 2 }}
+          className="absolute bottom-10 left-6 lg:left-16 xl:left-24 flex items-center gap-8"
+        >
+          {[
+            { value: '100M+', label: 'Streams' },
+            { value: '600K+', label: 'Followers' },
+            { value: 'Nations', label: 'Jesus to' },
+          ].map((stat) => (
+            <div key={stat.label} className="flex flex-col">
+              <span className="font-display text-snow text-xl font-semibold">{stat.value}</span>
+              <span className="label-text opacity-60">{stat.label}</span>
+            </div>
+          ))}
+        </motion.div>
       </div>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 2.5 }}
+        className="absolute bottom-10 right-10 hidden lg:flex flex-col items-center gap-2"
+      >
+        <div className="w-px h-16 bg-gradient-to-b from-transparent to-gold opacity-40" />
+        <div className="w-1 h-1 rounded-full bg-gold animate-pulse" />
+      </motion.div>
     </section>
   )
 }

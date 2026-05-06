@@ -1,55 +1,51 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { BookOpen, CalendarHeart, HeartHandshake, Users } from 'lucide-react'
-
-const ICONS = [CalendarHeart, HeartHandshake, BookOpen, Users] as const
 
 export function CommunityHighlights({ content }: { content: Record<string, string> }) {
-  const cards = [1, 2, 3, 4].map((n, i) => ({
-    title: content[`highlights.${n}.title`],
-    description: content[`highlights.${n}.desc`],
-    icon: ICONS[i]!,
-  }))
+  const highlights = [
+    { n: '01', title: content['highlights.1.title'] || 'Monthly Meetings', desc: content['highlights.1.desc'] || 'Physical gatherings across cities.' },
+    { n: '02', title: content['highlights.2.title'] || 'Prayer', desc: content['highlights.2.desc'] || 'Corporate and personal intercession.' },
+    { n: '03', title: content['highlights.3.title'] || 'Bible Study', desc: content['highlights.3.desc'] || 'Structured study with weekly tasks.' },
+    { n: '04', title: content['highlights.4.title'] || 'Mentorship', desc: content['highlights.4.desc'] || 'One-on-one counseling and growth.' },
+  ]
+
   return (
-    <section className="bg-bg py-24">
-      <div className="mx-auto max-w-7xl px-6">
-        <div className="section-number absolute left-8 opacity-20">04</div>
-        <p className="mb-3 font-body text-[10px] uppercase tracking-[0.35em] text-gold">WHAT WE DO</p>
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="font-display text-display-lg text-text-primary"
-        >
-          Community <span className="text-gradient-gold italic">highlights</span>
-        </motion.h2>
-        <div className="mt-14 grid gap-6 md:grid-cols-2">
-          {cards.map((card, i) => {
-            const Icon = card.icon
-            return (
-              <motion.article
-                key={`highlight-${i}`}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-40px' }}
-                transition={{ delay: i * 0.08, duration: 0.6 }}
-                className="rfy-card group relative p-6 transition-all duration-300 hover:-translate-y-1 hover:border-gold/60 hover:shadow-elevated"
-              >
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                  <div className="h-full w-full bg-[radial-gradient(ellipse_at_bottom,rgba(201,168,76,0.18),transparent_70%)]" />
-                </div>
-                <div className="relative z-10">
-                  <p className="font-display text-2xl text-gold">{String(i + 1).padStart(2, '0')}</p>
-                  <Icon className="mt-2 h-8 w-8 text-gold" aria-hidden />
-                  <h3 className="mt-5 font-display text-2xl text-text-primary">{card.title}</h3>
-                  <p className="mt-3 font-body text-sm leading-relaxed text-text-secondary">
-                    {card.description}
-                  </p>
-                </div>
-              </motion.article>
-            )
-          })}
+    <section className="bg-void py-32 px-6">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex items-end justify-between mb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <p className="label-text mb-4">What We Do</p>
+            <h2 className="font-display text-snow" style={{ fontSize: 'clamp(2rem, 5vw, 4rem)' }}>
+              Community <span className="italic text-gold-gradient">life.</span>
+            </h2>
+          </motion.div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-ash">
+          {highlights.map((h, i) => (
+            <motion.div
+              key={h.n}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: i * 0.1 }}
+              className="bg-void p-10 hover-lift group cursor-default"
+            >
+              <p className="font-display text-6xl text-ash group-hover:text-gold/20 transition-colors duration-500 mb-8 font-bold">
+                {h.n}
+              </p>
+              <h3 className="font-display text-snow text-2xl mb-3 group-hover:text-gold transition-colors duration-300">
+                {h.title}
+              </h3>
+              <p className="font-body text-fog text-sm leading-relaxed">{h.desc}</p>
+              <div className="gold-line-left w-0 group-hover:w-12 transition-all duration-500 mt-6 opacity-60" />
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>

@@ -1,60 +1,66 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import type { ScriptureTodayResponse } from '@/types'
 import { AudioPlayer } from '@/components/shared/AudioPlayer'
 import { ShareButton } from '@/components/shared/ShareButton'
-
-const fallback: ScriptureTodayResponse = {
-  id: 'fallback',
-  reference: '2 Corinthians 5:17',
-  text: 'Therefore, if anyone is in Christ, the new creation has come: The old has gone, the new is here!',
-  translation: 'NIV',
-  audioUrl: null,
-}
+import { motion } from 'framer-motion'
 
 export function ScriptureStrip() {
-  const [data, setData] = useState<ScriptureTodayResponse>(fallback)
+  const [scripture, setScripture] = useState<{
+    id: string
+    reference: string
+    text: string
+    translation: string
+    audioUrl?: string
+  } | null>(null)
 
   useEffect(() => {
-    let cancelled = false
-    ;(async () => {
-      try {
-        const res = await fetch('/api/scripture/today')
-        if (!res.ok) throw new Error('bad response')
-        const json = (await res.json()) as ScriptureTodayResponse & { error?: string }
-        if (json.error || !json.reference || !json.text) throw new Error('invalid')
-        if (!cancelled) setData(json)
-      } catch {
-        if (!cancelled) setData(fallback)
-      }
-    })()
-    return () => {
-      cancelled = true
-    }
+    fetch('/api/scripture/today')
+      .then((r) => r.json())
+      .then(setScripture)
+      .catch(() =>
+        setScripture({
+          id: 'fallback',
+          reference: '2 Corinthians 5:17',
+          text: 'Therefore, if anyone is in Christ, the new creation has come: The old has gone, the new is here!',
+          translation: 'NIV',
+        })
+      )
   }, [])
 
-  const scriptureId = data.id ?? 'fallback'
+  if (!scripture) return <div className="h-64 bg-ink" />
 
   return (
-    <section className="border-y border-gold-subtle/80 bg-charcoal py-16 md:py-20">
-      <div className="mx-auto max-w-4xl px-6 text-center">
-        <p className="font-display text-2xl text-gold md:text-3xl">{data.reference}</p>
-        <p className="mt-6 font-display text-xl italic leading-relaxed text-cream/95 md:text-2xl">
-          {data.text}
+    <section className="bg-ink py-24 px-6">
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.8 }}
+        className="max-w-3xl mx-auto text-center"
+      >
+        <p className="label-text mb-6 opacity-60">{scripture.translation}</p>
+
+        <p className="font-display text-gold text-2xl lg:text-3xl mb-6">
+          {scripture.reference}
         </p>
-        <p className="mt-4 font-body text-xs uppercase tracking-widest text-cream/45">
-          {data.translation}
-        </p>
-        {data.audioUrl ? (
-          <div className="mx-auto mt-10 max-w-xl">
-            <AudioPlayer src={data.audioUrl} />
-          </div>
-        ) : null}
-        <div className="mt-10 flex justify-center">
-          <ShareButton scriptureId={scriptureId} reference={data.reference} />
+
+        <div className="gold-line max-w-[120px] mx-auto mb-8 opacity-40" />
+
+        <blockquote className="font-display text-snow text-xl lg:text-2xl italic leading-relaxed mb-10">
+          &ldquo;{scripture.text}&rdquo;
+        </blockquote>
+
+        <div className="flex flex-col items-center gap-4">
+          {scripture.audioUrl && (
+            <AudioPlayer src={scripture.audioUrl} className="w-full max-w-sm" />
+          )}
+          <ShareButton
+            scriptureId={scripture.id}
+            reference={scripture.reference}
+          />
         </div>
-      </div>
+      </motion.div>
     </section>
   )
 }

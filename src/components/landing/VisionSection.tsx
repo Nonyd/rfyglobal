@@ -1,67 +1,75 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import Link from 'next/link'
-
-const activities = [
-  'Monthly meetings & gatherings',
-  'Corporate and personal prayer',
-  'Structured Bible study',
-  'Mentorship & counseling',
-  'Evangelism & outreach',
-]
 
 export function VisionSection({ content }: { content: Record<string, string> }) {
+  const activities = [
+    'Monthly community gatherings across cities',
+    'Corporate prayer and intercession',
+    'Structured online Bible study',
+    'One-on-one mentorship and counseling',
+    'Foot evangelism and outreaches',
+  ]
+
   return (
-    <section className="relative overflow-hidden surface py-24 md:py-28">
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/25 to-transparent" />
-      <div className="mx-auto grid max-w-7xl gap-16 px-6 lg:grid-cols-2 lg:gap-16">
-        <div className="section-number absolute left-8 top-6 opacity-25">01</div>
+    <section className="bg-void py-32 px-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-32 items-center">
         <motion.div
-          initial={{ opacity: 0, y: 32 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.8 }}
+          initial={{ opacity: 0, x: -32 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         >
-          <h2 className="font-display text-display-lg text-text-primary">
-            <span className="block">Building a community</span>
-            <span className="block text-display-md text-text-secondary">of young men &amp; women</span>
-            <span className="mt-2 block text-gradient-gold">singing songs of salvation.</span>
+          <p className="label-text mb-8">The Vision</p>
+          <h2
+            className="font-display text-snow leading-tight mb-8"
+            style={{ fontSize: 'clamp(2.2rem, 5vw, 4.5rem)' }}
+          >
+            {content['landing.vision.heading'] || 'Building a community'}
+            <br />
+            <span className="text-gold-gradient italic">
+              {content['landing.vision.subheading'] || 'Jesus to Nations'}
+            </span>
           </h2>
+          <p className="font-body text-mist leading-relaxed text-lg max-w-md">
+            {content['landing.vision.text'] || 'Building a community of young men and women who sing songs of salvation with conviction of their identity in Christ.'}
+          </p>
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 32 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-          className="lg:border-l lg:border-theme lg:pl-16"
+          initial={{ opacity: 0, x: 32 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.9, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="space-y-10"
         >
-          <p className="font-display text-3xl text-text-primary">JESUS TO NATIONS</p>
-          <p className="mt-2 font-body text-sm italic text-gold">2 Cor 5:17-21</p>
-          <p className="mt-6 font-body text-lg leading-relaxed text-text-secondary">
-            {content['landing.vision.text'] || content['landing.vision.subheading']}
-          </p>
-          <p className="mt-6 font-body text-sm uppercase tracking-widest text-gold">
-            2 Corinthians 5:17–21
-          </p>
-          <ul className="mt-10 space-y-4 font-body text-text-secondary">
-            {activities.map((item) => (
-              <li key={item} className="flex gap-3">
-                <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" />
-                <span>{item}</span>
-              </li>
+          <div>
+            <p className="label-text mb-4">The Mission</p>
+            <p className="font-display text-4xl text-snow mb-2">Jesus to Nations</p>
+            <p className="font-display text-lg italic text-gold opacity-70">
+              2 Corinthians 5:17–21
+            </p>
+          </div>
+
+          <div className="gold-line-left w-24 opacity-30" />
+
+          <div className="space-y-4">
+            {activities.map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, x: 16 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 + i * 0.08 }}
+                className="flex items-start gap-4"
+              >
+                <div className="w-px h-4 bg-gold opacity-60 mt-1 shrink-0" />
+                <p className="font-body text-mist text-sm leading-relaxed">{item}</p>
+              </motion.div>
             ))}
-          </ul>
-          <Link
-            href="/about"
-            className="mt-10 inline-block font-body text-sm uppercase tracking-widest text-gold hover:text-gold-light"
-          >
-            Learn more →
-          </Link>
+          </div>
         </motion.div>
       </div>
-      <div className="section-divider mx-auto mt-16 max-w-7xl" />
     </section>
   )
 }

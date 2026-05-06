@@ -7,92 +7,61 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        black: {
-          DEFAULT: '#000000',
-          soft: '#0c0c0c',
+        void: '#0F0F0F',
+        ink: '#1A1A1A',
+        smoke: '#242424',
+        ash: '#2E2E2E',
+        snow: '#F8F8F8',
+        mist: '#A0A0A0',
+        fog: '#585858',
+        gold: {
+          DEFAULT: '#C9A84C',
+          bright: '#E8C96A',
+          dim: '#8A6F2E',
+          glow: 'rgba(201,168,76,0.12)',
         },
-        charcoal: {
-          DEFAULT: '#141414',
-          soft: '#1C1C1C',
-          muted: '#242424',
-          border: '#2A2A2A',
-        },
+        paper: '#F5F0E8',
+        parchment: '#EDE7DB',
         cream: {
           DEFAULT: '#F5F0E8',
           soft: '#FAF7F2',
           muted: '#EDE8DF',
-          border: '#E0D9CE',
-        },
-        gold: {
-          DEFAULT: '#D4A847',
-          light: '#E8C068',
-          dark: '#B8902E',
-          electric: '#F0BC4A',
-          glow: 'rgba(212,168,71,0.15)',
-          subtle: 'rgba(212, 168, 71, 0.35)',
-        },
-        red: {
-          brand: '#D0021B',
-        },
-        bg: 'rgb(var(--color-bg) / <alpha-value>)',
-        surface: 'rgb(var(--color-surface) / <alpha-value>)',
-        border: 'rgb(var(--color-border) / <alpha-value>)',
-        text: {
-          primary: 'rgb(var(--color-text-primary) / <alpha-value>)',
-          secondary: 'rgb(var(--color-text-secondary) / <alpha-value>)',
-          muted: 'rgb(var(--color-text-muted) / <alpha-value>)',
+          border: '#D8D0C4',
         },
       },
       fontFamily: {
-        display: ['Clash Display', 'sans-serif'],
-        body: ['General Sans', 'sans-serif'],
+        display: ['Cormorant Garamond', 'Georgia', 'serif'],
+        body: ['General Sans', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
       fontSize: {
-        'display-2xl': ['clamp(3.5rem, 10vw, 9rem)', { lineHeight: '0.95', letterSpacing: '-0.03em' }],
-        'display-xl': ['clamp(2.5rem, 7vw, 6rem)', { lineHeight: '1.0', letterSpacing: '-0.02em' }],
-        'display-lg': ['clamp(2rem, 5vw, 4rem)', { lineHeight: '1.05', letterSpacing: '-0.02em' }],
-        'display-md': ['clamp(1.5rem, 3vw, 2.5rem)', { lineHeight: '1.1', letterSpacing: '-0.01em' }],
-      },
-      spacing: {
-        '18': '4.5rem',
-        '22': '5.5rem',
-        '30': '7.5rem',
-      },
-      borderRadius: {
-        none: '0',
-        sm: '2px',
-        DEFAULT: '4px',
-        md: '8px',
-        lg: '12px',
-        xl: '16px',
-      },
-      boxShadow: {
-        soft: 'var(--shadow-soft)',
-        elevated: 'var(--shadow-elevated)',
+        hero: ['clamp(3.5rem, 9vw, 8.5rem)', { lineHeight: '1.0', letterSpacing: '-0.02em' }],
+        title: ['clamp(2.5rem, 6vw, 5.5rem)', { lineHeight: '1.05', letterSpacing: '-0.02em' }],
+        heading: ['clamp(1.8rem, 4vw, 3.5rem)', { lineHeight: '1.1', letterSpacing: '-0.01em' }],
+        subheading: ['clamp(1.2rem, 2.5vw, 2rem)', { lineHeight: '1.2' }],
       },
       animation: {
-        'gold-pulse': 'goldPulse 3s ease-in-out infinite',
-        'fade-up': 'fadeUp 0.6s ease forwards',
-        'slide-in-right': 'slideInRight 0.4s ease forwards',
-        shimmer: 'shimmer 2s linear infinite',
+        breathe: 'breathe 6s ease-in-out infinite',
+        'fade-in': 'fadeIn 1s ease forwards',
+        'slide-up': 'slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        'gold-line': 'goldLine 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards',
       },
       keyframes: {
-        goldPulse: {
-          '0%, 100%': { opacity: '0.6' },
-          '50%': { opacity: '1' },
+        breathe: {
+          '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
+          '50%': { opacity: '0.7', transform: 'scale(1.05)' },
         },
-        fadeUp: {
-          from: { opacity: '0', transform: 'translateY(20px)' },
+        fadeIn: {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
+        },
+        slideUp: {
+          from: { opacity: '0', transform: 'translateY(32px)' },
           to: { opacity: '1', transform: 'translateY(0)' },
         },
-        slideInRight: {
-          from: { opacity: '0', transform: 'translateX(20px)' },
-          to: { opacity: '1', transform: 'translateX(0)' },
-        },
-        shimmer: {
-          '0%': { backgroundPosition: '-200% 0' },
-          '100%': { backgroundPosition: '200% 0' },
+        goldLine: {
+          from: { width: '0', opacity: '0' },
+          to: { width: '100%', opacity: '1' },
         },
       },
     },
