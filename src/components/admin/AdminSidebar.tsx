@@ -18,6 +18,7 @@ import {
   Images,
   Settings2,
   Plug,
+  Database,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -43,6 +44,7 @@ const NAV_GROUPS = [
       { label: 'Site CMS', href: '/admin/cms', icon: Settings2 },
       { label: 'Integrations', href: '/admin/integrations', icon: Plug },
       { label: 'Partnership', href: '/admin/partner', icon: Heart },
+      { label: 'Demo Data', href: '/admin/demo', icon: Database },
     ],
   },
 ]
