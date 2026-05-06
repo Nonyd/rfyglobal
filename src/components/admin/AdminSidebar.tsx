@@ -4,7 +4,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
 import { usePathname } from 'next/navigation'
-import { signOut, useSession } from 'next-auth/react'
+import { signOut } from 'next-auth/react'
 import {
   LayoutDashboard,
   BookOpen,
@@ -50,12 +50,13 @@ const NAV_GROUPS = [
 export function AdminSidebar({
   mobileOpen,
   onMobileClose,
+  userEmail,
 }: {
   mobileOpen?: boolean
   onMobileClose?: () => void
+  userEmail?: string | null
 }) {
   const pathname = usePathname()
-  const { data: session } = useSession()
   const [logoFailed, setLogoFailed] = useState(false)
 
   const nav = (
@@ -135,7 +136,7 @@ export function AdminSidebar({
 
       <div className="p-4 border-t" style={{ borderColor: 'var(--admin-border)' }}>
         <p className="text-xs font-body mb-3 truncate" style={{ color: 'var(--admin-text-secondary)' }}>
-          {session?.user?.email}
+          {userEmail}
         </p>
         <button
           type="button"
