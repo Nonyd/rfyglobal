@@ -16,6 +16,7 @@ import {
   X,
   Images,
   Settings2,
+  Plug,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -28,6 +29,7 @@ const navItems = [
   { label: 'Events', href: '/admin/events', icon: Calendar },
   { label: 'Gallery', href: '/admin/gallery', icon: Images },
   { label: 'Site CMS', href: '/admin/cms', icon: Settings2 },
+  { label: 'Integrations', href: '/admin/integrations', icon: Plug },
   { label: 'Partnership', href: '/admin/partner', icon: Heart },
 ]
 

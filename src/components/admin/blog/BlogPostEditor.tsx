@@ -159,7 +159,7 @@ export function BlogPostEditor({ mode, initialData }: BlogPostEditorProps) {
               </div>
             ) : (
               <UploadZone
-                endpoint="blogCoverImage"
+                folder="blogCover"
                 accept="image"
                 preview
                 label="Upload cover image (max 4MB)"

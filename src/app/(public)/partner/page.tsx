@@ -2,6 +2,13 @@ import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { PartnershipClientPage } from '@/components/partnership/PartnershipClientPage'
 import { getContentMany } from '@/lib/content'
+import {
+  getBankTransferCredentials,
+  getFlutterwaveCredentials,
+  getPayazaCredentials,
+  getPaymentSettings,
+  getPaystackCredentials,
+} from '@/lib/credentials'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
@@ -12,7 +19,8 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic'
 
 export default async function PartnerPage() {
-  const content = await getContentMany([
+  const [content, paystack, flutterwave, payaza, bank, settings] = await Promise.all([
+    getContentMany([
     'partnership.hero.headline',
     'partnership.hero.subtext',
     'partnership.hero.scripture',
@@ -26,13 +34,28 @@ export default async function PartnerPage() {
     'partnership.bank.accountName',
     'partnership.bank.accountNumber',
     'partnership.bank.contactEmail',
+    ]),
+    getPaystackCredentials(),
+    getFlutterwaveCredentials(),
+    getPayazaCredentials(),
+    getBankTransferCredentials(),
+    getPaymentSettings(),
   ])
 
   return (
     <>
       <Navbar />
       <main className="min-h-screen bg-black">
-        <PartnershipClientPage content={content} />
+        <PartnershipClientPage
+          content={content}
+          gateways={{
+            paystack: paystack?.isActive ?? false,
+            flutterwave: flutterwave?.isActive ?? false,
+            payaza: payaza?.isActive ?? false,
+          }}
+          bankDetails={bank ?? null}
+          minimumAmount={settings?.minimumGiftAmount ?? 100}
+        />
       </main>
       <Footer />
     </>

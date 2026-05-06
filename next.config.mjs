@@ -20,10 +20,10 @@ const securityHeaders = [
       "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.paystack.co https://checkout.flutterwave.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
-      "img-src 'self' data: blob: https: https://utfs.io",
-      "media-src 'self' https://utfs.io blob:",
+      "img-src 'self' data: blob: https: https://res.cloudinary.com",
+      "media-src 'self' https://res.cloudinary.com blob:",
       "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://checkout.paystack.com https://checkout.flutterwave.com https://checkout.payaza.africa",
-      "connect-src 'self' https://rfyglobal.org https://api.paystack.co https://api.flutterwave.com https://api.payaza.africa https://uploadthing.com https://*.uploadthing.com https://*.ingest.uploadthing.com https://utfs.io https://fonts.gstatic.com",
+      "connect-src 'self' https://rfyglobal.org https://api.cloudinary.com https://api.paystack.co https://api.flutterwave.com https://api.payaza.africa https://fonts.gstatic.com",
       "worker-src 'self' blob:",
     ].join('; '),
   },
@@ -49,9 +49,7 @@ const nextConfig = {
 
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'utfs.io' },
-      { protocol: 'https', hostname: '*.ufs.sh' },
-      { protocol: 'https', hostname: 'uploadthing.com' },
+      { protocol: 'https', hostname: 'res.cloudinary.com' },
     ],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],

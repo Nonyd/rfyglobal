@@ -6,7 +6,10 @@ import Link from 'next/link'
 
 export function FromTheShepherd({ content }: { content: Record<string, string> }) {
   const portrait = content['shepherd.image']
-  const isRemote = portrait.startsWith('http')
+  const portraitUrl = portrait.includes('cloudinary.com')
+    ? portrait.replace('/upload/', '/upload/w_600,h_700,c_fill,f_auto,q_auto,g_face/')
+    : portrait
+  const isRemote = portraitUrl.startsWith('http')
 
   return (    <section className="relative overflow-hidden bg-black py-24">
       <div className="pointer-events-none absolute -right-24 top-1/2 h-[420px] w-[420px] -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgba(201,168,76,0.12),transparent_65%)]" />
@@ -20,7 +23,7 @@ export function FromTheShepherd({ content }: { content: Record<string, string> }
         >
           {isRemote ? (
             <Image
-              src={portrait}
+              src={portraitUrl}
               alt={content['shepherd.name'] || 'Minister Yadah'}
               fill
               className="object-cover"
@@ -28,7 +31,7 @@ export function FromTheShepherd({ content }: { content: Record<string, string> }
             />
           ) : (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={portrait} alt={content['shepherd.name'] || 'Minister Yadah'} className="h-full w-full object-cover" />
+            <img src={portraitUrl} alt={content['shepherd.name'] || 'Minister Yadah'} className="h-full w-full object-cover" />
           )}        </motion.div>
         <motion.div
           initial={{ opacity: 0, x: 24 }}

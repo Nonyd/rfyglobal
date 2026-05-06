@@ -180,6 +180,15 @@ model GivingRecord {
   createdAt  DateTime       @default(now())
 }
 
+model Credential {
+  id        String   @id @default(cuid())
+  service   String   @unique
+  data      String   @db.Text
+  isActive  Boolean  @default(true)
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
 enum PaymentGateway {
   PAYSTACK
   FLUTTERWAVE

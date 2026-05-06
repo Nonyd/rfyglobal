@@ -14,6 +14,12 @@ interface GalleryClientPageProps {
   months: string[]
 }
 
+const thumbnailUrl = (url: string) =>
+  url.includes('cloudinary.com') ? url.replace('/upload/', '/upload/w_600,f_auto,q_auto/') : url
+
+const lightboxUrl = (url: string) =>
+  url.includes('cloudinary.com') ? url.replace('/upload/', '/upload/w_1200,f_auto,q_auto/') : url
+
 function formatMonth(month: string) {
   const [year, m] = month.split('-')
   return format(new Date(Number(year), Number(m) - 1, 1), 'MMMM yyyy')
@@ -133,7 +139,7 @@ export function GalleryClientPage({ images, cities, months }: GalleryClientPageP
               tabIndex={0}
             >
               <Image
-                src={img.url}
+                src={thumbnailUrl(img.url)}
                 alt={img.caption ?? img.eventName ?? 'Room For You'}
                 width={600}
                 height={400}
@@ -208,7 +214,7 @@ export function GalleryClientPage({ images, cities, months }: GalleryClientPageP
               tabIndex={-1}
             >
               <Image
-                src={currentImage.url}
+                src={lightboxUrl(currentImage.url)}
                 alt={currentImage.caption ?? currentImage.eventName ?? 'Room For You'}
                 width={1200}
                 height={800}

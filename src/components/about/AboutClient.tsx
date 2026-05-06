@@ -52,6 +52,9 @@ const CONFESSION_EXCERPT = `I am saved by grace through faith. I am justified an
 
 export function AboutClient({ content }: { content: Record<string, string> }) {
   const portrait = content['about.yadah.image']
+  const portraitUrl = portrait.includes('cloudinary.com')
+    ? portrait.replace('/upload/', '/upload/w_600,h_700,c_fill,f_auto,q_auto,g_face/')
+    : portrait
   const bioParagraphs = content['about.yadah.bio'].split(/\n\n+/).filter(Boolean)
 
   return (
@@ -246,7 +249,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
           >
             <div className="absolute -inset-2 border border-gold/10" />
             <Image
-              src={portrait}
+              src={portraitUrl}
               alt="Minister Yadah — Founder of Room For You"
               width={600}
               height={700}

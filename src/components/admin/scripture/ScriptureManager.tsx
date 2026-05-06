@@ -343,8 +343,9 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
                     </div>
                   ) : (
                     <UploadZone
-                      endpoint="scriptureAudio"
+                      folder="scriptureAudio"
                       accept="audio"
+                      resourceType="raw"
                       label="Upload audio explanation (MP3, max 32MB)"
                       onUploadComplete={(files) => {
                         if (files[0]?.url) setAudioUrl(files[0].url)

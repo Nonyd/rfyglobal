@@ -1,4 +1,5 @@
 import { BrevoClient } from '@getbrevo/brevo'
+import { getBrevoCredentials } from '@/lib/credentials'
 
 let client: BrevoClient | null = null
 
@@ -17,7 +18,12 @@ interface SendEmailOptions {
 }
 
 export async function sendEmail({ to, subject, html, replyTo }: SendEmailOptions) {
-  if (!process.env.BREVO_API_KEY) {
+  const creds = await getBrevoCredentials()
+  const apiKey = creds?.apiKey || process.env.BREVO_API_KEY
+  const fromEmail = creds?.fromEmail || process.env.BREVO_FROM_EMAIL || 'noreply@rfyglobal.org'
+  const fromName = creds?.fromName || process.env.BREVO_FROM_NAME || 'Room For You'
+
+  if (!apiKey) {
     console.error('[Brevo] BREVO_API_KEY is not set')
     return
   }
@@ -25,10 +31,11 @@ export async function sendEmail({ to, subject, html, replyTo }: SendEmailOptions
   const recipients = Array.isArray(to) ? to.map((email) => ({ email })) : [{ email: to }]
 
   try {
+    client = new BrevoClient({ apiKey })
     await getClient().transactionalEmails.sendTransacEmail({
       sender: {
-        email: process.env.BREVO_FROM_EMAIL!,
-        name: process.env.BREVO_FROM_NAME!,
+        email: fromEmail,
+        name: fromName,
       },
       to: recipients,
       subject,

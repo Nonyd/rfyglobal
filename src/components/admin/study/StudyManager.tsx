@@ -193,11 +193,11 @@ export function StudyManager() {
 
   const onMaterialUploaded = async (
     seriesId: string,
-    files: { url: string; name: string; type?: string }[]
+    files: { url: string; name: string }[]
   ) => {
     const f = files[0]
     if (!f?.url) return
-    const fileType = f.type ?? 'application/octet-stream'
+    const fileType = 'application/octet-stream'
     const s = series.find((x) => x.id === seriesId)
     const res = await fetch('/api/study/materials', {
       method: 'POST',
@@ -361,8 +361,9 @@ export function StudyManager() {
                       {materialSeriesId === s.id && (
                         <div className="mb-4 rounded border border-gold/25 bg-white/[0.02] p-4">
                           <UploadZone
-                            endpoint="studyMaterial"
+                            folder="studyMaterial"
                             accept="document"
+                            resourceType="raw"
                             label="Upload material (PDF or Word, max 16MB)"
                             onUploadComplete={(files) => {
                               const f = files[0]
@@ -371,7 +372,6 @@ export function StudyManager() {
                                 {
                                   url: f.url,
                                   name: f.name,
-                                  type: f.type,
                                 },
                               ])
                             }}

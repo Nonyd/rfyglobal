@@ -217,7 +217,7 @@ export function GalleryManager({ initialImages }: GalleryManagerProps) {
                 <div className="h-px" style={{ background: 'rgba(201,168,76,0.15)' }} />
 
                 <UploadZone
-                  endpoint="galleryImages"
+                  folder="gallery"
                   accept="image"
                   maxFiles={20}
                   preview

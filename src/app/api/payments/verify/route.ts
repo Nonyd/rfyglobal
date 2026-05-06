@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { paystackVerify } from '@/lib/payments/paystack'
-import { flutterwaveVerify } from '@/lib/payments/flutterwave'
+import { getFlutterwaveCredentials, getPaystackCredentials } from '@/lib/credentials'
 
 export const runtime = 'nodejs'
 
@@ -26,7 +25,12 @@ export async function GET(req: NextRequest) {
     let verified = false
 
     if (gateway === 'PAYSTACK') {
-      const data = await paystackVerify(reference)
+      const creds = await getPaystackCredentials()
+      if (!creds?.secretKey) return NextResponse.json({ status: 'error', reference }, { status: 503 })
+      const res = await fetch(`https://api.paystack.co/transaction/verify/${reference}`, {
+        headers: { Authorization: `Bearer ${creds.secretKey}` },
+      })
+      const data = await res.json()
       verified = data.data?.status === 'success'
       if (verified) {
         await db.givingRecord.update({
@@ -43,7 +47,14 @@ export async function GET(req: NextRequest) {
           return NextResponse.json({ status: 'pending', reference })
         }
       } else {
-        const data = await flutterwaveVerify(transactionId)
+        const creds = await getFlutterwaveCredentials()
+        if (!creds?.secretKey) {
+          return NextResponse.json({ status: 'error', reference }, { status: 503 })
+        }
+        const res = await fetch(`https://api.flutterwave.com/v3/transactions/${transactionId}/verify`, {
+          headers: { Authorization: `Bearer ${creds.secretKey}` },
+        })
+        const data = await res.json()
         verified =
           data.data?.status === 'successful' && data.data?.tx_ref === reference
         if (verified) {

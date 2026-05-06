@@ -7,6 +7,13 @@ import { cn } from '@/lib/utils'
 
 type Frequency = 'ONE_TIME' | 'MONTHLY' | 'ANNUAL'
 type Gateway = 'PAYSTACK' | 'FLUTTERWAVE' | 'PAYAZA'
+type GatewayFlags = { paystack: boolean; flutterwave: boolean; payaza: boolean }
+type BankDetails = {
+  bankName?: string
+  accountName?: string
+  accountNumber?: string
+  contactEmail?: string
+} | null
 
 const PRESET_AMOUNTS = [1000, 2500, 5000, 10000, 25000, 50000]
 
@@ -45,13 +52,26 @@ function firstApiError(error: unknown): string {
   return 'Failed to initialize payment'
 }
 
-export function PartnershipClientPage({ content }: { content: Record<string, string> }) {
+export function PartnershipClientPage({
+  content,
+  gateways,
+  bankDetails,
+  minimumAmount,
+}: {
+  content: Record<string, string>
+  gateways: GatewayFlags
+  bankDetails: BankDetails
+  minimumAmount: number
+}) {
+  const enabledGateways = GATEWAYS.filter((gw) =>
+    gw.id === 'PAYSTACK' ? gateways.paystack : gw.id === 'FLUTTERWAVE' ? gateways.flutterwave : gateways.payaza
+  )
   const [frequency, setFrequency] = useState<Frequency>('ONE_TIME')
   const [amount, setAmount] = useState<number>(5000)
   const [customAmount, setCustomAmount] = useState('')
   const [donorName, setDonorName] = useState('')
   const [donorEmail, setDonorEmail] = useState('')
-  const [gateway, setGateway] = useState<Gateway>('PAYSTACK')
+  const [gateway, setGateway] = useState<Gateway>((enabledGateways[0]?.id ?? 'PAYSTACK') as Gateway)
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
 
@@ -66,8 +86,12 @@ export function PartnershipClientPage({ content }: { content: Record<string, str
       toast.error('Please enter your email')
       return
     }
-    if (!activeAmount || Number.isNaN(activeAmount) || activeAmount < 100) {
-      toast.error('Minimum gift is ₦100')
+    if (!activeAmount || Number.isNaN(activeAmount) || activeAmount < minimumAmount) {
+      toast.error(`Minimum gift is ₦${minimumAmount.toLocaleString()}`)
+      return
+    }
+    if (enabledGateways.length === 0) {
+      toast.error('Online giving is currently unavailable')
       return
     }
     if (gateway === 'PAYAZA' && frequency !== 'ONE_TIME') {
@@ -103,7 +127,9 @@ export function PartnershipClientPage({ content }: { content: Record<string, str
   }
 
   const copyAccountNumber = () => {
-    void navigator.clipboard.writeText(content['partnership.bank.accountNumber'])
+    void navigator.clipboard.writeText(
+      bankDetails?.accountNumber ?? content['partnership.bank.accountNumber']
+    )
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -262,7 +288,7 @@ export function PartnershipClientPage({ content }: { content: Record<string, str
             <div>
               <p className="text-xs uppercase tracking-widest text-white/40 font-body mb-3">Payment Method</p>
               <div className="space-y-2">
-                {GATEWAYS.map((gw) => {
+                {enabledGateways.map((gw) => {
                   const disabled = frequency !== 'ONE_TIME' && !gw.supportsRecurring
                   return (
                     <button
@@ -325,20 +351,24 @@ export function PartnershipClientPage({ content }: { content: Record<string, str
               style={{ borderColor: 'rgba(255,255,255,0.08)' }}
             >
               <span className="text-white/40 font-body text-sm">Bank</span>
-              <span className="text-white font-body text-sm">{content['partnership.bank.bankName']}</span>
+              <span className="text-white font-body text-sm">
+                {bankDetails?.bankName ?? content['partnership.bank.bankName']}
+              </span>
             </div>
             <div
               className="flex justify-between py-3 border-b"
               style={{ borderColor: 'rgba(255,255,255,0.08)' }}
             >
               <span className="text-white/40 font-body text-sm">Account Name</span>
-              <span className="text-white font-body text-sm">{content['partnership.bank.accountName']}</span>
+              <span className="text-white font-body text-sm">
+                {bankDetails?.accountName ?? content['partnership.bank.accountName']}
+              </span>
             </div>
             <div className="flex items-center justify-between py-3">
               <span className="text-white/40 font-body text-sm">Account Number</span>
               <div className="flex items-center gap-2">
                 <span className="text-gold font-mono text-sm">
-                  {content['partnership.bank.accountNumber']}
+                  {bankDetails?.accountNumber ?? content['partnership.bank.accountNumber']}
                 </span>
                 <button
                   type="button"
@@ -354,10 +384,10 @@ export function PartnershipClientPage({ content }: { content: Record<string, str
           <p className="text-white/40 font-body text-sm leading-relaxed">
             After your transfer, please send your name and amount to{' '}
             <a
-              href={`mailto:${content['partnership.bank.contactEmail']}`}
+              href={`mailto:${bankDetails?.contactEmail ?? content['partnership.bank.contactEmail']}`}
               className="text-gold hover:underline"
             >
-              {content['partnership.bank.contactEmail']}
+              {bankDetails?.contactEmail ?? content['partnership.bank.contactEmail']}
             </a>{' '}
             so we can acknowledge your gift.
           </p>

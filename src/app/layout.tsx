@@ -1,8 +1,5 @@
 import type { Metadata } from 'next'
 import { Inter, Cormorant_Garamond } from 'next/font/google'
-import { NextSSRPlugin } from '@uploadthing/react/next-ssr-plugin'
-import { extractRouterConfig } from 'uploadthing/server'
-import { rfyFileRouter } from '@/lib/uploadthing'
 import { OrganizationJsonLd, WebsiteJsonLd } from '@/components/seo/JsonLd'
 import './globals.css'
 
@@ -97,7 +94,6 @@ export default function RootLayout({
       <body>
         <OrganizationJsonLd />
         <WebsiteJsonLd />
-        <NextSSRPlugin routerConfig={extractRouterConfig(rfyFileRouter)} />
         {children}
       </body>
     </html>

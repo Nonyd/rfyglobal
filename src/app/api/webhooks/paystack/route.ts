@@ -1,15 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { Prisma } from '@prisma/client'
+import { createHmac } from 'crypto'
 import { db } from '@/lib/db'
-import { verifyPaystackWebhook } from '@/lib/payments/paystack'
+import { getPaystackCredentials } from '@/lib/credentials'
 
 export const runtime = 'nodejs'
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text()
   const signature = req.headers.get('x-paystack-signature') ?? ''
+  const creds = await getPaystackCredentials()
+  if (!creds) return NextResponse.json({ error: 'Not configured' }, { status: 503 })
 
-  if (!verifyPaystackWebhook(rawBody, signature)) {
+  const hash = createHmac('sha512', creds.webhookSecret).update(rawBody).digest('hex')
+  if (hash !== signature) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
   }
 

@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { verifyFlutterwaveWebhook } from '@/lib/payments/flutterwave'
+import { getFlutterwaveCredentials } from '@/lib/credentials'
 
 export const runtime = 'nodejs'
 
 export async function POST(req: NextRequest) {
   const signature = req.headers.get('verif-hash') ?? ''
+  const creds = await getFlutterwaveCredentials()
+  if (!creds) return NextResponse.json({ error: 'Not configured' }, { status: 503 })
 
-  if (!verifyFlutterwaveWebhook(signature)) {
+  if (signature !== creds.webhookSecret) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
   }
 

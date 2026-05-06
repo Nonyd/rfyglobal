@@ -9,6 +9,11 @@ import { db } from '@/lib/db'
 
 export const dynamic = 'force-dynamic'
 
+const coverFullUrl = (url: string) =>
+  url.includes('cloudinary.com')
+    ? url.replace('/upload/', '/upload/w_900,h_450,c_fill,f_auto,q_auto/')
+    : url
+
 export async function generateMetadata({
   params,
 }: {
@@ -60,7 +65,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
           {post.coverImage && (
             <Image
-              src={post.coverImage}
+              src={coverFullUrl(post.coverImage)}
               alt={post.title}
               width={900}
               height={450}

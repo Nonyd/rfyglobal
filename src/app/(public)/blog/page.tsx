@@ -13,6 +13,11 @@ export const metadata: Metadata = {
   description: 'Devotionals, teachings, and reflections from Room For You.',
 }
 
+const coverThumbnailUrl = (url: string) =>
+  url.includes('cloudinary.com')
+    ? url.replace('/upload/', '/upload/w_600,h_300,c_fill,f_auto,q_auto/')
+    : url
+
 export default async function BlogPage() {
   const posts = await db.post.findMany({
     where: { isPublished: true },
@@ -53,7 +58,7 @@ export default async function BlogPage() {
                   {post.coverImage && (
                     <div className="overflow-hidden">
                       <Image
-                        src={post.coverImage}
+                        src={coverThumbnailUrl(post.coverImage)}
                         alt={post.title}
                         width={600}
                         height={300}

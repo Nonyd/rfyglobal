@@ -1,14 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createHmac } from 'crypto'
 import { db } from '@/lib/db'
-import { verifyPayazaWebhook } from '@/lib/payments/payaza'
+import { getPayazaCredentials } from '@/lib/credentials'
 
 export const runtime = 'nodejs'
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text()
   const signature = req.headers.get('x-payaza-signature') ?? ''
+  const creds = await getPayazaCredentials()
+  if (!creds) return NextResponse.json({ error: 'Not configured' }, { status: 503 })
 
-  if (!verifyPayazaWebhook(signature, rawBody)) {
+  const hash = createHmac('sha256', creds.secretKey).update(rawBody).digest('hex')
+  if (hash !== signature) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
   }
 

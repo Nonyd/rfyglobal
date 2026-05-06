@@ -1,25 +1,19 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { useUploadThing } from '@/lib/uploadthing-client'
+import type { CloudinaryFolder, ResourceType } from '@/lib/cloudinary-client'
 import { Upload, X, CheckCircle, AlertCircle, Image as ImageIcon, Music, FileText } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import type { RFYFileRouter } from '@/lib/uploadthing'
 
 export interface UploadedFile {
   name: string
   url: string
-  size?: number
-  /** MIME type when provided by the uploader */
-  type?: string
-}
-
-function pickUrl(res: { url?: string; ufsUrl?: string } | undefined): string | undefined {
-  return res?.url ?? res?.ufsUrl
+  publicId?: string
 }
 
 interface UploadZoneProps {
-  endpoint: keyof RFYFileRouter
+  folder: CloudinaryFolder
+  resourceType?: ResourceType
   onUploadComplete: (files: UploadedFile[]) => void
   onUploadError?: (error: Error) => void
   maxFiles?: number
@@ -29,28 +23,30 @@ interface UploadZoneProps {
   preview?: boolean
 }
 
-interface FileProgress {
+interface FileState {
   file: File
   progress: number
   status: 'pending' | 'uploading' | 'done' | 'error'
   url?: string
+  publicId?: string
   error?: string
 }
 
 const ACCEPT_MAP = {
   image: 'image/*',
-  audio: 'audio/mpeg,audio/mp3',
+  audio: 'audio/mpeg,audio/mp3,audio/*',
   document: 'application/pdf,.doc,.docx',
 }
 
-const FILE_ICON = {
-  image: ImageIcon,
-  audio: Music,
-  document: FileText,
+const RESOURCE_TYPE_MAP: Record<string, ResourceType> = {
+  image: 'image',
+  audio: 'raw',
+  document: 'raw',
 }
 
 export function UploadZone({
-  endpoint,
+  folder,
+  resourceType,
   onUploadComplete,
   onUploadError,
   maxFiles = 1,
@@ -59,101 +55,102 @@ export function UploadZone({
   className,
   preview = false,
 }: UploadZoneProps) {
-  const [files, setFiles] = useState<FileProgress[]>([])
+  const [fileStates, setFileStates] = useState<FileState[]>([])
   const [isDragging, setIsDragging] = useState(false)
 
-  const { startUpload } = useUploadThing(endpoint, {
-    onUploadProgress: (progress) => {
-      setFiles((prev) =>
-        prev.map((f) => (f.status === 'uploading' ? { ...f, progress } : f)),
-      )
-    },
-    onClientUploadComplete: (res) => {
-      const completed: UploadedFile[] = res.map((r) => {
-        const row = r as { name?: string; type?: string }
-        return {
-          name: row.name ?? 'file',
-          url: pickUrl(r) ?? '',
-          type: row.type,
-        }
-      })
-      setFiles((prev) =>
-        prev.map((f, i) => ({
-          ...f,
-          status: 'done' as const,
-          progress: 100,
-          url: pickUrl(res[i]) ?? f.url,
-        })),
-      )
-      onUploadComplete(completed)
-    },
-    onUploadError: (err) => {
-      setFiles((prev) =>
-        prev.map((f) => ({ ...f, status: 'error' as const, error: err.message })),
-      )
-      onUploadError?.(err)
-    },
-  })
+  const resolvedResourceType = resourceType ?? RESOURCE_TYPE_MAP[accept]
 
-  const handleFiles = useCallback(
-    async (selectedFiles: File[]) => {
-      const limited = selectedFiles.slice(0, maxFiles)
-      const fileProgress: FileProgress[] = limited.map((f) => ({
-        file: f,
-        progress: 0,
-        status: 'uploading',
-      }))
-      setFiles(fileProgress)
-      await startUpload(limited)
-    },
-    [startUpload, maxFiles],
-  )
+  const updateFileState = (index: number, updates: Partial<FileState>) => {
+    setFileStates((prev) => prev.map((f, i) => (i === index ? { ...f, ...updates } : f)))
+  }
 
-  const onDrop = useCallback(
-    (e: React.DragEvent) => {
-      e.preventDefault()
-      setIsDragging(false)
-      const dropped = Array.from(e.dataTransfer.files)
-      if (dropped.length > 0) void handleFiles(dropped)
-    },
-    [handleFiles],
-  )
+  const handleFiles = useCallback(async (selected: File[]) => {
+    const limited = selected.slice(0, maxFiles)
+    const initial: FileState[] = limited.map((file) => ({
+      file,
+      progress: 0,
+      status: 'uploading',
+    }))
+    setFileStates(initial)
+
+    const completed: UploadedFile[] = []
+
+    const BATCH_SIZE = 3
+    for (let i = 0; i < limited.length; i += BATCH_SIZE) {
+      const batch = limited.slice(i, i + BATCH_SIZE)
+      await Promise.all(
+        batch.map(async (file, batchIndex) => {
+          const globalIndex = i + batchIndex
+          try {
+            const base64 = await new Promise<string>((resolve, reject) => {
+              const reader = new FileReader()
+              reader.onload = () => resolve(reader.result as string)
+              reader.onerror = reject
+              reader.readAsDataURL(file)
+            })
+
+            updateFileState(globalIndex, { progress: 30 })
+
+            const res = await fetch('/api/upload', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                file: base64,
+                folder,
+                resourceType: resolvedResourceType,
+              }),
+            })
+
+            updateFileState(globalIndex, { progress: 90 })
+
+            if (!res.ok) {
+              const err = await res.json()
+              throw new Error(err.error ?? 'Upload failed')
+            }
+
+            const result = await res.json()
+            updateFileState(globalIndex, {
+              progress: 100,
+              status: 'done',
+              url: result.url,
+              publicId: result.publicId,
+            })
+            completed.push({ name: file.name, url: result.url, publicId: result.publicId })
+          } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Upload failed'
+            updateFileState(globalIndex, { status: 'error', error: message })
+            onUploadError?.(err instanceof Error ? err : new Error(message))
+          }
+        }),
+      )
+    }
+
+    if (completed.length > 0) onUploadComplete(completed)
+  }, [folder, resolvedResourceType, maxFiles, onUploadComplete, onUploadError])
+
+  const onDrop = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    setIsDragging(false)
+    handleFiles(Array.from(e.dataTransfer.files))
+  }, [handleFiles])
 
   const onFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = Array.from(e.target.files ?? [])
-    if (selected.length > 0) void handleFiles(selected)
+    if (selected.length > 0) handleFiles(selected)
     e.target.value = ''
   }
 
-  const removeFile = (i: number) => {
-    setFiles((prev) => {
-      const next = prev.filter((_, idx) => idx !== i)
-      return next
-    })
-  }
+  const reset = () => setFileStates([])
+  const removeFile = (i: number) => setFileStates((prev) => prev.filter((_, idx) => idx !== i))
 
-  const reset = () => {
-    setFiles([])
-  }
-
-  const retryFailed = () => {
-    const failed = files.filter((f) => f.status === 'error')
-    if (failed.length === 0) return
-    void handleFiles(failed.map((f) => f.file))
-  }
-
-  const FileIcon = FILE_ICON[accept]
-  const allDone = files.length > 0 && files.every((f) => f.status === 'done')
-  const hasError = files.some((f) => f.status === 'error')
+  const allDone = fileStates.length > 0 && fileStates.every((f) => f.status === 'done')
+  const hasError = fileStates.some((f) => f.status === 'error')
 
   return (
     <div className={cn('space-y-3', className)}>
-      {files.length === 0 && (
+      {fileStates.length === 0 && (
         <label
-          onDragOver={(e) => {
-            e.preventDefault()
-            setIsDragging(true)
-          }}
+          onDragOver={(e) => { e.preventDefault(); setIsDragging(true) }}
           onDragLeave={() => setIsDragging(false)}
           onDrop={onDrop}
           className={cn(
@@ -170,117 +167,82 @@ export function UploadZone({
             onChange={onFileInput}
             className="hidden"
           />
-          <div
-            className={cn(
-              'w-12 h-12 rounded-full border flex items-center justify-center transition-colors',
-              isDragging ? 'border-gold text-gold' : 'border-white/20 text-white/30',
-            )}
-          >
+          <div className={cn(
+            'w-12 h-12 rounded-full border flex items-center justify-center transition-colors',
+            isDragging ? 'border-gold text-gold' : 'border-white/20 text-white/30',
+          )}>
             <Upload size={20} />
           </div>
           <div className="text-center">
             <p className="font-body text-sm text-white/60">
-              {label ??
-                (maxFiles > 1
-                  ? `Drop up to ${maxFiles} ${accept} files here`
-                  : `Drop a ${accept} file here`)}
+              {label ?? (maxFiles > 1
+                ? `Drop up to ${maxFiles} files here`
+                : `Drop a ${accept} file here`)}
             </p>
             <p className="font-body text-xs text-white/25 mt-1">or click to browse</p>
           </div>
         </label>
       )}
 
-      {files.length > 0 && (
+      {fileStates.length > 0 && (
         <div className="space-y-2">
-          {files.map((f, i) => (
-            <div key={`${f.file.name}-${i}`} className="border border-white/10 p-3">
+          {fileStates.map((f, i) => (
+            <div key={i} className="border border-white/10 p-3">
               <div className="flex items-center gap-3 mb-2">
                 <div className="shrink-0">
                   {f.status === 'done' && f.url && preview && accept === 'image' ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={f.url} alt="" className="w-10 h-10 object-cover" />
+                    <img src={f.url} alt="" className="w-10 h-10 object-cover rounded" />
                   ) : (
-                    <div
-                      className={cn(
-                        'w-10 h-10 border flex items-center justify-center',
-                        f.status === 'done'
-                          ? 'border-gold/40 text-gold'
-                          : f.status === 'error'
-                            ? 'border-red-brand/40 text-red-brand'
-                            : 'border-white/10 text-white/30',
-                      )}
-                    >
-                      {f.status === 'done' ? (
-                        <CheckCircle size={16} />
-                      ) : f.status === 'error' ? (
-                        <AlertCircle size={16} />
-                      ) : (
-                        <FileIcon size={16} />
-                      )}
+                    <div className={cn(
+                      'w-10 h-10 border flex items-center justify-center',
+                      f.status === 'done' ? 'border-gold/40 text-gold' :
+                      f.status === 'error' ? 'border-red-brand/40 text-red-brand' :
+                      'border-white/10 text-white/30',
+                    )}>
+                      {f.status === 'done' ? <CheckCircle size={16} /> :
+                       f.status === 'error' ? <AlertCircle size={16} /> :
+                       accept === 'audio' ? <Music size={16} /> :
+                       accept === 'document' ? <FileText size={16} /> :
+                       <ImageIcon size={16} />}
                     </div>
                   )}
                 </div>
-
                 <div className="flex-1 min-w-0">
                   <p className="font-body text-xs text-white/70 truncate">{f.file.name}</p>
-                  <p
-                    className={cn(
-                      'font-body text-[10px] mt-0.5',
-                      f.status === 'done'
-                        ? 'text-gold/70'
-                        : f.status === 'error'
-                          ? 'text-red-brand/70'
-                          : 'text-white/30',
-                    )}
-                  >
-                    {f.status === 'done'
-                      ? 'Uploaded'
-                      : f.status === 'error'
-                        ? (f.error ?? 'Upload failed')
-                        : `${f.progress}%`}
+                  <p className={cn(
+                    'font-body text-[10px] mt-0.5',
+                    f.status === 'done' ? 'text-gold/70' :
+                    f.status === 'error' ? 'text-red-brand/70' :
+                    'text-white/30',
+                  )}>
+                    {f.status === 'done' ? 'Uploaded ✓' :
+                     f.status === 'error' ? (f.error ?? 'Failed') :
+                     `${f.progress}%`}
                   </p>
                 </div>
-
                 {(f.status === 'done' || f.status === 'error') && (
-                  <button
-                    type="button"
-                    onClick={() => removeFile(i)}
-                    className="text-white/20 hover:text-white/60 transition-colors"
-                  >
+                  <button onClick={() => removeFile(i)}
+                    className="text-white/20 hover:text-white/60 transition-colors">
                     <X size={14} />
                   </button>
                 )}
               </div>
-
-              {f.status === 'uploading' && (
-                <div className="h-0.5 bg-white/10 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gold transition-all duration-300 rounded-full"
-                    style={{ width: `${f.progress}%` }}
-                  />
-                </div>
-              )}
-              {f.status === 'done' && <div className="h-0.5 bg-gold/40 rounded-full" />}
-              {f.status === 'error' && <div className="h-0.5 bg-red-brand/40 rounded-full" />}
+              <div className="h-0.5 bg-white/10 rounded-full overflow-hidden">
+                <div
+                  className={cn(
+                    'h-full transition-all duration-300 rounded-full',
+                    f.status === 'error' ? 'bg-red-brand/60' : 'bg-gold',
+                  )}
+                  style={{ width: `${f.status === 'error' ? 100 : f.progress}%` }}
+                />
+              </div>
             </div>
           ))}
 
-          {hasError && (
-            <button
-              type="button"
-              onClick={() => retryFailed()}
-              className="text-xs text-gold/80 hover:text-gold font-body transition-colors"
-            >
-              Retry failed upload{files.filter((x) => x.status === 'error').length > 1 ? 's' : ''}
-            </button>
-          )}
-
           {(allDone || hasError) && (
-            <button
-              type="button"
-              onClick={reset}
-              className="text-xs text-white/30 hover:text-gold font-body transition-colors"
-            >
+            <button onClick={reset}
+              className="text-xs text-white/30 hover:text-gold font-body transition-colors">
               + Upload {maxFiles > 1 ? 'more files' : 'different file'}
             </button>
           )}

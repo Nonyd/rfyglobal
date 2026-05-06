@@ -169,7 +169,7 @@ export function CMSEditor({ title, description, fields, initialValues, defaults 
                     />
                   ) : null}
                   <UploadZone
-                    endpoint="cmsImage"
+                    folder="cms"
                     accept="image"
                     preview
                     label="Upload new image"

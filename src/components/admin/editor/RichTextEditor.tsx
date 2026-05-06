@@ -10,7 +10,6 @@ import CharacterCount from '@tiptap/extension-character-count'
 import TextAlign from '@tiptap/extension-text-align'
 import Highlight from '@tiptap/extension-highlight'
 import toast from 'react-hot-toast'
-import { useUploadThing } from '@/lib/uploadthing-client'
 import { cn } from '@/lib/utils'
 
 function ToolbarButton({
@@ -47,13 +46,6 @@ function ToolbarButton({
 }
 
 function EditorToolbar({ editor }: { editor: Editor }) {
-  const { startUpload } = useUploadThing('blogInlineImage', {
-    onUploadError: (err) => {
-      toast.dismiss('img-upload')
-      toast.error(`Upload failed: ${err.message}`)
-    },
-  })
-
   const addImage = async () => {
     const input = document.createElement('input')
     input.type = 'file'
@@ -63,17 +55,32 @@ function EditorToolbar({ editor }: { editor: Editor }) {
       if (!file) return
       toast.loading('Uploading image…', { id: 'img-upload' })
       try {
-        const uploaded = await startUpload([file])
-        const res = Array.isArray(uploaded) ? uploaded[0] : undefined
-        const src = res?.url ?? (res as { ufsUrl?: string } | undefined)?.ufsUrl
+        const base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader()
+          reader.onload = () => resolve(reader.result as string)
+          reader.onerror = reject
+          reader.readAsDataURL(file)
+        })
+
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ file: base64, folder: 'blogInline', resourceType: 'image' }),
+        })
+
         toast.dismiss('img-upload')
-        if (src) {
-          editor.chain().focus().setImage({ src }).run()
+
+        if (res.ok) {
+          const { url } = await res.json()
+          if (!url) throw new Error('Missing image URL')
+          editor.chain().focus().setImage({ src: url }).run()
           toast.success('Image inserted')
+        } else {
+          toast.error('Image upload failed')
         }
-      } catch {
+      } catch (err: unknown) {
         toast.dismiss('img-upload')
-        toast.error('Upload failed')
+        toast.error(err instanceof Error ? err.message : 'Upload failed')
       }
     }
     input.click()
