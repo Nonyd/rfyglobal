@@ -39,7 +39,7 @@ export function AdminLoginForm() {
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <div>
-        <label htmlFor="email" className="block text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--admin-text-muted)' }}>
+        <label htmlFor="email" className="block text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--a-text-secondary)' }}>
           Email
         </label>
         <input
@@ -52,17 +52,19 @@ export function AdminLoginForm() {
           onChange={(e) => setEmail(e.target.value)}
           className="w-full border px-3 py-2 font-body focus:outline-none"
           style={{
-            background: 'var(--admin-bg)',
-            borderColor: 'var(--admin-border)',
-            color: 'var(--admin-text)',
+            background: 'var(--a-bg)',
+            borderColor: 'var(--a-border)',
+            color: 'var(--a-text)',
           }}
+          onFocus={(e) => (e.target.style.borderColor = 'var(--a-gold)')}
+          onBlur={(e) => (e.target.style.borderColor = 'var(--a-border)')}
         />
       </div>
       <div>
         <label
           htmlFor="password"
           className="block text-xs uppercase tracking-widest mb-2"
-          style={{ color: 'var(--admin-text-muted)' }}
+          style={{ color: 'var(--a-text-secondary)' }}
         >
           Password
         </label>
@@ -76,17 +78,20 @@ export function AdminLoginForm() {
           onChange={(e) => setPassword(e.target.value)}
           className="w-full border px-3 py-2 font-body focus:outline-none"
           style={{
-            background: 'var(--admin-bg)',
-            borderColor: 'var(--admin-border)',
-            color: 'var(--admin-text)',
+            background: 'var(--a-bg)',
+            borderColor: 'var(--a-border)',
+            color: 'var(--a-text)',
           }}
+          onFocus={(e) => (e.target.style.borderColor = 'var(--a-gold)')}
+          onBlur={(e) => (e.target.style.borderColor = 'var(--a-border)')}
         />
       </div>
-      {error ? <p className="text-sm text-red-brand">{error}</p> : null}
+      {error ? <p className="text-sm" style={{ color: 'var(--a-red)' }}>{error}</p> : null}
       <button
         type="submit"
         disabled={pending}
-        className="mt-2 py-3 bg-gold text-black font-body text-sm uppercase tracking-widest font-medium hover:bg-gold-light transition-colors disabled:opacity-50"
+        className="mt-2 py-3 font-body text-sm uppercase tracking-widest font-medium transition-colors disabled:opacity-50"
+        style={{ background: 'var(--a-gold)', color: 'var(--a-text-inverse)' }}
       >
         {pending ? 'Signing in…' : 'Sign in'}
       </button>

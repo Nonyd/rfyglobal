@@ -2,25 +2,13 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import {
-  LayoutDashboard,
-  BookOpen,
-  ClipboardList,
-  FileText,
-  GraduationCap,
-  Calendar,
-  Heart,
-  LogOut,
-  X,
-  Images,
-  Settings2,
-  Plug,
-  Database,
+  LayoutDashboard, BookOpen, FileText, GraduationCap,
+  Calendar, Images, ClipboardList, Settings2, Plug,
+  Heart, Database, LogOut
 } from 'lucide-react'
-import { cn } from '@/lib/utils'
 
 const NAV_GROUPS = [
   {
@@ -49,84 +37,89 @@ const NAV_GROUPS = [
   },
 ]
 
-export function AdminSidebar({
-  mobileOpen,
-  onMobileClose,
-  userEmail,
-}: {
-  mobileOpen?: boolean
-  onMobileClose?: () => void
-  userEmail?: string | null
-}) {
-  const pathname = usePathname()
-  const [logoFailed, setLogoFailed] = useState(false)
+interface AdminSidebarProps {
+  theme: 'light' | 'dark'
+}
 
-  const nav = (
-    <>
-      <div className="p-5 border-b" style={{ borderColor: 'var(--admin-border)' }}>
-        {logoFailed ? (
-          <span className="font-display text-lg" style={{ color: 'var(--admin-text)' }}>
-            RFY
-          </span>
-        ) : (
-          <Image
-            src="/images/logo-mark-dark.png"
-            alt="Room For You"
-            width={48}
-            height={48}
-            className="h-10 w-auto object-contain"
-            onError={() => setLogoFailed(true)}
-          />
-        )}
+export function AdminSidebar({ theme }: AdminSidebarProps) {
+  const pathname = usePathname()
+
+  return (
+    <aside
+      className="hidden lg:flex flex-col w-64 shrink-0 border-r overflow-y-auto"
+      style={{
+        background: 'var(--a-sidebar)',
+        borderColor: 'var(--a-border)',
+      }}
+    >
+      <div className="p-5 border-b" style={{ borderColor: 'var(--a-border)' }}>
+        <div className="flex items-center gap-3">
+          <div
+            className="w-9 h-9 flex items-center justify-center rounded"
+            style={{ background: theme === 'dark' ? 'var(--a-gold-active)' : 'var(--a-border)' }}
+          >
+            <Image
+              src={theme === 'dark' ? '/images/logo-white.png' : '/images/logo-mark-dark.png'}
+              alt="RFY"
+              width={24}
+              height={24}
+              className="w-5 h-5 object-contain"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none'
+              }}
+            />
+          </div>
+          <div>
+            <p className="font-display text-sm font-semibold" style={{ color: 'var(--a-text)' }}>
+              Room For You
+            </p>
+            <p className="font-body text-[10px] uppercase tracking-widest" style={{ color: 'var(--a-text-muted)' }}>
+              Admin
+            </p>
+          </div>
+        </div>
       </div>
 
-      <nav className="flex-1 space-y-5 overflow-y-auto p-3">
+      <nav className="flex-1 p-3 space-y-6 pt-4">
         {NAV_GROUPS.map((group) => (
           <div key={group.label}>
             <p
-              className="px-3 mb-2 text-[10px] font-body font-semibold tracking-[0.15em] uppercase"
-              style={{ color: 'var(--admin-text-muted)' }}
+              className="px-3 mb-1 text-[10px] font-body font-semibold tracking-[0.12em] uppercase"
+              style={{ color: 'var(--a-text-muted)' }}
             >
               {group.label}
             </p>
             <div className="space-y-0.5">
               {group.items.map((item) => {
-                const isActive =
-                  'exact' in item && item.exact ? pathname === item.href : pathname.startsWith(item.href)
+                const isActive = ('exact' in item && item.exact)
+                  ? pathname === item.href
+                  : pathname.startsWith(item.href)
                 const Icon = item.icon
 
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
-                    onClick={() => onMobileClose?.()}
-                    className={cn(
-                      'flex items-center gap-3 px-3 py-2.5 text-sm font-body transition-all duration-200 border-l-[3px]',
-                      isActive ? '' : 'border-transparent',
-                    )}
-                    style={
-                      isActive
-                        ? {
-                            color: 'var(--admin-gold)',
-                            background: 'var(--admin-active-bg)',
-                            borderLeft: '3px solid var(--admin-gold)',
-                          }
-                        : { color: 'var(--admin-text-secondary)' }
-                    }
+                    className="flex items-center gap-2.5 px-3 py-2 rounded text-sm font-body font-medium transition-all duration-150 group"
+                    style={{
+                      background: isActive ? 'var(--a-gold-active)' : 'transparent',
+                      color: isActive ? 'var(--a-gold)' : 'var(--a-text-secondary)',
+                      borderLeft: isActive ? '2px solid var(--a-gold)' : '2px solid transparent',
+                    }}
                     onMouseEnter={(e) => {
                       if (!isActive) {
-                        e.currentTarget.style.color = 'var(--admin-text)'
-                        e.currentTarget.style.background = 'var(--admin-hover-bg)'
+                        e.currentTarget.style.background = 'var(--a-sidebar-hover)'
+                        e.currentTarget.style.color = 'var(--a-text)'
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (!isActive) {
-                        e.currentTarget.style.color = 'var(--admin-text-secondary)'
                         e.currentTarget.style.background = 'transparent'
+                        e.currentTarget.style.color = 'var(--a-text-secondary)'
                       }
                     }}
                   >
-                    <Icon size={16} strokeWidth={1.75} />
+                    <Icon size={15} />
                     {item.label}
                   </Link>
                 )
@@ -136,64 +129,23 @@ export function AdminSidebar({
         ))}
       </nav>
 
-      <div className="p-4 border-t" style={{ borderColor: 'var(--admin-border)' }}>
-        <p className="text-xs font-body mb-3 truncate" style={{ color: 'var(--admin-text-secondary)' }}>
-          {userEmail}
-        </p>
-        <button
-          type="button"
-          onClick={() => signOut({ callbackUrl: '/admin/login' })}
-          className="flex items-center gap-2 text-sm font-body w-full transition-colors"
-          style={{ color: 'var(--admin-text-muted)' }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = '#D0021B'
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = 'var(--admin-text-muted)'
-          }}
-        >
-          <LogOut size={14} />
-          Sign Out
-        </button>
-      </div>
-    </>
-  )
-
-  return (
-    <>
-      {mobileOpen ? (
-        <button
-          type="button"
-          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
-          aria-label="Close menu"
-          onClick={onMobileClose}
-        />
-      ) : null}
-
-      <aside
-        className={cn(
-          'z-50 flex w-[272px] shrink-0 flex-col border-r shadow-soft transition-transform duration-200 ease-out',
-          'fixed inset-y-0 left-0 lg:static lg:z-auto lg:translate-x-0',
-          mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
-        )}
-        style={{
-          borderColor: 'var(--admin-border)',
-          background: 'var(--admin-sidebar)',
-        }}
-      >
-        <div className="flex items-center justify-end border-b p-2 lg:hidden" style={{ borderColor: 'var(--admin-border)' }}>
+      <div className="p-4 border-t" style={{ borderColor: 'var(--a-border)' }}>
+        <div className="flex items-center justify-between">
+          <p className="font-body text-xs truncate flex-1 mr-2" style={{ color: 'var(--a-text-muted)' }}>
+            admin@rfyglobal.org
+          </p>
           <button
-            type="button"
-            onClick={onMobileClose}
-            className="p-2"
-            style={{ color: 'var(--admin-text-muted)' }}
-            aria-label="Close navigation"
+            onClick={() => signOut({ callbackUrl: '/admin/login' })}
+            className="p-1.5 rounded transition-colors"
+            title="Sign out"
+            style={{ color: 'var(--a-text-muted)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--a-red)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--a-text-muted)')}
           >
-            <X size={20} />
+            <LogOut size={14} />
           </button>
         </div>
-        {nav}
-      </aside>
-    </>
+      </div>
+    </aside>
   )
 }

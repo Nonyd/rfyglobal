@@ -37,23 +37,23 @@ export function DemoDataManager() {
     <div className="max-w-2xl">
       {/* Header */}
       <div className="mb-8">
-        <h2 className="font-display text-2xl font-semibold" style={{ color: 'var(--admin-text)' }}>
+        <h2 className="font-display text-2xl font-semibold" style={{ color: 'var(--a-text)' }}>
           Demo Data
         </h2>
-        <p className="font-body text-sm mt-1" style={{ color: 'var(--admin-text-muted)' }}>
+        <p className="font-body text-sm mt-1" style={{ color: 'var(--a-text-muted)' }}>
           Load sample data across all modules to make the site feel alive
         </p>
       </div>
 
       {/* Info card */}
-      <div className="p-6 border mb-8" style={{ background: 'var(--admin-surface)', borderColor: 'var(--admin-border)' }}>
+      <div className="p-6 border mb-8" style={{ background: 'var(--a-surface)', borderColor: 'var(--a-border)' }}>
         <div className="flex items-start gap-3 mb-6">
-          <Database size={18} className="shrink-0 mt-0.5" style={{ color: 'var(--admin-gold)' }} />
+          <Database size={18} className="shrink-0 mt-0.5" style={{ color: 'var(--a-gold)' }} />
           <div>
-            <p className="font-body text-sm font-medium mb-1" style={{ color: 'var(--admin-text)' }}>
+            <p className="font-body text-sm font-medium mb-1" style={{ color: 'var(--a-text)' }}>
               What gets created
             </p>
-            <p className="font-body text-xs leading-relaxed" style={{ color: 'var(--admin-text-muted)' }}>
+            <p className="font-body text-xs leading-relaxed" style={{ color: 'var(--a-text-muted)' }}>
               Existing data is never overwritten — demo data is only added if a module is empty.
             </p>
           </div>
@@ -71,8 +71,8 @@ export function DemoDataManager() {
             'Site CMS content for all pages',
           ].map((item) => (
             <div key={item} className="flex items-center gap-2">
-              <div className="w-1 h-1 rounded-full" style={{ background: 'var(--admin-gold)' }} />
-              <p className="font-body text-sm" style={{ color: 'var(--admin-text-secondary)' }}>{item}</p>
+              <div className="w-1 h-1 rounded-full" style={{ background: 'var(--a-gold)' }} />
+              <p className="font-body text-sm" style={{ color: 'var(--a-text-secondary)' }}>{item}</p>
             </div>
           ))}
         </div>
@@ -80,7 +80,7 @@ export function DemoDataManager() {
 
       {/* Results */}
       {results.length > 0 && (
-        <div className="p-5 border mb-6" style={{ background: 'var(--admin-sidebar)', borderColor: 'var(--admin-border)' }}>
+        <div className="p-5 border mb-6" style={{ background: 'var(--a-sidebar)', borderColor: 'var(--a-border)' }}>
           <div className="space-y-2">
             {results.map((r, i) => (
               <div key={i} className="flex items-center gap-2">
@@ -89,7 +89,7 @@ export function DemoDataManager() {
                 ) : (
                   <div className="w-3.5 h-3.5 shrink-0" />
                 )}
-                <p className="font-body text-sm" style={{ color: 'var(--admin-text-secondary)' }}>
+                <p className="font-body text-sm" style={{ color: 'var(--a-text-secondary)' }}>
                   {r.replace('✅ ', '').replace('⏭️ ', '')}
                 </p>
               </div>
@@ -112,7 +112,7 @@ export function DemoDataManager() {
           onClick={loadDemoData}
           disabled={loading}
           className="flex items-center gap-3 px-6 py-3 font-body text-sm font-medium text-white transition-all disabled:opacity-50"
-          style={{ background: loading ? 'var(--admin-text-muted)' : 'var(--admin-gold)' }}
+          style={{ background: loading ? 'var(--a-text-muted)' : 'var(--a-gold)' }}
         >
           {loading ? (
             <>
@@ -136,7 +136,7 @@ export function DemoDataManager() {
       )}
 
       {/* Warning */}
-      <p className="font-body text-xs mt-6" style={{ color: 'var(--admin-text-muted)' }}>
+      <p className="font-body text-xs mt-6" style={{ color: 'var(--a-text-muted)' }}>
         Note: Gallery images use Unsplash placeholder URLs. Replace them with real Room For You event photos via the Gallery module when available.
       </p>
     </div>

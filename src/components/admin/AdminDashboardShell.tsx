@@ -1,47 +1,42 @@
 'use client'
 
-import { useState } from 'react'
 import { AdminSidebar } from '@/components/admin/AdminSidebar'
 import { AdminTopbar } from '@/components/admin/AdminTopbar'
 import { Toaster } from 'react-hot-toast'
 
-export function AdminDashboardShell({
-  children,
-  userEmail,
-}: {
+interface AdminDashboardShellProps {
   children: React.ReactNode
-  userEmail?: string | null
-}) {
-  const [mobileNavOpen, setMobileNavOpen] = useState(false)
+  toggleTheme: () => void
+  theme: 'light' | 'dark'
+}
 
+export function AdminDashboardShell({ children, toggleTheme, theme }: AdminDashboardShellProps) {
   return (
-    <>
-      <div className="admin-layout flex h-screen overflow-hidden" style={{ background: 'var(--admin-bg)' }}>
-        <AdminSidebar
-          mobileOpen={mobileNavOpen}
-          onMobileClose={() => setMobileNavOpen(false)}
-          userEmail={userEmail}
-        />
-        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
-          <AdminTopbar onMenuClick={() => setMobileNavOpen(true)} />
-          <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:px-10 lg:py-8">{children}</main>
-        </div>
+    <div className="flex h-full w-full overflow-hidden">
+      <AdminSidebar theme={theme} />
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <AdminTopbar toggleTheme={toggleTheme} theme={theme} />
+        <main
+          className="flex-1 overflow-y-auto p-6 lg:p-8"
+          style={{ background: 'var(--a-bg)' }}
+        >
+          {children}
+        </main>
       </div>
       <Toaster
         position="bottom-center"
         toastOptions={{
           style: {
-            background: '#fff',
-            color: '#141414',
-            border: '1px solid var(--admin-border)',
+            background: 'var(--a-surface)',
+            color: 'var(--a-text)',
+            border: '1px solid var(--a-gold-border)',
             fontFamily: 'General Sans, sans-serif',
             fontSize: '14px',
-            boxShadow: 'var(--admin-shadow-card)',
           },
-          success: { iconTheme: { primary: '#D4A847', secondary: '#FFFFFF' } },
-          error: { iconTheme: { primary: '#D0021B', secondary: '#FFFFFF' } },
+          success: { iconTheme: { primary: '#C9A84C', secondary: 'var(--a-bg)' } },
+          error: { iconTheme: { primary: 'var(--a-red)', secondary: '#FFFFFF' } },
         }}
       />
-    </>
+    </div>
   )
 }

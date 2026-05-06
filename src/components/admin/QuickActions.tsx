@@ -20,17 +20,17 @@ export function QuickActions() {
           href={action.href}
           className="px-4 py-2.5 font-body text-sm font-medium border transition-all"
           style={{
-            background: 'var(--admin-surface)',
-            borderColor: 'var(--admin-border)',
-            color: 'var(--admin-text-secondary)',
+            background: 'var(--a-surface)',
+            borderColor: 'var(--a-border)',
+            color: 'var(--a-text-secondary)',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = 'var(--admin-gold)'
-            e.currentTarget.style.color = 'var(--admin-gold)'
+            e.currentTarget.style.borderColor = 'var(--a-gold)'
+            e.currentTarget.style.color = 'var(--a-gold)'
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = 'var(--admin-border)'
-            e.currentTarget.style.color = 'var(--admin-text-secondary)'
+            e.currentTarget.style.borderColor = 'var(--a-border)'
+            e.currentTarget.style.color = 'var(--a-text-secondary)'
           }}
         >
           {action.label}

@@ -9,7 +9,7 @@ export function LogoMark() {
   return (
     <div className="flex justify-center mb-8">
       {failed ? (
-        <span className="font-display text-2xl" style={{ color: 'var(--admin-text)' }}>
+        <span className="font-display text-2xl" style={{ color: 'var(--a-text)' }}>
           RFY
         </span>
       ) : (

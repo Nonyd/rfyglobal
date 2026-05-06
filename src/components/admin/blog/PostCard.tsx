@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { Edit, Eye, Trash2, Globe, EyeOff } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
-import { cn } from '@/lib/utils'
 import toast from 'react-hot-toast'
 
 interface PostCardProps {
@@ -45,61 +44,83 @@ export function PostCard({ post }: PostCardProps) {
     } else toast.error('Failed to delete')
   }
 
+  const dateText = isPublished && post.publishedAt
+    ? `Published ${formatDate(post.publishedAt)}`
+    : `Created ${formatDate(post.createdAt)}`
+
   return (
     <div
-      className={cn(
-        'border p-5 transition-all',
-        isPublished ? 'border-gold/25 bg-gold/[0.06]' : 'border-white/10'
-      )}
+      className="border transition-all duration-200 p-5"
+      style={{
+        background: 'var(--a-surface)',
+        borderColor: isPublished ? 'var(--a-gold-border)' : 'var(--a-border)',
+        boxShadow: 'var(--a-shadow)',
+      }}
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-3">
-            <h3 className="font-display text-lg text-white">{post.title}</h3>
+            <h3 className="font-display text-lg font-semibold mb-1" style={{ color: 'var(--a-text)' }}>
+              {post.title}
+            </h3>
             <span
-              className={cn(
-                'px-2 py-0.5 font-body text-[10px] uppercase tracking-widest',
-                isPublished ? 'bg-gold/20 text-gold' : 'bg-white/10 text-white/40'
-              )}
+              className="text-[10px] px-2 py-0.5 font-body tracking-widest uppercase"
+              style={{
+                background: isPublished ? 'var(--a-gold-light)' : 'var(--a-sidebar-hover)',
+                color: isPublished ? 'var(--a-gold)' : 'var(--a-text-muted)',
+                border: `1px solid ${isPublished ? 'var(--a-gold-border)' : 'var(--a-border)'}`,
+              }}
             >
               {isPublished ? 'Published' : 'Draft'}
             </span>
           </div>
           {post.excerpt && (
-            <p className="mt-1 line-clamp-1 font-body text-sm text-white/40">{post.excerpt}</p>
+            <p className="font-body text-sm line-clamp-1 mb-2" style={{ color: 'var(--a-text-secondary)' }}>
+              {post.excerpt}
+            </p>
           )}
-          <p className="mt-1 font-body text-xs text-white/25">
-            {isPublished && post.publishedAt
-              ? `Published ${formatDate(post.publishedAt)}`
-              : `Created ${formatDate(post.createdAt)}`}
+          <p className="font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
+            {dateText}
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
           <button
             type="button"
             onClick={togglePublish}
-            className="p-2 text-white/40 transition-colors hover:text-gold"
+            className="p-2 transition-colors"
+            style={{ color: 'var(--a-text-secondary)' }}
             title={isPublished ? 'Unpublish' : 'Publish'}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--a-gold)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--a-text-secondary)')}
           >
-            {isPublished ? <Globe size={16} className="text-gold" /> : <EyeOff size={16} />}
+            {isPublished ? <Globe size={16} style={{ color: 'var(--a-gold)' }} /> : <EyeOff size={16} />}
           </button>
           <Link
             href={`/blog/${post.slug}`}
             target="_blank"
-            className="p-2 text-white/40 transition-colors hover:text-gold"
+            className="p-2 transition-colors"
+            style={{ color: 'var(--a-text-secondary)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--a-gold)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--a-text-secondary)')}
           >
             <Eye size={16} />
           </Link>
           <Link
             href={`/admin/blog/${post.id}/edit`}
-            className="p-2 text-white/40 transition-colors hover:text-white"
+            className="p-2 transition-colors"
+            style={{ color: 'var(--a-text-secondary)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--a-text)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--a-text-secondary)')}
           >
             <Edit size={16} />
           </Link>
           <button
             type="button"
             onClick={deletePost}
-            className="p-2 text-white/40 transition-colors hover:text-red-brand"
+            className="p-2 transition-colors"
+            style={{ color: 'var(--a-text-secondary)' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--a-red)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--a-text-secondary)')}
           >
             <Trash2 size={16} />
           </button>

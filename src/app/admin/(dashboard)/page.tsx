@@ -72,10 +72,10 @@ export default async function AdminHomePage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-display text-3xl font-semibold" style={{ color: 'var(--admin-text)' }}>
+        <h1 className="font-display text-3xl font-semibold" style={{ color: 'var(--a-text)' }}>
           {greeting}, Nony.
         </h1>
-        <p className="mt-1 font-body text-sm" style={{ color: 'var(--admin-text-muted)' }}>
+        <p className="mt-1 font-body text-sm" style={{ color: 'var(--a-text-muted)' }}>
           {now.toLocaleDateString('en-NG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </p>
       </div>
@@ -84,19 +84,19 @@ export default async function AdminHomePage() {
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="shadow-sm border-l-4 p-5"
+            className="p-5 border-l-4 rounded-sm"
             style={{
-              background: 'var(--admin-surface)',
-              borderLeftColor: 'var(--admin-gold)',
-              borderTop: '1px solid var(--admin-border)',
-              borderRight: '1px solid var(--admin-border)',
-              borderBottom: '1px solid var(--admin-border)',
+              background: 'var(--a-surface)',
+              borderLeftColor: 'var(--a-gold)',
+              border: '1px solid var(--a-border)',
+              borderLeftWidth: '4px',
+              boxShadow: 'var(--a-shadow)',
             }}
           >
-            <p className="mb-3 font-body text-xs uppercase tracking-widest" style={{ color: 'var(--admin-text-muted)' }}>
+            <p className="mb-3 font-body text-xs uppercase tracking-widest" style={{ color: 'var(--a-text-muted)' }}>
               {stat.label}
             </p>
-            <p className="font-display text-3xl font-bold" style={{ color: 'var(--admin-text)' }}>
+            <p className="font-display text-3xl font-bold" style={{ color: 'var(--a-text)' }}>
               {stat.value}
             </p>
             {stat.trend ? (
@@ -109,7 +109,7 @@ export default async function AdminHomePage() {
       </div>
 
       <div>
-        <p className="font-body text-xs uppercase tracking-[0.15em] font-semibold mb-4" style={{ color: 'var(--admin-text-muted)' }}>
+        <p className="font-body text-xs uppercase tracking-[0.15em] font-semibold mb-4" style={{ color: 'var(--a-text-muted)' }}>
           Quick Actions
         </p>
         <QuickActions />
@@ -118,37 +118,41 @@ export default async function AdminHomePage() {
       {todayScripture ? (
         <div
           className="admin-card border-l-4 p-6"
-          style={{ borderLeftColor: 'var(--admin-gold)', background: 'var(--admin-sidebar)' }}
+          style={{
+            background: 'var(--a-surface)',
+            borderLeftColor: 'var(--a-gold)',
+            border: '1px solid var(--a-border)',
+          }}
         >
-          <p className="mb-3 font-body text-xs uppercase tracking-widest" style={{ color: 'var(--admin-gold)' }}>
+          <p className="mb-3 font-body text-xs uppercase tracking-widest" style={{ color: 'var(--a-gold)' }}>
             Today&apos;s Word
           </p>
-          <p className="mb-2 font-display text-xl" style={{ color: 'var(--admin-text)' }}>
+          <p className="mb-2 font-display text-xl" style={{ color: 'var(--a-text)' }}>
             {todayScripture.reference}
           </p>
-          <p className="font-body text-sm italic leading-relaxed" style={{ color: 'var(--admin-text-muted)' }}>
+          <p className="font-body text-sm italic leading-relaxed" style={{ color: 'var(--a-text-secondary)' }}>
             &ldquo;{todayScripture.text}&rdquo;
           </p>
         </div>
       ) : null}
 
       <div>
-        <p className="mb-4 font-body text-xs uppercase tracking-widest" style={{ color: 'var(--admin-text-muted)' }}>
+        <p className="mb-4 font-body text-xs uppercase tracking-widest" style={{ color: 'var(--a-text-muted)' }}>
           Recent Activity
         </p>
         <div className="space-y-2">
           {activity.length === 0 ? (
-            <p className="font-body text-sm" style={{ color: 'var(--admin-text-muted)' }}>
+            <p className="font-body text-sm" style={{ color: 'var(--a-text-muted)' }}>
               No recent activity yet.
             </p>
           ) : (
             activity.map((item, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 border" style={{ background: 'var(--admin-surface)', borderColor: 'var(--admin-border)' }}>
-                <div className="h-2 w-2 shrink-0 rounded-full" style={{ background: item.type === 'gift' ? 'var(--admin-gold)' : 'var(--admin-border)' }} />
-                <p className="flex-1 font-body text-sm" style={{ color: 'var(--admin-text)' }}>
+              <div key={i} className="flex items-center gap-3 p-3 rounded-sm border" style={{ background: 'var(--a-surface)', borderColor: 'var(--a-border)' }}>
+                <div className="h-2 w-2 shrink-0 rounded-full" style={{ background: item.type === 'gift' ? 'var(--a-gold)' : 'var(--a-border)' }} />
+                <p className="flex-1 font-body text-sm" style={{ color: 'var(--a-text)' }}>
                   {item.label}
                 </p>
-                <p className="font-body text-xs" style={{ color: 'var(--admin-text-muted)' }}>
+                <p className="font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
                   {formatDistanceToNow(item.time, { addSuffix: true })}
                 </p>
               </div>

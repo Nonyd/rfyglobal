@@ -171,14 +171,14 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
   return (
     <div className="max-w-3xl">
       <div className="mb-8">
-        <h2 className="font-display text-2xl" style={{ color: 'var(--admin-text)' }}>Integrations</h2>
-        <p className="text-sm font-body mt-1" style={{ color: 'var(--admin-text-secondary)' }}>Manage all third-party credentials securely</p>
+        <h2 className="font-display text-2xl" style={{ color: 'var(--a-text)' }}>Integrations</h2>
+        <p className="text-sm font-body mt-1" style={{ color: 'var(--a-text-secondary)' }}>Manage all third-party credentials securely</p>
       </div>
 
       <div className="flex items-start gap-3 p-4 mb-8"
-        style={{ background: 'var(--admin-gold-light)', border: '1px solid var(--admin-gold-border)' }}>
-        <Shield size={16} className="shrink-0 mt-0.5" style={{ color: 'var(--admin-gold)' }} />
-        <p className="text-sm font-body leading-relaxed" style={{ color: 'var(--admin-text-secondary)' }}>
+        style={{ background: 'var(--a-gold-light)', border: '1px solid var(--a-gold-border)' }}>
+        <Shield size={16} className="shrink-0 mt-0.5" style={{ color: 'var(--a-gold)' }} />
+        <p className="text-sm font-body leading-relaxed" style={{ color: 'var(--a-text-secondary)' }}>
           All credentials are encrypted with AES-256-GCM before storage. Keys are masked and never returned in plain text.
         </p>
       </div>
@@ -194,16 +194,16 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
               key={service.id}
               className={cn('border transition-all duration-200', !isActive && 'opacity-70')}
               style={{
-                background: 'var(--admin-surface)',
-                borderColor: isActive ? 'var(--admin-gold-border)' : 'var(--admin-border)',
+                background: 'var(--a-surface)',
+                borderColor: isActive ? 'var(--a-gold-border)' : 'var(--a-border)',
               }}
             >
               <div className="flex items-center justify-between p-5">
                 <div className="flex items-center gap-4">
                   <div className="w-3 h-3 rounded-full shrink-0" style={{ background: service.color }} />
                   <div>
-                    <h3 className="font-display text-base" style={{ color: 'var(--admin-text)' }}>{service.name}</h3>
-                    <p className="text-xs font-body mt-0.5" style={{ color: 'var(--admin-text-muted)' }}>{service.description}</p>
+                    <h3 className="font-display text-base" style={{ color: 'var(--a-text)' }}>{service.name}</h3>
+                    <p className="text-xs font-body mt-0.5" style={{ color: 'var(--a-text-muted)' }}>{service.description}</p>
                   </div>
                 </div>
 
@@ -215,8 +215,8 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
                         className="px-2.5 py-1 text-[10px] font-body font-medium tracking-widest transition-all"
                         style={{
                           background: values[service.id]?.mode !== 'live' ? 'rgba(234,179,8,0.15)' : 'transparent',
-                          color: values[service.id]?.mode !== 'live' ? '#CA8A04' : 'var(--admin-text-muted)',
-                          borderColor: values[service.id]?.mode !== 'live' ? 'rgba(234,179,8,0.4)' : 'var(--admin-border)',
+                          color: values[service.id]?.mode !== 'live' ? '#CA8A04' : 'var(--a-text-muted)',
+                          borderColor: values[service.id]?.mode !== 'live' ? 'rgba(234,179,8,0.4)' : 'var(--a-border)',
                           border: '1px solid',
                         }}
                       >
@@ -227,8 +227,8 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
                         className="px-2.5 py-1 text-[10px] font-body font-medium tracking-widest transition-all"
                         style={{
                           background: values[service.id]?.mode === 'live' ? 'rgba(34,197,94,0.15)' : 'transparent',
-                          color: values[service.id]?.mode === 'live' ? '#16A34A' : 'var(--admin-text-muted)',
-                          borderColor: values[service.id]?.mode === 'live' ? 'rgba(34,197,94,0.4)' : 'var(--admin-border)',
+                          color: values[service.id]?.mode === 'live' ? '#16A34A' : 'var(--a-text-muted)',
+                          borderColor: values[service.id]?.mode === 'live' ? 'rgba(34,197,94,0.4)' : 'var(--a-border)',
                           border: '1px solid',
                         }}
                       >
@@ -255,10 +255,10 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
               </div>
 
               {isExpanded ? (
-                <div className="border-t px-5 pb-5 pt-4 space-y-4" style={{ borderColor: 'var(--admin-border)' }}>
+                <div className="border-t px-5 pb-5 pt-4 space-y-4" style={{ borderColor: 'var(--a-border)' }}>
                   {service.fields.map((field) => (
                     <div key={field.key}>
-                      <label className="block text-xs uppercase tracking-widest font-body font-medium mb-2" style={{ color: 'var(--admin-text-secondary)' }}>
+                      <label className="block text-xs uppercase tracking-widest font-body font-medium mb-2" style={{ color: 'var(--a-text-secondary)' }}>
                         {field.label}
                       </label>
                       <input
@@ -270,25 +270,25 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
                         spellCheck={false}
                         className="w-full border px-4 py-3 font-mono text-sm focus:outline-none transition-colors"
                         style={{
-                          background: 'var(--admin-bg)',
-                          borderColor: 'var(--admin-border)',
-                          color: 'var(--admin-text)',
+                          background: 'var(--a-bg)',
+                          borderColor: 'var(--a-border)',
+                          color: 'var(--a-text)',
                         }}
-                        onFocus={(e) => (e.target.style.borderColor = 'var(--admin-gold)')}
-                        onBlur={(e) => (e.target.style.borderColor = 'var(--admin-border)')}
+                        onFocus={(e) => (e.target.style.borderColor = 'var(--a-gold)')}
+                        onBlur={(e) => (e.target.style.borderColor = 'var(--a-border)')}
                       />
-                      {field.hint ? <p className="text-xs font-body mt-1" style={{ color: 'var(--admin-text-muted)' }}>{field.hint}</p> : null}
+                      {field.hint ? <p className="text-xs font-body mt-1" style={{ color: 'var(--a-text-muted)' }}>{field.hint}</p> : null}
                     </div>
                   ))}
 
                   <div className="flex items-center justify-between pt-2">
-                    <p className="text-xs font-body" style={{ color: 'var(--admin-text-muted)' }}>Values shown masked - type to update</p>
+                    <p className="text-xs font-body" style={{ color: 'var(--a-text-muted)' }}>Values shown masked - type to update</p>
                     <button
                       type="button"
                       onClick={() => void saveService(service.id)}
                       disabled={isSaving}
                       className="flex items-center gap-2 px-5 py-2.5 text-sm font-body font-medium transition-colors disabled:opacity-40"
-                      style={{ background: 'var(--admin-gold)', color: 'white' }}
+                      style={{ background: 'var(--a-gold)', color: 'var(--a-text-inverse)' }}
                     >
                       <Save size={14} />
                       {isSaving ? 'Saving...' : 'Save Credentials'}
