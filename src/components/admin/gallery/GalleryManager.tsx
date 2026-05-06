@@ -142,9 +142,10 @@ export function GalleryManager({ initialImages }: GalleryManagerProps) {
                 width={600}
                 height={400}
                 className={cn(
-                  'h-auto w-full object-cover transition-transform duration-500 group-hover:scale-105',
+                  'h-auto w-full object-contain transition-transform duration-500 group-hover:scale-105',
                   !img.isActive && 'opacity-40',
                 )}
+                style={{ background: '#1A1A1A' }}
                 sizes="(max-width: 768px) 100vw, 33vw"
               />
               <div className="absolute inset-0 flex flex-col justify-end bg-black/70 p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
@@ -422,7 +423,8 @@ function EditImagePanel({
             alt=""
             width={400}
             height={300}
-            className="h-48 w-full object-cover"
+            className="h-48 w-full object-contain"
+            style={{ background: '#1A1A1A' }}
             sizes="400px"
           />
           {[

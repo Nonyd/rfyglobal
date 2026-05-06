@@ -66,21 +66,33 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
               href={event.slug ? `/events/${event.slug}` : '#'}
               className="rfy-card group block overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-elevated cursor-pointer"
             >
-              <div className="relative h-48 overflow-hidden bg-charcoal-soft">
+              <div
+                className="relative h-80 overflow-hidden"
+                style={{ background: '#0F0F0F' }}
+              >
                 {event.imageUrl ? (
                   <Image
                     src={event.imageUrl}
                     alt={event.title}
                     fill
                     priority={index === 0}
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="object-contain transition-transform duration-500 group-hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
                 ) : (
                   <div className="flex h-full items-center justify-center">
-                    <span className="font-display text-4xl italic text-gold/20">RFY</span>
+                    <span
+                      className="font-display text-4xl font-bold"
+                      style={{
+                        color: 'transparent',
+                        WebkitTextStroke: '1px rgba(201,168,76,0.2)',
+                      }}
+                    >
+                      RFY
+                    </span>
                   </div>
                 )}
-                <div className="absolute left-4 top-4 border border-gold/40 bg-charcoal/90 px-3 py-2 text-center backdrop-blur-sm">
+                <div className="absolute left-4 top-4 z-10 border border-gold/30 bg-void/90 px-3 py-2 text-center backdrop-blur-sm">
                   <p className="font-display text-2xl leading-none text-gold">
                     {format(new Date(event.date), 'dd')}
                   </p>

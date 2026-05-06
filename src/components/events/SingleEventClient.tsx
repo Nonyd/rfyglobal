@@ -30,56 +30,95 @@ export function SingleEventClient({ event, otherEvents, formFields }: SingleEven
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
-          className="relative min-h-[60vh] lg:min-h-[calc(100vh-8rem)] lg:sticky lg:top-28 lg:self-start"
+          className="relative lg:sticky lg:top-28 lg:self-start"
+          style={{ background: '#0A0A0A' }}
         >
           {event.imageUrl ? (
             <>
-              <Image
-                src={event.imageUrl}
-                alt={event.title}
-                fill
-                className="object-cover"
-                priority
-              />
+              {/* Mobile: portrait ratio frame */}
+              <div className="relative w-full pb-[133%] lg:hidden">
+                <Image
+                  src={event.imageUrl}
+                  alt={event.title}
+                  fill
+                  className="object-cover object-top"
+                  priority
+                  sizes="100vw"
+                />
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      'linear-gradient(to bottom, rgba(15,15,15,0.1), rgba(15,15,15,0.5))',
+                  }}
+                />
+              </div>
+
+              {/* Desktop: full portrait contained, min viewport height */}
               <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    'linear-gradient(to right, rgba(15,15,15,0.3), rgba(15,15,15,0.1))',
-                }}
-              />
+                className="relative hidden min-h-[100vh] w-full lg:block"
+                style={{ background: '#0A0A0A' }}
+              >
+                <Image
+                  src={event.imageUrl}
+                  alt={event.title}
+                  fill
+                  className="object-contain object-top"
+                  priority
+                  sizes="50vw"
+                />
+                <div
+                  className="pointer-events-none absolute inset-0"
+                  style={{
+                    background:
+                      'linear-gradient(to right, rgba(15,15,15,0.3) 0%, transparent 20%, transparent 80%, rgba(15,15,15,0.3) 100%)',
+                  }}
+                />
+              </div>
             </>
           ) : (
             <div
-              className="absolute inset-0 flex items-center justify-center"
+              className="relative w-full pb-[133%] lg:min-h-screen lg:pb-0"
               style={{ background: 'linear-gradient(135deg, #1A1A1A 0%, #0F0F0F 100%)' }}
             >
-              <div className="text-center">
-                <p
-                  className="font-display text-[8rem] font-bold leading-none"
-                  style={{
-                    color: 'transparent',
-                    WebkitTextStroke: '1px rgba(201,168,76,0.3)',
-                  }}
-                >
-                  RFY
-                </p>
-                <div className="gold-line w-24 mx-auto mt-4 opacity-30" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <p
+                    className="font-display font-bold leading-none"
+                    style={{
+                      fontSize: 'clamp(5rem, 15vw, 10rem)',
+                      color: 'transparent',
+                      WebkitTextStroke: '1px rgba(201,168,76,0.2)',
+                    }}
+                  >
+                    RFY
+                  </p>
+                  <div className="gold-line mx-auto mt-4 w-24 opacity-20" />
+                </div>
               </div>
             </div>
           )}
 
-          <div className="absolute top-8 left-8 lg:top-10 lg:left-12 z-10">
-            <div className="border border-gold/40 bg-void/80 backdrop-blur-sm px-4 py-3 text-center">
-              <p className="font-display text-4xl text-gold font-bold leading-none">{dayNum}</p>
-              <p className="label-text opacity-70 mt-1">{monthShort}</p>
+          <div className="absolute left-6 top-24 z-10 lg:left-10">
+            <div
+              className="border border-gold/50 px-3 py-2.5 text-center"
+              style={{ background: 'rgba(15,15,15,0.85)', backdropFilter: 'blur(8px)' }}
+            >
+              <p className="font-display text-3xl font-bold leading-none text-gold">{dayNum}</p>
+              <p className="label-text mt-1 opacity-70">{monthShort}</p>
             </div>
           </div>
 
           <Link
             href="/events"
-            className="absolute bottom-8 left-8 lg:bottom-12 lg:left-12 z-10 flex items-center gap-2 font-body text-xs tracking-widest uppercase transition-colors"
-            style={{ color: 'rgba(248,248,248,0.5)' }}
+            className="absolute bottom-6 left-6 z-10 flex items-center gap-2 font-body text-xs uppercase tracking-widest transition-colors lg:bottom-10 lg:left-10"
+            style={{ color: 'rgba(248,248,248,0.6)' }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#C9A84C'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = 'rgba(248,248,248,0.6)'
+            }}
           >
             <ArrowLeft size={14} />
             All Events
@@ -258,16 +297,17 @@ export function SingleEventClient({ event, otherEvents, formFields }: SingleEven
                     onMouseEnter={(el) => (el.currentTarget.style.borderColor = 'rgba(201,168,76,0.3)')}
                     onMouseLeave={(el) => (el.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)')}
                   >
-                    <div className="h-40 relative overflow-hidden" style={{ background: '#1A1A1A' }}>
+                    <div className="relative h-52 overflow-hidden" style={{ background: '#1A1A1A' }}>
                       {e.imageUrl ? (
                         <Image
                           src={e.imageUrl}
                           alt={e.title}
                           fill
-                          className="object-cover opacity-60 group-hover:opacity-80 transition-opacity"
+                          className="object-contain transition-transform duration-300 group-hover:scale-105"
+                          sizes="(max-width: 768px) 100vw, 33vw"
                         />
                       ) : (
-                        <div className="flex items-center justify-center h-full">
+                        <div className="flex h-full items-center justify-center">
                           <span
                             className="font-display text-3xl font-bold"
                             style={{
@@ -279,7 +319,7 @@ export function SingleEventClient({ event, otherEvents, formFields }: SingleEven
                           </span>
                         </div>
                       )}
-                      <div className="absolute top-3 left-3 bg-void/90 border border-gold/30 px-2 py-1.5 text-center">
+                      <div className="absolute left-3 top-3 z-10 border border-gold/30 bg-void/90 px-2 py-1.5 text-center">
                         <p className="font-display text-xl text-gold font-bold leading-none">
                           {format(new Date(e.date), 'dd')}
                         </p>
