@@ -13,14 +13,15 @@ export default async function FormsPage() {
     <div>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-8">
         <div>
-          <h2 className="font-display text-2xl text-white">Forms</h2>
-          <p className="text-white/40 text-sm font-body mt-1">
+          <h2 className="font-display text-2xl" style={{ color: 'var(--a-text)' }}>Forms</h2>
+          <p className="text-sm font-body mt-1" style={{ color: 'var(--a-text-muted)' }}>
             Create and manage all community forms
           </p>
         </div>
         <Link
           href="/admin/forms/new"
-          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gold text-black text-sm font-body font-medium tracking-wide hover:bg-gold-light transition-colors w-fit"
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-body font-medium tracking-wide transition-colors w-fit"
+          style={{ background: 'var(--a-gold)', color: 'var(--a-text-inverse)' }}
         >
           <Plus size={16} />
           New Form
@@ -30,10 +31,10 @@ export default async function FormsPage() {
       {forms.length === 0 ? (
         <div
           className="text-center py-24 border border-dashed"
-          style={{ borderColor: 'rgba(201,168,76,0.2)' }}
+          style={{ borderColor: 'var(--a-gold-border)' }}
         >
-          <p className="font-display text-2xl text-white/30 italic">No forms yet</p>
-          <p className="text-white/20 text-sm mt-2 font-body">Create your first form to get started</p>
+          <p className="font-display text-2xl italic" style={{ color: 'var(--a-text-muted)' }}>No forms yet</p>
+          <p className="text-sm mt-2 font-body" style={{ color: 'var(--a-text-muted)' }}>Create your first form to get started</p>
         </div>
       ) : (
         <div className="grid gap-4">

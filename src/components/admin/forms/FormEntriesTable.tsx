@@ -50,7 +50,7 @@ export function FormEntriesTable({ form }: { form: FormWithEntries }) {
           header: f.label,
           cell: (info) => {
             const v = info.getValue()
-            return v ? <span className="text-white/60">{v}</span> : <span className="text-white/25">—</span>
+            return v ? <span style={{ color: 'var(--a-text-secondary)' }}>{v}</span> : <span style={{ color: 'var(--a-text-muted)' }}>—</span>
           },
         })
       ),
@@ -66,25 +66,23 @@ export function FormEntriesTable({ form }: { form: FormWithEntries }) {
 
   if (rows.length === 0) {
     return (
-      <div
-        className="border border-dashed py-16 text-center text-white/30 text-sm font-body"
-        style={{ borderColor: 'rgba(201,168,76,0.2)' }}
-      >
+      <div className="border border-dashed py-16 text-center text-sm font-body" style={{ borderColor: 'var(--a-gold-border)', color: 'var(--a-text-muted)' }}>
         No submissions yet.
       </div>
     )
   }
 
   return (
-    <div className="overflow-x-auto rounded border border-white/10">
+    <div className="overflow-x-auto rounded border" style={{ borderColor: 'var(--a-border)', background: 'var(--a-surface)' }}>
       <table className="w-full min-w-[640px] text-left text-sm font-body">
         <thead>
           {table.getHeaderGroups().map((hg) => (
-            <tr key={hg.id} className="bg-black border-b border-gold/20">
+            <tr key={hg.id} className="border-b" style={{ background: 'var(--a-surface)', borderColor: 'var(--a-gold-border)' }}>
               {hg.headers.map((h) => (
                 <th
                   key={h.id}
-                  className="px-4 py-3 text-xs uppercase tracking-widest text-gold font-body whitespace-nowrap"
+                  className="px-4 py-3 text-xs uppercase tracking-widest font-body whitespace-nowrap"
+                  style={{ color: 'var(--a-gold)' }}
                 >
                   {h.isPlaceholder ? null : flexRender(h.column.columnDef.header, h.getContext())}
                 </th>
@@ -96,8 +94,8 @@ export function FormEntriesTable({ form }: { form: FormWithEntries }) {
           {table.getRowModel().rows.map((row, i) => (
             <tr
               key={row.id}
-              className="border-b border-white/5"
-              style={{ background: i % 2 === 0 ? '#0A0A0A' : '#111111' }}
+              className="border-b"
+              style={{ borderColor: 'var(--a-border)', background: i % 2 === 0 ? 'var(--a-surface)' : 'var(--a-bg)' }}
             >
               {row.getVisibleCells().map((cell) => (
                 <td key={cell.id} className="px-4 py-3 align-top whitespace-nowrap max-w-[280px] truncate">

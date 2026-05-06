@@ -129,7 +129,7 @@ export function EventsManager() {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-24 text-white/40">
+      <div className="flex justify-center py-24" style={{ color: 'var(--a-text-muted)' }}>
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     )
@@ -141,8 +141,8 @@ export function EventsManager() {
     <div className="relative">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h2 className="font-display text-2xl text-white">Events</h2>
-          <p className="mt-1 font-body text-sm text-white/40">{events.length} events</p>
+          <h2 className="font-display text-2xl" style={{ color: 'var(--a-text)' }}>Events</h2>
+          <p className="mt-1 font-body text-sm" style={{ color: 'var(--a-text-muted)' }}>{events.length} events</p>
         </div>
         <button
           type="button"
@@ -163,29 +163,33 @@ export function EventsManager() {
                 'flex flex-wrap items-start justify-between gap-4 border p-5 transition-opacity',
                 past ? 'opacity-50' : 'opacity-100'
               )}
-              style={{ borderColor: 'rgba(201,168,76,0.2)' }}
+              style={{ borderColor: 'var(--a-gold-border)', background: 'var(--a-surface)' }}
             >
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="font-display text-lg text-white">{e.title}</h3>
+                  <h3 className="font-display text-lg" style={{ color: 'var(--a-text)' }}>{e.title}</h3>
                   <span
                     className={cn(
                       'px-2 py-0.5 font-body text-[10px] uppercase tracking-widest',
-                      e.isActive ? 'bg-gold/20 text-gold' : 'bg-white/10 text-white/40'
+                      ''
                     )}
+                    style={{
+                      background: e.isActive ? 'var(--a-gold-light)' : 'var(--a-sidebar-hover)',
+                      color: e.isActive ? 'var(--a-gold)' : 'var(--a-text-muted)',
+                    }}
                   >
                     {e.isActive ? 'Active' : 'Inactive'}
                   </span>
                   {past && (
-                    <span className="font-body text-[10px] uppercase tracking-widest text-white/30">
+                    <span className="font-body text-[10px] uppercase tracking-widest" style={{ color: 'var(--a-text-muted)' }}>
                       Past
                     </span>
                   )}
                 </div>
-                <p className="mt-1 font-body text-sm text-white/45">
+                <p className="mt-1 font-body text-sm" style={{ color: 'var(--a-text-secondary)' }}>
                   {e.city} · {e.venue}
                 </p>
-                <p className="mt-1 font-body text-xs text-gold/60">
+                <p className="mt-1 font-body text-xs" style={{ color: 'var(--a-gold)' }}>
                   {formatDate(e.date)}
                   {e.time ? ` · ${e.time}` : ''}
                 </p>
@@ -194,7 +198,8 @@ export function EventsManager() {
                 <button
                   type="button"
                   onClick={() => openEdit(e)}
-                  className="p-2 text-white/40 hover:text-gold"
+                  className="p-2"
+                  style={{ color: 'var(--a-text-muted)' }}
                   title="Edit"
                 >
                   <Pencil size={16} />
@@ -202,7 +207,8 @@ export function EventsManager() {
                 <button
                   type="button"
                   onClick={() => remove(e.id, e.title)}
-                  className="p-2 text-white/40 hover:text-red-brand"
+                  className="p-2"
+                  style={{ color: 'var(--a-text-muted)' }}
                   title="Delete"
                 >
                   <Trash2 size={16} />
@@ -212,7 +218,7 @@ export function EventsManager() {
           )
         })}
         {events.length === 0 && (
-          <p className="py-16 text-center font-body text-white/35">No events yet.</p>
+          <p className="py-16 text-center font-body" style={{ color: 'var(--a-text-muted)' }}>No events yet.</p>
         )}
       </div>
 
@@ -239,13 +245,14 @@ export function EventsManager() {
             className="flex items-center justify-between border-b p-4"
             style={{ borderColor: 'rgba(201,168,76,0.15)' }}
           >
-            <h3 className="font-display text-lg text-white">
+            <h3 className="font-display text-lg" style={{ color: 'var(--a-text)' }}>
               {editingId ? 'Edit Event' : 'New Event'}
             </h3>
             <button
               type="button"
               onClick={() => setPanelOpen(false)}
-              className="p-2 text-white/40 hover:text-white"
+              className="p-2"
+              style={{ color: 'var(--a-text-muted)' }}
             >
               <X size={18} />
             </button>
@@ -255,7 +262,8 @@ export function EventsManager() {
               <input
                 value={form.title}
                 onChange={(ev) => setForm((f) => ({ ...f, title: ev.target.value }))}
-                className="w-full border border-white/10 bg-white/[0.03] px-3 py-2 font-body text-sm text-white focus:border-gold/50 focus:outline-none"
+                className="w-full border px-3 py-2 font-body text-sm focus:outline-none"
+                style={{ borderColor: 'var(--a-border)', background: 'var(--a-bg)', color: 'var(--a-text)' }}
               />
             </Field>
             <Field label="Description">
@@ -263,21 +271,24 @@ export function EventsManager() {
                 value={form.description}
                 onChange={(ev) => setForm((f) => ({ ...f, description: ev.target.value }))}
                 rows={3}
-                className="w-full border border-white/10 bg-white/[0.03] px-3 py-2 font-body text-sm text-white/80 focus:border-gold/50 focus:outline-none"
+                className="w-full border px-3 py-2 font-body text-sm focus:outline-none"
+                style={{ borderColor: 'var(--a-border)', background: 'var(--a-bg)', color: 'var(--a-text-secondary)' }}
               />
             </Field>
             <Field label="City">
               <input
                 value={form.city}
                 onChange={(ev) => setForm((f) => ({ ...f, city: ev.target.value }))}
-                className="w-full border border-white/10 bg-white/[0.03] px-3 py-2 font-body text-sm text-white focus:border-gold/50 focus:outline-none"
+                className="w-full border px-3 py-2 font-body text-sm focus:outline-none"
+                style={{ borderColor: 'var(--a-border)', background: 'var(--a-bg)', color: 'var(--a-text)' }}
               />
             </Field>
             <Field label="Venue">
               <input
                 value={form.venue}
                 onChange={(ev) => setForm((f) => ({ ...f, venue: ev.target.value }))}
-                className="w-full border border-white/10 bg-white/[0.03] px-3 py-2 font-body text-sm text-white focus:border-gold/50 focus:outline-none"
+                className="w-full border px-3 py-2 font-body text-sm focus:outline-none"
+                style={{ borderColor: 'var(--a-border)', background: 'var(--a-bg)', color: 'var(--a-text)' }}
               />
             </Field>
             <Field label="Date">
@@ -285,7 +296,8 @@ export function EventsManager() {
                 type="date"
                 value={form.date}
                 onChange={(ev) => setForm((f) => ({ ...f, date: ev.target.value }))}
-                className="w-full border border-white/10 bg-white/[0.03] px-3 py-2 font-body text-sm text-white focus:border-gold/50 focus:outline-none"
+                className="w-full border px-3 py-2 font-body text-sm focus:outline-none"
+                style={{ borderColor: 'var(--a-border)', background: 'var(--a-bg)', color: 'var(--a-text)' }}
               />
             </Field>
             <Field label="Time">
@@ -293,17 +305,19 @@ export function EventsManager() {
                 value={form.time}
                 onChange={(ev) => setForm((f) => ({ ...f, time: ev.target.value }))}
                 placeholder="e.g. 6:00 PM"
-                className="w-full border border-white/10 bg-white/[0.03] px-3 py-2 font-body text-sm text-white focus:border-gold/50 focus:outline-none"
+                className="w-full border px-3 py-2 font-body text-sm focus:outline-none"
+                style={{ borderColor: 'var(--a-border)', background: 'var(--a-bg)', color: 'var(--a-text)' }}
               />
             </Field>
             <Field label="Image URL">
               <input
                 value={form.imageUrl}
                 onChange={(ev) => setForm((f) => ({ ...f, imageUrl: ev.target.value }))}
-                className="w-full border border-white/10 bg-white/[0.03] px-3 py-2 font-mono text-xs text-white focus:border-gold/50 focus:outline-none"
+                className="w-full border px-3 py-2 font-mono text-xs focus:outline-none"
+                style={{ borderColor: 'var(--a-border)', background: 'var(--a-bg)', color: 'var(--a-text)' }}
               />
             </Field>
-            <label className="flex cursor-pointer items-center gap-2 font-body text-sm text-white/70">
+            <label className="flex cursor-pointer items-center gap-2 font-body text-sm" style={{ color: 'var(--a-text-secondary)' }}>
               <input
                 type="checkbox"
                 checked={form.isActive}
@@ -331,7 +345,7 @@ export function EventsManager() {
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="mb-1 block font-body text-xs uppercase tracking-widest text-white/40">
+      <label className="mb-1 block font-body text-xs uppercase tracking-widest" style={{ color: 'var(--a-text-muted)' }}>
         {label}
       </label>
       {children}

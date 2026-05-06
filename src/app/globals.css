@@ -23,24 +23,24 @@
 
   /* ── ADMIN LIGHT MODE (default) ── */
   .admin-layout {
-    --a-bg: #FAF7F2;
+    --a-bg: #F5F0E8;
     --a-surface: #FFFFFF;
     --a-surface-raised: #FFFFFF;
-    --a-sidebar: #F2EDE4;
-    --a-sidebar-active: rgba(180, 130, 10, 0.1);
-    --a-sidebar-hover: rgba(0, 0, 0, 0.04);
-    --a-border: #E2D9CC;
-    --a-border-strong: #C8BDB0;
-    --a-text: #1C1814;
-    --a-text-secondary: #3D3530;
-    --a-text-muted: #7A6E65;
+    --a-sidebar: #EDE7DB;
+    --a-sidebar-active: rgba(139, 90, 0, 0.1);
+    --a-sidebar-hover: rgba(0, 0, 0, 0.05);
+    --a-border: #D4C9B8;
+    --a-border-strong: #B8A898;
+    --a-text: #0F0C08;
+    --a-text-secondary: #2C2520;
+    --a-text-muted: #5C5248;
     --a-text-inverse: #FFFFFF;
-    --a-gold: #B8860B;
-    --a-gold-light: rgba(184, 134, 11, 0.1);
-    --a-gold-border: rgba(184, 134, 11, 0.25);
-    --a-gold-active: rgba(184, 134, 11, 0.12);
-    --a-red: #C0392B;
-    --a-green: #27AE60;
+    --a-gold: #8B5A00;
+    --a-gold-light: rgba(139, 90, 0, 0.08);
+    --a-gold-border: rgba(139, 90, 0, 0.2);
+    --a-gold-active: rgba(139, 90, 0, 0.1);
+    --a-red: #9B1C1C;
+    --a-green: #166534;
     --a-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
     --a-shadow-md: 0 4px 12px rgba(0,0,0,0.1);
   }

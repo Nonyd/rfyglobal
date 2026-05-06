@@ -111,8 +111,8 @@ export function DemoDataManager() {
         <button
           onClick={loadDemoData}
           disabled={loading}
-          className="flex items-center gap-3 px-6 py-3 font-body text-sm font-medium text-white transition-all disabled:opacity-50"
-          style={{ background: loading ? 'var(--a-text-muted)' : 'var(--a-gold)' }}
+          className="flex items-center gap-3 px-6 py-3 font-body text-sm font-medium transition-all disabled:opacity-50"
+          style={{ background: loading ? 'var(--a-text-muted)' : 'var(--a-gold)', color: 'var(--a-text-inverse)' }}
         >
           {loading ? (
             <>

@@ -42,9 +42,10 @@ export function FieldTypePicker({ onAdd }: { onAdd: (type: AppFieldType) => void
                   onAdd(type)
                   setOpen(false)
                 }}
-                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-body text-white/70 hover:bg-gold/10 hover:text-white transition-colors text-left"
+                className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-body transition-colors text-left"
+                style={{ color: 'var(--a-text-secondary)' }}
               >
-                <span className="w-5 text-center text-gold/60 font-mono text-xs">{icon}</span>
+                <span className="w-5 text-center font-mono text-xs" style={{ color: 'var(--a-gold)' }}>{icon}</span>
                 {label}
               </button>
             ))}

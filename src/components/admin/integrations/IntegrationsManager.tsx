@@ -239,15 +239,17 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
                   <button
                     type="button"
                     onClick={() => void toggleActive(service.id)}
-                    className="text-white/40 hover:text-gold transition-colors"
+                    className="transition-colors"
+                    style={{ color: 'var(--a-text-muted)' }}
                     title={isActive ? 'Disable' : 'Enable'}
                   >
-                    {isActive ? <ToggleRight size={22} className="text-gold" /> : <ToggleLeft size={22} />}
+                    {isActive ? <ToggleRight size={22} style={{ color: 'var(--a-gold)' }} /> : <ToggleLeft size={22} />}
                   </button>
                   <button
                     type="button"
                     onClick={() => setExpanded(isExpanded ? null : service.id)}
-                    className="p-2 border border-white/10 text-white/40 hover:border-gold/40 hover:text-gold transition-all"
+                    className="p-2 border transition-all"
+                    style={{ borderColor: 'var(--a-border)', color: 'var(--a-text-muted)' }}
                   >
                     {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                   </button>

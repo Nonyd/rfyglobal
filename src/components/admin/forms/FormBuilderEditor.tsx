@@ -179,33 +179,34 @@ export function FormBuilderEditor({ mode, initialData }: FormBuilderEditorProps)
         <div className="lg:col-span-2 space-y-6">
           <div
             className="border p-6 space-y-5"
-            style={{ borderColor: 'rgba(201,168,76,0.2)' }}
+            style={{ borderColor: 'var(--a-border)', background: 'var(--a-surface)' }}
           >
             <h3
-              className="font-display text-lg text-white border-b pb-3"
-              style={{ borderColor: 'rgba(201,168,76,0.15)' }}
+              className="font-display text-lg border-b pb-3"
+              style={{ color: 'var(--a-text)', borderColor: 'var(--a-border)' }}
             >
               Form Settings
             </h3>
 
             <div>
-              <label className="block text-xs text-white/50 font-body tracking-widest uppercase mb-2">
+              <label className="block text-xs font-body tracking-widest uppercase mb-2" style={{ color: 'var(--a-text-muted)' }}>
                 Form Title *
               </label>
               <input
                 value={title}
                 onChange={(e) => handleTitleChange(e.target.value)}
                 placeholder="e.g. Join Room For You"
-                className="w-full bg-white/5 border border-white/10 text-white px-4 py-3 text-sm font-body focus:border-gold focus:outline-none transition-colors placeholder:text-white/20"
+                className="w-full border px-4 py-3 text-sm font-body focus:outline-none transition-colors"
+                style={{ background: 'var(--a-bg)', borderColor: 'var(--a-border)', color: 'var(--a-text)' }}
               />
             </div>
 
             <div>
-              <label className="block text-xs text-white/50 font-body tracking-widest uppercase mb-2">
+              <label className="block text-xs font-body tracking-widest uppercase mb-2" style={{ color: 'var(--a-text-muted)' }}>
                 URL Slug *
               </label>
-              <div className="flex items-center border border-white/10 focus-within:border-gold transition-colors">
-                <span className="px-3 py-3 text-xs text-white/30 font-mono bg-white/5 border-r border-white/10">
+              <div className="flex items-center border transition-colors" style={{ borderColor: 'var(--a-border)' }}>
+                <span className="px-3 py-3 text-xs font-mono border-r" style={{ color: 'var(--a-text-muted)', background: 'var(--a-bg)', borderColor: 'var(--a-border)' }}>
                   /forms/
                 </span>
                 <input
@@ -213,13 +214,14 @@ export function FormBuilderEditor({ mode, initialData }: FormBuilderEditorProps)
                   onChange={(e) =>
                     setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))
                   }
-                  className="flex-1 bg-transparent text-white px-3 py-3 text-sm font-mono focus:outline-none"
+                  className="flex-1 bg-transparent px-3 py-3 text-sm font-mono focus:outline-none"
+                  style={{ color: 'var(--a-text)' }}
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs text-white/50 font-body tracking-widest uppercase mb-2">
+              <label className="block text-xs font-body tracking-widest uppercase mb-2" style={{ color: 'var(--a-text-muted)' }}>
                 Description
               </label>
               <textarea
@@ -227,12 +229,13 @@ export function FormBuilderEditor({ mode, initialData }: FormBuilderEditorProps)
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Optional description shown on the form page"
                 rows={3}
-                className="w-full bg-white/5 border border-white/10 text-white px-4 py-3 text-sm font-body focus:border-gold focus:outline-none transition-colors placeholder:text-white/20 resize-none"
+                className="w-full border px-4 py-3 text-sm font-body focus:outline-none transition-colors resize-none"
+                style={{ background: 'var(--a-bg)', borderColor: 'var(--a-border)', color: 'var(--a-text)' }}
               />
             </div>
 
             <div>
-              <label className="block text-xs text-white/50 font-body tracking-widest uppercase mb-2">
+              <label className="block text-xs font-body tracking-widest uppercase mb-2" style={{ color: 'var(--a-text-muted)' }}>
                 Notify Email
               </label>
               <input
@@ -240,9 +243,10 @@ export function FormBuilderEditor({ mode, initialData }: FormBuilderEditorProps)
                 value={notifyEmail}
                 onChange={(e) => setNotifyEmail(e.target.value)}
                 placeholder="admin@roomforyou.org"
-                className="w-full bg-white/5 border border-white/10 text-white px-4 py-3 text-sm font-body focus:border-gold focus:outline-none transition-colors placeholder:text-white/20"
+                className="w-full border px-4 py-3 text-sm font-body focus:outline-none transition-colors"
+                style={{ background: 'var(--a-bg)', borderColor: 'var(--a-border)', color: 'var(--a-text)' }}
               />
-              <p className="text-[11px] text-white/30 mt-1 font-body">
+              <p className="text-[11px] mt-1 font-body" style={{ color: 'var(--a-text-muted)' }}>
                 Receive an email on every submission
               </p>
             </div>
@@ -253,19 +257,21 @@ export function FormBuilderEditor({ mode, initialData }: FormBuilderEditorProps)
                 onClick={() => setDesiredActive(!desiredActive)}
                 className={cn(
                   'relative inline-flex h-5 w-9 items-center rounded-full transition-colors',
-                  desiredActive ? 'bg-gold' : 'bg-white/10'
+                  desiredActive ? '' : ''
                 )}
+                style={{ background: desiredActive ? 'var(--a-gold)' : 'var(--a-border-strong)' }}
               >
                 <span
                   className={cn(
-                    'inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform',
+                    'inline-block h-3.5 w-3.5 rounded-full transition-transform',
                     desiredActive ? 'translate-x-4' : 'translate-x-0.5'
                   )}
+                  style={{ background: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}
                 />
               </button>
               <div>
-                <p className="text-xs text-white font-body">Published (live on site)</p>
-                <p className="text-[10px] text-white/35 font-body">
+                <p className="text-xs font-body" style={{ color: 'var(--a-text)' }}>Published (live on site)</p>
+                <p className="text-[10px] font-body" style={{ color: 'var(--a-text-muted)' }}>
                   When you publish, this controls visibility. Save as Draft always keeps the form
                   off.
                 </p>
@@ -276,10 +282,10 @@ export function FormBuilderEditor({ mode, initialData }: FormBuilderEditorProps)
           {mode === 'edit' && slug ? (
             <div
               className="border p-4 space-y-2"
-              style={{ borderColor: 'rgba(201,168,76,0.15)' }}
+              style={{ borderColor: 'var(--a-gold-border)' }}
             >
-              <p className="text-xs text-white/50 font-body tracking-widest uppercase">Embed Code</p>
-              <code className="block text-[11px] text-gold/70 font-mono bg-white/5 p-3 break-all">
+              <p className="text-xs font-body tracking-widest uppercase" style={{ color: 'var(--a-text-muted)' }}>Embed Code</p>
+              <code className="block text-[11px] font-mono p-3 break-all" style={{ color: 'var(--a-gold)', background: 'var(--a-bg)' }}>
                 {`<iframe src="${appUrl || '(set NEXT_PUBLIC_APP_URL)'}/forms/${slug}" width="100%" height="600" frameborder="0"></iframe>`}
               </code>
             </div>
@@ -288,16 +294,16 @@ export function FormBuilderEditor({ mode, initialData }: FormBuilderEditorProps)
 
         <div className="lg:col-span-3 space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <h3 className="font-display text-lg text-white">Fields</h3>
+            <h3 className="font-display text-lg" style={{ color: 'var(--a-text)' }}>Fields</h3>
             <FieldTypePicker onAdd={addField} />
           </div>
 
           {fields.length === 0 ? (
             <div
               className="border border-dashed py-16 text-center"
-              style={{ borderColor: 'rgba(201,168,76,0.2)' }}
+              style={{ borderColor: 'var(--a-gold-border)' }}
             >
-              <p className="text-white/30 font-body text-sm">
+              <p className="font-body text-sm" style={{ color: 'var(--a-text-muted)' }}>
                 No fields yet. Add your first field above.
               </p>
             </div>
@@ -326,12 +332,13 @@ export function FormBuilderEditor({ mode, initialData }: FormBuilderEditorProps)
 
       <div
         className="sticky bottom-0 mt-8 border-t py-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
-        style={{ borderColor: 'rgba(201,168,76,0.2)', background: '#0A0A0A' }}
+        style={{ borderColor: 'var(--a-border)', background: 'var(--a-surface)' }}
       >
         <button
           type="button"
           onClick={() => router.back()}
-          className="px-5 py-2.5 border border-white/20 text-white/60 text-sm font-body hover:border-white/40 hover:text-white transition-colors w-fit"
+          className="px-5 py-2.5 border text-sm font-body transition-colors w-fit"
+          style={{ borderColor: 'var(--a-border)', color: 'var(--a-text-secondary)' }}
         >
           Cancel
         </button>
@@ -340,7 +347,8 @@ export function FormBuilderEditor({ mode, initialData }: FormBuilderEditorProps)
             type="button"
             onClick={() => handleSave(false)}
             disabled={saving}
-            className="px-5 py-2.5 border border-gold/50 text-gold/80 text-sm font-body hover:border-gold hover:text-gold transition-colors disabled:opacity-40"
+            className="px-5 py-2.5 border text-sm font-body transition-colors disabled:opacity-40"
+            style={{ borderColor: 'var(--a-gold-border)', color: 'var(--a-gold)' }}
           >
             Save as Draft
           </button>
@@ -348,7 +356,8 @@ export function FormBuilderEditor({ mode, initialData }: FormBuilderEditorProps)
             type="button"
             onClick={() => handleSave(true)}
             disabled={saving}
-            className="px-6 py-2.5 bg-gold text-black text-sm font-body font-medium hover:bg-gold-light transition-colors disabled:opacity-40"
+            className="px-6 py-2.5 text-sm font-body font-medium transition-colors disabled:opacity-40"
+            style={{ background: 'var(--a-gold)', color: 'var(--a-text-inverse)' }}
           >
             {saving ? 'Saving…' : 'Publish Form'}
           </button>

@@ -36,9 +36,14 @@ function ToolbarButton({
       title={title}
       className={cn(
         'rounded px-2 py-1.5 font-mono text-sm transition-colors',
-        active ? 'bg-gold/20 text-gold' : 'text-white/50 hover:bg-white/5 hover:text-white',
+        active ? '' : '',
         disabled && 'cursor-not-allowed opacity-30'
       )}
+      style={
+        active
+          ? { background: 'var(--a-gold-light)', color: 'var(--a-gold)' }
+          : { color: 'var(--a-text-secondary)' }
+      }
     >
       {children}
     </button>
@@ -99,7 +104,7 @@ function EditorToolbar({ editor }: { editor: Editor }) {
   return (
     <div
       className="flex flex-wrap items-center gap-0.5 border-b p-2"
-      style={{ background: '#111', borderColor: 'rgba(201,168,76,0.15)' }}
+      style={{ background: 'var(--a-surface)', borderColor: 'var(--a-border)' }}
     >
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleBold().run()}
@@ -137,7 +142,7 @@ function EditorToolbar({ editor }: { editor: Editor }) {
         H
       </ToolbarButton>
 
-      <div className="mx-1 h-5 w-px bg-white/10" />
+      <div className="mx-1 h-5 w-px" style={{ background: 'var(--a-border)' }} />
 
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
@@ -161,7 +166,7 @@ function EditorToolbar({ editor }: { editor: Editor }) {
         H3
       </ToolbarButton>
 
-      <div className="mx-1 h-5 w-px bg-white/10" />
+      <div className="mx-1 h-5 w-px" style={{ background: 'var(--a-border)' }} />
 
       <ToolbarButton
         onClick={() => editor.chain().focus().toggleBulletList().run()}
@@ -192,7 +197,7 @@ function EditorToolbar({ editor }: { editor: Editor }) {
         {'</>'}
       </ToolbarButton>
 
-      <div className="mx-1 h-5 w-px bg-white/10" />
+      <div className="mx-1 h-5 w-px" style={{ background: 'var(--a-border)' }} />
 
       <ToolbarButton
         onClick={() => editor.chain().focus().setTextAlign('left').run()}
@@ -216,7 +221,7 @@ function EditorToolbar({ editor }: { editor: Editor }) {
         →
       </ToolbarButton>
 
-      <div className="mx-1 h-5 w-px bg-white/10" />
+      <div className="mx-1 h-5 w-px" style={{ background: 'var(--a-border)' }} />
 
       <ToolbarButton onClick={addLink} active={editor.isActive('link')} title="Add Link">
         Link
@@ -271,14 +276,14 @@ export function RichTextEditor({ content, onChange, placeholder }: RichTextEdito
 
   return (
     <div
-      className="border transition-colors focus-within:border-gold/50"
-      style={{ borderColor: 'rgba(201,168,76,0.2)', background: '#0A0A0A' }}
+      className="border transition-colors"
+      style={{ borderColor: 'var(--a-border)', background: 'var(--a-surface)' }}
     >
       <EditorToolbar editor={editor} />
       <EditorContent editor={editor} />
       <div
-        className="flex justify-end border-t px-4 py-2 font-body text-xs text-white/20"
-        style={{ borderColor: 'rgba(201,168,76,0.1)' }}
+        className="flex justify-end border-t px-4 py-2 font-body text-xs"
+        style={{ borderColor: 'var(--a-border)', color: 'var(--a-text-muted)' }}
       >
         {editor.storage.characterCount.characters()} characters
       </div>

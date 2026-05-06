@@ -99,15 +99,23 @@ export function BlogPostEditor({ mode, initialData }: BlogPostEditorProps) {
             value={title}
             onChange={(e) => handleTitleChange(e.target.value)}
             placeholder="Post title…"
-            className="w-full border-b-2 bg-transparent pb-3 font-display text-3xl text-white transition-colors placeholder:text-white/20 focus:outline-none"
-            style={{ borderColor: title ? 'rgba(201,168,76,0.4)' : 'rgba(255,255,255,0.1)' }}
+            className="w-full border-b-2 bg-transparent pb-3 font-display text-3xl transition-colors focus:outline-none"
+            style={{
+              color: 'var(--a-text)',
+              borderColor: title ? 'var(--a-gold-border)' : 'var(--a-border)',
+            }}
           />
           <textarea
             value={excerpt}
             onChange={(e) => setExcerpt(e.target.value)}
             placeholder="Short excerpt (shown in blog listing)…"
             rows={2}
-            className="w-full resize-none border border-white/10 bg-white/[0.03] px-4 py-3 font-body text-sm text-white/70 transition-colors placeholder:text-white/20 focus:border-gold/50 focus:outline-none"
+            className="w-full resize-none border px-4 py-3 font-body text-sm transition-colors focus:outline-none"
+            style={{
+              borderColor: 'var(--a-border)',
+              background: 'var(--a-bg)',
+              color: 'var(--a-text-secondary)',
+            }}
           />
           <RichTextEditor
             content={content}
@@ -117,14 +125,14 @@ export function BlogPostEditor({ mode, initialData }: BlogPostEditorProps) {
         </div>
 
         <div className="space-y-6 lg:col-span-2">
-          <div className="space-y-4 border p-5" style={{ borderColor: 'rgba(201,168,76,0.2)' }}>
-            <h3 className="font-display text-base text-white">Post Settings</h3>
+          <div className="space-y-4 border p-5" style={{ borderColor: 'var(--a-border)' }}>
+            <h3 className="font-display text-base" style={{ color: 'var(--a-text)' }}>Post Settings</h3>
             <div>
-              <label className="mb-2 block font-body text-xs uppercase tracking-widest text-white/40">
+              <label className="mb-2 block font-body text-xs uppercase tracking-widest" style={{ color: 'var(--a-text-muted)' }}>
                 URL Slug
               </label>
-              <div className="flex items-center border border-white/10 transition-colors focus-within:border-gold/50">
-                <span className="border-r border-white/10 bg-white/5 px-3 py-2.5 font-mono text-xs text-white/25">
+              <div className="flex items-center border transition-colors" style={{ borderColor: 'var(--a-border)' }}>
+                <span className="border-r px-3 py-2.5 font-mono text-xs" style={{ borderColor: 'var(--a-border)', background: 'var(--a-bg)', color: 'var(--a-text-muted)' }}>
                   /blog/
                 </span>
                 <input
@@ -132,14 +140,15 @@ export function BlogPostEditor({ mode, initialData }: BlogPostEditorProps) {
                   onChange={(e) =>
                     setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '-'))
                   }
-                  className="flex-1 bg-transparent px-3 py-2.5 font-mono text-sm text-white focus:outline-none"
+                  className="flex-1 bg-transparent px-3 py-2.5 font-mono text-sm focus:outline-none"
+                  style={{ color: 'var(--a-text)' }}
                 />
               </div>
             </div>
           </div>
 
-          <div className="space-y-4 border p-5" style={{ borderColor: 'rgba(201,168,76,0.2)' }}>
-            <h3 className="font-display text-base text-white">Cover Image</h3>
+          <div className="space-y-4 border p-5" style={{ borderColor: 'var(--a-border)' }}>
+            <h3 className="font-display text-base" style={{ color: 'var(--a-text)' }}>Cover Image</h3>
             {coverImage ? (
               <div className="space-y-3">
                 <Image
@@ -178,7 +187,8 @@ export function BlogPostEditor({ mode, initialData }: BlogPostEditorProps) {
               type="button"
               onClick={() => handleSave(false)}
               disabled={saving}
-              className="w-full border border-gold/50 py-3 font-body text-sm text-gold transition-colors hover:border-gold hover:bg-gold/5 disabled:opacity-40"
+              className="w-full border py-3 font-body text-sm transition-colors disabled:opacity-40"
+              style={{ borderColor: 'var(--a-gold-border)', color: 'var(--a-gold)' }}
             >
               Save as Draft
             </button>
@@ -186,14 +196,16 @@ export function BlogPostEditor({ mode, initialData }: BlogPostEditorProps) {
               type="button"
               onClick={() => handleSave(true)}
               disabled={saving}
-              className="w-full bg-gold py-3 font-body text-sm font-medium text-black transition-colors hover:bg-gold-light disabled:opacity-40"
+              className="w-full py-3 font-body text-sm font-medium transition-colors disabled:opacity-40"
+              style={{ background: 'var(--a-gold)', color: 'var(--a-text-inverse)' }}
             >
               {saving ? 'Saving…' : 'Publish Post'}
             </button>
             <button
               type="button"
               onClick={() => router.back()}
-              className="w-full py-2 font-body text-xs text-white/30 transition-colors hover:text-white/60"
+              className="w-full py-2 font-body text-xs transition-colors"
+              style={{ color: 'var(--a-text-muted)' }}
             >
               Cancel
             </button>

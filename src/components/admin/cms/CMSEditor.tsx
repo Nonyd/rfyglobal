@@ -100,9 +100,9 @@ export function CMSEditor({ title, description, fields, initialValues, defaults 
     <div className="max-w-3xl">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h2 className="font-display text-2xl text-white">{title}</h2>
+          <h2 className="font-display text-2xl" style={{ color: 'var(--a-text)' }}>{title}</h2>
           {description ? (
-            <p className="mt-1 font-body text-sm text-white/40">{description}</p>
+            <p className="mt-1 font-body text-sm" style={{ color: 'var(--a-text-muted)' }}>{description}</p>
           ) : null}
         </div>
         <button
@@ -112,9 +112,14 @@ export function CMSEditor({ title, description, fields, initialValues, defaults 
           className={cn(
             'px-5 py-2.5 font-body text-sm font-medium transition-all',
             changedCount > 0
-              ? 'bg-gold text-black hover:bg-gold-light'
-              : 'cursor-not-allowed bg-white/10 text-white/30',
+              ? ''
+              : 'cursor-not-allowed',
           )}
+          style={
+            changedCount > 0
+              ? { background: 'var(--a-gold)', color: 'var(--a-text-inverse)' }
+              : { background: 'var(--a-sidebar-hover)', color: 'var(--a-text-muted)' }
+          }
         >
           {saving === 'all' ? 'Saving…' : `Save All${changedCount > 0 ? ` (${changedCount})` : ''}`}
         </button>
@@ -130,20 +135,24 @@ export function CMSEditor({ title, description, fields, initialValues, defaults 
               key={field.key}
               className={cn(
                 'border p-6 transition-all',
-                changed ? 'border-gold/30 bg-gold/3' : 'border-white/10',
+                '',
               )}
+              style={{
+                borderColor: changed ? 'var(--a-gold-border)' : 'var(--a-border)',
+                background: changed ? 'var(--a-gold-light)' : 'var(--a-surface)',
+              }}
             >
               <div className="mb-3 flex items-center justify-between">
                 <div>
-                  <label className="block font-body text-sm font-medium text-white">{field.label}</label>
-                  <p className="mt-0.5 font-mono text-[10px] text-white/25">{field.key}</p>
+                  <label className="block font-body text-sm font-medium" style={{ color: 'var(--a-text)' }}>{field.label}</label>
+                  <p className="mt-0.5 font-mono text-[10px]" style={{ color: 'var(--a-text-muted)' }}>{field.key}</p>
                   {field.hint ? (
-                    <p className="mt-1 font-body text-xs text-white/35">{field.hint}</p>
+                    <p className="mt-1 font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>{field.hint}</p>
                   ) : null}
                 </div>
                 <div className="flex items-center gap-2">
                   {changed ? (
-                    <span className="font-body text-[10px] uppercase tracking-widest text-gold/70">
+                    <span className="font-body text-[10px] uppercase tracking-widest" style={{ color: 'var(--a-gold)' }}>
                       Unsaved
                     </span>
                   ) : null}
@@ -151,7 +160,8 @@ export function CMSEditor({ title, description, fields, initialValues, defaults 
                     type="button"
                     onClick={() => void resetField(field.key)}
                     title="Reset to default"
-                    className="p-1.5 text-white/20 transition-colors hover:text-white/60"
+                    className="p-1.5 transition-colors"
+                    style={{ color: 'var(--a-text-muted)' }}
                   >
                     <RotateCcw size={13} />
                   </button>
@@ -165,7 +175,8 @@ export function CMSEditor({ title, description, fields, initialValues, defaults 
                     <img
                       src={values[field.key]}
                       alt=""
-                      className="h-32 border border-white/10 object-cover"
+                      className="h-32 border object-cover"
+                      style={{ borderColor: 'var(--a-border)' }}
                     />
                   ) : null}
                   <UploadZone
@@ -186,7 +197,8 @@ export function CMSEditor({ title, description, fields, initialValues, defaults 
                   onChange={(e) => setValues((prev) => ({ ...prev, [field.key]: e.target.value }))}
                   placeholder={field.placeholder}
                   rows={4}
-                  className="w-full resize-y border border-white/10 bg-white/5 px-4 py-3 font-body text-sm text-white transition-colors placeholder:text-white/20 focus:border-gold focus:outline-none"
+                  className="w-full resize-y border px-4 py-3 font-body text-sm transition-colors focus:outline-none"
+                  style={{ borderColor: 'var(--a-border)', background: 'var(--a-bg)', color: 'var(--a-text)' }}
                 />
               ) : (
                 <input
@@ -194,7 +206,8 @@ export function CMSEditor({ title, description, fields, initialValues, defaults 
                   value={values[field.key] ?? ''}
                   onChange={(e) => setValues((prev) => ({ ...prev, [field.key]: e.target.value }))}
                   placeholder={field.placeholder}
-                  className="w-full border border-white/10 bg-white/5 px-4 py-3 font-body text-sm text-white transition-colors placeholder:text-white/20 focus:border-gold focus:outline-none"
+                  className="w-full border px-4 py-3 font-body text-sm transition-colors focus:outline-none"
+                  style={{ borderColor: 'var(--a-border)', background: 'var(--a-bg)', color: 'var(--a-text)' }}
                 />
               )}
 
@@ -204,7 +217,8 @@ export function CMSEditor({ title, description, fields, initialValues, defaults 
                     type="button"
                     onClick={() => void saveField(field.key)}
                     disabled={isSaving}
-                    className="border border-gold/30 bg-gold/20 px-4 py-2 font-body text-xs text-gold transition-colors hover:bg-gold/30 disabled:opacity-40"
+                    className="border px-4 py-2 font-body text-xs transition-colors disabled:opacity-40"
+                    style={{ borderColor: 'var(--a-gold-border)', background: 'var(--a-gold-light)', color: 'var(--a-gold)' }}
                   >
                     {isSaving ? 'Saving…' : 'Save this field'}
                   </button>

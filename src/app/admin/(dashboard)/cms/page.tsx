@@ -25,8 +25,8 @@ export default function CMSIndexPage() {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="font-display text-2xl text-white">Site CMS</h2>
-        <p className="mt-1 font-body text-sm text-white/40">
+        <h2 className="font-display text-2xl" style={{ color: 'var(--a-text)' }}>Site CMS</h2>
+        <p className="mt-1 font-body text-sm" style={{ color: 'var(--a-text-muted)' }}>
           Edit every piece of text and every image on the site — no code required
         </p>
       </div>
@@ -37,17 +37,18 @@ export default function CMSIndexPage() {
             <Link
               key={section.href}
               href={section.href}
-              className="group border border-white/10 p-6 transition-all hover:border-gold/30 hover:bg-gold/3"
+              className="group border p-6 transition-all"
+              style={{ borderColor: 'var(--a-border)', background: 'var(--a-surface)' }}
             >
               <div className="flex items-start gap-4">
-                <div className="border border-white/10 p-2 transition-colors group-hover:border-gold/30">
-                  <Icon size={18} className="text-white/40 transition-colors group-hover:text-gold" />
+                <div className="border p-2 transition-colors" style={{ borderColor: 'var(--a-border)' }}>
+                  <Icon size={18} style={{ color: 'var(--a-text-muted)' }} />
                 </div>
                 <div>
-                  <h3 className="font-display text-lg text-white transition-colors group-hover:text-gold">
+                  <h3 className="font-display text-lg" style={{ color: 'var(--a-text)' }}>
                     {section.label}
                   </h3>
-                  <p className="mt-1 font-body text-sm text-white/40">{section.desc}</p>
+                  <p className="mt-1 font-body text-sm" style={{ color: 'var(--a-text-muted)' }}>{section.desc}</p>
                 </div>
               </div>
             </Link>

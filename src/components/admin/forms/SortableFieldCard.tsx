@@ -43,10 +43,14 @@ export function SortableFieldCard({ field, onUpdate, onRemove }: SortableFieldCa
   return (
     <div
       ref={setNodeRef}
-      style={style}
+      style={{
+        ...style,
+        background: 'var(--a-bg)',
+        borderColor: isDragging ? 'var(--a-gold-border)' : 'var(--a-border)',
+      }}
       className={cn(
-        'border bg-white/[0.03] p-4 space-y-4 transition-colors',
-        isDragging ? 'border-gold/60' : 'border-white/10'
+        'border p-4 space-y-4 transition-colors',
+        isDragging ? '' : ''
       )}
     >
       <div className="flex items-start gap-3">
@@ -54,13 +58,14 @@ export function SortableFieldCard({ field, onUpdate, onRemove }: SortableFieldCa
           type="button"
           {...attributes}
           {...listeners}
-          className="mt-0.5 text-white/20 hover:text-gold transition-colors cursor-grab active:cursor-grabbing touch-none"
+          className="mt-0.5 transition-colors cursor-grab active:cursor-grabbing touch-none"
+          style={{ color: 'var(--a-text-muted)' }}
         >
           <GripVertical size={18} />
         </button>
 
         <div className="flex-1 min-w-0">
-          <span className="text-[10px] tracking-widest uppercase font-body px-2 py-0.5 bg-gold/10 text-gold/80 mb-2 inline-block">
+          <span className="text-[10px] tracking-widest uppercase font-body px-2 py-0.5 mb-2 inline-block" style={{ background: 'var(--a-gold-light)', color: 'var(--a-gold)' }}>
             {FIELD_TYPE_LABELS[typeKey]}
           </span>
 
@@ -68,14 +73,16 @@ export function SortableFieldCard({ field, onUpdate, onRemove }: SortableFieldCa
             value={field.label}
             onChange={(e) => onUpdate({ label: e.target.value })}
             placeholder="Field label"
-            className="w-full bg-transparent border-b border-white/10 text-white text-sm font-body py-1 focus:border-gold focus:outline-none transition-colors placeholder:text-white/20"
+            className="w-full bg-transparent border-b text-sm font-body py-1 focus:outline-none transition-colors"
+            style={{ borderColor: 'var(--a-border)', color: 'var(--a-text)' }}
           />
         </div>
 
         <button
           type="button"
           onClick={onRemove}
-          className="mt-0.5 text-white/20 hover:text-red-brand transition-colors shrink-0"
+          className="mt-0.5 transition-colors shrink-0"
+          style={{ color: 'var(--a-text-muted)' }}
         >
           <Trash2 size={16} />
         </button>
@@ -86,24 +93,27 @@ export function SortableFieldCard({ field, onUpdate, onRemove }: SortableFieldCa
           value={field.placeholder ?? ''}
           onChange={(e) => onUpdate({ placeholder: e.target.value })}
           placeholder="Placeholder text (optional)"
-          className="w-full bg-transparent border border-white/10 text-white/60 text-xs font-body px-3 py-2 focus:border-gold/50 focus:outline-none transition-colors placeholder:text-white/15"
+          className="w-full bg-transparent border text-xs font-body px-3 py-2 focus:outline-none transition-colors"
+          style={{ borderColor: 'var(--a-border)', color: 'var(--a-text-secondary)' }}
         />
       ) : null}
 
       {HAS_OPTIONS.includes(typeKey) ? (
         <div className="space-y-2">
-          <p className="text-[10px] text-white/30 font-body uppercase tracking-widest">Options</p>
+          <p className="text-[10px] font-body uppercase tracking-widest" style={{ color: 'var(--a-text-muted)' }}>Options</p>
           {options.map((opt, i) => (
             <div key={i} className="flex items-center gap-2">
               <input
                 value={opt}
                 onChange={(e) => updateOption(i, e.target.value)}
-                className="flex-1 bg-transparent border border-white/10 text-white/80 text-xs font-body px-3 py-2 focus:border-gold/50 focus:outline-none transition-colors"
+                className="flex-1 bg-transparent border text-xs font-body px-3 py-2 focus:outline-none transition-colors"
+                style={{ borderColor: 'var(--a-border)', color: 'var(--a-text-secondary)' }}
               />
               <button
                 type="button"
                 onClick={() => removeOption(i)}
-                className="text-white/20 hover:text-red-brand transition-colors"
+                className="transition-colors"
+                style={{ color: 'var(--a-text-muted)' }}
               >
                 <X size={14} />
               </button>
@@ -112,7 +122,8 @@ export function SortableFieldCard({ field, onUpdate, onRemove }: SortableFieldCa
           <button
             type="button"
             onClick={addOption}
-            className="flex items-center gap-1 text-xs text-gold/60 hover:text-gold font-body transition-colors"
+            className="flex items-center gap-1 text-xs font-body transition-colors"
+            style={{ color: 'var(--a-gold)' }}
           >
             <Plus size={12} /> Add option
           </button>
@@ -125,17 +136,19 @@ export function SortableFieldCard({ field, onUpdate, onRemove }: SortableFieldCa
           onClick={() => onUpdate({ required: !field.required })}
           className={cn(
             'relative inline-flex h-5 w-9 items-center rounded-full transition-colors',
-            field.required ? 'bg-gold' : 'bg-white/10'
+            field.required ? '' : ''
           )}
+          style={{ background: field.required ? 'var(--a-gold)' : 'var(--a-border-strong)' }}
         >
           <span
             className={cn(
-              'inline-block h-3.5 w-3.5 rounded-full bg-white transition-transform',
+              'inline-block h-3.5 w-3.5 rounded-full transition-transform',
               field.required ? 'translate-x-4' : 'translate-x-0.5'
             )}
+            style={{ background: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}
           />
         </button>
-        <span className="text-xs text-white/40 font-body">Required</span>
+        <span className="text-xs font-body" style={{ color: 'var(--a-text-muted)' }}>Required</span>
       </div>
     </div>
   )
