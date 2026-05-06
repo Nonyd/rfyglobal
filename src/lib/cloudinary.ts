@@ -16,6 +16,7 @@ export const UPLOAD_FOLDERS = {
   studyMaterial: 'rfyglobal/study/materials',
   gallery: 'rfyglobal/gallery',
   cms: 'rfyglobal/cms',
+  eventImage: 'rfyglobal/events',
 } as const
 
 export function cloudinaryImageUrl(

@@ -2,11 +2,13 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
+import Image from 'next/image'
 import type { EventFormField, EventRegistration } from '@prisma/client'
 import { Plus, Pencil, Trash2, X, Loader2, Users, Download, Settings } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { formatDate } from '@/lib/utils'
 import { cn } from '@/lib/utils'
+import { UploadZone } from '@/components/shared/UploadZone'
 
 type EventRow = {
   id: string
@@ -461,14 +463,50 @@ export function EventsManager() {
                 style={{ borderColor: 'var(--a-border)', background: 'var(--a-bg)', color: 'var(--a-text)' }}
               />
             </Field>
-            <Field label="Image URL">
-              <input
-                value={form.imageUrl}
-                onChange={(ev) => setForm((f) => ({ ...f, imageUrl: ev.target.value }))}
-                className="w-full border px-3 py-2 font-mono text-xs focus:outline-none"
-                style={{ borderColor: 'var(--a-border)', background: 'var(--a-bg)', color: 'var(--a-text)' }}
-              />
-            </Field>
+            <div>
+              <label
+                className="mb-1 block font-body text-xs uppercase tracking-widest"
+                style={{ color: 'var(--a-text-secondary)' }}
+              >
+                Event image
+              </label>
+              {form.imageUrl ? (
+                <div className="space-y-3">
+                  <div className="relative h-40 w-full overflow-hidden border" style={{ borderColor: 'var(--a-border)' }}>
+                    <Image
+                      src={form.imageUrl}
+                      alt=""
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 28rem) 100vw, 400px"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setForm((f) => ({ ...f, imageUrl: '' }))}
+                    className="font-body text-xs transition-colors"
+                    style={{ color: 'var(--a-red, #F85149)' }}
+                  >
+                    Remove image
+                  </button>
+                </div>
+              ) : (
+                <UploadZone
+                  folder="eventImage"
+                  accept="image"
+                  preview
+                  label="Upload event image (max 4MB)"
+                  onUploadComplete={(files) => {
+                    const url = files[0]?.url
+                    if (url) {
+                      setForm((f) => ({ ...f, imageUrl: url }))
+                      toast.success('Image uploaded')
+                    }
+                  }}
+                  onUploadError={(err) => toast.error(`Upload failed: ${err.message}`)}
+                />
+              )}
+            </div>
             <label className="flex cursor-pointer items-center gap-2 font-body text-sm" style={{ color: 'var(--a-text-secondary)' }}>
               <input
                 type="checkbox"
