@@ -145,12 +145,12 @@ export function PartnershipClientPage({
           </p>
         </div>
       ) : null}
-      <section className="max-w-4xl mx-auto px-6 text-center py-20">
-        <p className="text-[10px] tracking-[0.35em] uppercase text-gold font-body mb-6">Partner With Us</p>
-        <h1 className="font-display text-5xl lg:text-7xl text-white mb-6 leading-none">
+      <section className="mx-auto max-w-4xl px-6 py-20 text-center">
+        <p className="mb-6 font-body text-[10px] uppercase tracking-[0.35em] text-gold">Partner With Us</p>
+        <h1 className="mb-6 font-display text-5xl leading-none text-text-primary lg:text-7xl">
           {content['partnership.hero.headline']}
         </h1>
-        <p className="text-white/60 font-body text-lg leading-relaxed max-w-2xl mx-auto mb-10">
+        <p className="mx-auto mb-10 max-w-2xl font-body text-lg leading-relaxed text-text-secondary">
           {content['partnership.hero.subtext']}
         </p>
         <p className="font-display text-xl italic text-gold max-w-xl mx-auto whitespace-pre-line">
@@ -180,11 +180,11 @@ export function PartnershipClientPage({
           ].map((item) => (
             <div
               key={item.title}
-              className="border border-white/10 p-6 hover:border-gold/30 transition-colors"
+              className="rfy-card p-6 transition-colors hover:border-gold/35"
             >
-              <div className="text-3xl mb-4">{item.icon}</div>
-              <h3 className="font-display text-lg text-white mb-2">{item.title}</h3>
-              <p className="text-white/50 font-body text-sm leading-relaxed">{item.desc}</p>
+              <div className="mb-4 text-3xl">{item.icon}</div>
+              <h3 className="mb-2 font-display text-lg text-text-primary">{item.title}</h3>
+              <p className="font-body text-sm leading-relaxed text-text-secondary">{item.desc}</p>
             </div>
           ))}
         </div>
@@ -192,12 +192,12 @@ export function PartnershipClientPage({
 
       <section className="max-w-5xl mx-auto px-6 pb-20">
         <div className="h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent mb-16" />
-        <h2 className="font-display text-3xl text-white text-center mb-12">Give Now</h2>
+        <h2 className="mb-12 text-center font-display text-3xl text-text-primary">Give Now</h2>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
           <div className="space-y-8">
             <div>
-              <p className="text-xs uppercase tracking-widest text-white/40 font-body mb-3">Giving Frequency</p>
+              <p className="mb-3 font-body text-xs uppercase tracking-widest text-text-muted">Giving Frequency</p>
               <div className="flex">
                 {(['ONE_TIME', 'MONTHLY', 'ANNUAL'] as Frequency[]).map((f) => (
                   <button
@@ -210,8 +210,8 @@ export function PartnershipClientPage({
                     className={cn(
                       'flex-1 py-3 text-sm font-body tracking-wide border transition-all',
                       frequency === f
-                        ? 'bg-gold text-black border-gold'
-                        : 'border-white/20 text-white/60 hover:border-gold/40 hover:text-white'
+                        ? 'border-gold bg-gold text-charcoal'
+                        : 'border-theme text-text-secondary hover:border-gold/40 hover:text-text-primary'
                     )}
                   >
                     {f === 'ONE_TIME' ? 'One-Time' : f === 'MONTHLY' ? 'Monthly' : 'Annual'}
@@ -221,7 +221,7 @@ export function PartnershipClientPage({
             </div>
 
             <div>
-              <p className="text-xs uppercase tracking-widest text-white/40 font-body mb-3">Select Amount</p>
+              <p className="mb-3 font-body text-xs uppercase tracking-widest text-text-muted">Select Amount</p>
               <div className="grid grid-cols-3 gap-2">
                 {PRESET_AMOUNTS.map((a) => (
                   <button
@@ -234,8 +234,8 @@ export function PartnershipClientPage({
                     className={cn(
                       'py-3 text-sm font-body border transition-all',
                       amount === a && !customAmount
-                        ? 'bg-gold text-black border-gold'
-                        : 'border-white/20 text-white/60 hover:border-gold/40 hover:text-white'
+                        ? 'border-gold bg-gold text-charcoal'
+                        : 'border-theme text-text-secondary hover:border-gold/40 hover:text-text-primary'
                     )}
                   >
                     ₦{a.toLocaleString()}
@@ -245,9 +245,9 @@ export function PartnershipClientPage({
             </div>
 
             <div>
-              <p className="text-xs uppercase tracking-widest text-white/40 font-body mb-3">Or Enter Amount</p>
-              <div className="flex items-center border border-white/20 focus-within:border-gold transition-colors">
-                <span className="px-4 py-3 text-gold font-body border-r border-white/20">₦</span>
+              <p className="mb-3 font-body text-xs uppercase tracking-widest text-text-muted">Or Enter Amount</p>
+              <div className="flex items-center border border-theme transition-colors focus-within:border-gold">
+                <span className="border-r border-theme px-4 py-3 font-body text-gold">₦</span>
                 <input
                   type="number"
                   value={customAmount}
@@ -256,13 +256,13 @@ export function PartnershipClientPage({
                     setAmount(0)
                   }}
                   placeholder="Enter amount"
-                  className="flex-1 bg-transparent text-white px-4 py-3 font-body focus:outline-none placeholder:text-white/20"
+                  className="flex-1 bg-transparent px-4 py-3 font-body text-text-primary placeholder:text-text-muted/60 focus:outline-none"
                 />
               </div>
             </div>
 
             {frequency !== 'ONE_TIME' && (
-              <p className="text-xs text-white/30 font-body">
+              <p className="font-body text-xs text-text-muted">
                 * Payaza supports one-time gifts only. For recurring giving, use Paystack or Flutterwave.
               </p>
             )}
@@ -270,19 +270,19 @@ export function PartnershipClientPage({
 
           <div className="space-y-6">
             <div>
-              <label className="block text-xs uppercase tracking-widest text-white/40 font-body mb-2">
+              <label className="mb-2 block font-body text-xs uppercase tracking-widest text-text-muted">
                 Full Name
               </label>
               <input
                 value={donorName}
                 onChange={(e) => setDonorName(e.target.value)}
                 placeholder="Your full name"
-                className="w-full bg-white/3 border border-white/10 text-white px-4 py-3 font-body focus:border-gold focus:outline-none transition-colors placeholder:text-white/20"
+                className="w-full border border-theme bg-surface px-4 py-3 font-body text-text-primary transition-colors placeholder:text-text-muted/70 focus:border-gold focus:outline-none"
               />
             </div>
 
             <div>
-              <label className="block text-xs uppercase tracking-widest text-white/40 font-body mb-2">
+              <label className="mb-2 block font-body text-xs uppercase tracking-widest text-text-muted">
                 Email Address
               </label>
               <input
@@ -290,12 +290,12 @@ export function PartnershipClientPage({
                 value={donorEmail}
                 onChange={(e) => setDonorEmail(e.target.value)}
                 placeholder="your@email.com"
-                className="w-full bg-white/3 border border-white/10 text-white px-4 py-3 font-body focus:border-gold focus:outline-none transition-colors placeholder:text-white/20"
+                className="w-full border border-theme bg-surface px-4 py-3 font-body text-text-primary transition-colors placeholder:text-text-muted/70 focus:border-gold focus:outline-none"
               />
             </div>
 
             <div>
-              <p className="text-xs uppercase tracking-widest text-white/40 font-body mb-3">Payment Method</p>
+              <p className="mb-3 font-body text-xs uppercase tracking-widest text-text-muted">Payment Method</p>
               <div className="space-y-2">
                 {enabledGateways.map((gw) => {
                   const disabled = frequency !== 'ONE_TIME' && !gw.supportsRecurring
@@ -310,20 +310,20 @@ export function PartnershipClientPage({
                         gateway === gw.id && !disabled
                           ? 'border-gold bg-gold/5'
                           : disabled
-                            ? 'border-white/5 opacity-40 cursor-not-allowed'
-                            : 'border-white/10 hover:border-gold/30'
+                            ? 'cursor-not-allowed border-border/40 opacity-40'
+                            : 'border-theme hover:border-gold/35'
                       )}
                     >
                       <div>
                         <p
                           className={cn(
                             'font-body text-sm font-medium',
-                            gateway === gw.id && !disabled ? 'text-gold' : 'text-white'
+                            gateway === gw.id && !disabled ? 'text-gold' : 'text-text-primary'
                           )}
                         >
                           {gw.name}
                         </p>
-                        <p className="text-white/40 text-xs font-body mt-0.5">{gw.description}</p>
+                        <p className="mt-0.5 font-body text-xs text-text-muted">{gw.description}</p>
                       </div>
                       {gw.supportsRecurring && (
                         <span className="text-[10px] px-2 py-0.5 bg-gold/10 text-gold/70 font-body tracking-wide">
@@ -340,7 +340,7 @@ export function PartnershipClientPage({
               type="button"
               onClick={() => void handleGive()}
               disabled={loading}
-              className="w-full py-4 bg-gold text-black font-body font-medium text-base tracking-widest uppercase hover:bg-gold-light transition-all duration-300 disabled:opacity-50 animate-pulse-gold"
+              className="animate-pulse-gold w-full bg-gold py-4 font-body text-base font-medium uppercase tracking-widest text-charcoal transition-all duration-300 hover:bg-gold-light disabled:opacity-50"
             >
               {loading
                 ? 'Processing…'
@@ -352,15 +352,15 @@ export function PartnershipClientPage({
 
       <section className="max-w-2xl mx-auto px-6 pb-24">
         <div className="h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent mb-16" />
-        <div className="border border-white/10 p-8 text-center">
-          <h2 className="font-display text-2xl text-white mb-6">Prefer Bank Transfer?</h2>
-          <div className="space-y-4 text-left max-w-sm mx-auto mb-8">
+        <div className="rfy-card p-8 text-center">
+          <h2 className="mb-6 font-display text-2xl text-text-primary">Prefer Bank Transfer?</h2>
+          <div className="mx-auto mb-8 max-w-sm space-y-4 text-left">
             <div
               className="flex justify-between py-3 border-b"
               style={{ borderColor: 'rgba(255,255,255,0.08)' }}
             >
-              <span className="text-white/40 font-body text-sm">Bank</span>
-              <span className="text-white font-body text-sm">
+              <span className="font-body text-sm text-text-muted">Bank</span>
+              <span className="font-body text-sm text-text-primary">
                 {bankDetails?.bankName ?? content['partnership.bank.bankName']}
               </span>
             </div>
@@ -368,13 +368,13 @@ export function PartnershipClientPage({
               className="flex justify-between py-3 border-b"
               style={{ borderColor: 'rgba(255,255,255,0.08)' }}
             >
-              <span className="text-white/40 font-body text-sm">Account Name</span>
-              <span className="text-white font-body text-sm">
+              <span className="font-body text-sm text-text-muted">Account Name</span>
+              <span className="font-body text-sm text-text-primary">
                 {bankDetails?.accountName ?? content['partnership.bank.accountName']}
               </span>
             </div>
             <div className="flex items-center justify-between py-3">
-              <span className="text-white/40 font-body text-sm">Account Number</span>
+              <span className="font-body text-sm text-text-muted">Account Number</span>
               <div className="flex items-center gap-2">
                 <span className="text-gold font-mono text-sm">
                   {bankDetails?.accountNumber ?? content['partnership.bank.accountNumber']}
@@ -382,7 +382,7 @@ export function PartnershipClientPage({
                 <button
                   type="button"
                   onClick={copyAccountNumber}
-                  className="p-1.5 text-white/30 hover:text-gold transition-colors"
+                  className="p-1.5 text-text-muted transition-colors hover:text-gold"
                   aria-label="Copy account number"
                 >
                   {copied ? <Check size={14} className="text-gold" /> : <Copy size={14} />}
@@ -390,7 +390,7 @@ export function PartnershipClientPage({
               </div>
             </div>
           </div>
-          <p className="text-white/40 font-body text-sm leading-relaxed">
+          <p className="font-body text-sm leading-relaxed text-text-muted">
             After your transfer, please send your name and amount to{' '}
             <a
               href={`mailto:${bankDetails?.contactEmail ?? content['partnership.bank.contactEmail']}`}

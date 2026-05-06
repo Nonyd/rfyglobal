@@ -34,7 +34,7 @@ export function CommunityHighlights({ content }: { content: Record<string, strin
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-40px' }}
                 transition={{ delay: i * 0.08, duration: 0.6 }}
-                className="group relative border border-theme surface p-6 transition-all duration-300 hover:-translate-y-1 hover:border-gold"
+                className="rfy-card group relative p-6 transition-all duration-300 hover:-translate-y-1 hover:border-gold/60 hover:shadow-elevated"
               >
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                   <div className="h-full w-full bg-[radial-gradient(ellipse_at_bottom,rgba(201,168,76,0.18),transparent_70%)]" />

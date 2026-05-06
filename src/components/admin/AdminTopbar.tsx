@@ -25,31 +25,44 @@ export function AdminTopbar({ onMenuClick }: { onMenuClick?: () => void }) {
 
   return (
     <header
-      className="flex h-16 shrink-0 items-center justify-between gap-4 border-b px-4 sm:px-6 lg:px-8"
-      style={{ borderColor: 'var(--admin-border)', background: 'var(--admin-surface)' }}
+      className="flex h-[4.25rem] shrink-0 items-center justify-between gap-4 border-b px-4 sm:px-6 lg:px-8"
+      style={{
+        borderColor: 'var(--admin-border)',
+        background: 'var(--admin-surface)',
+        boxShadow: 'var(--admin-shadow-card)',
+      }}
     >
-      <div className="flex items-center gap-3 min-w-0">
+      <div className="flex min-w-0 items-center gap-3">
         <button
           type="button"
-          className="p-2 -ml-2 lg:hidden"
+          className="-ml-2 rounded-md p-2 lg:hidden"
           style={{ color: 'var(--admin-text-muted)' }}
           aria-label="Open navigation"
           onClick={onMenuClick}
         >
           <Menu size={22} />
         </button>
-        <h1 className="truncate font-display text-2xl" style={{ color: 'var(--admin-text)' }}>
+        <h1 className="truncate font-display text-xl sm:text-2xl" style={{ color: 'var(--admin-text)' }}>
           {title}
         </h1>
       </div>
       <div className="flex shrink-0 items-center gap-4">
-        <a href="https://rfyglobal.org" target="_blank" rel="noreferrer" className="hidden items-center gap-2 sm:flex">
-          <span className="h-2 w-2 animate-pulse rounded-full bg-green-500" />
+        <a
+          href="https://rfyglobal.org"
+          target="_blank"
+          rel="noreferrer"
+          className="hidden items-center gap-2 rounded-full border px-3 py-1.5 sm:flex"
+          style={{ borderColor: 'var(--admin-border)' }}
+        >
+          <span className="h-2 w-2 animate-pulse rounded-full bg-green-600" />
           <span className="font-body text-xs tracking-wide" style={{ color: 'var(--admin-text-muted)' }}>
-            rfyglobal.org
+            Live site
           </span>
         </a>
-        <div className="flex h-9 w-9 items-center justify-center rounded-full font-body text-sm font-semibold text-white" style={{ background: 'var(--admin-gold)' }}>
+        <div
+          className="flex h-10 w-10 items-center justify-center rounded-full font-body text-sm font-semibold text-white shadow-soft"
+          style={{ background: 'var(--admin-gold)' }}
+        >
           AD
         </div>
       </div>

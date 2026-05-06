@@ -40,8 +40,8 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
               className={cn(
                 'px-5 py-2 font-body text-sm tracking-wide transition-all duration-200',
                 activeCity === city
-                  ? 'bg-gold text-black'
-                  : 'border border-white/20 text-white/60 hover:border-gold/40 hover:text-white'
+                  ? 'bg-gold text-charcoal shadow-soft'
+                  : 'border border-theme text-text-secondary hover:border-gold/50 hover:text-text-primary'
               )}
             >
               {city}
@@ -52,7 +52,7 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
 
       {filtered.length === 0 ? (
         <div className="py-24 text-center">
-          <p className="font-display text-2xl italic text-white/30">
+          <p className="font-display text-2xl italic text-text-muted">
             No upcoming events in {activeCity} yet.
           </p>
         </div>
@@ -61,9 +61,9 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
           {filtered.map((event, index) => (
             <div
               key={event.id}
-              className="group border border-white/10 transition-all duration-300 hover:-translate-y-0.5 hover:border-gold/30"
+              className="rfy-card group overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-elevated"
             >
-              <div className="relative h-48 overflow-hidden" style={{ background: '#111' }}>
+              <div className="relative h-48 overflow-hidden bg-charcoal-soft">
                 {event.imageUrl ? (
                   <Image
                     src={event.imageUrl}
@@ -77,7 +77,7 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
                     <span className="font-display text-4xl italic text-gold/20">RFY</span>
                   </div>
                 )}
-                <div className="absolute left-4 top-4 border border-gold/30 bg-black/80 px-3 py-2 text-center">
+                <div className="absolute left-4 top-4 border border-gold/40 bg-charcoal/90 px-3 py-2 text-center backdrop-blur-sm">
                   <p className="font-display text-2xl leading-none text-gold">
                     {format(new Date(event.date), 'dd')}
                   </p>
@@ -88,10 +88,10 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
               </div>
 
               <div className="p-6">
-                <h3 className="mb-2 font-display text-xl text-white transition-colors group-hover:text-gold">
+                <h3 className="mb-2 font-display text-xl text-text-primary transition-colors group-hover:text-gold">
                   {event.title}
                 </h3>
-                <div className="mb-3 flex items-center gap-1 font-body text-xs text-white/40">
+                <div className="mb-3 flex items-center gap-1 font-body text-xs text-text-muted">
                   <MapPin size={12} />
                   <span>
                     {event.venue}, {event.city}
@@ -101,7 +101,7 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
                   <p className="mb-3 font-body text-xs text-gold/60">{event.time}</p>
                 )}
                 {event.description && (
-                  <p className="line-clamp-2 font-body text-sm text-white/50">{event.description}</p>
+                  <p className="line-clamp-2 font-body text-sm text-text-secondary">{event.description}</p>
                 )}
                 <div className="mt-4 flex justify-end">
                   <span className="font-body text-sm text-gold/40 transition-colors group-hover:text-gold">

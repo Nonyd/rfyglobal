@@ -7,6 +7,10 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        black: {
+          DEFAULT: '#000000',
+          soft: '#0c0c0c',
+        },
         charcoal: {
           DEFAULT: '#141414',
           soft: '#1C1C1C',
@@ -25,6 +29,7 @@ const config: Config = {
           dark: '#B8902E',
           electric: '#F0BC4A',
           glow: 'rgba(212,168,71,0.15)',
+          subtle: 'rgba(212, 168, 71, 0.35)',
         },
         red: {
           brand: '#D0021B',
@@ -58,7 +63,13 @@ const config: Config = {
         none: '0',
         sm: '2px',
         DEFAULT: '4px',
-        lg: '8px',
+        md: '8px',
+        lg: '12px',
+        xl: '16px',
+      },
+      boxShadow: {
+        soft: 'var(--shadow-soft)',
+        elevated: 'var(--shadow-elevated)',
       },
       animation: {
         'gold-pulse': 'goldPulse 3s ease-in-out infinite',

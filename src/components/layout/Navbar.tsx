@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import Image from 'next/image'
 import Link from 'next/link'
 import { motion, AnimatePresence, useScroll } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { ThemeToggle } from '@/components/shared/ThemeToggle'
+import { BrandLogo } from '@/components/brand/BrandLogo'
 
 const navLinks = [
   { label: 'Word', href: '/word' },
@@ -39,38 +39,31 @@ export function Navbar() {
         transition={{ duration: 0.6, ease: 'easeOut' }}
         className={cn(
           'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
-          scrolled ? 'bg-bg/95 backdrop-blur-md border-b border-theme py-3' : 'bg-transparent py-5',
+          scrolled
+            ? 'border-b border-theme/80 bg-bg/95 py-3 shadow-soft backdrop-blur-md'
+            : 'border-b border-transparent bg-transparent py-5',
         )}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6">
-          <Link href="/" className="shrink-0">
-            <Image
-              src="/images/logo-white.svg"
-              alt="Room For You — home"
-              width={120}
-              height={40}
-              priority
-              className="h-10 w-auto object-contain"
-            />
-          </Link>
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
+          <BrandLogo variant="auto" width={168} height={56} priority className="min-w-0" />
 
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden items-center gap-8 md:flex">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="font-body text-sm uppercase tracking-widest text-text-secondary transition-colors duration-300 hover:text-gold"
+                className="font-body text-sm font-medium uppercase tracking-[0.2em] text-text-secondary transition-colors duration-300 hover:text-gold"
               >
                 {link.label}
               </Link>
             ))}
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <ThemeToggle className="hidden md:flex" />
             <Link
               href="/forms/join-room-for-you"
-              className="hidden md:inline-flex items-center border border-gold px-5 py-2 font-body text-sm uppercase tracking-widest text-gold transition-all duration-300 hover:bg-gold hover:text-charcoal"
+              className="rfy-focus hidden border border-gold/90 px-4 py-2.5 font-body text-xs font-semibold uppercase tracking-[0.2em] text-gold transition-all duration-300 hover:border-red-brand hover:bg-gold/10 hover:text-text-primary md:inline-flex md:px-5"
             >
               Join Us
             </Link>
@@ -95,32 +88,25 @@ export function Navbar() {
             transition={{ duration: 0.3 }}
             className="fixed inset-0 z-[100] flex flex-col bg-bg"
           >
-            <div className="flex items-center justify-between px-6 py-5">
-              <Image
-                src="/images/logo-white.svg"
-                alt="Room For You — home"
-                width={120}
-                height={40}
-                priority
-                className="h-10 w-auto object-contain"
-              />
-              <button type="button" onClick={() => setIsOpen(false)} className="text-text-primary">
+            <div className="flex items-center justify-between border-b border-theme px-4 py-5 sm:px-6">
+              <BrandLogo variant="auto" width={160} height={52} />
+              <button type="button" onClick={() => setIsOpen(false)} className="text-text-primary" aria-label="Close menu">
                 <X size={24} />
               </button>
             </div>
 
-            <div className="flex flex-1 flex-col items-center justify-center gap-10">
+            <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6">
               {navLinks.map((link, i) => (
                 <motion.div
                   key={link.href}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.08 }}
+                  transition={{ delay: i * 0.06 }}
                 >
                   <Link
                     href={link.href}
                     onClick={() => setIsOpen(false)}
-                    className="font-display text-4xl font-light text-text-primary transition-colors hover:text-gold"
+                    className="font-display text-3xl font-light text-text-primary transition-colors hover:text-gold sm:text-4xl"
                   >
                     {link.label}
                   </Link>
@@ -129,19 +115,21 @@ export function Navbar() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: navLinks.length * 0.08 }}
+                transition={{ delay: navLinks.length * 0.06 }}
+                className="flex flex-col items-center gap-6 pt-4"
               >
+                <ThemeToggle />
                 <Link
                   href="/forms/join-room-for-you"
                   onClick={() => setIsOpen(false)}
-                  className="border border-gold px-8 py-3 font-body text-sm uppercase tracking-widest text-gold transition-all duration-300 hover:bg-gold hover:text-charcoal"
+                  className="border border-gold px-8 py-3 font-body text-sm uppercase tracking-[0.2em] text-gold transition-all duration-300 hover:bg-gold hover:text-charcoal"
                 >
                   Join Us
                 </Link>
               </motion.div>
             </div>
 
-            <div className="mx-6 mb-8 h-px bg-gradient-to-r from-transparent via-gold to-transparent" />
+            <div className="mx-6 mb-8 h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent opacity-80" />
           </motion.div>
         ) : null}
       </AnimatePresence>

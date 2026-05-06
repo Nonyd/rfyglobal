@@ -1,25 +1,20 @@
 import { Suspense } from 'react'
-import { Navbar } from '@/components/layout/Navbar'
-import { Footer } from '@/components/layout/Footer'
+import { PublicPageShell } from '@/components/layout/PublicPageShell'
 import { PaymentVerifyContent } from '@/components/partnership/PaymentVerifyContent'
 
 export default function PaymentVerifyPage() {
   return (
-    <>
-      <Navbar />
-      <main className="min-h-screen bg-black flex items-center justify-center px-6">
-        <Suspense
-          fallback={
-            <div className="max-w-lg w-full text-center py-24">
-              <div className="w-12 h-12 border-2 border-gold border-t-transparent rounded-full animate-spin mx-auto" />
-              <p className="font-body text-white/50 mt-6">Loading…</p>
-            </div>
-          }
-        >
-          <PaymentVerifyContent />
-        </Suspense>
-      </main>
-      <Footer />
-    </>
+    <PublicPageShell mainClassName="flex min-h-[calc(100vh-4rem)] items-center justify-center pb-16 pt-6">
+      <Suspense
+        fallback={
+          <div className="w-full max-w-lg py-24 text-center">
+            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-2 border-gold border-t-transparent" />
+            <p className="mt-6 font-body text-text-secondary">Loading…</p>
+          </div>
+        }
+      >
+        <PaymentVerifyContent />
+      </Suspense>
+    </PublicPageShell>
   )
 }

@@ -2,8 +2,9 @@ import Link from 'next/link'
 
 export function CTASection({ content }: { content: Record<string, string> }) {
   return (
-    <section className="relative bg-gradient-to-r from-gold-dark via-gold to-gold-electric py-24">
-      <div className="mx-auto max-w-4xl px-6 py-16 text-center">
+    <section className="relative overflow-hidden bg-gradient-to-r from-gold-dark via-gold to-gold-electric py-24 md:py-28">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_30%_50%,rgba(255,255,255,0.12),transparent_55%)]" />
+      <div className="relative mx-auto max-w-4xl px-6 py-12 text-center md:py-16">
         <h2 className="font-display text-display-2xl text-charcoal">
           THE DOOR IS OPEN.
         </h2>

@@ -55,7 +55,11 @@ export default async function AdminHomePage() {
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
         {stats.map((stat) => (
-          <div key={stat.label} className="border-l-4 bg-white p-5 shadow-sm" style={{ borderLeftColor: 'var(--admin-gold)', borderTop: '1px solid var(--admin-border)', borderRight: '1px solid var(--admin-border)', borderBottom: '1px solid var(--admin-border)' }}>
+          <div
+            key={stat.label}
+            className="admin-card border-l-4 p-5"
+            style={{ borderLeftColor: 'var(--admin-gold)' }}
+          >
             <p className="mb-3 font-body text-xs uppercase tracking-widest" style={{ color: 'var(--admin-text-muted)' }}>
               {stat.label}
             </p>
@@ -87,8 +91,8 @@ export default async function AdminHomePage() {
             <Link
               key={m.href}
               href={m.href}
-              className="border px-4 py-2 text-sm font-body transition-all"
-              style={{ borderColor: 'var(--admin-border)', color: 'var(--admin-text)', background: '#fff' }}
+              className="admin-card border px-4 py-2.5 text-sm font-body transition-all hover:border-gold/40"
+              style={{ color: 'var(--admin-text)', background: 'var(--admin-surface)' }}
             >
               {m.label}
             </Link>
@@ -97,7 +101,10 @@ export default async function AdminHomePage() {
       </div>
 
       {todayScripture ? (
-        <div className="border-l-4 p-6" style={{ borderLeftColor: 'var(--admin-gold)', background: 'var(--admin-sidebar)', borderTop: '1px solid var(--admin-border)', borderRight: '1px solid var(--admin-border)', borderBottom: '1px solid var(--admin-border)' }}>
+        <div
+          className="admin-card border-l-4 p-6"
+          style={{ borderLeftColor: 'var(--admin-gold)', background: 'var(--admin-sidebar)' }}
+        >
           <p className="mb-3 font-body text-xs uppercase tracking-widest" style={{ color: 'var(--admin-gold)' }}>
             Today&apos;s Word
           </p>
@@ -121,7 +128,7 @@ export default async function AdminHomePage() {
             </p>
           ) : (
             activity.map((item, i) => (
-              <div key={i} className="flex items-center gap-3 border bg-white p-3" style={{ borderColor: 'var(--admin-border)' }}>
+              <div key={i} className="admin-card flex items-center gap-3 p-3">
                 <div className="h-2 w-2 shrink-0 rounded-full" style={{ background: item.type === 'gift' ? '#D4A847' : '#6B6560' }} />
                 <p className="flex-1 font-body text-sm" style={{ color: 'var(--admin-text)' }}>
                   {item.label}

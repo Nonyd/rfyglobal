@@ -1,6 +1,5 @@
 import { db } from '@/lib/db'
-import { Navbar } from '@/components/layout/Navbar'
-import { Footer } from '@/components/layout/Footer'
+import { PublicPageHeader, PublicPageShell } from '@/components/layout/PublicPageShell'
 import { GalleryClientPage } from '@/components/gallery/GalleryClientPage'
 import type { Metadata } from 'next'
 
@@ -32,20 +31,13 @@ export default async function GalleryPage() {
     .reverse()
 
   return (
-    <>
-      <Navbar />
-      <main className="min-h-screen bg-black pb-16 pt-24">
-        <div className="mx-auto mb-16 max-w-7xl px-6 text-center">
-          <p className="mb-4 font-body text-[10px] uppercase tracking-[0.35em] text-gold">Room For You</p>
-          <h1 className="mb-4 font-display text-4xl text-white lg:text-6xl">Gallery</h1>
-          <p className="mx-auto max-w-md font-body text-white/50">
-            Moments from our gatherings across cities. Real people. Real community.
-          </p>
-          <div className="mx-auto mt-8 h-px max-w-xs bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
-        </div>
-        <GalleryClientPage images={images} cities={cities} months={months} />
-      </main>
-      <Footer />
-    </>
+    <PublicPageShell mainClassName="pb-20 md:pb-24">
+      <PublicPageHeader
+        eyebrow="Room For You"
+        title="Gallery"
+        subtitle="Moments from our gatherings across cities. Real people. Real community."
+      />
+      <GalleryClientPage images={images} cities={cities} months={months} />
+    </PublicPageShell>
   )
 }

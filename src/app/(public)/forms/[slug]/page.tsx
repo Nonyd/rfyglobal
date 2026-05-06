@@ -2,8 +2,7 @@ import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { PublicFormRenderer } from '@/components/forms/PublicFormRenderer'
-import { Navbar } from '@/components/layout/Navbar'
-import { Footer } from '@/components/layout/Footer'
+import { PublicPageShell } from '@/components/layout/PublicPageShell'
 
 export async function generateMetadata({
   params,
@@ -29,25 +28,19 @@ export default async function PublicFormPage({ params }: { params: { slug: strin
   void notifyEmail
 
   return (
-    <>
-      <Navbar />
-      <main className="min-h-screen bg-black pt-24 pb-16 px-6">
-        <div className="max-w-2xl mx-auto">
-          <div className="mb-10 text-center">
-            <p className="text-[10px] tracking-[0.35em] uppercase text-gold font-body mb-4">
-              Room For You
-            </p>
-            <h1 className="font-display text-3xl lg:text-4xl text-white mb-4">{publicForm.title}</h1>
-            {publicForm.description ? (
-              <p className="text-white/50 font-body leading-relaxed">{publicForm.description}</p>
-            ) : null}
-            <div className="h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent mt-8" />
-          </div>
-
-          <PublicFormRenderer form={publicForm} />
+    <PublicPageShell mainClassName="pb-16 pt-6 md:pb-20">
+      <div className="mx-auto max-w-2xl px-6 pt-20 md:pt-24">
+        <div className="mb-10 text-center">
+          <p className="mb-4 font-body text-[10px] uppercase tracking-[0.35em] text-gold">Room For You</p>
+          <h1 className="mb-4 font-display text-3xl text-text-primary lg:text-4xl">{publicForm.title}</h1>
+          {publicForm.description ? (
+            <p className="font-body leading-relaxed text-text-secondary">{publicForm.description}</p>
+          ) : null}
+          <div className="mt-8 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
         </div>
-      </main>
-      <Footer />
-    </>
+
+        <PublicFormRenderer form={publicForm} />
+      </div>
+    </PublicPageShell>
   )
 }

@@ -1,10 +1,10 @@
 import dynamic from 'next/dynamic'
-import { Navbar } from '@/components/layout/Navbar'
 import type { Metadata } from 'next'
+import { PublicPageShell } from '@/components/layout/PublicPageShell'
 
 const ConfessionPageClient = dynamic(
   () => import('@/components/confession/ConfessionPageClient').then((m) => m.ConfessionPageClient),
-  { ssr: false, loading: () => <div className="min-h-screen bg-black" aria-hidden /> },
+  { ssr: false, loading: () => <div className="min-h-screen bg-bg" aria-hidden /> },
 )
 
 export const metadata: Metadata = {
@@ -14,9 +14,8 @@ export const metadata: Metadata = {
 
 export default function ConfessionPage() {
   return (
-    <>
-      <Navbar />
+    <PublicPageShell hideFooter mainClassName="pb-0">
       <ConfessionPageClient />
-    </>
+    </PublicPageShell>
   )
 }

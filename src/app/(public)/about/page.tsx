@@ -1,5 +1,4 @@
-import { Navbar } from '@/components/layout/Navbar'
-import { Footer } from '@/components/layout/Footer'
+import { PublicPageShell } from '@/components/layout/PublicPageShell'
 import { AboutClient } from '@/components/about/AboutClient'
 import { getContentMany } from '@/lib/content'
 import type { Metadata } from 'next'
@@ -34,12 +33,8 @@ export default async function AboutPage() {
   ])
 
   return (
-    <>
-      <Navbar />
-      <main className="min-h-screen bg-black">
-        <AboutClient content={content} />
-      </main>
-      <Footer />
-    </>
+    <PublicPageShell mainClassName="pb-0">
+      <AboutClient content={content} />
+    </PublicPageShell>
   )
 }

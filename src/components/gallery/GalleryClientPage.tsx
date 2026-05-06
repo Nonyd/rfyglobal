@@ -61,7 +61,7 @@ export function GalleryClientPage({ images, cities, months }: GalleryClientPageP
         <div className="mb-12 space-y-4">
           {cities.length > 0 && (
             <div className="flex flex-wrap justify-center gap-2">
-              <p className="mb-1 w-full text-center font-body text-xs uppercase tracking-widest text-white/30">
+              <p className="mb-1 w-full text-center font-body text-xs uppercase tracking-widest text-text-muted">
                 Filter by City
               </p>
               {['All', ...cities].map((c) => (
@@ -72,8 +72,8 @@ export function GalleryClientPage({ images, cities, months }: GalleryClientPageP
                   className={cn(
                     'border px-4 py-2 font-body text-xs tracking-wide transition-all',
                     activeCity === c
-                      ? 'border-gold bg-gold text-black'
-                      : 'border-white/20 text-white/50 hover:border-gold/40 hover:text-white',
+                      ? 'border-gold bg-gold text-charcoal shadow-soft'
+                      : 'border-theme text-text-secondary hover:border-gold/40 hover:text-text-primary',
                   )}
                 >
                   {c}
@@ -84,7 +84,7 @@ export function GalleryClientPage({ images, cities, months }: GalleryClientPageP
 
           {months.length > 0 && (
             <div className="flex flex-wrap justify-center gap-2">
-              <p className="mb-1 w-full text-center font-body text-xs uppercase tracking-widest text-white/30">
+              <p className="mb-1 w-full text-center font-body text-xs uppercase tracking-widest text-text-muted">
                 Filter by Month
               </p>
               {['All', ...months].map((month) => (
@@ -95,8 +95,8 @@ export function GalleryClientPage({ images, cities, months }: GalleryClientPageP
                   className={cn(
                     'border px-4 py-2 font-body text-xs tracking-wide transition-all',
                     activeMonth === month
-                      ? 'border-gold/50 bg-gold/20 text-gold'
-                      : 'border-white/20 text-white/50 hover:border-gold/40 hover:text-white',
+                      ? 'border-gold/50 bg-gold/15 text-gold'
+                      : 'border-theme text-text-secondary hover:border-gold/40 hover:text-text-primary',
                   )}
                 >
                   {month === 'All' ? 'All Time' : formatMonth(month)}
@@ -108,7 +108,7 @@ export function GalleryClientPage({ images, cities, months }: GalleryClientPageP
       )}
 
       {(activeCity !== 'All' || activeMonth !== 'All') && (
-        <p className="mb-8 text-center font-body text-sm text-white/30">
+        <p className="mb-8 text-center font-body text-sm text-text-muted">
           {filtered.length} photo{filtered.length !== 1 ? 's' : ''}
           {activeCity !== 'All' ? ` in ${activeCity}` : ''}
           {activeMonth !== 'All' ? ` · ${formatMonth(activeMonth)}` : ''}
@@ -117,7 +117,7 @@ export function GalleryClientPage({ images, cities, months }: GalleryClientPageP
 
       {filtered.length === 0 ? (
         <div className="py-24 text-center">
-          <p className="font-display text-2xl italic text-white/30">No photos found.</p>
+          <p className="font-display text-2xl italic text-text-muted">No photos found.</p>
         </div>
       ) : (
         <div className="columns-1 gap-4 sm:columns-2 lg:columns-3">

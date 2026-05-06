@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import {
@@ -19,6 +18,7 @@ import {
   Plug,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { BrandLogo } from '@/components/brand/BrandLogo'
 
 const NAV_GROUPS = [
   {
@@ -57,24 +57,29 @@ export function AdminSidebar({
 
   const nav = (
     <>
-      <div className="border-b p-6" style={{ borderColor: 'var(--admin-border)' }}>
-        <div className="inline-flex rounded-full bg-charcoal px-4 py-2">
-          <Image src="/images/logo-white.svg" alt="Room For You" width={100} height={32} className="h-7 w-auto" />
-        </div>
-        <p className="mt-2 font-body text-[10px] uppercase tracking-widest" style={{ color: 'var(--admin-text-muted)' }}>
+      <div className="border-b px-5 py-6" style={{ borderColor: 'var(--admin-border)' }}>
+        <BrandLogo variant="onLight" width={152} height={48} href={null} className="block" />
+        <p
+          className="mt-3 font-body text-[10px] uppercase tracking-[0.2em]"
+          style={{ color: 'var(--admin-text-muted)' }}
+        >
           Admin Dashboard
         </p>
       </div>
 
-      <nav className="flex-1 space-y-5 overflow-y-auto p-4">
+      <nav className="flex-1 space-y-5 overflow-y-auto p-3">
         {NAV_GROUPS.map((group) => (
           <div key={group.label}>
-            <p className="mb-2 px-3 font-body text-[10px] uppercase tracking-[0.2em]" style={{ color: 'var(--admin-text-muted)' }}>
+            <p
+              className="mb-2 px-3 font-body text-[10px] uppercase tracking-[0.2em]"
+              style={{ color: 'var(--admin-text-muted)' }}
+            >
               {group.label}
             </p>
-            <div className="space-y-1">
+            <div className="space-y-0.5">
               {group.items.map((item) => {
-                const isActive = 'exact' in item && item.exact ? pathname === item.href : pathname.startsWith(item.href)
+                const isActive =
+                  'exact' in item && item.exact ? pathname === item.href : pathname.startsWith(item.href)
                 const Icon = item.icon
 
                 return (
@@ -83,16 +88,12 @@ export function AdminSidebar({
                     href={item.href}
                     onClick={() => onMobileClose?.()}
                     className={cn(
-                      'flex items-center gap-3 border-l-[3px] px-3 py-2.5 text-sm font-body transition-all duration-200',
-                      isActive ? 'bg-[rgba(212,168,71,0.08)] text-gold border-gold' : 'border-transparent'
+                      'flex items-center gap-3 rounded-md border-l-[3px] px-3 py-2.5 text-sm font-body transition-all duration-200',
+                      isActive ? 'border-gold bg-[var(--admin-gold-light)] text-gold' : 'border-transparent',
                     )}
-                    style={
-                      isActive
-                        ? undefined
-                        : { color: 'var(--admin-text-muted)' }
-                    }
+                    style={isActive ? undefined : { color: 'var(--admin-text-muted)' }}
                   >
-                    <Icon size={16} />
+                    <Icon size={16} strokeWidth={1.75} />
                     {item.label}
                   </Link>
                 )
@@ -109,7 +110,7 @@ export function AdminSidebar({
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: '/admin/login' })}
-          className="flex w-full items-center gap-3 px-3 py-2.5 text-sm transition-colors hover:text-red-brand"
+          className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors hover:bg-red-brand/10 hover:text-red-brand"
           style={{ color: 'var(--admin-text-muted)' }}
         >
           <LogOut size={16} />
@@ -124,7 +125,7 @@ export function AdminSidebar({
       {mobileOpen ? (
         <button
           type="button"
-          className="fixed inset-0 z-40 bg-black/70 lg:hidden"
+          className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
           aria-label="Close menu"
           onClick={onMobileClose}
         />
@@ -132,9 +133,9 @@ export function AdminSidebar({
 
       <aside
         className={cn(
-          'z-50 flex w-[260px] shrink-0 flex-col border-r transition-transform duration-200 ease-out',
+          'z-50 flex w-[272px] shrink-0 flex-col border-r shadow-soft transition-transform duration-200 ease-out',
           'fixed inset-y-0 left-0 lg:static lg:z-auto lg:translate-x-0',
-          mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          mobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
         )}
         style={{
           borderColor: 'var(--admin-border)',

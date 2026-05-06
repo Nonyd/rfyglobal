@@ -83,8 +83,9 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
           className="mb-8 font-display leading-none"
           style={{ fontSize: 'clamp(3rem, 8vw, 7rem)' }}
         >
-          <span className="block text-white">{content['about.hero.headline1']}</span>
-          <span className="text-gradient-gold block italic">{content['about.hero.headline2']}</span>        </motion.h1>
+          <span className="block text-text-primary">{content['about.hero.headline1']}</span>
+          <span className="text-gradient-gold block italic">{content['about.hero.headline2']}</span>
+        </motion.h1>
         <div className="mx-auto h-px max-w-sm bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
       </section>
 
@@ -103,7 +104,8 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
             className="pb-12 lg:pb-0 lg:pr-16"
           >
             <p className="mb-6 font-body text-[10px] uppercase tracking-[0.4em] text-gold">The Vision</p>
-            <p className="font-body text-lg leading-relaxed text-white/70">{content['about.vision.text']}</p>          </motion.div>
+            <p className="font-body text-lg leading-relaxed text-text-secondary">{content['about.vision.text']}</p>
+          </motion.div>
 
           <motion.div
             initial="hidden"
@@ -119,24 +121,25 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
             className="lg:pl-16"
           >
             <p className="mb-6 font-body text-[10px] uppercase tracking-[0.4em] text-gold">The Mission</p>
-            <p className="font-display text-4xl leading-none text-white lg:text-5xl">
+            <p className="font-display text-4xl leading-none text-text-primary lg:text-5xl">
               {content['about.mission.heading']}
             </p>
             <p className="font-display text-lg italic text-gold/70">{content['about.mission.scripture']}</p>
-            <p className="mt-4 max-w-sm font-body text-sm leading-relaxed text-white/50">
+            <p className="mt-4 max-w-sm font-body text-sm leading-relaxed text-text-secondary">
               {content['about.mission.text']}
-            </p>          </motion.div>
+            </p>
+          </motion.div>
         </div>
       </section>
 
-      <section className="px-6 py-20" style={{ background: '#111111' }}>
+      <section className="bg-charcoal-soft px-6 py-20">
         <div className="mx-auto max-w-6xl">
           <motion.h2
             initial="hidden"
             whileInView="show"
             viewport={{ once: true }}
             variants={fadeUp}
-            className="mb-16 text-center font-display text-3xl text-white lg:text-4xl"
+            className="mb-16 text-center font-display text-3xl text-text-primary lg:text-4xl"
           >
             What Room For You Looks Like
           </motion.h2>
@@ -151,18 +154,18 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
                   hidden: { opacity: 0, y: 20 },
                   show: { opacity: 1, y: 0, transition: { duration: 0.5, delay: i * 0.08 } },
                 }}
-                className="border border-white/10 p-6"
+                className="rfy-card p-6"
               >
                 <p className="mb-4 font-display text-3xl text-gold/30">{item.number}</p>
-                <h3 className="mb-2 font-display text-lg text-white">{item.title}</h3>
-                <p className="font-body text-sm leading-relaxed text-white/50">{item.desc}</p>
+                <h3 className="mb-2 font-display text-lg text-text-primary">{item.title}</h3>
+                <p className="font-body text-sm leading-relaxed text-text-secondary">{item.desc}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="bg-black px-6 py-24 text-center">
+      <section className="surface px-6 py-24 text-center">
         <div className="mx-auto max-w-3xl">
           <motion.h2
             initial="hidden"
@@ -184,7 +187,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
                 transition: { duration: 0.7, ease: EASE, delay: 0.1 },
               },
             }}
-            className="mb-12 font-display text-xl leading-[1.9] text-white/80 lg:text-2xl"
+            className="mb-12 font-display text-xl leading-[1.9] text-text-secondary lg:text-2xl"
             style={{ fontStyle: 'italic' }}
           >
             {CONFESSION_EXCERPT}
@@ -198,7 +201,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
         </div>
       </section>
 
-      <section className="relative overflow-hidden px-6 py-20" style={{ background: '#0A0A0A' }}>
+      <section className="relative overflow-hidden bg-charcoal px-6 py-20">
         <div
           className="pointer-events-none absolute top-0 right-0 bottom-0 w-1/2"
           style={{
@@ -210,13 +213,13 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
         <div className="relative z-10 mx-auto grid max-w-6xl grid-cols-1 items-center gap-16 lg:grid-cols-2">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}>
             <p className="font-display mb-2 text-2xl italic text-gold">The Shepherd</p>
-            <h2 className="font-display mb-1 text-4xl text-white lg:text-5xl">Minister Yadah</h2>
+            <h2 className="font-display mb-1 text-4xl text-cream lg:text-5xl">Minister Yadah</h2>
             <p className="mb-1 font-body text-[10px] uppercase tracking-[0.35em] text-gold/60">
               Founder · Room For You
             </p>
             <div className="mb-8 h-px w-24 bg-gold/50" />
 
-            <div className="space-y-5 font-body text-base leading-relaxed text-white/65">
+            <div className="space-y-5 font-body text-base leading-relaxed text-cream/80">
               {bioParagraphs.map((para, idx) => (
                 <p key={idx}>{para}</p>
               ))}
@@ -234,10 +237,11 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
                 href={content['about.yadah.musicLink']}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 font-body text-sm uppercase tracking-widest text-white/40 transition-colors hover:text-white/70"
+                className="inline-flex items-center gap-2 font-body text-sm uppercase tracking-widest text-cream/50 transition-colors hover:text-cream"
               >
                 Listen to her music →
-              </Link>            </div>
+              </Link>
+            </div>
           </motion.div>
 
           <motion.div
@@ -255,12 +259,13 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
               height={700}
               className="relative z-10 h-[500px] w-full object-cover lg:h-[600px]"
               priority
-            />            <div className="absolute bottom-0 left-0 right-0 z-20 h-1 bg-gradient-to-r from-gold/60 to-transparent" />
+            />
+            <div className="absolute bottom-0 left-0 right-0 z-20 h-1 bg-gradient-to-r from-gold/60 to-transparent" />
           </motion.div>
         </div>
       </section>
 
-      <section className="bg-black px-6 py-24 text-center">
+      <section className="surface px-6 py-24 text-center">
         <div className="mx-auto mb-16 h-px max-w-xs bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
         <motion.p
           initial="hidden"
@@ -271,7 +276,8 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
         >
           {content['about.cta.headline']}
         </motion.p>
-        <p className="mb-10 font-body text-white/50">{content['about.cta.subtext']}</p>        <Link
+        <p className="mb-10 font-body text-text-secondary">{content['about.cta.subtext']}</p>
+        <Link
           href="/forms/join-room-for-you"
           className="inline-block bg-gold px-10 py-4 font-body text-sm font-medium uppercase tracking-widest text-black transition-all duration-300 hover:bg-gold-light"
         >

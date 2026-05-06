@@ -13,7 +13,8 @@ const activities = [
 
 export function VisionSection({ content }: { content: Record<string, string> }) {
   return (
-    <section className="relative surface py-24">
+    <section className="relative overflow-hidden surface py-24 md:py-28">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gold/25 to-transparent" />
       <div className="mx-auto grid max-w-7xl gap-16 px-6 lg:grid-cols-2 lg:gap-16">
         <div className="section-number absolute left-8 top-6 opacity-25">01</div>
         <motion.div

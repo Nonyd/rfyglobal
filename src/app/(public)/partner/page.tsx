@@ -1,5 +1,4 @@
-import { Navbar } from '@/components/layout/Navbar'
-import { Footer } from '@/components/layout/Footer'
+import { PublicPageShell } from '@/components/layout/PublicPageShell'
 import { PartnershipClientPage } from '@/components/partnership/PartnershipClientPage'
 import { getContentMany } from '@/lib/content'
 import {
@@ -47,22 +46,18 @@ export default async function PartnerPage() {
     (payaza?.isActive && payaza?.mode === 'test')
 
   return (
-    <>
-      <Navbar />
-      <main className="min-h-screen bg-bg">
-        <PartnershipClientPage
-          content={content}
-          gateways={{
-            paystack: paystack?.isActive ?? false,
-            flutterwave: flutterwave?.isActive ?? false,
-            payaza: payaza?.isActive ?? false,
-          }}
-          bankDetails={bank ?? null}
-          minimumAmount={settings?.minimumGiftAmount ?? 100}
-          isTestMode={Boolean(isTestMode)}
-        />
-      </main>
-      <Footer />
-    </>
+    <PublicPageShell mainClassName="pb-0">
+      <PartnershipClientPage
+        content={content}
+        gateways={{
+          paystack: paystack?.isActive ?? false,
+          flutterwave: flutterwave?.isActive ?? false,
+          payaza: payaza?.isActive ?? false,
+        }}
+        bankDetails={bank ?? null}
+        minimumAmount={settings?.minimumGiftAmount ?? 100}
+        isTestMode={Boolean(isTestMode)}
+      />
+    </PublicPageShell>
   )
 }

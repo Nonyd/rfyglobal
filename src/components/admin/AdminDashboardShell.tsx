@@ -10,11 +10,11 @@ export function AdminDashboardShell({ children }: { children: React.ReactNode })
 
   return (
     <>
-      <div className="flex h-screen overflow-hidden" style={{ background: 'var(--admin-bg)' }}>
+      <div className="admin-layout flex h-screen overflow-hidden" style={{ background: 'var(--admin-bg)' }}>
         <AdminSidebar mobileOpen={mobileNavOpen} onMobileClose={() => setMobileNavOpen(false)} />
         <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
           <AdminTopbar onMenuClick={() => setMobileNavOpen(true)} />
-          <main className="flex-1 overflow-y-auto p-6 lg:p-8">{children}</main>
+          <main className="flex-1 overflow-y-auto px-4 py-6 sm:px-6 lg:px-10 lg:py-8">{children}</main>
         </div>
       </div>
       <Toaster
@@ -22,10 +22,11 @@ export function AdminDashboardShell({ children }: { children: React.ReactNode })
         toastOptions={{
           style: {
             background: '#fff',
-            color: '#1a1a1a',
+            color: '#141414',
             border: '1px solid var(--admin-border)',
             fontFamily: 'General Sans, sans-serif',
             fontSize: '14px',
+            boxShadow: 'var(--admin-shadow-card)',
           },
           success: { iconTheme: { primary: '#D4A847', secondary: '#FFFFFF' } },
           error: { iconTheme: { primary: '#D0021B', secondary: '#FFFFFF' } },

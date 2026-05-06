@@ -5,7 +5,7 @@ export function OrganizationJsonLd() {
     name: 'Room For You',
     alternateName: 'RFY',
     url: 'https://rfyglobal.org',
-    logo: 'https://rfyglobal.org/images/logo-white.svg',
+    logo: 'https://rfyglobal.org/images/brand-logo-on-dark.png',
     description:
       'A worship, prayer, study, mentorship and evangelism community founded by Minister Yadah. Jesus to Nations.',
     founder: {

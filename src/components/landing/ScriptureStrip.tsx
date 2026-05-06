@@ -37,13 +37,13 @@ export function ScriptureStrip() {
   const scriptureId = data.id ?? 'fallback'
 
   return (
-    <section className="border-y border-gold-subtle bg-black py-16">
+    <section className="border-y border-gold-subtle/80 bg-charcoal py-16 md:py-20">
       <div className="mx-auto max-w-4xl px-6 text-center">
         <p className="font-display text-2xl text-gold md:text-3xl">{data.reference}</p>
-        <p className="mt-6 font-display text-xl italic leading-relaxed text-white md:text-2xl">
+        <p className="mt-6 font-display text-xl italic leading-relaxed text-cream/95 md:text-2xl">
           {data.text}
         </p>
-        <p className="mt-4 font-body text-xs uppercase tracking-widest text-white/40">
+        <p className="mt-4 font-body text-xs uppercase tracking-widest text-cream/45">
           {data.translation}
         </p>
         {data.audioUrl ? (
