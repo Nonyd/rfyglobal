@@ -175,7 +175,7 @@ export function ConfessionPageClient() {
         </p>
         <div className="flex flex-col gap-4 sm:flex-row">
           <Link
-            href="/forms/join-room-for-you"
+            href="/join"
             className="animate-pulse-gold bg-gold px-10 py-4 font-body text-sm font-medium uppercase tracking-widest text-black transition-all duration-300 hover:bg-gold-light"
           >
             Join the Community

@@ -15,9 +15,11 @@ interface SendEmailOptions {
   subject: string
   html: string
   replyTo?: string
+  /** When true, missing credentials or API errors propagate (for automation / logging). */
+  throwOnError?: boolean
 }
 
-export async function sendEmail({ to, subject, html, replyTo }: SendEmailOptions) {
+export async function sendEmail({ to, subject, html, replyTo, throwOnError }: SendEmailOptions) {
   const creds = await getBrevoCredentials()
   const apiKey = creds?.apiKey || process.env.BREVO_API_KEY
   const fromEmail = creds?.fromEmail || process.env.BREVO_FROM_EMAIL || 'noreply@rfyglobal.org'
@@ -25,6 +27,7 @@ export async function sendEmail({ to, subject, html, replyTo }: SendEmailOptions
 
   if (!apiKey) {
     console.error('[Brevo] BREVO_API_KEY is not set')
+    if (throwOnError) throw new Error('Brevo API key is not configured')
     return
   }
 
@@ -43,7 +46,7 @@ export async function sendEmail({ to, subject, html, replyTo }: SendEmailOptions
       ...(replyTo ? { replyTo: { email: replyTo } } : {}),
     })
   } catch (error) {
-    // Log but never throw — email failure should never break a user action
     console.error('[Brevo] Failed to send email:', error)
+    if (throwOnError) throw error
   }
 }

@@ -11,6 +11,8 @@ const PAGE_TITLES: Record<string, string> = {
   '/admin/events': 'Events',
   '/admin/gallery': 'Gallery',
   '/admin/forms': 'Forms',
+  '/admin/members': 'Community Members',
+  '/admin/automation': 'Automation',
   '/admin/cms': 'Site CMS',
   '/admin/integrations': 'Integrations',
   '/admin/partner': 'Partnership',

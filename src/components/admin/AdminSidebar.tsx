@@ -7,13 +7,16 @@ import { signOut } from 'next-auth/react'
 import {
   LayoutDashboard, BookOpen, FileText, GraduationCap,
   Calendar, Images, ClipboardList, Settings2, Plug,
-  Heart, Database, LogOut
+  Heart, Database, LogOut, Users, Zap,
 } from 'lucide-react'
 
 const NAV_GROUPS = [
   {
     label: 'OVERVIEW',
-    items: [{ label: 'Dashboard', href: '/admin', icon: LayoutDashboard, exact: true }],
+    items: [
+      { label: 'Dashboard', href: '/admin', icon: LayoutDashboard, exact: true },
+      { label: 'Members', href: '/admin/members', icon: Users },
+    ],
   },
   {
     label: 'CONTENT',
@@ -30,6 +33,7 @@ const NAV_GROUPS = [
     label: 'SETTINGS',
     items: [
       { label: 'Site CMS', href: '/admin/cms', icon: Settings2 },
+      { label: 'Automation', href: '/admin/automation', icon: Zap },
       { label: 'Integrations', href: '/admin/integrations', icon: Plug },
       { label: 'Partnership', href: '/admin/partner', icon: Heart },
       { label: 'Demo Data', href: '/admin/demo', icon: Database },

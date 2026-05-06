@@ -34,7 +34,7 @@ export default async function AdminHomePage() {
       recentSubmissions,
       recentGifts,
     ] = await Promise.all([
-      db.formSubmission.count({ where: { form: { slug: { contains: 'join' } } } }),
+      db.communityMember.count(),
       db.form.count({ where: { isActive: true } }),
       db.formSubmission.count(),
       db.post.count({ where: { isPublished: true } }),

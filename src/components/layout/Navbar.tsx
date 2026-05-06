@@ -66,7 +66,7 @@ export function Navbar() {
           <div className="flex items-center gap-4">
             <ThemeToggle className="hidden md:flex" />
             <Link
-              href="/forms/join-room-for-you"
+              href="/join"
               className="hidden md:inline-flex items-center px-5 py-2 text-[11px] font-body font-medium tracking-[0.2em] uppercase border border-gold text-gold hover:bg-gold hover:text-void transition-all duration-300"
             >
               Join Us
@@ -127,7 +127,7 @@ export function Navbar() {
                 transition={{ delay: 0.5 }}
               >
                 <Link
-                  href="/forms/join-room-for-you"
+                  href="/join"
                   onClick={() => setMenuOpen(false)}
                   className="mt-4 px-8 py-3 border border-gold text-gold text-[11px] font-body tracking-[0.2em] uppercase hover:bg-gold hover:text-void transition-all"
                 >

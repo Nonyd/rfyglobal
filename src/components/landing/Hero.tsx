@@ -89,7 +89,7 @@ export function Hero() {
           className="flex flex-wrap gap-4"
         >
           <Link
-            href="/forms/join-room-for-you"
+            href="/join"
             className="inline-flex items-center px-8 py-4 bg-gold text-void font-body text-[11px] font-semibold tracking-[0.2em] uppercase hover:bg-gold-bright transition-all duration-300"
           >
             Join the Community

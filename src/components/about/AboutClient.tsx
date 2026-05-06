@@ -278,7 +278,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
         </motion.p>
         <p className="mb-10 font-body text-text-secondary">{content['about.cta.subtext']}</p>
         <Link
-          href="/forms/join-room-for-you"
+          href="/join"
           className="inline-block bg-gold px-10 py-4 font-body text-sm font-medium uppercase tracking-widest text-black transition-all duration-300 hover:bg-gold-light"
         >
           Join the Community

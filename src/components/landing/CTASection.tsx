@@ -40,7 +40,7 @@ export function CTASection({ content }: { content: Record<string, string> }) {
           transition={{ duration: 0.7, delay: 0.4 }}
         >
           <Link
-            href="/forms/join-room-for-you"
+            href="/join"
             className="inline-flex items-center px-10 py-4 bg-void text-snow font-body text-[11px] font-semibold tracking-[0.25em] uppercase hover:bg-smoke transition-all duration-300"
           >
             {content['landing.cta.button'] || 'Join the Community'}

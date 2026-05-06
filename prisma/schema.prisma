@@ -232,3 +232,61 @@ enum ContentType {
   IMAGE
   JSON
 }
+
+// ─── MASTER JOIN & EMAIL AUTOMATION ───────────────────────────────────
+
+model CommunityMember {
+  id           String    @id @default(cuid())
+  name         String
+  phone        String
+  email        String    @unique
+  country      String
+  state        String?
+  city         String?
+  extraFields  Json?
+  isSubscribed Boolean   @default(true)
+  confirmedAt  DateTime  @default(now())
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  emailLogs EmailLog[]
+}
+
+model JoinFormField {
+  id          String    @id @default(cuid())
+  label       String
+  type        FieldType
+  placeholder String?
+  required    Boolean   @default(false)
+  options     Json?
+  order       Int       @default(0)
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+}
+
+model EmailLog {
+  id       String            @id @default(cuid())
+  memberId String?
+  member   CommunityMember?  @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  type     EmailType
+  subject  String
+  sentAt   DateTime          @default(now())
+  status   String            @default("sent")
+  meta     Json?
+}
+
+model AutomationSettings {
+  id                    String   @id @default(cuid())
+  whatsappChannelUrl    String   @default("")
+  devotionalEmailTime   String   @default("07:00")
+  isDevotionalActive    Boolean  @default(true)
+  isEventReminderActive Boolean  @default(true)
+  updatedAt             DateTime @updatedAt
+}
+
+enum EmailType {
+  CONFIRMATION
+  DAILY_DEVOTIONAL
+  EVENT_REMINDER_WEEK
+  EVENT_REMINDER_DAY
+}
