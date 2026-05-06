@@ -1,11 +1,13 @@
 'use client'
 
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 import { MapPin, Clock, Calendar, ArrowLeft, ArrowRight } from 'lucide-react'
 import { format } from 'date-fns'
 import type { Event } from '@prisma/client'
+import { EventRegistrationModal } from '@/components/events/EventRegistrationModal'
 
 interface SingleEventClientProps {
   event: Event
@@ -13,6 +15,7 @@ interface SingleEventClientProps {
 }
 
 export function SingleEventClient({ event, otherEvents }: SingleEventClientProps) {
+  const [registrationOpen, setRegistrationOpen] = useState(false)
   const dateFormatted = format(new Date(event.date), 'EEEE, MMMM do yyyy')
   const monthShort = format(new Date(event.date), 'MMM').toUpperCase()
   const dayNum = format(new Date(event.date), 'dd')
@@ -20,12 +23,12 @@ export function SingleEventClient({ event, otherEvents }: SingleEventClientProps
 
   return (
     <main className="min-h-screen bg-void">
-      <section className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+      <section className="min-h-screen grid grid-cols-1 lg:grid-cols-2 pt-20 lg:pt-0">
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
-          className="relative min-h-[50vh] lg:min-h-screen lg:sticky lg:top-0"
+          className="relative min-h-[50vh] lg:min-h-screen lg:sticky lg:top-0 lg:pt-20"
         >
           {event.imageUrl ? (
             <>
@@ -85,7 +88,7 @@ export function SingleEventClient({ event, otherEvents }: SingleEventClientProps
           initial={{ opacity: 0, x: 32 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col justify-center px-8 lg:px-16 xl:px-20 py-24 lg:py-32"
+          className="flex flex-col justify-center px-8 lg:px-16 xl:px-20 py-24 lg:py-32 lg:pt-28"
           style={{ borderLeft: '1px solid rgba(255,255,255,0.06)' }}
         >
           <motion.div
@@ -190,13 +193,14 @@ export function SingleEventClient({ event, otherEvents }: SingleEventClientProps
               transition={{ duration: 0.7, delay: 1 }}
               className="flex flex-wrap gap-4"
             >
-              <Link
-                href="/join"
+              <button
+                type="button"
+                onClick={() => setRegistrationOpen(true)}
                 className="inline-flex items-center gap-2 px-8 py-4 font-body text-xs font-semibold tracking-widest uppercase transition-all duration-300"
                 style={{ background: '#C9A84C', color: '#0F0F0F' }}
               >
                 Register to Attend →
-              </Link>
+              </button>
               <Link
                 href="/events"
                 className="inline-flex items-center gap-2 px-8 py-4 font-body text-xs tracking-widest uppercase border transition-all duration-300"
@@ -299,6 +303,15 @@ export function SingleEventClient({ event, otherEvents }: SingleEventClientProps
           </div>
         </section>
       )}
+
+      <EventRegistrationModal
+        isOpen={registrationOpen}
+        onClose={() => setRegistrationOpen(false)}
+        eventSlug={event.slug ?? event.id}
+        eventTitle={event.title}
+        eventDate={dateFormatted}
+        eventCity={event.city}
+      />
     </main>
   )
 }

@@ -25,6 +25,9 @@ export async function GET(req: NextRequest) {
   const events = await db.event.findMany({
     where,
     orderBy: { date: 'asc' },
+    ...(session
+      ? { include: { _count: { select: { registrations: true } } } }
+      : {}),
   })
 
   return NextResponse.json(events)

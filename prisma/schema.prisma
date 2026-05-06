@@ -169,18 +169,33 @@ model StudyTask {
 // ─── EVENTS ───────────────────────────────────────────────────────────
 
 model Event {
-  id          String   @id @default(cuid())
-  title       String
-  slug        String?   @unique
-  description String?  @db.Text
-  city        String
-  venue       String
-  date        DateTime
-  time        String?
-  imageUrl    String?
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String              @id @default(cuid())
+  title          String
+  slug           String?             @unique
+  description    String?             @db.Text
+  city           String
+  venue          String
+  date           DateTime
+  time           String?
+  imageUrl       String?
+  isActive       Boolean             @default(true)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  registrations  EventRegistration[]
+}
+
+model EventRegistration {
+  id           String   @id @default(cuid())
+  eventId      String
+  event        Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name         String
+  email        String
+  phone        String
+  location     String
+  expectations String?  @db.Text
+  createdAt    DateTime @default(now())
+
+  @@unique([eventId, email])
 }
 
 // ─── PARTNERSHIP / GIVING ─────────────────────────────────────────────

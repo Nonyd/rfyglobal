@@ -1,5 +1,6 @@
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
+import type { Role } from '@prisma/client'
 import { db } from '@/lib/db'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -78,12 +79,21 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return token
     },
     async session({ session, token }) {
-      if (session.user && token.sub) {
-        if (token.sub === 'env-admin') {
-          session.user.id = 'env-admin'
-          session.user.role = 'ADMIN'
-          return session
-        }
+      if (!session.user || !token.sub) return session
+
+      // Always hydrate from JWT first so the session is never empty if the DB is slow or errors.
+      // Without id/role here, middleware sees no user → redirect loop back to /admin/login.
+      session.user.id = token.sub
+      if (typeof token.role === 'string') {
+        session.user.role = token.role as Role
+      }
+
+      if (token.sub === 'env-admin') {
+        session.user.role = 'ADMIN'
+        return session
+      }
+
+      try {
         const user = await db.user.findUnique({
           where: { id: token.sub },
           select: { id: true, role: true, name: true, email: true, isActive: true },
@@ -94,7 +104,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           session.user.name = user.name ?? undefined
           session.user.email = user.email ?? undefined
         }
+      } catch (err) {
+        console.error('[auth] session DB lookup failed — using JWT claims only:', err)
       }
+
       return session
     },
   },

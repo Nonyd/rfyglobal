@@ -31,8 +31,10 @@ export function AdminLoginForm() {
       setError('Invalid credentials')
       return
     }
-    if (result?.url) {
-      window.location.href = result.url
+
+    // Full page navigation so the session cookie is always sent before middleware runs.
+    if (result?.ok) {
+      window.location.assign(result.url ?? callbackUrl)
     }
   }
 
