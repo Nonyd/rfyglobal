@@ -25,11 +25,11 @@ export function AdminTopbar({ onMenuClick }: { onMenuClick?: () => void }) {
 
   return (
     <header
-      className="flex h-[4.25rem] shrink-0 items-center justify-between gap-4 border-b px-4 sm:px-6 lg:px-8"
+      className="flex items-center justify-between px-6 lg:px-8 border-b"
       style={{
-        borderColor: 'var(--admin-border)',
+        height: '64px',
         background: 'var(--admin-surface)',
-        boxShadow: 'var(--admin-shadow-card)',
+        borderColor: 'var(--admin-border)',
       }}
     >
       <div className="flex min-w-0 items-center gap-3">
@@ -42,25 +42,23 @@ export function AdminTopbar({ onMenuClick }: { onMenuClick?: () => void }) {
         >
           <Menu size={22} />
         </button>
-        <h1 className="truncate font-display text-xl sm:text-2xl" style={{ color: 'var(--admin-text)' }}>
+        <h1 className="font-display text-xl font-semibold" style={{ color: 'var(--admin-text)' }}>
           {title}
         </h1>
       </div>
-      <div className="flex shrink-0 items-center gap-4">
+      <div className="flex items-center gap-4">
         <a
-          href="https://rfyglobal.org"
+          href="https://rfyglobal.vercel.app"
           target="_blank"
-          rel="noreferrer"
-          className="hidden items-center gap-2 rounded-full border px-3 py-1.5 sm:flex"
-          style={{ borderColor: 'var(--admin-border)' }}
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 text-xs font-body transition-colors"
+          style={{ color: 'var(--admin-text-muted)' }}
         >
-          <span className="h-2 w-2 animate-pulse rounded-full bg-green-600" />
-          <span className="font-body text-xs tracking-wide" style={{ color: 'var(--admin-text-muted)' }}>
-            Live site
-          </span>
+          <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          rfyglobal.org
         </a>
         <div
-          className="flex h-10 w-10 items-center justify-center rounded-full font-body text-sm font-semibold text-white shadow-soft"
+          className="w-9 h-9 rounded-full flex items-center justify-center text-xs font-body font-bold text-white"
           style={{ background: 'var(--admin-gold)' }}
         >
           AD

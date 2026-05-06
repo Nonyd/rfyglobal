@@ -39,7 +39,7 @@ export function AdminLoginForm() {
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
       <div>
-        <label htmlFor="email" className="block text-xs uppercase tracking-widest text-white/50 mb-2">
+        <label htmlFor="email" className="block text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--admin-text-muted)' }}>
           Email
         </label>
         <input
@@ -50,13 +50,19 @@ export function AdminLoginForm() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full bg-black border border-white/20 px-3 py-2 text-white font-body focus:border-gold focus:outline-none"
+          className="w-full border px-3 py-2 font-body focus:outline-none"
+          style={{
+            background: 'var(--admin-bg)',
+            borderColor: 'var(--admin-border)',
+            color: 'var(--admin-text)',
+          }}
         />
       </div>
       <div>
         <label
           htmlFor="password"
-          className="block text-xs uppercase tracking-widest text-white/50 mb-2"
+          className="block text-xs uppercase tracking-widest mb-2"
+          style={{ color: 'var(--admin-text-muted)' }}
         >
           Password
         </label>
@@ -68,7 +74,12 @@ export function AdminLoginForm() {
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full bg-black border border-white/20 px-3 py-2 text-white font-body focus:border-gold focus:outline-none"
+          className="w-full border px-3 py-2 font-body focus:outline-none"
+          style={{
+            background: 'var(--admin-bg)',
+            borderColor: 'var(--admin-border)',
+            color: 'var(--admin-text)',
+          }}
         />
       </div>
       {error ? <p className="text-sm text-red-brand">{error}</p> : null}

@@ -171,13 +171,14 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
   return (
     <div className="max-w-3xl">
       <div className="mb-8">
-        <h2 className="font-display text-2xl text-white">Integrations</h2>
-        <p className="text-white/40 text-sm font-body mt-1">Manage all third-party credentials securely</p>
+        <h2 className="font-display text-2xl" style={{ color: 'var(--admin-text)' }}>Integrations</h2>
+        <p className="text-sm font-body mt-1" style={{ color: 'var(--admin-text-secondary)' }}>Manage all third-party credentials securely</p>
       </div>
 
-      <div className="flex items-start gap-3 p-4 border border-gold/30 bg-gold/5 mb-8">
-        <Shield size={18} className="text-gold shrink-0 mt-0.5" />
-        <p className="text-gold/80 text-sm font-body leading-relaxed">
+      <div className="flex items-start gap-3 p-4 mb-8"
+        style={{ background: 'var(--admin-gold-light)', border: '1px solid var(--admin-gold-border)' }}>
+        <Shield size={16} className="shrink-0 mt-0.5" style={{ color: 'var(--admin-gold)' }} />
+        <p className="text-sm font-body leading-relaxed" style={{ color: 'var(--admin-text-secondary)' }}>
           All credentials are encrypted with AES-256-GCM before storage. Keys are masked and never returned in plain text.
         </p>
       </div>
@@ -191,14 +192,18 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
           return (
             <div
               key={service.id}
-              className={cn('border transition-all duration-200', isActive ? 'border-white/15' : 'border-white/8 opacity-70')}
+              className={cn('border transition-all duration-200', !isActive && 'opacity-70')}
+              style={{
+                background: 'var(--admin-surface)',
+                borderColor: isActive ? 'var(--admin-gold-border)' : 'var(--admin-border)',
+              }}
             >
               <div className="flex items-center justify-between p-5">
                 <div className="flex items-center gap-4">
                   <div className="w-3 h-3 rounded-full shrink-0" style={{ background: service.color }} />
                   <div>
-                    <h3 className="font-display text-base text-white">{service.name}</h3>
-                    <p className="text-white/40 text-xs font-body mt-0.5">{service.description}</p>
+                    <h3 className="font-display text-base" style={{ color: 'var(--admin-text)' }}>{service.name}</h3>
+                    <p className="text-xs font-body mt-0.5" style={{ color: 'var(--admin-text-muted)' }}>{service.description}</p>
                   </div>
                 </div>
 
@@ -250,10 +255,10 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
               </div>
 
               {isExpanded ? (
-                <div className="border-t px-5 pb-5 pt-4 space-y-4" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+                <div className="border-t px-5 pb-5 pt-4 space-y-4" style={{ borderColor: 'var(--admin-border)' }}>
                   {service.fields.map((field) => (
                     <div key={field.key}>
-                      <label className="block text-xs uppercase tracking-widest text-white/40 font-body mb-2">
+                      <label className="block text-xs uppercase tracking-widest font-body font-medium mb-2" style={{ color: 'var(--admin-text-secondary)' }}>
                         {field.label}
                       </label>
                       <input
@@ -263,19 +268,27 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
                         placeholder={field.placeholder}
                         autoComplete="off"
                         spellCheck={false}
-                        className="w-full bg-white/5 border border-white/10 text-white px-4 py-3 font-mono text-sm focus:border-gold focus:outline-none transition-colors placeholder:text-white/15"
+                        className="w-full border px-4 py-3 font-mono text-sm focus:outline-none transition-colors"
+                        style={{
+                          background: 'var(--admin-bg)',
+                          borderColor: 'var(--admin-border)',
+                          color: 'var(--admin-text)',
+                        }}
+                        onFocus={(e) => (e.target.style.borderColor = 'var(--admin-gold)')}
+                        onBlur={(e) => (e.target.style.borderColor = 'var(--admin-border)')}
                       />
-                      {field.hint ? <p className="text-white/25 text-xs font-body mt-1">{field.hint}</p> : null}
+                      {field.hint ? <p className="text-xs font-body mt-1" style={{ color: 'var(--admin-text-muted)' }}>{field.hint}</p> : null}
                     </div>
                   ))}
 
                   <div className="flex items-center justify-between pt-2">
-                    <p className="text-white/20 text-xs font-body">Values shown masked - type to update</p>
+                    <p className="text-xs font-body" style={{ color: 'var(--admin-text-muted)' }}>Values shown masked - type to update</p>
                     <button
                       type="button"
                       onClick={() => void saveService(service.id)}
                       disabled={isSaving}
-                      className="flex items-center gap-2 px-5 py-2.5 bg-gold text-black text-sm font-body font-medium hover:bg-gold-light transition-colors disabled:opacity-40"
+                      className="flex items-center gap-2 px-5 py-2.5 text-sm font-body font-medium transition-colors disabled:opacity-40"
+                      style={{ background: 'var(--admin-gold)', color: 'white' }}
                     >
                       <Save size={14} />
                       {isSaving ? 'Saving...' : 'Save Credentials'}

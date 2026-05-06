@@ -30,17 +30,21 @@
   }
 
   .admin-layout {
-    --admin-bg: #f6f4ef;
+    --admin-bg: #f7f3ee;
     --admin-surface: #ffffff;
-    --admin-sidebar: #eeebdf;
-    --admin-border: #e0d9cc;
-    --admin-text: #141414;
-    --admin-text-muted: #5c574f;
-    --admin-gold: #d4a847;
+    --admin-sidebar: #f0eae0;
+    --admin-border: #d8d0c4;
+    --admin-text: #1a1714;
+    --admin-text-secondary: #3d3830;
+    --admin-text-muted: #7a7066;
+    --admin-gold: #c9960a;
     --admin-accent-red: #d0021b;
-    --admin-gold-light: rgba(212, 168, 71, 0.12);
+    --admin-gold-light: rgba(201, 150, 10, 0.1);
+    --admin-gold-border: rgba(201, 150, 10, 0.3);
+    --admin-active-bg: rgba(201, 150, 10, 0.08);
+    --admin-hover-bg: rgba(26, 23, 20, 0.04);
     --admin-shadow-card: 0 1px 0 rgba(20, 20, 20, 0.04), 0 10px 40px rgba(20, 20, 20, 0.06);
-    --admin-ring: rgba(212, 168, 71, 0.45);
+    --admin-ring: rgba(201, 150, 10, 0.45);
   }
 
   * {

@@ -1,8 +1,9 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import {
   LayoutDashboard,
   BookOpen,
@@ -18,7 +19,6 @@ import {
   Plug,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { BrandLogo } from '@/components/brand/BrandLogo'
 
 const NAV_GROUPS = [
   {
@@ -54,24 +54,25 @@ export function AdminSidebar({
   onMobileClose?: () => void
 }) {
   const pathname = usePathname()
+  const { data: session } = useSession()
 
   const nav = (
     <>
-      <div className="border-b px-5 py-6" style={{ borderColor: 'var(--admin-border)' }}>
-        <BrandLogo variant="onLight" width={152} height={48} href={null} className="block" />
-        <p
-          className="mt-3 font-body text-[10px] uppercase tracking-[0.2em]"
-          style={{ color: 'var(--admin-text-muted)' }}
-        >
-          Admin Dashboard
-        </p>
+      <div className="p-5 border-b" style={{ borderColor: 'var(--admin-border)' }}>
+        <Image
+          src="/images/logo-mark-dark.png"
+          alt="Room For You"
+          width={48}
+          height={48}
+          className="h-10 w-auto object-contain"
+        />
       </div>
 
       <nav className="flex-1 space-y-5 overflow-y-auto p-3">
         {NAV_GROUPS.map((group) => (
           <div key={group.label}>
             <p
-              className="mb-2 px-3 font-body text-[10px] uppercase tracking-[0.2em]"
+              className="px-3 mb-2 text-[10px] font-body font-semibold tracking-[0.15em] uppercase"
               style={{ color: 'var(--admin-text-muted)' }}
             >
               {group.label}
@@ -88,10 +89,30 @@ export function AdminSidebar({
                     href={item.href}
                     onClick={() => onMobileClose?.()}
                     className={cn(
-                      'flex items-center gap-3 rounded-md border-l-[3px] px-3 py-2.5 text-sm font-body transition-all duration-200',
-                      isActive ? 'border-gold bg-[var(--admin-gold-light)] text-gold' : 'border-transparent',
+                      'flex items-center gap-3 px-3 py-2.5 text-sm font-body transition-all duration-200 border-l-[3px]',
+                      isActive ? '' : 'border-transparent',
                     )}
-                    style={isActive ? undefined : { color: 'var(--admin-text-muted)' }}
+                    style={
+                      isActive
+                        ? {
+                            color: 'var(--admin-gold)',
+                            background: 'var(--admin-active-bg)',
+                            borderLeft: '3px solid var(--admin-gold)',
+                          }
+                        : { color: 'var(--admin-text-secondary)' }
+                    }
+                    onMouseEnter={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.color = 'var(--admin-text)'
+                        e.currentTarget.style.background = 'var(--admin-hover-bg)'
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isActive) {
+                        e.currentTarget.style.color = 'var(--admin-text-secondary)'
+                        e.currentTarget.style.background = 'transparent'
+                      }
+                    }}
                   >
                     <Icon size={16} strokeWidth={1.75} />
                     {item.label}
@@ -103,17 +124,23 @@ export function AdminSidebar({
         ))}
       </nav>
 
-      <div className="border-t p-4" style={{ borderColor: 'var(--admin-border)' }}>
-        <p className="mb-3 px-3 font-body text-xs" style={{ color: 'var(--admin-text-muted)' }}>
-          admin@rfyglobal.org
+      <div className="p-4 border-t" style={{ borderColor: 'var(--admin-border)' }}>
+        <p className="text-xs font-body mb-3 truncate" style={{ color: 'var(--admin-text-secondary)' }}>
+          {session?.user?.email}
         </p>
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: '/admin/login' })}
-          className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors hover:bg-red-brand/10 hover:text-red-brand"
+          className="flex items-center gap-2 text-sm font-body w-full transition-colors"
           style={{ color: 'var(--admin-text-muted)' }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = '#D0021B'
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = 'var(--admin-text-muted)'
+          }}
         >
-          <LogOut size={16} />
+          <LogOut size={14} />
           Sign Out
         </button>
       </div>

@@ -45,7 +45,7 @@ export default async function AdminHomePage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="font-display text-3xl" style={{ color: 'var(--admin-text)' }}>
+        <h1 className="font-display text-3xl font-semibold" style={{ color: 'var(--admin-text)' }}>
           {greeting}, Nony.
         </h1>
         <p className="mt-1 font-body text-sm" style={{ color: 'var(--admin-text-muted)' }}>
@@ -57,13 +57,19 @@ export default async function AdminHomePage() {
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="admin-card border-l-4 p-5"
-            style={{ borderLeftColor: 'var(--admin-gold)' }}
+            className="shadow-sm border-l-4 p-5"
+            style={{
+              background: 'var(--admin-surface)',
+              borderLeftColor: 'var(--admin-gold)',
+              borderTop: '1px solid var(--admin-border)',
+              borderRight: '1px solid var(--admin-border)',
+              borderBottom: '1px solid var(--admin-border)',
+            }}
           >
             <p className="mb-3 font-body text-xs uppercase tracking-widest" style={{ color: 'var(--admin-text-muted)' }}>
               {stat.label}
             </p>
-            <p className="font-display text-3xl" style={{ color: 'var(--admin-text)' }}>
+            <p className="font-display text-3xl font-bold" style={{ color: 'var(--admin-text)' }}>
               {stat.value}
             </p>
             {stat.trend ? (
@@ -76,7 +82,7 @@ export default async function AdminHomePage() {
       </div>
 
       <div>
-        <p className="mb-4 font-body text-xs uppercase tracking-widest" style={{ color: 'var(--admin-text-muted)' }}>
+        <p className="font-body text-xs uppercase tracking-[0.15em] font-semibold mb-4" style={{ color: 'var(--admin-text-muted)' }}>
           Quick Actions
         </p>
         <div className="flex flex-wrap gap-3">
@@ -91,8 +97,20 @@ export default async function AdminHomePage() {
             <Link
               key={m.href}
               href={m.href}
-              className="admin-card border px-4 py-2.5 text-sm font-body transition-all hover:border-gold/40"
-              style={{ color: 'var(--admin-text)', background: 'var(--admin-surface)' }}
+              className="px-4 py-2.5 font-body text-sm font-medium border transition-all"
+              style={{
+                background: 'var(--admin-surface)',
+                borderColor: 'var(--admin-border)',
+                color: 'var(--admin-text-secondary)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'var(--admin-gold)'
+                e.currentTarget.style.color = 'var(--admin-gold)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'var(--admin-border)'
+                e.currentTarget.style.color = 'var(--admin-text-secondary)'
+              }}
             >
               {m.label}
             </Link>
@@ -128,8 +146,8 @@ export default async function AdminHomePage() {
             </p>
           ) : (
             activity.map((item, i) => (
-              <div key={i} className="admin-card flex items-center gap-3 p-3">
-                <div className="h-2 w-2 shrink-0 rounded-full" style={{ background: item.type === 'gift' ? '#D4A847' : '#6B6560' }} />
+              <div key={i} className="flex items-center gap-3 p-3 border" style={{ background: 'var(--admin-surface)', borderColor: 'var(--admin-border)' }}>
+                <div className="h-2 w-2 shrink-0 rounded-full" style={{ background: item.type === 'gift' ? 'var(--admin-gold)' : 'var(--admin-border)' }} />
                 <p className="flex-1 font-body text-sm" style={{ color: 'var(--admin-text)' }}>
                   {item.label}
                 </p>
