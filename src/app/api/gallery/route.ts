@@ -5,6 +5,15 @@ import { db } from '@/lib/db'
 
 export const runtime = 'nodejs'
 
+const DEFAULT_LIMIT = 20
+const MAX_LIMIT = 1000
+
+const safeInt = (raw: string | null, fallback: number, min: number, max: number) => {
+  const n = Number.parseInt(raw ?? '', 10)
+  if (!Number.isFinite(n)) return fallback
+  return Math.min(Math.max(n, min), max)
+}
+
 export async function GET(req: NextRequest) {
   const session = await auth()
   const { searchParams } = new URL(req.url)
@@ -12,6 +21,9 @@ export async function GET(req: NextRequest) {
   const month = searchParams.get('month') // format: "YYYY-MM"
   const includeHidden = searchParams.get('includeHidden') === 'true'
   const eventId = searchParams.get('eventId')
+  const page = safeInt(searchParams.get('page'), 1, 1, 100_000)
+  const limit = safeInt(searchParams.get('limit'), DEFAULT_LIMIT, 1, MAX_LIMIT)
+  const skip = (page - 1) * limit
 
   const where: Prisma.GalleryImageWhereInput = {}
 
@@ -60,15 +72,27 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  const images = await db.galleryImage.findMany({
-    where,
-    orderBy: [{ takenAt: 'desc' }, { order: 'asc' }, { createdAt: 'desc' }],
-    include: {
-      galleryEvent: { select: { id: true, name: true, city: true, date: true } },
-    },
-  })
+  const [images, total] = await Promise.all([
+    db.galleryImage.findMany({
+      where,
+      orderBy: [{ takenAt: 'desc' }, { order: 'asc' }, { createdAt: 'desc' }],
+      skip,
+      take: limit,
+      include: {
+        galleryEvent: { select: { id: true, name: true, city: true, date: true } },
+      },
+    }),
+    db.galleryImage.count({ where }),
+  ])
 
-  return NextResponse.json(images)
+  return NextResponse.json({
+    images,
+    total,
+    page,
+    limit,
+    totalPages: Math.max(1, Math.ceil(total / limit)),
+    hasMore: page * limit < total,
+  })
 }
 
 type SingleImagePayload = {

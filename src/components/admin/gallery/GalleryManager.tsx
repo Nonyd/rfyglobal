@@ -12,7 +12,11 @@ import {
   Upload,
   Images,
 } from 'lucide-react'
-import { UploadZone, type UploadedFile } from '@/components/shared/UploadZone'
+import {
+  UploadZone,
+  type UploadFailure,
+  type UploadPartialResult,
+} from '@/components/shared/UploadZone'
 import toast from 'react-hot-toast'
 import { format } from 'date-fns'
 import type { GalleryImage, GalleryEvent } from '@prisma/client'
@@ -50,6 +54,12 @@ export function GalleryManager() {
   const [newEventForm, setNewEventForm] = useState<EventForm>(EMPTY_EVENT_FORM)
   const [savingEvent, setSavingEvent] = useState(false)
 
+  const [uploadResult, setUploadResult] = useState<UploadPartialResult | null>(null)
+  const [uploadProgress, setUploadProgress] = useState<{ done: number; total: number } | null>(
+    null,
+  )
+  const [savingPhotos, setSavingPhotos] = useState(false)
+
   const loadEvents = useCallback(async () => {
     try {
       const res = await fetch('/api/gallery/events')
@@ -66,12 +76,15 @@ export function GalleryManager() {
     try {
       const url =
         selectedEventId === 'all'
-          ? '/api/gallery?includeHidden=true'
+          ? '/api/gallery?includeHidden=true&limit=1000'
           : `/api/gallery/events/${selectedEventId}`
       const res = await fetch(url)
       if (!res.ok) throw new Error('Failed to load images')
-      const data = (await res.json()) as ImageWithEvent[]
-      setImages(Array.isArray(data) ? data : [])
+      const data = (await res.json()) as
+        | ImageWithEvent[]
+        | { images: ImageWithEvent[] }
+      const list = Array.isArray(data) ? data : data.images
+      setImages(Array.isArray(list) ? list : [])
     } catch {
       toast.error('Failed to load images')
       setImages([])
@@ -212,32 +225,79 @@ export function GalleryManager() {
     }
   }
 
-  const handleAddPhotosUpload = async (files: UploadedFile[]) => {
-    if (!addPhotosEvent || files.length === 0) return
-    const baseOrder = addPhotosEvent._count.images
-    const isoDate = new Date(addPhotosEvent.date).toISOString()
-    try {
-      await Promise.all(
-        files.map((file, idx) =>
-          fetch('/api/gallery', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              url: file.url,
-              galleryEventId: addPhotosEvent.id,
-              city: addPhotosEvent.city,
-              takenAt: isoDate,
-              order: baseOrder + idx,
-            }),
+  const closeAddPhotosPanel = () => {
+    setAddPhotosEvent(null)
+    setUploadResult(null)
+    setUploadProgress(null)
+  }
+
+  const handleAddPhotosPartialComplete = async (result: UploadPartialResult) => {
+    if (!addPhotosEvent) return
+
+    const persistedFailures: UploadFailure[] = []
+
+    if (result.succeeded.length > 0) {
+      setSavingPhotos(true)
+      const baseOrder = addPhotosEvent._count.images
+      const isoDate = new Date(addPhotosEvent.date).toISOString()
+      try {
+        await Promise.all(
+          result.succeeded.map(async (item, idx) => {
+            try {
+              const res = await fetch('/api/gallery', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  url: item.url,
+                  galleryEventId: addPhotosEvent.id,
+                  city: addPhotosEvent.city,
+                  takenAt: isoDate,
+                  order: baseOrder + idx,
+                }),
+              })
+              if (!res.ok) {
+                const body = (await res.json().catch(() => ({}))) as { error?: string }
+                throw new Error(body.error ?? 'Failed to save image')
+              }
+            } catch (err) {
+              persistedFailures.push({
+                filename: item.filename,
+                error:
+                  err instanceof Error
+                    ? err.message
+                    : 'Uploaded but failed to attach to event',
+              })
+            }
           }),
-        ),
+        )
+        await loadEvents()
+        await loadImages()
+      } finally {
+        setSavingPhotos(false)
+      }
+    }
+
+    const merged: UploadPartialResult = {
+      succeeded: result.succeeded.filter(
+        (s) => !persistedFailures.some((p) => p.filename === s.filename),
+      ),
+      failed: [...result.failed, ...persistedFailures],
+    }
+
+    setUploadResult(merged)
+
+    if (merged.failed.length === 0) {
+      toast.success(
+        `${merged.succeeded.length} photo${merged.succeeded.length > 1 ? 's' : ''} uploaded successfully`,
       )
-      toast.success(`${files.length} photo${files.length > 1 ? 's' : ''} uploaded`)
-      setAddPhotosEvent(null)
-      await loadEvents()
-      await loadImages()
-    } catch {
-      toast.error('Failed to attach uploaded photos')
+    } else if (merged.succeeded.length === 0) {
+      toast.error(
+        `${merged.failed.length} photo${merged.failed.length > 1 ? 's' : ''} failed to upload`,
+      )
+    } else {
+      toast.error(
+        `${merged.succeeded.length} uploaded, ${merged.failed.length} failed`,
+      )
     }
   }
 
@@ -654,7 +714,7 @@ export function GalleryManager() {
       {/* ── ADD PHOTOS PANEL ── */}
       <AnimatePresence>
         {addPhotosEvent && (
-          <SlideOver onClose={() => setAddPhotosEvent(null)} maxWidth="max-w-lg">
+          <SlideOver onClose={closeAddPhotosPanel} maxWidth="max-w-lg">
             <div className="space-y-5 p-8">
               <div className="flex items-start justify-between">
                 <div>
@@ -680,7 +740,7 @@ export function GalleryManager() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setAddPhotosEvent(null)}
+                  onClick={closeAddPhotosPanel}
                   style={{ color: 'var(--a-text-muted)' }}
                   aria-label="Close"
                 >
@@ -689,15 +749,183 @@ export function GalleryManager() {
               </div>
               <div className="h-px" style={{ background: 'var(--a-border)' }} />
 
+              {uploadProgress && uploadProgress.done < uploadProgress.total && (
+                <div
+                  className="flex items-center gap-3 p-3"
+                  style={{
+                    background: 'var(--a-gold-light)',
+                    border: '1px solid var(--a-gold-border)',
+                  }}
+                >
+                  <div
+                    className="h-4 w-4 shrink-0 animate-spin rounded-full border-2 border-t-transparent"
+                    style={{
+                      borderColor: 'rgba(201,168,76,0.4)',
+                      borderTopColor: 'var(--a-gold)',
+                    }}
+                  />
+                  <p
+                    className="font-body text-sm font-medium"
+                    style={{ color: 'var(--a-gold)' }}
+                  >
+                    Uploading {uploadProgress.done} / {uploadProgress.total} photos…
+                  </p>
+                  <p
+                    className="ml-auto font-body text-xs"
+                    style={{ color: 'var(--a-text-muted)' }}
+                  >
+                    {Math.round((uploadProgress.done / uploadProgress.total) * 100)}%
+                  </p>
+                </div>
+              )}
+
+              {savingPhotos && (
+                <p
+                  className="font-body text-xs"
+                  style={{ color: 'var(--a-text-muted)' }}
+                >
+                  Saving uploaded photos to event…
+                </p>
+              )}
+
               <UploadZone
                 folder="gallery"
                 accept="image"
                 maxFiles={100}
+                maxFileSizeMB={10}
                 preview
                 label="Drop up to 100 photos here, or click to browse"
-                onUploadComplete={(files) => void handleAddPhotosUpload(files)}
+                helpText="Max 100 files · 10MB per file · JPG, PNG, WEBP"
                 onUploadError={(err) => toast.error(`Upload failed: ${err.message}`)}
+                onProgress={(done, total) => setUploadProgress({ done, total })}
+                onPartialComplete={(result) => {
+                  void handleAddPhotosPartialComplete(result)
+                }}
               />
+
+              {uploadResult && (
+                <div className="space-y-3">
+                  <div
+                    className="flex items-center gap-3 p-3"
+                    style={{
+                      background: 'var(--a-bg)',
+                      border: '1px solid var(--a-border)',
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="h-2 w-2 rounded-full"
+                        style={{ background: 'rgb(34,197,94)' }}
+                      />
+                      <p
+                        className="font-body text-xs"
+                        style={{ color: 'var(--a-text)' }}
+                      >
+                        {uploadResult.succeeded.length} uploaded
+                      </p>
+                    </div>
+                    {uploadResult.failed.length > 0 && (
+                      <>
+                        <div
+                          style={{
+                            width: '1px',
+                            height: '12px',
+                            background: 'var(--a-border)',
+                          }}
+                        />
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="h-2 w-2 rounded-full"
+                            style={{ background: 'rgb(239,68,68)' }}
+                          />
+                          <p className="font-body text-xs" style={{ color: '#FCA5A5' }}>
+                            {uploadResult.failed.length} failed
+                          </p>
+                        </div>
+                      </>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setUploadResult(null)}
+                      className="ml-auto font-body text-xs transition-colors"
+                      style={{ color: 'var(--a-text-muted)' }}
+                      onMouseEnter={(e) =>
+                        (e.currentTarget.style.color = 'var(--a-text)')
+                      }
+                      onMouseLeave={(e) =>
+                        (e.currentTarget.style.color = 'var(--a-text-muted)')
+                      }
+                    >
+                      Clear
+                    </button>
+                  </div>
+
+                  {uploadResult.failed.length > 0 && (
+                    <div
+                      className="border"
+                      style={{
+                        borderColor: 'rgba(239,68,68,0.3)',
+                        background: 'rgba(239,68,68,0.05)',
+                      }}
+                    >
+                      <div
+                        className="flex items-center justify-between border-b px-4 py-2.5"
+                        style={{ borderColor: 'rgba(239,68,68,0.2)' }}
+                      >
+                        <p
+                          className="font-body text-xs font-medium"
+                          style={{ color: '#FCA5A5' }}
+                        >
+                          Failed uploads — try these files again
+                        </p>
+                      </div>
+                      <div>
+                        {uploadResult.failed.map((f, i) => (
+                          <div
+                            key={`${f.filename}-${i}`}
+                            className="flex items-center gap-3 px-4 py-2.5"
+                            style={{
+                              borderTop:
+                                i === 0 ? 'none' : '1px solid rgba(239,68,68,0.15)',
+                            }}
+                          >
+                            <span className="shrink-0 text-sm" style={{ color: '#F87171' }}>
+                              ✗
+                            </span>
+                            <div className="min-w-0 flex-1">
+                              <p
+                                className="truncate font-body text-xs"
+                                style={{ color: '#FCA5A5' }}
+                              >
+                                {f.filename}
+                              </p>
+                              <p
+                                className="mt-0.5 font-body text-[10px]"
+                                style={{ color: 'rgba(252,165,165,0.7)' }}
+                              >
+                                {f.error}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div
+                        className="border-t px-4 py-3"
+                        style={{ borderColor: 'rgba(239,68,68,0.2)' }}
+                      >
+                        <p
+                          className="font-body text-[10px] leading-relaxed"
+                          style={{ color: 'rgba(252,165,165,0.75)' }}
+                        >
+                          These files failed to upload. Common causes: file too large
+                          (&gt;10MB), unsupported format, or network interruption. Try
+                          re-uploading them individually or check the file size.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
 
               <p className="font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
                 Photos will be added to &ldquo;{addPhotosEvent.name}&rdquo;. You can upload

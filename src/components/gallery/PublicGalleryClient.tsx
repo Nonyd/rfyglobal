@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -29,7 +29,19 @@ export interface PublicGalleryImage {
 }
 
 interface PublicGalleryClientProps {
+  initialImages: PublicGalleryImage[]
+  initialTotal: number
+  cities: string[]
+  months: string[]
+  pageSize?: number
+}
+
+interface PaginatedResponse {
   images: PublicGalleryImage[]
+  total: number
+  page: number
+  totalPages: number
+  hasMore: boolean
 }
 
 const cinematicUrl = (url: string) =>
@@ -53,44 +65,92 @@ const toDate = (value: string | Date | null | undefined): Date | null => {
   return Number.isNaN(d.getTime()) ? null : d
 }
 
-export function PublicGalleryClient({ images }: PublicGalleryClientProps) {
+export function PublicGalleryClient({
+  initialImages,
+  initialTotal,
+  cities,
+  months,
+  pageSize = 20,
+}: PublicGalleryClientProps) {
+  const [images, setImages] = useState<PublicGalleryImage[]>(initialImages)
+  const [total, setTotal] = useState(initialTotal)
+  const [page, setPage] = useState(1)
+  const [loadingMore, setLoadingMore] = useState(false)
+  const [filtering, setFiltering] = useState(false)
+
   const [cityFilter, setCityFilter] = useState<string>('all')
   const [monthFilter, setMonthFilter] = useState<string>('all')
+
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
   const [selectMode, setSelectMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [downloading, setDownloading] = useState(false)
 
-  const cities = useMemo(() => {
-    const set = new Set<string>()
-    images.forEach((img) => {
-      const city = img.galleryEvent?.city ?? img.city
-      if (city) set.add(city)
-    })
-    return Array.from(set).sort()
-  }, [images])
+  const buildParams = useCallback(
+    (overrides: { page?: number; city?: string; month?: string }) => {
+      const params = new URLSearchParams({
+        page: String(overrides.page ?? 1),
+        limit: String(pageSize),
+      })
+      const cityValue = overrides.city ?? cityFilter
+      const monthValue = overrides.month ?? monthFilter
+      if (cityValue !== 'all') params.set('city', cityValue)
+      if (monthValue !== 'all') params.set('month', monthValue)
+      return params
+    },
+    [pageSize, cityFilter, monthFilter],
+  )
 
-  const months = useMemo(() => {
-    const set = new Set<string>()
-    images.forEach((img) => {
-      const date = toDate(img.takenAt) ?? toDate(img.galleryEvent?.date) ?? toDate(img.createdAt)
-      if (date) set.add(format(date, 'yyyy-MM'))
-    })
-    return Array.from(set).sort().reverse()
-  }, [images])
+  const loadMore = async () => {
+    if (loadingMore) return
+    setLoadingMore(true)
+    try {
+      const params = buildParams({ page: page + 1 })
+      const res = await fetch(`/api/gallery?${params.toString()}`)
+      if (!res.ok) throw new Error('Failed')
+      const data = (await res.json()) as PaginatedResponse
+      setImages((prev) => [...prev, ...data.images])
+      setTotal(data.total)
+      setPage(data.page)
+    } catch {
+      toast.error('Failed to load more photos')
+    } finally {
+      setLoadingMore(false)
+    }
+  }
 
-  const filtered = useMemo(() => {
-    return images.filter((img) => {
-      const city = img.galleryEvent?.city ?? img.city
-      const date = toDate(img.takenAt) ?? toDate(img.galleryEvent?.date) ?? toDate(img.createdAt)
-      const month = date ? format(date, 'yyyy-MM') : null
+  const refetchFirstPage = useCallback(
+    async (nextCity: string, nextMonth: string) => {
+      setFiltering(true)
+      setSelectedIds(new Set())
+      try {
+        const params = buildParams({ page: 1, city: nextCity, month: nextMonth })
+        const res = await fetch(`/api/gallery?${params.toString()}`)
+        if (!res.ok) throw new Error('Failed')
+        const data = (await res.json()) as PaginatedResponse
+        setImages(data.images)
+        setTotal(data.total)
+        setPage(1)
+      } catch {
+        toast.error('Failed to filter gallery')
+      } finally {
+        setFiltering(false)
+      }
+    },
+    [buildParams],
+  )
 
-      const matchCity = cityFilter === 'all' || city === cityFilter
-      const matchMonth = monthFilter === 'all' || month === monthFilter
+  const handleCityFilter = (city: string) => {
+    if (city === cityFilter) return
+    setCityFilter(city)
+    void refetchFirstPage(city, monthFilter)
+  }
 
-      return matchCity && matchMonth
-    })
-  }, [images, cityFilter, monthFilter])
+  const handleMonthFilter = (month: string) => {
+    if (month === monthFilter) return
+    setMonthFilter(month)
+    void refetchFirstPage(cityFilter, month)
+  }
 
   const openLightbox = (index: number) => {
     if (selectMode) return
@@ -99,15 +159,15 @@ export function PublicGalleryClient({ images }: PublicGalleryClientProps) {
   const closeLightbox = () => setLightboxIndex(null)
 
   const prevImage = () => {
-    if (lightboxIndex === null) return
+    if (lightboxIndex === null || images.length === 0) return
     setLightboxIndex((i) =>
-      i === null ? null : (i - 1 + filtered.length) % filtered.length,
+      i === null ? null : (i - 1 + images.length) % images.length,
     )
   }
 
   const nextImage = () => {
-    if (lightboxIndex === null) return
-    setLightboxIndex((i) => (i === null ? null : (i + 1) % filtered.length))
+    if (lightboxIndex === null || images.length === 0) return
+    setLightboxIndex((i) => (i === null ? null : (i + 1) % images.length))
   }
 
   const triggerDownload = (url: string, filename?: string) => {
@@ -136,7 +196,7 @@ export function PublicGalleryClient({ images }: PublicGalleryClientProps) {
     toast.loading('Preparing downloads…', { id: 'zip-download' })
 
     try {
-      const selectedImages = filtered.filter((img) => selectedIds.has(img.id))
+      const selectedImages = images.filter((img) => selectedIds.has(img.id))
       for (let i = 0; i < selectedImages.length; i++) {
         triggerDownload(selectedImages[i].url, `rfy-photo-${i + 1}.jpg`)
         await new Promise((resolve) => setTimeout(resolve, 350))
@@ -163,14 +223,18 @@ export function PublicGalleryClient({ images }: PublicGalleryClientProps) {
     })
   }
 
-  const currentImage = lightboxIndex !== null ? filtered[lightboxIndex] : null
+  const currentImage = lightboxIndex !== null ? images[lightboxIndex] : null
+  const hasMore = images.length < total
+  const remaining = Math.max(0, total - images.length)
+  const nextBatchSize = Math.min(pageSize, remaining)
+  const progressPercent = total > 0 ? (images.length / total) * 100 : 0
 
   return (
     <div className="bg-void">
       <div className="mx-auto max-w-7xl px-6 pb-6 pt-4">
         <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <p className="label-text">
-            {filtered.length} photo{filtered.length === 1 ? '' : 's'}
+            {images.length} of {total} photo{total === 1 ? '' : 's'}
           </p>
 
           <div className="flex flex-wrap items-center gap-3">
@@ -205,8 +269,11 @@ export function PublicGalleryClient({ images }: PublicGalleryClientProps) {
         </div>
 
         {selectMode && (
-          <p className="mt-2 font-body text-[11px]" style={{ color: 'rgba(248,248,248,0.4)' }}>
-            Tap photos to select. Photos download individually.
+          <p
+            className="mt-2 font-body text-[11px]"
+            style={{ color: 'rgba(248,248,248,0.4)' }}
+          >
+            Select from currently loaded photos. Photos download individually.
           </p>
         )}
 
@@ -216,14 +283,16 @@ export function PublicGalleryClient({ images }: PublicGalleryClientProps) {
               <p className="label-text text-[10px] opacity-40">Month</p>
               <FilterPill
                 active={monthFilter === 'all'}
-                onClick={() => setMonthFilter('all')}
+                disabled={filtering}
+                onClick={() => handleMonthFilter('all')}
                 label="All"
               />
               {months.map((m) => (
                 <FilterPill
                   key={m}
                   active={monthFilter === m}
-                  onClick={() => setMonthFilter(m)}
+                  disabled={filtering}
+                  onClick={() => handleMonthFilter(m)}
                   label={format(new Date(`${m}-01T00:00:00`), 'MMM yyyy')}
                 />
               ))}
@@ -235,14 +304,16 @@ export function PublicGalleryClient({ images }: PublicGalleryClientProps) {
               <p className="label-text text-[10px] opacity-40">City</p>
               <FilterPill
                 active={cityFilter === 'all'}
-                onClick={() => setCityFilter('all')}
+                disabled={filtering}
+                onClick={() => handleCityFilter('all')}
                 label="All"
               />
               {cities.map((c) => (
                 <FilterPill
                   key={c}
                   active={cityFilter === c}
-                  onClick={() => setCityFilter(c)}
+                  disabled={filtering}
+                  onClick={() => handleCityFilter(c)}
                   label={c}
                 />
               ))}
@@ -252,14 +323,18 @@ export function PublicGalleryClient({ images }: PublicGalleryClientProps) {
       </div>
 
       <div className="mx-auto max-w-7xl px-6 pb-24">
-        {filtered.length === 0 ? (
+        {filtering && images.length === 0 ? (
+          <div className="py-24 text-center">
+            <p className="font-body text-sm text-mist">Loading…</p>
+          </div>
+        ) : images.length === 0 ? (
           <div className="py-24 text-center">
             <p className="mb-3 font-display text-2xl text-snow">No photos found</p>
             <p className="font-body text-sm text-mist">Try a different filter</p>
           </div>
         ) : (
           <div className="columns-1 gap-3 space-y-3 sm:columns-2 lg:columns-3 xl:columns-4">
-            {filtered.map((image, index) => {
+            {images.map((image, index) => {
               const isSelected = selectedIds.has(image.id)
               const eventName = image.galleryEvent?.name ?? image.caption ?? null
               const city = image.galleryEvent?.city ?? image.city
@@ -273,7 +348,7 @@ export function PublicGalleryClient({ images }: PublicGalleryClientProps) {
                   key={image.id}
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ duration: 0.4, delay: Math.min(index * 0.03, 0.5) }}
+                  transition={{ duration: 0.4, delay: Math.min(index * 0.02, 0.4) }}
                   className="group relative cursor-pointer break-inside-avoid overflow-hidden"
                   onClick={() =>
                     selectMode ? toggleSelect(image.id) : openLightbox(index)
@@ -361,6 +436,70 @@ export function PublicGalleryClient({ images }: PublicGalleryClientProps) {
             })}
           </div>
         )}
+
+        {hasMore && images.length > 0 && (
+          <div className="mt-16 flex flex-col items-center gap-3 pb-8">
+            <p className="label-text opacity-40">
+              {images.length} of {total} photos
+            </p>
+
+            <div
+              className="h-px w-48"
+              style={{ background: 'rgba(255,255,255,0.1)' }}
+            >
+              <div
+                className="h-full transition-all duration-500"
+                style={{ width: `${progressPercent}%`, background: '#C9A84C' }}
+              />
+            </div>
+
+            <button
+              type="button"
+              onClick={() => void loadMore()}
+              disabled={loadingMore || filtering}
+              className="mt-4 flex items-center gap-3 border px-10 py-4 font-body text-xs font-semibold uppercase tracking-[0.25em] transition-all duration-300 disabled:opacity-50"
+              style={{
+                borderColor: 'rgba(201,168,76,0.4)',
+                color: '#C9A84C',
+                background: 'transparent',
+              }}
+              onMouseEnter={(e) => {
+                if (loadingMore || filtering) return
+                e.currentTarget.style.background = '#C9A84C'
+                e.currentTarget.style.color = '#0F0F0F'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent'
+                e.currentTarget.style.color = '#C9A84C'
+              }}
+            >
+              {loadingMore ? (
+                <>
+                  <span
+                    className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
+                    style={{
+                      borderColor: 'rgba(201,168,76,0.4)',
+                      borderTopColor: '#C9A84C',
+                    }}
+                  />
+                  Loading…
+                </>
+              ) : (
+                <>
+                  Load More Photos
+                  <span className="opacity-60">+{nextBatchSize}</span>
+                </>
+              )}
+            </button>
+          </div>
+        )}
+
+        {!hasMore && images.length > 0 && (
+          <div className="mt-16 flex flex-col items-center gap-3 pb-8">
+            <div className="gold-line w-24 opacity-30" />
+            <p className="label-text opacity-30">All {total} photos loaded</p>
+          </div>
+        )}
       </div>
 
       <AnimatePresence>
@@ -406,7 +545,7 @@ export function PublicGalleryClient({ images }: PublicGalleryClientProps) {
               Download
             </button>
 
-            {filtered.length > 1 && (
+            {images.length > 1 && (
               <button
                 type="button"
                 onClick={(e) => {
@@ -461,12 +600,12 @@ export function PublicGalleryClient({ images }: PublicGalleryClientProps) {
                   </p>
                 )}
                 <p className="mt-0.5 font-body text-xs text-white/50">
-                  {lightboxIndex + 1} / {filtered.length}
+                  {lightboxIndex + 1} / {images.length}
                 </p>
               </div>
             </motion.div>
 
-            {filtered.length > 1 && (
+            {images.length > 1 && (
               <button
                 type="button"
                 onClick={(e) => {
@@ -497,16 +636,19 @@ function FilterPill({
   active,
   label,
   onClick,
+  disabled,
 }: {
   active: boolean
   label: string
   onClick: () => void
+  disabled?: boolean
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className="px-3 py-1 font-body text-xs tracking-wide transition-all"
+      disabled={disabled}
+      className="px-3 py-1 font-body text-xs tracking-wide transition-all disabled:opacity-40"
       style={{
         background: active ? '#C9A84C' : 'transparent',
         color: active ? '#0F0F0F' : 'rgba(248,248,248,0.6)',

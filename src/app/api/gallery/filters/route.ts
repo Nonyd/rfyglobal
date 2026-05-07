@@ -4,26 +4,33 @@ import { db } from '@/lib/db'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
+const monthKey = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+
 export async function GET() {
   const images = await db.galleryImage.findMany({
     where: { isActive: true },
-    select: { city: true, takenAt: true },
+    select: {
+      city: true,
+      takenAt: true,
+      createdAt: true,
+      galleryEvent: { select: { city: true, date: true } },
+    },
   })
 
-  const cities = Array.from(new Set(images.map((i) => i.city).filter(Boolean) as string[])).sort()
+  const cities = new Set<string>()
+  const months = new Set<string>()
 
-  const months = Array.from(
-    new Set(
-      images
-        .filter((i) => i.takenAt)
-        .map((i) => {
-          const d = new Date(i.takenAt!)
-          return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
-        }),
-    ),
-  )
-    .sort()
-    .reverse()
+  for (const img of images) {
+    const city = img.galleryEvent?.city ?? img.city
+    if (city) cities.add(city)
 
-  return NextResponse.json({ cities, months })
+    const date = img.takenAt ?? img.galleryEvent?.date ?? img.createdAt
+    if (date) months.add(monthKey(new Date(date)))
+  }
+
+  return NextResponse.json({
+    cities: Array.from(cities).sort(),
+    months: Array.from(months).sort().reverse(),
+  })
 }
