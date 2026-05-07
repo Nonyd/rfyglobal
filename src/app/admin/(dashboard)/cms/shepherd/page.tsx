@@ -13,7 +13,13 @@ const FIELDS: CMSField[] = [
   },
   { key: 'shepherd.name', label: 'Name', type: 'text' },
   { key: 'shepherd.title', label: 'Title / Role', type: 'text' },
-  { key: 'shepherd.image', label: 'Portrait Photo', type: 'image', hint: 'Yadah portrait shown on the landing page' },
+  {
+    key: 'shepherd.portrait',
+    label: 'Shepherd Portrait Image',
+    type: 'image',
+    hint: 'Portrait photo of Minister Yadah — shown on the landing page Shepherd section',
+    uploadFolder: 'portraits',
+  },
   { key: 'shepherd.link', label: 'Yadah World Link', type: 'url' },
 ]
 

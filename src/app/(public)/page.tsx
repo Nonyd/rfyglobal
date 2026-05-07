@@ -8,6 +8,8 @@ import { CTASection } from '@/components/landing/CTASection'
 import { Footer } from '@/components/layout/Footer'
 import { getContentMany } from '@/lib/content'
 
+export const dynamic = 'force-dynamic'
+
 export default async function HomePage() {
   const content = await getContentMany([
     'landing.vision.heading',
@@ -19,6 +21,7 @@ export default async function HomePage() {
     'shepherd.quote',
     'shepherd.name',
     'shepherd.title',
+    'shepherd.portrait',
     'shepherd.image',
     'shepherd.link',
     'highlights.1.title',

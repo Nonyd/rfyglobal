@@ -9,6 +9,7 @@ export type CloudinaryFolder =
   | 'studyMaterial'
   | 'gallery'
   | 'cms'
+  | 'portraits'
   | 'eventImage'
 
 export type ResourceType = 'image' | 'raw'

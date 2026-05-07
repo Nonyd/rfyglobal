@@ -16,6 +16,7 @@ export const UPLOAD_FOLDERS = {
   studyMaterial: 'rfyglobal/study/materials',
   gallery: 'rfyglobal/gallery',
   cms: 'rfyglobal/cms',
+  portraits: 'rfyglobal/portraits',
   eventImage: 'rfyglobal/events',
 } as const
 

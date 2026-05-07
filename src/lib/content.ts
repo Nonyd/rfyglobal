@@ -20,6 +20,7 @@ const DEFAULTS: Record<string, string> = {
     'Room For You was born out of a deep conviction — that every young person deserves a community where they are seen, known, and called into purpose. This is not just a ministry. It is a family. And there is room for you here.',
   'shepherd.name': 'Minister Yadah',
   'shepherd.title': 'Founder, Room For You',
+  'shepherd.portrait': '/images/yadah-portrait.svg',
   'shepherd.image': '/images/yadah-portrait.svg',
   'shepherd.link': 'https://yadahworld.com',
 

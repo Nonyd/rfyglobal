@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
 import { BrandLogo } from '@/components/brand/BrandLogo'
@@ -9,15 +10,26 @@ import { ThemeToggle } from '@/components/shared/ThemeToggle'
 import { cn } from '@/lib/utils'
 
 const NAV_LINKS = [
+  { label: 'Home', href: '/' },
   { label: 'Word', href: '/word' },
   { label: 'Study', href: '/study' },
   { label: 'Events', href: '/events' },
   { label: 'Gallery', href: '/gallery' },
   { label: 'Blog', href: '/blog' },
+  { label: 'About', href: '/about' },
   { label: 'Partner', href: '/partner' },
 ]
 
+const DESKTOP_NAV_LINKS = NAV_LINKS.filter((l) => l.href !== '/')
+const MOBILE_NAV_LINKS = NAV_LINKS
+
+function linkActive(pathname: string, href: string) {
+  if (href === '/') return pathname === '/'
+  return pathname === href || pathname.startsWith(`${href}/`)
+}
+
 export function Navbar() {
+  const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -37,7 +49,7 @@ export function Navbar() {
           'fixed top-0 left-0 right-0 z-50 transition-all duration-500',
           scrolled
             ? 'bg-void/90 backdrop-blur-xl border-b border-ash/40 py-4'
-            : 'bg-transparent py-6'
+            : 'bg-transparent py-6',
         )}
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between">
@@ -52,12 +64,16 @@ export function Navbar() {
             />
           </Link>
 
-          <div className="hidden lg:flex items-center gap-10">
-            {NAV_LINKS.map((link) => (
+          <div className="hidden lg:flex items-center gap-7 xl:gap-8">
+            {DESKTOP_NAV_LINKS.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-[11px] font-body font-medium tracking-[0.2em] uppercase text-mist hover:text-snow transition-colors duration-300"
+                prefetch
+                className={cn(
+                  'text-[10px] xl:text-[11px] font-body font-medium tracking-[0.18em] xl:tracking-[0.2em] uppercase transition-colors duration-300',
+                  linkActive(pathname, link.href) ? 'text-gold' : 'text-mist hover:text-snow',
+                )}
               >
                 {link.label}
               </Link>
@@ -102,17 +118,17 @@ export function Navbar() {
                 imgClassName="h-14 max-h-14 w-auto sm:h-16 sm:max-h-16 md:h-[72px] md:max-h-[72px]"
               />
               <button
-              type="button"
+                type="button"
                 aria-label="Close menu"
                 onClick={() => setMenuOpen(false)}
                 className="text-mist hover:text-snow"
-            >
+              >
                 <X size={20} />
               </button>
             </div>
 
             <div className="flex flex-col items-center justify-center flex-1 gap-8">
-              {NAV_LINKS.map((link, i) => (
+              {MOBILE_NAV_LINKS.map((link, i) => (
                 <motion.div
                   key={link.href}
                   initial={{ opacity: 0, y: 16 }}
@@ -121,8 +137,12 @@ export function Navbar() {
                 >
                   <Link
                     href={link.href}
+                    prefetch
                     onClick={() => setMenuOpen(false)}
-                    className="font-display text-4xl text-snow hover:text-gold transition-colors"
+                    className={cn(
+                      'font-display text-4xl transition-colors',
+                      linkActive(pathname, link.href) ? 'text-gold' : 'text-snow hover:text-gold',
+                    )}
                   >
                     {link.label}
                   </Link>

@@ -1,7 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 import { ContentType } from '@prisma/client'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
+
+function revalidatePublicSite() {
+  revalidatePath('/')
+  revalidatePath('/about')
+  revalidatePath('/partner')
+  revalidatePath('/confession')
+  revalidatePath('/', 'layout')
+}
 
 export const runtime = 'nodejs'
 
@@ -39,6 +48,8 @@ export async function POST(req: NextRequest) {
     create: { key, value, type: contentType },
   })
 
+  revalidatePublicSite()
+
   return NextResponse.json(record)
 }
 
@@ -50,5 +61,8 @@ export async function DELETE(req: NextRequest) {
   if (!key) return NextResponse.json({ error: 'key required' }, { status: 400 })
 
   await db.siteContent.deleteMany({ where: { key } })
+
+  revalidatePublicSite()
+
   return NextResponse.json({ success: true })
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { OrganizationJsonLd, WebsiteJsonLd } from '@/components/seo/JsonLd'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
+import { CookieBanner } from '@/components/shared/CookieBanner'
 import './globals.css'
 
 const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
@@ -85,7 +86,10 @@ export default function RootLayout({
       <body>
         <OrganizationJsonLd />
         <WebsiteJsonLd />
-        <ThemeProvider>{children}</ThemeProvider>
+        <ThemeProvider>
+          {children}
+          <CookieBanner />
+        </ThemeProvider>
       </body>
     </html>
   )

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { UploadZone } from '@/components/shared/UploadZone'
+import type { CloudinaryFolder } from '@/lib/cloudinary-client'
 import { cn } from '@/lib/utils'
 import toast from 'react-hot-toast'
 import { RotateCcw } from 'lucide-react'
@@ -12,6 +13,8 @@ export interface CMSField {
   type: 'text' | 'textarea' | 'image' | 'url'
   placeholder?: string
   hint?: string
+  /** Cloudinary folder for image uploads (default: cms) */
+  uploadFolder?: CloudinaryFolder
 }
 
 interface CMSEditorProps {
@@ -180,7 +183,7 @@ export function CMSEditor({ title, description, fields, initialValues, defaults 
                     />
                   ) : null}
                   <UploadZone
-                    folder="cms"
+                    folder={field.uploadFolder ?? 'cms'}
                     accept="image"
                     preview
                     label="Upload new image"

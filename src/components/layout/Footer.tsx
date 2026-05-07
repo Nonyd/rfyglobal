@@ -77,9 +77,30 @@ export async function Footer() {
           <p className="font-body text-xs text-fog">
             {content['footer.copyright'] || '© 2026 Room For You · rfyglobal.org · A SonsHub Media Initiative.'}
           </p>
-          <Link href="/confession" className="font-body text-xs text-fog hover:text-gold transition-colors">
-            The Confession →
-          </Link>
+
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            <Link
+              href="/privacy"
+              className="font-body text-xs text-fog hover:text-gold transition-colors"
+            >
+              Privacy Policy
+            </Link>
+            <Link
+              href="/cookies"
+              className="font-body text-xs text-fog hover:text-gold transition-colors"
+            >
+              Cookie Policy
+            </Link>
+            <Link
+              href="/refund"
+              className="font-body text-xs text-fog hover:text-gold transition-colors"
+            >
+              Refund Policy
+            </Link>
+            <Link href="/confession" className="font-body text-xs text-fog hover:text-gold transition-colors">
+              The Confession →
+            </Link>
+          </div>
         </div>
       </div>
     </footer>
