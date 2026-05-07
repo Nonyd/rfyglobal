@@ -13,9 +13,9 @@ export default function AdminLoginPage() {
         <Image
           src="/images/logo-dark.png"
           alt="Room For You"
-          width={200}
-          height={100}
-          className="mx-auto h-24 w-auto object-contain"
+          width={240}
+          height={120}
+          className="mx-auto h-28 w-auto object-contain"
           priority
         />
         <Link

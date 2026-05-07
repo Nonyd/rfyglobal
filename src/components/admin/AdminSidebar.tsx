@@ -102,7 +102,7 @@ export function AdminSidebar({ theme, userRole }: AdminSidebarProps) {
             src={theme === 'dark' ? '/images/logo-white.png' : '/images/logo-dark.png'}
             alt="Room For You"
             style={{
-              height: '48px',
+              height: '72px',
               width: 'auto',
               objectFit: 'contain',
               display: 'block',

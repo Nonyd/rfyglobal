@@ -71,7 +71,7 @@ export const ScriptureShareCard = forwardRef<HTMLDivElement, ScriptureShareCardP
               position: 'absolute',
               top: '48px',
               left: '80px',
-              height: '100px',
+              height: '140px',
               width: 'auto',
               objectFit: 'contain',
             }}
