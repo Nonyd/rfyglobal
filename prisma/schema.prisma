@@ -51,6 +51,7 @@ model Scripture {
   audioUrl    String?
   scheduledAt DateTime?
   isActive    Boolean   @default(true)
+  isDraft     Boolean   @default(false)
   displayedOn DateTime?
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

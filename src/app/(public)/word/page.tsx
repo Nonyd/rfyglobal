@@ -22,10 +22,11 @@ export default async function WordPage() {
       where: {
         scheduledAt: { gte: dayStart, lt: dayEnd },
         isActive: true,
+        isDraft: false,
       },
     }),
     db.scripture.findMany({
-      where: { isActive: true },
+      where: { isActive: true, isDraft: false },
       orderBy: [{ scheduledAt: 'desc' }, { createdAt: 'desc' }],
     }),
   ])

@@ -7,6 +7,7 @@ export const CreateScriptureSchema = z.object({
   audioUrl: z.union([z.string().url(), z.literal('')]).optional(),
   scheduledAt: z.union([z.string().datetime(), z.literal('')]).optional(),
   isActive: z.boolean().default(true),
+  isDraft: z.boolean().default(false),
 })
 
 export const UpdateScriptureSchema = CreateScriptureSchema.partial()

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { AudioPlayer } from '@/components/shared/AudioPlayer'
-import { ShareButton } from '@/components/shared/ShareButton'
+import { ScriptureShareButton } from '@/components/word/ScriptureShareButton'
 import { cn, formatDate } from '@/lib/utils'
 import type { Scripture } from '@prisma/client'
 
@@ -63,7 +63,12 @@ export function WordClientPage({ today, allScriptures }: WordClientPageProps) {
               ) : null}
 
               <div className="flex justify-center pt-4">
-                <ShareButton scriptureId={today.id} reference={today.reference} />
+                <ScriptureShareButton
+                  scriptureId={today.id}
+                  reference={today.reference}
+                  text={today.text}
+                  translation={today.translation}
+                />
               </div>
             </div>
           ) : (
@@ -107,7 +112,13 @@ export function WordClientPage({ today, allScriptures }: WordClientPageProps) {
                       </div>
                     ) : null}
                   </div>
-                  <ShareButton scriptureId={s.id} reference={s.reference} compact />
+                  <ScriptureShareButton
+                    scriptureId={s.id}
+                    reference={s.reference}
+                    text={s.text}
+                    translation={s.translation}
+                    compact
+                  />
                 </div>
               </div>
             ))

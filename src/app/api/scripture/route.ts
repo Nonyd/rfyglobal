@@ -9,9 +9,15 @@ export const dynamic = 'force-dynamic'
 
 export async function GET() {
   const session = await auth()
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (session) {
+    const scriptures = await db.scripture.findMany({
+      orderBy: [{ scheduledAt: 'desc' }, { createdAt: 'desc' }],
+    })
+    return NextResponse.json(scriptures)
+  }
 
   const scriptures = await db.scripture.findMany({
+    where: { isActive: true, isDraft: false },
     orderBy: [{ scheduledAt: 'desc' }, { createdAt: 'desc' }],
   })
 

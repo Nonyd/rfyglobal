@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Edit, Trash2, Volume2, Calendar, Shuffle, X } from 'lucide-react'
+import { Plus, Edit, Trash2, Volume2, Calendar, Shuffle, X, Upload } from 'lucide-react'
 import { UploadZone } from '@/components/shared/UploadZone'
 import { formatDate } from '@/lib/utils'
 import { cn } from '@/lib/utils'
@@ -17,9 +17,20 @@ interface ScriptureManagerProps {
 
 export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
   const [scriptures, setScriptures] = useState(initialScriptures)
+  const [tab, setTab] = useState<'published' | 'drafts'>('published')
   const [panelOpen, setPanelOpen] = useState(false)
+  const [bulkUploadOpen, setBulkUploadOpen] = useState(false)
   const [editing, setEditing] = useState<Scripture | null>(null)
   const [saving, setSaving] = useState(false)
+  const [bulkFile, setBulkFile] = useState<File | null>(null)
+  const [bulkUploading, setBulkUploading] = useState(false)
+  const [bulkResult, setBulkResult] = useState<{
+    created: number
+    duplicates: number
+    duplicateRefs: string[]
+    errors: string[]
+    total: number
+  } | null>(null)
 
   const [reference, setReference] = useState('')
   const [translation, setTranslation] = useState('KJV')
@@ -28,6 +39,15 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
   const [scheduleType, setScheduleType] = useState<'DATE' | 'RANDOM'>('RANDOM')
   const [scheduledAt, setScheduledAt] = useState('')
   const [isActive, setIsActive] = useState(true)
+
+  const loadScriptures = async () => {
+    const res = await fetch('/api/scripture')
+    if (!res.ok) throw new Error('Failed to load scriptures')
+    const data = (await res.json()) as Scripture[]
+    setScriptures(data)
+  }
+
+  const displayedScriptures = scriptures.filter((s) => (tab === 'drafts' ? s.isDraft : !s.isDraft))
 
   const openNew = () => {
     setEditing(null)
@@ -53,6 +73,40 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
     setPanelOpen(true)
   }
 
+  const openBulkUpload = () => {
+    setBulkFile(null)
+    setBulkResult(null)
+    setBulkUploadOpen(true)
+  }
+
+  const handleBulkUpload = async () => {
+    if (!bulkFile) return
+    setBulkUploading(true)
+    setBulkResult(null)
+
+    try {
+      const formData = new FormData()
+      formData.append('file', bulkFile)
+      const res = await fetch('/api/scripture/bulk-upload', {
+        method: 'POST',
+        body: formData,
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? 'Upload failed')
+
+      setBulkResult(data as { created: number; duplicates: number; duplicateRefs: string[]; errors: string[]; total: number })
+      if ((data as { created: number }).created > 0) {
+        toast.success(`${(data as { created: number }).created} scriptures added as drafts`)
+        await loadScriptures()
+        setTab('drafts')
+      }
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : 'Upload failed')
+    } finally {
+      setBulkUploading(false)
+    }
+  }
+
   const handleSave = async () => {
     if (!reference.trim()) {
       toast.error('Reference is required')
@@ -76,6 +130,7 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
         audioUrl: audioUrl || '',
         scheduledAt: scheduleType === 'DATE' ? new Date(scheduledAt).toISOString() : '',
         isActive,
+        isDraft: false,
       }
 
       const url = editing ? `/api/scripture/${editing.id}` : '/api/scripture'
@@ -131,6 +186,22 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
     }
   }
 
+  const publishDraft = async (scriptureId: string) => {
+    const res = await fetch(`/api/scripture/${scriptureId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ isDraft: false, isActive: true }),
+    })
+
+    if (res.ok) {
+      toast.success('Scripture published')
+      await loadScriptures()
+      setTab('published')
+    } else {
+      toast.error('Failed to publish')
+    }
+  }
+
   return (
     <div className="relative">
       <div className="mb-8 flex items-center justify-between">
@@ -140,26 +211,60 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
             One scripture + audio displayed per day · {scriptures.length} total
           </p>
         </div>
-        <button
-          type="button"
-          onClick={openNew}
-          className="flex items-center gap-2 bg-gold px-5 py-2.5 font-body text-sm font-medium text-black transition-colors hover:bg-gold-light"
-        >
-          <Plus size={16} /> Add Scripture
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={openBulkUpload}
+            className="flex items-center gap-2 border px-5 py-2.5 font-body text-sm font-medium transition-colors"
+            style={{ borderColor: 'var(--a-gold-border)', color: 'var(--a-gold)' }}
+          >
+            <Upload size={16} /> Bulk Upload
+          </button>
+          <button
+            type="button"
+            onClick={openNew}
+            className="flex items-center gap-2 bg-gold px-5 py-2.5 font-body text-sm font-medium text-black transition-colors hover:bg-gold-light"
+          >
+            <Plus size={16} /> Add Scripture
+          </button>
+        </div>
       </div>
 
-      {scriptures.length === 0 ? (
+      <div className="mb-4 flex border-b" style={{ borderColor: 'var(--a-border)' }}>
+        {(['published', 'drafts'] as const).map((currentTab) => (
+          <button
+            key={currentTab}
+            onClick={() => setTab(currentTab)}
+            className="border-b-2 px-5 py-2.5 font-body text-sm font-medium capitalize transition-all"
+            style={{
+              borderBottomColor: tab === currentTab ? 'var(--a-gold)' : 'transparent',
+              color: tab === currentTab ? 'var(--a-gold)' : 'var(--a-text-muted)',
+              marginBottom: '-1px',
+            }}
+          >
+            {currentTab}
+            <span className="ml-2 text-xs opacity-60">
+              ({scriptures.filter((s) => (currentTab === 'drafts' ? s.isDraft : !s.isDraft)).length})
+            </span>
+          </button>
+        ))}
+      </div>
+
+      {displayedScriptures.length === 0 ? (
         <div
           className="border border-dashed py-24 text-center"
           style={{ borderColor: 'var(--a-gold-border)' }}
         >
-          <p className="font-display text-2xl italic" style={{ color: 'var(--a-text-muted)' }}>No scriptures yet</p>
-          <p className="mt-2 font-body text-sm" style={{ color: 'var(--a-text-muted)' }}>Add your first scripture to get started</p>
+          <p className="font-display text-2xl italic" style={{ color: 'var(--a-text-muted)' }}>
+            {tab === 'drafts' ? 'No drafts yet' : 'No published scriptures yet'}
+          </p>
+          <p className="mt-2 font-body text-sm" style={{ color: 'var(--a-text-muted)' }}>
+            {tab === 'drafts' ? 'Use bulk upload to create drafts' : 'Add your first scripture to get started'}
+          </p>
         </div>
       ) : (
         <div className="space-y-3">
-          {scriptures.map((s) => (
+          {displayedScriptures.map((s) => (
             <div
               key={s.id}
               className={cn(
@@ -211,6 +316,16 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
                 </div>
 
                 <div className="flex shrink-0 items-center gap-2">
+                  {s.isDraft ? (
+                    <button
+                      type="button"
+                      onClick={() => void publishDraft(s.id)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-body font-medium text-white transition-all"
+                      style={{ background: 'var(--a-gold)' }}
+                    >
+                      Publish
+                    </button>
+                  ) : null}
                   <button
                     type="button"
                     onClick={() => toggleActive(s)}
@@ -508,6 +623,144 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
                 >
                   {saving ? 'Saving…' : editing ? 'Update Scripture' : 'Add Scripture'}
                 </button>
+              </div>
+            </motion.div>
+          </>
+        ) : null}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {bulkUploadOpen ? (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setBulkUploadOpen(false)}
+              className="fixed inset-0 z-40 bg-black/60"
+            />
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+              className="fixed bottom-0 right-0 top-0 z-50 w-full max-w-lg overflow-y-auto"
+              style={{
+                background: 'var(--a-surface)',
+                borderLeft: '1px solid var(--a-border)',
+                boxShadow: 'var(--a-shadow-md)',
+              }}
+            >
+              <div className="space-y-6 p-8">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-display text-xl font-semibold" style={{ color: 'var(--a-text)' }}>
+                    Bulk Upload Scriptures
+                  </h3>
+                  <button onClick={() => setBulkUploadOpen(false)} style={{ color: 'var(--a-text-muted)' }}>
+                    <X size={20} />
+                  </button>
+                </div>
+
+                <div className="border p-4" style={{ borderColor: 'var(--a-gold-border)', background: 'var(--a-gold-light)' }}>
+                  <p className="mb-2 font-body text-xs font-medium" style={{ color: 'var(--a-gold)' }}>
+                    File Format (.txt)
+                  </p>
+                  <p className="mb-3 font-body text-xs" style={{ color: 'var(--a-text-secondary)' }}>
+                    One scripture per line. Use <code style={{ background: 'var(--a-bg)', padding: '1px 4px' }}> | </code>
+                    as separator:
+                  </p>
+                  <div className="p-3 font-mono text-xs" style={{ background: 'var(--a-bg)', color: 'var(--a-text-secondary)' }}>
+                    <p>John 3:16 | For God so loved the world... | NIV</p>
+                    <p>Romans 8:1 | There is now no condemnation... | NIV</p>
+                    <p>Psalm 23:1 | The LORD is my shepherd... | KJV</p>
+                  </div>
+                  <p className="mt-2 font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
+                    Lines starting with # are ignored. Translation defaults to NIV if omitted. Uploads are saved as drafts.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="mb-2 block font-body text-xs font-medium uppercase tracking-widest" style={{ color: 'var(--a-text-secondary)' }}>
+                    Select .txt File
+                  </label>
+                  <input
+                    type="file"
+                    accept=".txt"
+                    onChange={(e) => setBulkFile(e.target.files?.[0] ?? null)}
+                    className="w-full font-body text-sm"
+                    style={{ color: 'var(--a-text)' }}
+                  />
+                  {bulkFile ? (
+                    <p className="mt-1 font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
+                      {bulkFile.name} - {(bulkFile.size / 1024).toFixed(1)}KB
+                    </p>
+                  ) : null}
+                </div>
+
+                <button
+                  onClick={() => void handleBulkUpload()}
+                  disabled={!bulkFile || bulkUploading}
+                  className="w-full py-3 font-body text-sm font-semibold uppercase tracking-wide text-white disabled:opacity-40"
+                  style={{ background: 'var(--a-gold)' }}
+                >
+                  {bulkUploading ? 'Uploading...' : 'Upload & Create Drafts'}
+                </button>
+
+                {bulkResult ? (
+                  <div className="space-y-3">
+                    <div className="border p-4" style={{ borderColor: 'var(--a-border)', background: 'var(--a-surface)' }}>
+                      <div className="grid grid-cols-3 gap-4 text-center">
+                        <div>
+                          <p className="font-display text-2xl font-bold" style={{ color: 'var(--a-gold)' }}>
+                            {bulkResult.created}
+                          </p>
+                          <p className="font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>Created</p>
+                        </div>
+                        <div>
+                          <p className="font-display text-2xl font-bold" style={{ color: 'var(--a-text)' }}>
+                            {bulkResult.duplicates}
+                          </p>
+                          <p className="font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>Duplicates</p>
+                        </div>
+                        <div>
+                          <p
+                            className="font-display text-2xl font-bold"
+                            style={{ color: bulkResult.errors.length > 0 ? 'var(--a-red)' : 'var(--a-text)' }}
+                          >
+                            {bulkResult.errors.length}
+                          </p>
+                          <p className="font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>Errors</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {bulkResult.duplicateRefs.length > 0 ? (
+                      <div className="border p-3" style={{ borderColor: 'var(--a-border)' }}>
+                        <p className="mb-2 font-body text-xs font-medium" style={{ color: 'var(--a-text-secondary)' }}>
+                          Skipped (already exist):
+                        </p>
+                        {bulkResult.duplicateRefs.map((ref, index) => (
+                          <p key={`${ref}-${index}`} className="font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
+                            - {ref}
+                          </p>
+                        ))}
+                      </div>
+                    ) : null}
+
+                    {bulkResult.errors.length > 0 ? (
+                      <div className="border p-3" style={{ borderColor: 'rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.05)' }}>
+                        <p className="mb-2 font-body text-xs font-medium" style={{ color: '#FCA5A5' }}>
+                          Parse errors:
+                        </p>
+                        {bulkResult.errors.map((error, index) => (
+                          <p key={`${error}-${index}`} className="font-body text-xs" style={{ color: 'rgba(252,165,165,0.8)' }}>
+                            {error}
+                          </p>
+                        ))}
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
               </div>
             </motion.div>
           </>
