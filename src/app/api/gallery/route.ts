@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { Prisma } from '@prisma/client'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 
@@ -8,19 +9,53 @@ export async function GET(req: NextRequest) {
   const session = await auth()
   const { searchParams } = new URL(req.url)
   const city = searchParams.get('city')
-  const month = searchParams.get('month')
+  const month = searchParams.get('month') // format: "YYYY-MM"
+  const includeHidden = searchParams.get('includeHidden') === 'true'
+  const eventId = searchParams.get('eventId')
 
-  const where: Record<string, unknown> = {}
-  if (!session) {
+  const where: Prisma.GalleryImageWhereInput = {}
+
+  if (!session || !includeHidden) {
     where.isActive = true
   }
-  if (city) where.city = { contains: city, mode: 'insensitive' as const }
+
+  if (eventId) {
+    where.galleryEventId = eventId
+  }
+
+  if (city && city !== 'all') {
+    where.OR = [
+      { city: { equals: city, mode: 'insensitive' } },
+      { galleryEvent: { is: { city: { equals: city, mode: 'insensitive' } } } },
+    ]
+  }
+
   if (month) {
     const [year, m] = month.split('-').map(Number)
     if (!Number.isNaN(year) && !Number.isNaN(m)) {
-      where.takenAt = {
-        gte: new Date(year, m - 1, 1),
-        lt: new Date(year, m, 1),
+      const start = new Date(year, m - 1, 1)
+      const end = new Date(year, m, 1)
+      const monthFilter: Prisma.GalleryImageWhereInput[] = [
+        { takenAt: { gte: start, lt: end } },
+        {
+          AND: [
+            { takenAt: null },
+            { galleryEvent: { is: { date: { gte: start, lt: end } } } },
+          ],
+        },
+        {
+          AND: [
+            { takenAt: null },
+            { galleryEventId: null },
+            { createdAt: { gte: start, lt: end } },
+          ],
+        },
+      ]
+      if (where.OR) {
+        where.AND = [{ OR: where.OR }, { OR: monthFilter }]
+        delete where.OR
+      } else {
+        where.OR = monthFilter
       }
     }
   }
@@ -28,34 +63,73 @@ export async function GET(req: NextRequest) {
   const images = await db.galleryImage.findMany({
     where,
     orderBy: [{ takenAt: 'desc' }, { order: 'asc' }, { createdAt: 'desc' }],
+    include: {
+      galleryEvent: { select: { id: true, name: true, city: true, date: true } },
+    },
   })
 
   return NextResponse.json(images)
+}
+
+type SingleImagePayload = {
+  url: string
+  thumbnailUrl?: string | null
+  caption?: string | null
+  eventName?: string | null
+  city?: string | null
+  takenAt?: string | null
+  galleryEventId?: string | null
+  order?: number
+}
+
+type BulkImagesPayload = {
+  images: SingleImagePayload[]
 }
 
 export async function POST(req: NextRequest) {
   const session = await auth()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const body = (await req.json()) as {
-    images?: { url: string; caption?: string; eventName?: string; city?: string; takenAt?: string }[]
-  }
-  const images = body.images
+  const body = (await req.json()) as Partial<SingleImagePayload> & Partial<BulkImagesPayload>
 
-  if (!Array.isArray(images) || images.length === 0) {
-    return NextResponse.json({ error: 'No images provided' }, { status: 400 })
+  // Bulk insert path
+  if (Array.isArray(body.images)) {
+    const images = body.images
+    if (images.length === 0) {
+      return NextResponse.json({ error: 'No images provided' }, { status: 400 })
+    }
+    const created = await db.galleryImage.createMany({
+      data: images.map((img, i) => ({
+        url: img.url,
+        thumbnailUrl: img.thumbnailUrl ?? null,
+        caption: img.caption ?? null,
+        eventName: img.eventName ?? null,
+        city: img.city ?? null,
+        takenAt: img.takenAt ? new Date(img.takenAt) : null,
+        galleryEventId: img.galleryEventId ?? null,
+        order: typeof img.order === 'number' ? img.order : i,
+      })),
+    })
+    return NextResponse.json({ created: created.count }, { status: 201 })
   }
 
-  const created = await db.galleryImage.createMany({
-    data: images.map((img, i) => ({
-      url: img.url,
-      caption: img.caption ?? null,
-      eventName: img.eventName ?? null,
-      city: img.city ?? null,
-      takenAt: img.takenAt ? new Date(img.takenAt) : null,
-      order: i,
-    })),
+  // Single insert path
+  if (!body.url) {
+    return NextResponse.json({ error: 'url is required' }, { status: 400 })
+  }
+
+  const image = await db.galleryImage.create({
+    data: {
+      url: body.url,
+      thumbnailUrl: body.thumbnailUrl ?? null,
+      caption: body.caption ?? null,
+      eventName: body.eventName ?? null,
+      city: body.city ?? null,
+      takenAt: body.takenAt ? new Date(body.takenAt) : null,
+      galleryEventId: body.galleryEventId ?? null,
+      order: typeof body.order === 'number' ? body.order : 0,
+    },
   })
 
-  return NextResponse.json({ created: created.count }, { status: 201 })
+  return NextResponse.json(image, { status: 201 })
 }

@@ -254,17 +254,31 @@ enum PaymentStatus {
 
 // ─── GALLERY ─────────────────────────────────────────────────────────
 
+model GalleryEvent {
+  id        String         @id @default(cuid())
+  name      String
+  city      String
+  date      DateTime
+  isActive  Boolean        @default(true)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  images    GalleryImage[]
+}
+
 model GalleryImage {
-  id        String    @id @default(cuid())
-  url       String
-  caption   String?
-  eventName String?
-  city      String?
-  takenAt   DateTime?
-  order     Int       @default(0)
-  isActive  Boolean   @default(true)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id             String        @id @default(cuid())
+  url            String
+  thumbnailUrl   String?
+  galleryEventId String?
+  galleryEvent   GalleryEvent? @relation(fields: [galleryEventId], references: [id], onDelete: SetNull)
+  caption        String?
+  eventName      String?
+  city           String?
+  takenAt        DateTime?
+  order          Int           @default(0)
+  isActive       Boolean       @default(true)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 }
 
 // ─── SITE CMS ───────────────────────────────────────────────────────

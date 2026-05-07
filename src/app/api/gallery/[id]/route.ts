@@ -10,6 +10,8 @@ type PatchBody = {
   eventName?: string | null
   city?: string | null
   takenAt?: string | null
+  galleryEventId?: string | null
+  thumbnailUrl?: string | null
   order?: number
   isActive?: boolean
 }
@@ -25,6 +27,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if ('city' in body) data.city = body.city
   if ('order' in body) data.order = body.order
   if ('isActive' in body) data.isActive = body.isActive
+  if ('thumbnailUrl' in body) data.thumbnailUrl = body.thumbnailUrl
+  if ('galleryEventId' in body) {
+    data.galleryEventId = body.galleryEventId && body.galleryEventId.length > 0 ? body.galleryEventId : null
+  }
   if ('takenAt' in body) {
     data.takenAt = body.takenAt ? new Date(body.takenAt) : null
   }
@@ -32,6 +38,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const image = await db.galleryImage.update({
     where: { id: params.id },
     data,
+    include: {
+      galleryEvent: { select: { name: true, city: true, date: true } },
+    },
   })
   return NextResponse.json(image)
 }
