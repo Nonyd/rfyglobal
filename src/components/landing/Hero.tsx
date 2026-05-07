@@ -3,15 +3,23 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
 import { Navbar } from '@/components/layout/Navbar'
 
 const words = [
-  { text: 'THERE IS', style: 'text-outline', delay: 0.2 },
+  { text: 'THERE IS', delay: 0.2 },
   { text: 'ROOM', style: 'text-gold-gradient', delay: 0.5 },
-  { text: 'FOR YOU.', style: 'text-snow', delay: 0.8 },
+  { text: 'FOR YOU.', delay: 0.8 },
 ]
 
 export function Hero() {
+  const { resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+
+  const isDark = !mounted || resolvedTheme === 'dark'
+
   return (
     <section className="relative min-h-screen bg-void overflow-hidden flex flex-col">
       <Navbar />
@@ -22,7 +30,9 @@ export function Hero() {
           width: '600px',
           height: '600px',
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%)',
+          background: isDark
+            ? 'radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%)'
+            : 'radial-gradient(circle, rgba(139,90,0,0.05) 0%, transparent 70%)',
           top: '50%',
           right: '10%',
           transform: 'translateY(-50%)',
@@ -57,8 +67,13 @@ export function Hero() {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: word.delay, ease: [0.16, 1, 0.3, 1] }}
-              className={`font-display font-bold leading-none ${word.style}`}
-              style={{ fontSize: 'clamp(4rem, 11vw, 10rem)' }}
+              className={`font-display font-bold leading-none ${
+                i === 0 ? (isDark ? 'text-outline' : 'text-outline-gold') : word.style ?? ''
+              }`}
+              style={{
+                fontSize: 'clamp(4rem, 11vw, 10rem)',
+                ...(i === 2 ? { color: isDark ? '#F8F8F8' : '#0F0C08' } : {}),
+              }}
             >
               {word.text}
             </motion.h1>
@@ -77,6 +92,7 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.4 }}
           className="font-body text-mist text-lg leading-relaxed max-w-lg mb-12"
+          style={{ color: isDark ? '#A0A0A0' : '#3D3530' }}
         >
           A community of young men and women singing songs of salvation,
           studying the Word, and getting others saved.
@@ -114,7 +130,12 @@ export function Hero() {
             { value: 'Nations', label: 'Jesus to' },
           ].map((stat) => (
             <div key={stat.label} className="flex flex-col">
-              <span className="font-display text-snow text-xl font-semibold">{stat.value}</span>
+              <span
+                className="font-display text-snow text-xl font-semibold"
+                style={{ color: isDark ? '#F8F8F8' : '#0F0C08' }}
+              >
+                {stat.value}
+              </span>
               <span className="label-text opacity-60">{stat.label}</span>
             </div>
           ))}
@@ -127,7 +148,14 @@ export function Hero() {
         transition={{ delay: 2.5 }}
         className="absolute bottom-10 right-10 hidden lg:flex flex-col items-center gap-2"
       >
-        <div className="w-px h-16 bg-gradient-to-b from-transparent to-gold opacity-40" />
+        <div
+          className="w-px h-16 opacity-40"
+          style={{
+            background: isDark
+              ? 'linear-gradient(to bottom, transparent, #C9A84C)'
+              : 'linear-gradient(to bottom, transparent, #8B5A00)',
+          }}
+        />
         <div className="w-1 h-1 rounded-full bg-gold animate-pulse" />
       </motion.div>
     </section>

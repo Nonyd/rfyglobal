@@ -3,6 +3,9 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
+import { cn } from '@/lib/utils'
 
 const EASE = [0.25, 0.46, 0.45, 0.94] as const
 
@@ -51,6 +54,11 @@ const ACTIVITIES = [
 const CONFESSION_EXCERPT = `I am saved by grace through faith. I am justified and redeemed by the blood of Jesus. I have received mercy because of the sacrifice of Jesus on the cross. God's love has been shed abroad in my heart and I am sealed with the Holy Spirit. I am now a part of God's family! I am committed to learning the value of this family and I grow in both wisdom and stature. I am committed to study and prayers! I am saved and I get others saved. I am reconciled and I reconcile others. On account of me, many come to the knowledge of the Son. It's Jesus to nations — and I am a willing vessel! I live my life in honor of the one who died for me, till his return!`
 
 export function AboutClient({ content }: { content: Record<string, string> }) {
+  const { resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  const isDark = !mounted || resolvedTheme === 'dark'
+
   const portrait = content['about.yadah.image']
   const portraitUrl = portrait.includes('cloudinary.com')
     ? portrait.replace('/upload/', '/upload/w_600,h_700,c_fill,f_auto,q_auto,g_face/')
@@ -165,7 +173,10 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
         </div>
       </section>
 
-      <section className="surface px-6 py-24 text-center">
+      <section
+        className="px-6 py-24 text-center"
+        style={{ background: isDark ? '#0F0F0F' : '#EDE7DB' }}
+      >
         <div className="mx-auto max-w-3xl">
           <motion.h2
             initial="hidden"
@@ -187,8 +198,11 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
                 transition: { duration: 0.7, ease: EASE, delay: 0.1 },
               },
             }}
-            className="mb-12 font-display text-xl leading-[1.9] text-text-secondary lg:text-2xl"
-            style={{ fontStyle: 'italic' }}
+            className="mb-12 font-display text-xl leading-[1.9] lg:text-2xl"
+            style={{
+              fontStyle: 'italic',
+              color: isDark ? 'rgba(248,248,248,0.7)' : '#2C2520',
+            }}
           >
             {CONFESSION_EXCERPT}
           </motion.p>
@@ -201,25 +215,37 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
         </div>
       </section>
 
-      <section className="relative overflow-hidden bg-charcoal px-6 py-20">
+      <section
+        className={cn('relative overflow-hidden px-6 py-20', isDark && 'bg-charcoal')}
+        style={!isDark ? { background: '#E8E2D6' } : undefined}
+      >
         <div
           className="pointer-events-none absolute top-0 right-0 bottom-0 w-1/2"
           style={{
-            background:
-              'radial-gradient(ellipse 80% 60% at 100% 50%, rgba(201,168,76,0.06), transparent)',
+            background: isDark
+              ? 'radial-gradient(ellipse 80% 60% at 100% 50%, rgba(201,168,76,0.06), transparent)'
+              : 'radial-gradient(ellipse 80% 60% at 100% 50%, rgba(139,90,0,0.05), transparent)',
           }}
         />
 
         <div className="relative z-10 mx-auto grid max-w-6xl grid-cols-1 items-center gap-16 lg:grid-cols-2">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}>
             <p className="font-display mb-2 text-2xl italic text-gold">The Shepherd</p>
-            <h2 className="font-display mb-1 text-4xl text-cream lg:text-5xl">Minister Yadah</h2>
+            <h2
+              className="font-display mb-1 text-4xl lg:text-5xl"
+              style={{ color: isDark ? '#F5F0E8' : '#0F0C08' }}
+            >
+              Minister Yadah
+            </h2>
             <p className="mb-1 font-body text-[10px] uppercase tracking-[0.35em] text-gold/60">
               Founder · Room For You
             </p>
             <div className="mb-8 h-px w-24 bg-gold/50" />
 
-            <div className="space-y-5 font-body text-base leading-relaxed text-cream/80">
+            <div
+              className="space-y-5 font-body text-base leading-relaxed"
+              style={{ color: isDark ? 'rgba(245,240,232,0.8)' : '#3D3530' }}
+            >
               {bioParagraphs.map((para, idx) => (
                 <p key={idx}>{para}</p>
               ))}
@@ -237,7 +263,10 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
                 href={content['about.yadah.musicLink']}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 font-body text-sm uppercase tracking-widest text-cream/50 transition-colors hover:text-cream"
+                className="inline-flex items-center gap-2 font-body text-sm uppercase tracking-widest transition-colors hover:underline"
+                style={{
+                  color: isDark ? 'rgba(245,240,232,0.5)' : '#7A7066',
+                }}
               >
                 Listen to her music →
               </Link>

@@ -205,3 +205,31 @@
 img, video, canvas {
   transition: none;
 }
+
+/* ══════════════════════════════════════════════
+   LIGHT MODE — Public site overrides
+   Fixes components using hardcoded dark colors
+══════════════════════════════════════════════ */
+
+.light .bg-void { background-color: #F5F0E8 !important; }
+.light .bg-ink  { background-color: #EDE7DB !important; }
+.light .bg-smoke { background-color: #E5DFD4 !important; }
+
+.light .text-snow { color: #0F0C08 !important; }
+.light .text-mist { color: #3D3530 !important; }
+.light .text-fog  { color: #7A7066 !important; }
+
+.light .text-outline {
+  color: transparent !important;
+  -webkit-text-stroke: 1px rgba(15,12,8,0.35) !important;
+}
+.light .text-outline-gold {
+  color: transparent !important;
+  -webkit-text-stroke: 1px rgba(139,90,0,0.5) !important;
+}
+
+/* Section dividers */
+.light .section-divider {
+  background: linear-gradient(90deg, transparent, #8B5A00, transparent);
+  opacity: 0.3;
+}

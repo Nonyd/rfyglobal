@@ -12,7 +12,7 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
   ]
 
   return (
-    <section className="bg-void py-32 px-6">
+    <section className="py-32 px-6" style={{ background: 'rgb(var(--color-bg))' }}>
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-32 items-center">
         <motion.div
           initial={{ opacity: 0, x: -32 }}
@@ -22,8 +22,11 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
         >
           <p className="label-text mb-8">The Vision</p>
           <h2
-            className="font-display text-snow leading-tight mb-8"
-            style={{ fontSize: 'clamp(2.2rem, 5vw, 4.5rem)' }}
+            className="font-display leading-tight mb-8"
+            style={{
+              fontSize: 'clamp(2.2rem, 5vw, 4.5rem)',
+              color: 'rgb(var(--color-text-primary))',
+            }}
           >
             {content['landing.vision.heading'] || 'Building a community'}
             <br />
@@ -31,7 +34,10 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
               {content['landing.vision.subheading'] || 'Jesus to Nations'}
             </span>
           </h2>
-          <p className="font-body text-mist leading-relaxed text-lg max-w-md">
+          <p
+            className="font-body leading-relaxed text-lg max-w-md"
+            style={{ color: 'rgb(var(--color-text-secondary))' }}
+          >
             {content['landing.vision.text'] || 'Building a community of young men and women who sing songs of salvation with conviction of their identity in Christ.'}
           </p>
         </motion.div>
@@ -45,7 +51,12 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
         >
           <div>
             <p className="label-text mb-4">The Mission</p>
-            <p className="font-display text-4xl text-snow mb-2">Jesus to Nations</p>
+            <p
+              className="font-display text-4xl mb-2"
+              style={{ color: 'rgb(var(--color-text-primary))' }}
+            >
+              Jesus to Nations
+            </p>
             <p className="font-display text-lg italic text-gold opacity-70">
               2 Corinthians 5:17–21
             </p>
@@ -64,7 +75,12 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
                 className="flex items-start gap-4"
               >
                 <div className="w-px h-4 bg-gold opacity-60 mt-1 shrink-0" />
-                <p className="font-body text-mist text-sm leading-relaxed">{item}</p>
+                <p
+                  className="font-body text-sm leading-relaxed"
+                  style={{ color: 'rgb(var(--color-text-secondary))' }}
+                >
+                  {item}
+                </p>
               </motion.div>
             ))}
           </div>

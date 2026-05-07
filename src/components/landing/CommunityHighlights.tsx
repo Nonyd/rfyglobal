@@ -11,7 +11,7 @@ export function CommunityHighlights({ content }: { content: Record<string, strin
   ]
 
   return (
-    <section className="bg-void py-32 px-6">
+    <section className="py-32 px-6" style={{ background: 'rgb(var(--color-bg))' }}>
       <div className="max-w-7xl mx-auto">
         <div className="flex items-end justify-between mb-20">
           <motion.div
@@ -20,13 +20,19 @@ export function CommunityHighlights({ content }: { content: Record<string, strin
             viewport={{ once: true }}
           >
             <p className="label-text mb-4">What We Do</p>
-            <h2 className="font-display text-snow" style={{ fontSize: 'clamp(2rem, 5vw, 4rem)' }}>
+            <h2
+              className="font-display"
+              style={{ fontSize: 'clamp(2rem, 5vw, 4rem)', color: 'rgb(var(--color-text-primary))' }}
+            >
               Community <span className="italic text-gold-gradient">life.</span>
             </h2>
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-ash">
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 gap-px"
+          style={{ background: 'rgb(var(--color-border))' }}
+        >
           {highlights.map((h, i) => (
             <motion.div
               key={h.n}
@@ -34,15 +40,27 @@ export function CommunityHighlights({ content }: { content: Record<string, strin
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.1 }}
-              className="bg-void p-10 hover-lift group cursor-default"
+              className="p-10 hover-lift group cursor-default"
+              style={{ background: 'rgb(var(--color-bg))' }}
             >
-              <p className="font-display text-6xl text-ash group-hover:text-gold/20 transition-colors duration-500 mb-8 font-bold">
+              <p
+                className="font-display text-6xl group-hover:text-gold/20 transition-colors duration-500 mb-8 font-bold"
+                style={{ color: 'rgb(var(--color-border))' }}
+              >
                 {h.n}
               </p>
-              <h3 className="font-display text-snow text-2xl mb-3 group-hover:text-gold transition-colors duration-300">
+              <h3
+                className="font-display text-2xl mb-3 group-hover:text-gold transition-colors duration-300"
+                style={{ color: 'rgb(var(--color-text-primary))' }}
+              >
                 {h.title}
               </h3>
-              <p className="font-body text-fog text-sm leading-relaxed">{h.desc}</p>
+              <p
+                className="font-body text-sm leading-relaxed"
+                style={{ color: 'rgb(var(--color-text-secondary))' }}
+              >
+                {h.desc}
+              </p>
               <div className="gold-line-left w-0 group-hover:w-12 transition-all duration-500 mt-6 opacity-60" />
             </motion.div>
           ))}

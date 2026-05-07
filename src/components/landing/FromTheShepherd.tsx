@@ -3,14 +3,21 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useTheme } from 'next-themes'
+import { useEffect, useState } from 'react'
 
 export function FromTheShepherd({ content }: { content: Record<string, string> }) {
+  const { resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => setMounted(true), [])
+  const isDark = !mounted || resolvedTheme === 'dark'
+
   const portraitUrl =
     content['shepherd.portrait'] || content['shepherd.image'] || null
 
   return (
-    <section className="relative bg-void py-32 px-6">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-16 lg:gap-24 items-center">
+    <section className="relative py-32 px-6" style={{ background: isDark ? '#0F0F0F' : '#E8E2D6' }}>
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-16 lg:gap-24 items-center relative z-10">
         {/* Left — content (3 cols) */}
         <div className="lg:col-span-3">
           <motion.p
@@ -27,8 +34,13 @@ export function FromTheShepherd({ content }: { content: Record<string, string> }
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            className="font-display text-snow italic mb-10"
-            style={{ fontSize: 'clamp(1.3rem, 3vw, 2.2rem)', lineHeight: '1.5' }}
+            className="font-display italic mb-10"
+            style={{
+              color: isDark ? '#F8F8F8' : '#0F0C08',
+              fontSize: 'clamp(1.3rem, 3vw, 2.2rem)',
+              lineHeight: '1.5',
+              fontFamily: 'Cormorant Garamond, serif',
+            }}
           >
             &ldquo;{content['shepherd.quote'] || 'There is room for you here.'}&rdquo;
           </motion.blockquote>
@@ -43,7 +55,7 @@ export function FromTheShepherd({ content }: { content: Record<string, string> }
             <p className="font-display text-2xl text-gold mb-1">
               {content['shepherd.name'] || 'Minister Yadah'}
             </p>
-            <p className="label-text opacity-50 mb-8">
+            <p className="label-text mb-8" style={{ opacity: isDark ? 0.5 : 0.7 }}>
               {content['shepherd.title'] || 'Founder · Room For You'}
             </p>
             <Link
@@ -83,7 +95,9 @@ export function FromTheShepherd({ content }: { content: Record<string, string> }
               <div
                 className="absolute bottom-0 left-0 right-0 h-1/3 pointer-events-none"
                 style={{
-                  background: 'linear-gradient(to top, rgba(15,15,15,0.6), transparent)',
+                  background: isDark
+                    ? 'linear-gradient(to top, rgba(15,15,15,0.6), transparent)'
+                    : 'linear-gradient(to top, rgba(232,226,214,0.85), transparent)',
                 }}
               />
             </div>
