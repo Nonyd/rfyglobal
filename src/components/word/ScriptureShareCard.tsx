@@ -51,33 +51,17 @@ export const ScriptureShareCard = forwardRef<HTMLDivElement, ScriptureShareCardP
             justifyContent: 'space-between',
           }}
         >
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <p
-              style={{
-                fontFamily: 'Georgia, serif',
-                fontSize: '22px',
-                fontWeight: '700',
-                color: '#1A1714',
-                letterSpacing: '0.1em',
-                margin: 0,
-                lineHeight: 1,
-              }}
-            >
-              ROOM FOR YOU
-            </p>
-            <p
-              style={{
-                fontFamily: 'Arial, sans-serif',
-                fontSize: '11px',
-                color: '#C9A84C',
-                letterSpacing: '0.3em',
-                textTransform: 'uppercase',
-                margin: '4px 0 0 0',
-              }}
-            >
-              rfyglobal.org
-            </p>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/brand-logo-on-light.png"
+            alt="Room For You"
+            crossOrigin="anonymous"
+            style={{
+              width: '240px',
+              height: 'auto',
+              objectFit: 'contain',
+            }}
+          />
           <p
             style={{
               fontFamily: 'Arial, sans-serif',
