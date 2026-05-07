@@ -72,9 +72,10 @@ export function Navbar() {
               src={logoSrc}
               alt="Room For You"
               style={{
-                height: isDark ? '48px' : '56px',
+                height: isDark ? '52px' : '60px',
                 width: 'auto',
                 objectFit: 'contain',
+                display: 'block',
               }}
             />
           </Link>

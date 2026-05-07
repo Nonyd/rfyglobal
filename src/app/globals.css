@@ -224,6 +224,13 @@ img, video, canvas {
 }
 
 /*
-  Site footer (Footer.tsx): background is inline #0F0F0F (not bg-void), so .light .bg-void
-  does not apply. Footer text/icons use inline colors — not .text-fog / CSS vars that flip in .light.
+  Site footer: inline style={{ background: '#0F0F0F' }} wins over .light .bg-void.
+  Interactive hover lives in FooterInteractive.tsx (client). Safety / documentation:
 */
+.light footer,
+.light footer .bg-void,
+.light footer .text-fog,
+.light footer .text-mist,
+.light footer .text-snow {
+  /* Inline styles on footer and client children take precedence over public light utilities */
+}
