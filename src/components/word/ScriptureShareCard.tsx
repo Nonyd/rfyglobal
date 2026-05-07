@@ -51,17 +51,28 @@ export const ScriptureShareCard = forwardRef<HTMLDivElement, ScriptureShareCardP
             justifyContent: 'space-between',
           }}
         >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/brand-logo-dark-transparent.png"
-            alt="Room For You — with Yadah"
-            crossOrigin="anonymous"
+          {/* Cream backing matches card so logo transparency never reads as black in rasterizers */}
+          <div
             style={{
-              width: '240px',
-              height: 'auto',
-              objectFit: 'contain',
+              background: '#F5F0E8',
+              lineHeight: 0,
+              display: 'inline-block',
             }}
-          />
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/images/brand-logo-dark-transparent.png"
+              alt="Room For You — with Yadah"
+              style={{
+                display: 'block',
+                width: '240px',
+                height: 'auto',
+                objectFit: 'contain',
+                backgroundColor: 'transparent',
+                backgroundImage: 'none',
+              }}
+            />
+          </div>
           <p
             style={{
               fontFamily: 'Arial, sans-serif',

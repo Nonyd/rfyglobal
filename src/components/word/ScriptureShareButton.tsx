@@ -36,10 +36,14 @@ export function ScriptureShareButton({
       const canvas = await html2canvas(cardRef.current, {
         scale: 1,
         useCORS: true,
+        // Preserve PNG alpha on images (default raster path often paints transparency as black).
+        foreignObjectRendering: true,
         backgroundColor: '#F5F0E8',
         width: 1080,
         height: 1080,
         logging: false,
+        scrollX: 0,
+        scrollY: 0,
       })
 
       const link = document.createElement('a')
