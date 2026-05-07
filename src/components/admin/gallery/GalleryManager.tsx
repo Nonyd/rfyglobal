@@ -692,9 +692,9 @@ export function GalleryManager() {
               <UploadZone
                 folder="gallery"
                 accept="image"
-                maxFiles={20}
+                maxFiles={100}
                 preview
-                label="Drop up to 20 photos here, or click to browse"
+                label="Drop up to 100 photos here, or click to browse"
                 onUploadComplete={(files) => void handleAddPhotosUpload(files)}
                 onUploadError={(err) => toast.error(`Upload failed: ${err.message}`)}
               />
