@@ -65,7 +65,7 @@ export async function Footer() {
               alt="Room For You — with Yadah"
               width={280}
               height={93}
-              className="h-14 w-auto mb-4 object-contain object-left sm:h-16 md:h-[72px] md:max-h-[72px]"
+              className="h-12 w-auto object-contain mb-4 object-left"
             />
             <p className="label-text opacity-40">
               {content['footer.tagline'] || 'Jesus to Nations — 2 Cor 5:17-21'}

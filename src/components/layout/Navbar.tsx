@@ -59,7 +59,7 @@ export function Navbar() {
               href={null}
               width={280}
               height={93}
-              imgClassName="h-14 max-h-14 w-auto sm:h-16 sm:max-h-16 md:h-[72px] md:max-h-[72px]"
+              imgClassName="h-12 w-auto object-contain"
               priority
             />
           </Link>
@@ -115,7 +115,7 @@ export function Navbar() {
                 href={null}
                 width={280}
                 height={93}
-                imgClassName="h-14 max-h-14 w-auto sm:h-16 sm:max-h-16 md:h-[72px] md:max-h-[72px]"
+                imgClassName="h-12 w-auto object-contain"
               />
               <button
                 type="button"

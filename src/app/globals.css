@@ -146,17 +146,6 @@
     color: #C9A84C;
   }
 
-  /* Cinematic image overlay */
-  .cinematic-overlay {
-    background: linear-gradient(
-      to right,
-      #0F0F0F 0%,
-      #0F0F0F 35%,
-      rgba(15,15,15,0.7) 60%,
-      rgba(15,15,15,0.2) 100%
-    );
-  }
-
   /* Hover lift */
   .hover-lift {
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);

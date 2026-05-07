@@ -40,7 +40,14 @@ export function Hero() {
       />
 
       <div className="absolute inset-y-0 right-0 w-1/2 pointer-events-none hidden lg:block">
-        <div className="absolute inset-0 cinematic-overlay z-10" />
+        <div
+          className="absolute inset-0 z-10"
+          style={{
+            background: isDark
+              ? 'linear-gradient(to right, #0F0F0F 0%, #0F0F0F 35%, rgba(15,15,15,0.7) 60%, rgba(15,15,15,0.2) 100%)'
+              : 'linear-gradient(to right, #F5F0E8 0%, #F5F0E8 35%, rgba(245,240,232,0.7) 60%, rgba(245,240,232,0.2) 100%)',
+          }}
+        />
         <Image
           src="/images/yadah-portrait.jpg"
           alt=""
