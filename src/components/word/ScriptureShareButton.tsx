@@ -33,14 +33,18 @@ export function ScriptureShareButton({
     try {
       const html2canvas = (await import('html2canvas')).default
 
-      const canvas = await html2canvas(cardRef.current, {
+      // Avoid foreignObjectRendering — it often yields a solid black PNG on Windows Chrome/Edge.
+      const el = cardRef.current
+      const w = el.offsetWidth || 1080
+      const h = el.offsetHeight || 1080
+
+      const canvas = await html2canvas(el, {
         scale: 1,
         useCORS: true,
-        // Preserve PNG alpha on images (default raster path often paints transparency as black).
-        foreignObjectRendering: true,
+        allowTaint: false,
         backgroundColor: '#F5F0E8',
-        width: 1080,
-        height: 1080,
+        width: w,
+        height: h,
         logging: false,
         scrollX: 0,
         scrollY: 0,

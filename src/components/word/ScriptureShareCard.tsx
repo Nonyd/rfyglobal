@@ -16,7 +16,7 @@ export const ScriptureShareCard = forwardRef<HTMLDivElement, ScriptureShareCardP
         style={{
           position: 'fixed',
           left: '-9999px',
-          top: '-9999px',
+          top: 0,
           width: '1080px',
           height: '1080px',
           background: '#F5F0E8',
@@ -51,28 +51,21 @@ export const ScriptureShareCard = forwardRef<HTMLDivElement, ScriptureShareCardP
             justifyContent: 'space-between',
           }}
         >
-          {/* Cream backing matches card so logo transparency never reads as black in rasterizers */}
+          {/* Logo as CSS background (html2canvas often composites <img> PNG alpha as black) */}
           <div
+            role="img"
+            aria-label="Room For You — with Yadah"
             style={{
-              background: '#F5F0E8',
-              lineHeight: 0,
-              display: 'inline-block',
+              width: '280px',
+              height: '72px',
+              flexShrink: 0,
+              backgroundColor: '#F5F0E8',
+              backgroundImage: 'url(/images/brand-logo-dark-transparent.png)',
+              backgroundRepeat: 'no-repeat',
+              backgroundPosition: 'left center',
+              backgroundSize: 'contain',
             }}
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/brand-logo-dark-transparent.png"
-              alt="Room For You — with Yadah"
-              style={{
-                display: 'block',
-                width: '240px',
-                height: 'auto',
-                objectFit: 'contain',
-                backgroundColor: 'transparent',
-                backgroundImage: 'none',
-              }}
-            />
-          </div>
+          />
           <p
             style={{
               fontFamily: 'Arial, sans-serif',
