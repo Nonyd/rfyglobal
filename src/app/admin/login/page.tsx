@@ -15,7 +15,7 @@ export default function AdminLoginPage() {
           alt="Room For You"
           width={200}
           height={100}
-          className="mx-auto h-16 w-auto object-contain"
+          className="mx-auto h-24 w-auto object-contain"
           priority
         />
         <Link

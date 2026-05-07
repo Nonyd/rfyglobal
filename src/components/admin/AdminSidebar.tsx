@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import type { LucideIcon } from 'lucide-react'
@@ -98,12 +97,22 @@ export function AdminSidebar({ theme, userRole }: AdminSidebarProps) {
     >
       <div className="p-5 border-b" style={{ borderColor: 'var(--a-border)' }}>
         <div className="flex flex-col gap-1">
-          <Image
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
             src={theme === 'dark' ? '/images/logo-white.png' : '/images/logo-dark.png'}
             alt="Room For You"
-            width={120}
-            height={60}
-            className="h-8 w-auto object-contain"
+            style={{
+              height: '48px',
+              width: 'auto',
+              objectFit: 'contain',
+              display: 'block',
+            }}
+            onError={(e) => {
+              const target = e.currentTarget
+              if (theme === 'dark') {
+                target.src = '/images/logo-dark.png'
+              }
+            }}
           />
           <p
             className="font-body text-[10px] uppercase tracking-widest"
