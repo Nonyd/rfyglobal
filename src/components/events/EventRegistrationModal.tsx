@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, CheckCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
 import type { EventFormField } from '@prisma/client'
+import { useEmailCheck } from '@/hooks/useEmailCheck'
 
 interface EventRegistrationModalProps {
   isOpen: boolean
@@ -33,6 +34,94 @@ function messageFromApiError(error: unknown): string {
   return 'Registration failed'
 }
 
+function EventPrimaryEmailField({
+  eventSlug,
+  field,
+  value,
+  onChange,
+  inputStyle,
+  labelStyle,
+  isOpen,
+  onDuplicateChange,
+}: {
+  eventSlug: string
+  field: EventFormField
+  value: string
+  onChange: (v: string) => void
+  inputStyle: React.CSSProperties
+  labelStyle: React.CSSProperties
+  isOpen: boolean
+  onDuplicateChange: (exists: boolean) => void
+}) {
+  const checkUrl = useCallback(
+    (email: string) =>
+      `/api/events/${encodeURIComponent(eventSlug)}/check-email?email=${encodeURIComponent(email)}`,
+    [eventSlug],
+  )
+  const { checking: checkingEmail, emailExists, checkEmail, reset } = useEmailCheck({ checkUrl })
+
+  useEffect(() => {
+    if (!isOpen) reset()
+  }, [isOpen, reset])
+
+  useEffect(() => {
+    onDuplicateChange(emailExists)
+    return () => onDuplicateChange(false)
+  }, [emailExists, onDuplicateChange])
+
+  return (
+    <>
+      <label style={labelStyle}>
+        {field.label}
+        {field.required ? ' *' : ''}
+      </label>
+      <div className="relative">
+        <input
+          type="email"
+          value={value}
+          onChange={(e) => {
+            const v = e.target.value
+            onChange(v)
+            checkEmail(v)
+          }}
+          onBlur={() => checkEmail(value)}
+          placeholder={field.placeholder ?? ''}
+          required={field.required}
+          style={{
+            ...inputStyle,
+            paddingRight: checkingEmail ? 40 : 16,
+            borderColor: emailExists ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.12)',
+          }}
+          onFocus={(ev) => {
+            if (!emailExists) ev.target.style.borderColor = '#C9A84C'
+          }}
+        />
+        {checkingEmail && (
+          <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+            <div
+              className="h-4 w-4 animate-spin rounded-full border-2"
+              style={{ borderColor: 'rgba(201,168,76,0.3)', borderTopColor: '#C9A84C' }}
+            />
+          </div>
+        )}
+      </div>
+      {emailExists && (
+        <motion.div
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-2 flex items-start gap-2 px-3 py-2"
+          style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.3)' }}
+        >
+          <span className="shrink-0 text-sm text-red-400">⚠</span>
+          <p className="font-body text-xs leading-relaxed" style={{ color: '#FCA5A5' }}>
+            You are already registered for this event with this email address.
+          </p>
+        </motion.div>
+      )}
+    </>
+  )
+}
+
 export function EventRegistrationModal({
   isOpen,
   onClose,
@@ -45,9 +134,20 @@ export function EventRegistrationModal({
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [primaryEmailDuplicate, setPrimaryEmailDuplicate] = useState(false)
+
+  const primaryEmailField = useMemo(() => {
+    const emails = fields.filter((f) => f.type === 'EMAIL').sort((a, b) => a.order - b.order)
+    return emails[0]
+  }, [fields])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (primaryEmailDuplicate) {
+      toast.error('You are already registered for this event.')
+      return
+    }
 
     if (fields.length === 0) {
       toast.error('Registration form is not available.')
@@ -230,6 +330,10 @@ export function EventRegistrationModal({
     )
   }
 
+  const onPrimaryDup = useCallback((exists: boolean) => {
+    setPrimaryEmailDuplicate(exists)
+  }, [])
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -282,17 +386,32 @@ export function EventRegistrationModal({
                     <form onSubmit={handleSubmit} className="space-y-4">
                       {fields.map((field) => (
                         <div key={field.id}>
-                          <label style={labelStyle}>
-                            {field.label}
-                            {field.required ? ' *' : ''}
-                          </label>
-                          {renderFieldControl(field)}
+                          {field.type === 'EMAIL' && field.id === primaryEmailField?.id ? (
+                            <EventPrimaryEmailField
+                              eventSlug={eventSlug}
+                              field={field}
+                              value={fieldValues[field.id] ?? ''}
+                              onChange={(v) => setFieldValues((p) => ({ ...p, [field.id]: v }))}
+                              inputStyle={inputStyle}
+                              labelStyle={labelStyle}
+                              isOpen={isOpen}
+                              onDuplicateChange={onPrimaryDup}
+                            />
+                          ) : (
+                            <>
+                              <label style={labelStyle}>
+                                {field.label}
+                                {field.required ? ' *' : ''}
+                              </label>
+                              {renderFieldControl(field)}
+                            </>
+                          )}
                         </div>
                       ))}
 
                       <button
                         type="submit"
-                        disabled={submitting}
+                        disabled={submitting || primaryEmailDuplicate}
                         className="mt-2 w-full py-4 font-body text-xs font-semibold uppercase tracking-widest transition-all duration-300 disabled:opacity-50"
                         style={{ background: '#C9A84C', color: '#0F0F0F' }}
                       >

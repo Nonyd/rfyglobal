@@ -1,11 +1,13 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import Link from 'next/link'
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, type UseFormRegister, type FieldErrors } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import { motion } from 'framer-motion'
 import type { Form, FormField } from '@prisma/client'
 import { cn } from '@/lib/utils'
+import { useEmailCheck } from '@/hooks/useEmailCheck'
 
 type PublicForm = Omit<Form, 'notifyEmail'> & { fields: FormField[] }
 
@@ -14,9 +16,94 @@ const inputClass =
 
 const labelClass = 'block text-xs uppercase tracking-widest text-white/50 mb-2 font-body'
 
+function FormBuilderEmailField({
+  formSlug,
+  field,
+  register,
+  errors,
+  onExistsChange,
+}: {
+  formSlug: string
+  field: FormField
+  register: UseFormRegister<Record<string, string | string[]>>
+  errors: FieldErrors<Record<string, string | string[]>>
+  onExistsChange: (exists: boolean) => void
+}) {
+  const checkUrl = useCallback(
+    (email: string) =>
+      `/api/forms/slug/${encodeURIComponent(formSlug)}/check-email?email=${encodeURIComponent(email)}&fieldId=${encodeURIComponent(field.id)}`,
+    [formSlug, field.id],
+  )
+  const { checking, emailExists, checkEmail } = useEmailCheck({ checkUrl })
+
+  const onExistsRef = useRef(onExistsChange)
+  onExistsRef.current = onExistsChange
+  useEffect(() => {
+    onExistsRef.current(emailExists)
+    return () => onExistsRef.current(false)
+  }, [emailExists])
+
+  const err = errors[field.id]?.message as string | undefined
+  const reg = register(field.id, {
+    required: field.required ? `${field.label} is required` : false,
+    pattern: {
+      value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+      message: 'Enter a valid email',
+    },
+  })
+
+  return (
+    <div>
+      <label htmlFor={field.id} className={labelClass}>
+        {field.label}
+        {field.required ? <span className="text-red-brand"> *</span> : null}
+      </label>
+      <div className="relative">
+        <input
+          id={field.id}
+          type="email"
+          placeholder={field.placeholder ?? undefined}
+          className={cn(inputClass, checking ? 'pr-11' : undefined, emailExists ? '!border-red-500/60' : undefined)}
+          {...reg}
+          onChange={(e) => {
+            reg.onChange(e)
+            checkEmail(e.target.value)
+          }}
+          onBlur={(e) => {
+            reg.onBlur(e)
+            checkEmail(e.target.value)
+          }}
+        />
+        {checking ? (
+          <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+            <div
+              className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
+              style={{ borderColor: 'rgba(201,168,76,0.4)' }}
+            />
+          </div>
+        ) : null}
+      </div>
+      {emailExists ? (
+        <motion.div
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-2 flex items-start gap-2 border border-red-500/30 bg-red-500/10 px-3 py-2"
+        >
+          <span className="shrink-0 text-sm text-red-400">⚠</span>
+          <p className="font-body text-xs leading-relaxed text-red-300">
+            This email has already been used on this form. If you need to update your response, please contact us.
+          </p>
+        </motion.div>
+      ) : null}
+      {err ? <p className="mt-1 text-xs text-red-brand">{err}</p> : null}
+    </div>
+  )
+}
+
 export function PublicFormRenderer({ form }: { form: PublicForm }) {
   const [done, setDone] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [emailDupByField, setEmailDupByField] = useState<Record<string, boolean>>({})
 
   const defaultValues = useMemo(() => {
     const v: Record<string, string | string[]> = {}
@@ -36,7 +123,13 @@ export function PublicFormRenderer({ form }: { form: PublicForm }) {
     defaultValues,
   })
 
+  const emailSubmitBlocked = Object.values(emailDupByField).some(Boolean)
+
   const onSubmit = async (data: Record<string, string | string[]>) => {
+    if (emailSubmitBlocked) {
+      toast.error('This email has already been submitted for this form.')
+      return
+    }
     setSubmitting(true)
     try {
       const res = await fetch(`/api/forms/${form.id}/submit`, {
@@ -239,6 +332,26 @@ export function PublicFormRenderer({ form }: { form: PublicForm }) {
             ? field.placeholder || 'City, Country'
             : field.placeholder ?? undefined
 
+        if (field.type === 'EMAIL') {
+          return (
+            <FormBuilderEmailField
+              key={field.id}
+              formSlug={form.slug}
+              field={field}
+              register={register}
+              errors={errors}
+              onExistsChange={(exists) =>
+                setEmailDupByField((p) => {
+                  const next = { ...p }
+                  if (exists) next[field.id] = true
+                  else delete next[field.id]
+                  return next
+                })
+              }
+            />
+          )
+        }
+
         return (
           <div key={field.id}>
             <label htmlFor={field.id} className={labelClass}>
@@ -252,14 +365,6 @@ export function PublicFormRenderer({ form }: { form: PublicForm }) {
               className={inputClass}
               {...register(field.id, {
                 required: field.required ? `${field.label} is required` : false,
-                ...(field.type === 'EMAIL'
-                  ? {
-                      pattern: {
-                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                        message: 'Enter a valid email',
-                      },
-                    }
-                  : {}),
               })}
             />
             {err ? <p className="text-red-brand text-xs mt-1">{err}</p> : null}
@@ -270,7 +375,7 @@ export function PublicFormRenderer({ form }: { form: PublicForm }) {
       <div className="pt-4">
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || emailSubmitBlocked}
           className="w-full sm:w-auto px-10 py-3.5 bg-gold text-black text-sm font-body font-medium tracking-wide hover:bg-gold-light transition-colors disabled:opacity-50"
         >
           {submitting ? 'Submitting…' : 'Submit'}

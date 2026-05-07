@@ -1,7 +1,41 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { getContentMany } from '@/lib/content'
- 
+
+function InstagramGlyph({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+      <rect
+        x="2.75"
+        y="2.75"
+        width="18.5"
+        height="18.5"
+        rx="5"
+        stroke="currentColor"
+        strokeWidth="1.35"
+      />
+      <circle cx="12" cy="12" r="3.35" stroke="currentColor" strokeWidth="1.35" />
+      <circle cx="17.25" cy="6.75" r="0.95" fill="currentColor" />
+    </svg>
+  )
+}
+
+function YoutubeGlyph({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+      <path d="M21.6 7.2c.2.8.3 2.1.3 4.8s-.1 4-.3 4.8c-.17.72-.72 1.27-1.44 1.44-.8.2-4.5.3-8.16.3s-7.36-.1-8.16-.3a1.95 1.95 0 0 1-1.44-1.44C2.1 16 2 14.7 2 12s.1-4 .3-4.8C2.47 6.48 3.02 5.93 3.74 5.76 4.54 5.56 8.24 5.46 11.9 5.46s7.36.1 8.16.3c.72.17 1.27.72 1.44 1.44zM10 9.5v5l4.5-2.5L10 9.5z" />
+    </svg>
+  )
+}
+
+function XGlyph({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+      <path d="M13.86 10.47 20.44 3h-1.56l-5.7 6.49L8.8 3H3.5l6.88 10.01L3.5 21h1.56l6.02-6.88L15.2 21h5.3l-6.64-9.53zm-2.1 2.4-.7-1L5.2 4.2h2.32l4.48 6.28.7 1 5.84 8.18h-2.32l-4.76-6.67z" />
+    </svg>
+  )
+}
+
 const NAV_LINKS = [
   { label: 'Word', href: '/word' },
   { label: 'Study', href: '/study' },
@@ -50,24 +84,39 @@ export async function Footer() {
             ))}
           </nav>
 
-          <div className="flex items-center gap-6">
-            {[
-              { href: content['footer.instagram'], label: 'IG' },
-              { href: content['footer.youtube'], label: 'YT' },
-              { href: content['footer.twitter'], label: 'TW' },
-            ]
+          <div className="flex items-center gap-3 sm:gap-4">
+            {(
+              [
+                {
+                  href: content['footer.instagram'],
+                  label: 'Instagram',
+                  Icon: InstagramGlyph,
+                },
+                {
+                  href: content['footer.youtube'],
+                  label: 'YouTube',
+                  Icon: YoutubeGlyph,
+                },
+                {
+                  href: content['footer.twitter'],
+                  label: 'X',
+                  Icon: XGlyph,
+                },
+              ] as const
+            )
               .filter((s) => s.href)
-              .map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-body text-[11px] tracking-[0.15em] text-fog hover:text-gold transition-colors"
-              >
-                {social.label}
-              </a>
-            ))}
+              .map(({ href, label, Icon }) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Room For You on ${label}`}
+                  className="group flex h-11 w-11 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.03] text-fog shadow-sm transition-all duration-300 hover:border-gold/45 hover:bg-gold/[0.07] hover:text-gold hover:shadow-[0_0_24px_rgba(201,168,76,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 focus-visible:ring-offset-2 focus-visible:ring-offset-void"
+                >
+                  <Icon className="h-[18px] w-[18px] shrink-0 transition-transform duration-300 group-hover:scale-105" />
+                </a>
+              ))}
           </div>
         </div>
 

@@ -1,11 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { COUNTRIES, NIGERIA_STATES } from '@/lib/geo-data'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
 import { FieldType, type JoinFormField } from '@prisma/client'
+import { useEmailCheck } from '@/hooks/useEmailCheck'
 
 const MOVEMENT_LINES = [
   { text: 'A MOVEMENT', style: 'text-outline' },
@@ -47,11 +48,41 @@ export function JoinPageClient({ extraFields, whatsappUrl }: JoinPageClientProps
   const [extraValues, setExtraValues] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [countdown, setCountdown] = useState(3)
+
+  const joinCheckUrl = useCallback(
+    (email: string) => `/api/join/check-email?email=${encodeURIComponent(email)}`,
+    [],
+  )
+  const { checking: checkingEmail, emailExists, checkEmail } = useEmailCheck({ checkUrl: joinCheckUrl })
 
   const isNigeria = form.country === 'Nigeria'
 
+  useEffect(() => {
+    if (!submitted || !whatsappUrl) return
+
+    setCountdown(3)
+    const interval = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval)
+          window.location.href = whatsappUrl
+          return 0
+        }
+        return prev - 1
+      })
+    }, 1000)
+
+    return () => clearInterval(interval)
+  }, [submitted, whatsappUrl])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (emailExists) {
+      toast.error('This email is already registered with Room For You.')
+      return
+    }
 
     if (!form.name || !form.phone || !form.email || !form.country) {
       toast.error('Please fill in all required fields')
@@ -190,7 +221,7 @@ export function JoinPageClient({ extraFields, whatsappUrl }: JoinPageClientProps
 
   return (
     <main className="min-h-screen bg-void">
-      <div className="flex flex-col lg:flex-row min-h-screen pt-20 lg:pt-0">
+      <div className="flex flex-col lg:flex-row min-h-screen pt-24 lg:pt-36">
         <div className="relative lg:w-1/2 flex flex-col justify-center px-8 lg:px-16 xl:px-24 py-20 lg:py-0 overflow-hidden">
           <div
             className="absolute pointer-events-none animate-breathe"
@@ -311,16 +342,49 @@ export function JoinPageClient({ extraFields, whatsappUrl }: JoinPageClientProps
 
                 <div>
                   <label style={labelStyle}>Email Address *</label>
-                  <input
-                    type="email"
-                    value={form.email}
-                    onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))}
-                    placeholder="your@email.com"
-                    required
-                    style={inputStyle}
-                    onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
-                    onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.12)')}
-                  />
+                  <div className="relative">
+                    <input
+                      type="email"
+                      value={form.email}
+                      onChange={(e) => {
+                        const v = e.target.value
+                        setForm((p) => ({ ...p, email: v }))
+                        checkEmail(v)
+                      }}
+                      onBlur={() => checkEmail(form.email)}
+                      placeholder="your@email.com"
+                      required
+                      style={{
+                        ...inputStyle,
+                        paddingRight: checkingEmail ? 40 : 16,
+                        borderColor: emailExists ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.12)',
+                      }}
+                      onFocus={(e) => {
+                        if (!emailExists) e.target.style.borderColor = '#C9A84C'
+                      }}
+                    />
+                    {checkingEmail && (
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                        <div
+                          className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin"
+                          style={{ borderColor: 'rgba(201,168,76,0.4)', borderTopColor: 'transparent' }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                  {emailExists && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex items-start gap-2 mt-2 px-3 py-2"
+                      style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.3)' }}
+                    >
+                      <span className="text-red-400 text-sm shrink-0">⚠</span>
+                      <p className="font-body text-xs leading-relaxed" style={{ color: '#FCA5A5' }}>
+                        This email is already registered with Room For You. You are already part of the community!
+                      </p>
+                    </motion.div>
+                  )}
                 </div>
 
                 <div>
@@ -400,7 +464,7 @@ export function JoinPageClient({ extraFields, whatsappUrl }: JoinPageClientProps
 
                 <button
                   type="submit"
-                  disabled={submitting}
+                  disabled={submitting || emailExists}
                   className="w-full py-4 font-body font-semibold text-sm tracking-widest uppercase transition-all duration-300 disabled:opacity-50"
                   style={{ background: '#C9A84C', color: '#0F0F0F' }}
                 >
@@ -428,28 +492,46 @@ export function JoinPageClient({ extraFields, whatsappUrl }: JoinPageClientProps
               <div className="gold-line max-w-[60px] mx-auto mb-8 opacity-40" />
 
               <h2 className="font-display text-4xl text-snow mb-4">You&apos;re in.</h2>
-              <p className="font-body text-mist leading-relaxed mb-10">
-                Welcome to Room For You. Check your email for a confirmation and everything you need to get started.
+              <p className="font-body text-mist leading-relaxed mb-6">
+                Welcome to Room For You. Check your email for your confirmation.
                 <span className="text-gold"> There is room for you here.</span>
               </p>
 
-              {whatsappUrl && (
-                <a
-                  href={whatsappUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 px-8 py-4 font-body text-sm font-semibold tracking-widest uppercase transition-all duration-300 mb-6"
-                  style={{ background: '#25D366', color: '#FFFFFF' }}
-                >
-                  Join our WhatsApp Community →
-                </a>
+              {whatsappUrl ? (
+                <div className="mb-8">
+                  <div
+                    className="inline-flex flex-col items-center gap-3 px-8 py-5 border"
+                    style={{ borderColor: 'rgba(201,168,76,0.3)', background: 'rgba(201,168,76,0.05)' }}
+                  >
+                    <p className="font-body text-mist text-sm">Joining our WhatsApp community in</p>
+                    <p className="font-display text-gold text-5xl font-bold">{countdown}</p>
+                    <p className="font-body text-mist text-xs opacity-60">seconds</p>
+                  </div>
+                  <p className="font-body text-xs mt-4" style={{ color: '#585858' }}>
+                    Not redirected?{' '}
+                    <a
+                      href={whatsappUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gold hover:opacity-70 transition-opacity underline"
+                    >
+                      Click here to join →
+                    </a>
+                  </p>
+                </div>
+              ) : (
+                <div className="mb-8">
+                  <p className="font-body text-mist text-sm">Your confirmation email is on its way.</p>
+                </div>
               )}
 
-              <div className="mt-4">
-                <Link href="/" className="font-body text-sm tracking-widest uppercase" style={{ color: '#C9A84C' }}>
-                  ← Back to Home
-                </Link>
-              </div>
+              <Link
+                href="/"
+                className="font-body text-sm tracking-widest uppercase"
+                style={{ color: 'rgba(248,248,248,0.4)' }}
+              >
+                ← Back to Home
+              </Link>
             </motion.div>
           )}
         </div>
