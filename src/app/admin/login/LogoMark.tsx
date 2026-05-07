@@ -19,6 +19,7 @@ export function LogoMark({ className }: { className?: string }) {
           alt="Room For You — with Yadah"
           width={300}
           height={100}
+          unoptimized
           className="h-20 w-auto max-w-[min(100%,320px)] object-contain sm:h-24"
           onError={() => setFailed(true)}
         />
