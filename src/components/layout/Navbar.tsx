@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
-import { BrandLogo } from '@/components/brand/BrandLogo'
+import { useTheme } from 'next-themes'
 import { ThemeToggle } from '@/components/shared/ThemeToggle'
 import { cn } from '@/lib/utils'
 
@@ -30,14 +30,28 @@ function linkActive(pathname: string, href: string) {
 
 export function Navbar() {
   const pathname = usePathname()
+  const { resolvedTheme } = useTheme()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [mounted, setMounted] = useState(false)
 
+  useEffect(() => setMounted(true), [])
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 60)
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
+
+  const isDark = !mounted || resolvedTheme === 'dark'
+
+  const logoSrc =
+    isDark || scrolled ? '/images/logo-white.png' : '/images/logo-dark.png'
+
+  const navLinkColor =
+    isDark || scrolled ? 'rgba(248,248,248,0.7)' : '#2C2520'
+
+  const navLinkHoverColor =
+    isDark || scrolled ? '#F8F8F8' : '#0F0C08'
 
   return (
     <>
@@ -54,37 +68,46 @@ export function Navbar() {
       >
         <div className="max-w-7xl mx-auto px-6 lg:px-10 flex items-center justify-between">
           <Link href="/" className="shrink-0">
-            <BrandLogo
-              variant="onDark"
-              href={null}
-              width={280}
-              height={93}
-              imgClassName="h-12 w-auto object-contain"
-              priority
+            <img
+              src={logoSrc}
+              alt="Room For You"
+              style={{ height: '48px', width: 'auto', objectFit: 'contain' }}
             />
           </Link>
 
-          <div className="hidden lg:flex items-center gap-7 xl:gap-8">
-            {DESKTOP_NAV_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                prefetch
-                className={cn(
-                  'text-[10px] xl:text-[11px] font-body font-medium tracking-[0.18em] xl:tracking-[0.2em] uppercase transition-colors duration-300',
-                  linkActive(pathname, link.href) ? 'text-gold' : 'text-mist hover:text-snow',
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
+          <div className="hidden lg:flex items-center gap-10">
+            {DESKTOP_NAV_LINKS.map((link) => {
+              const active = linkActive(pathname, link.href)
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  prefetch
+                  className="text-[11px] font-body font-medium tracking-[0.2em] uppercase transition-colors duration-300"
+                  style={{ color: active ? '#C9A84C' : navLinkColor }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.color = active ? '#C9A84C' : navLinkHoverColor
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = active ? '#C9A84C' : navLinkColor
+                  }}
+                >
+                  {link.label}
+                </Link>
+              )
+            })}
           </div>
 
           <div className="flex items-center gap-4">
             <ThemeToggle className="hidden md:flex" />
             <Link
               href="/join"
-              className="hidden md:inline-flex items-center px-5 py-2 text-[11px] font-body font-medium tracking-[0.2em] uppercase border border-gold text-gold hover:bg-gold hover:text-void transition-all duration-300"
+              prefetch
+              className="hidden md:inline-flex items-center px-5 py-2 text-[11px] font-body font-medium tracking-[0.2em] uppercase border transition-all duration-300 hover:bg-gold hover:text-void"
+              style={{
+                borderColor: '#C9A84C',
+                color: isDark || scrolled ? '#C9A84C' : '#8B5A00',
+              }}
             >
               Join Us
             </Link>
@@ -92,7 +115,8 @@ export function Navbar() {
               type="button"
               aria-label="Open menu"
               onClick={() => setMenuOpen(true)}
-              className="lg:hidden text-mist hover:text-snow transition-colors"
+              className="lg:hidden transition-colors"
+              style={{ color: navLinkColor }}
             >
               <Menu size={20} />
             </button>
@@ -110,12 +134,10 @@ export function Navbar() {
             className="fixed inset-0 z-[100] bg-void flex flex-col"
           >
             <div className="flex items-center justify-between px-6 py-6">
-              <BrandLogo
-                variant="onDark"
-                href={null}
-                width={280}
-                height={93}
-                imgClassName="h-12 w-auto object-contain"
+              <img
+                src="/images/logo-white.png"
+                alt="Room For You"
+                style={{ height: '48px', width: 'auto', objectFit: 'contain' }}
               />
               <button
                 type="button"

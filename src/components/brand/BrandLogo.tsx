@@ -16,6 +16,13 @@ export type BrandLogoVariant = 'auto' | 'onDark' | 'onLight'
 export type BrandLogoProps = {
   /** `auto` picks by theme; override when background is fixed (e.g. footer charcoal). */
   variant?: BrandLogoVariant
+  /**
+   * Navbar-style logo: white when dark theme or scrolled (frosted bar); dark logo on light cream when not scrolled.
+   * Ignored when variant is `onDark` or `onLight`.
+   */
+  navbarScrollAware?: boolean
+  /** Current navbar scroll state; only used with `navbarScrollAware`. */
+  scrolled?: boolean
   className?: string
   imgClassName?: string
   width?: number
@@ -25,15 +32,29 @@ export type BrandLogoProps = {
   alt?: string
 }
 
-function resolveSrc(variant: BrandLogoVariant, resolvedTheme: string | undefined, mounted: boolean) {
+function resolveSrc(
+  variant: BrandLogoVariant,
+  resolvedTheme: string | undefined,
+  mounted: boolean,
+  navbarScrollAware: boolean | undefined,
+  scrolled: boolean | undefined,
+) {
   if (variant === 'onDark') return SRC_ON_DARK
   if (variant === 'onLight') return SRC_ON_LIGHT
+
+  if (navbarScrollAware) {
+    const isDark = !mounted || resolvedTheme === 'dark'
+    return isDark || scrolled ? SRC_ON_DARK : SRC_ON_LIGHT
+  }
+
   if (!mounted || !resolvedTheme) return SRC_ON_DARK
   return resolvedTheme === 'light' ? SRC_ON_LIGHT : SRC_ON_DARK
 }
 
 export function BrandLogo({
   variant = 'auto',
+  navbarScrollAware,
+  scrolled,
   className,
   imgClassName,
   width = 280,
@@ -49,7 +70,7 @@ export function BrandLogo({
     setMounted(true)
   }, [])
 
-  const src = resolveSrc(variant, resolvedTheme, mounted)
+  const src = resolveSrc(variant, resolvedTheme, mounted, navbarScrollAware, scrolled)
 
   const image = (
     <Image
