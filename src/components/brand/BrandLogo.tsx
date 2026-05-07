@@ -6,8 +6,10 @@ import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
 import { cn } from '@/lib/utils'
 
-const SRC_ON_DARK = '/images/brand-logo-on-dark.png'
-const SRC_ON_LIGHT = '/images/brand-logo-on-light.png'
+/** Shown on dark backgrounds (e.g. navbar void, footer void). */
+const SRC_ON_DARK = '/images/logo-white.png'
+/** Shown on light backgrounds. */
+const SRC_ON_LIGHT = '/images/logo-dark.png'
 
 export type BrandLogoVariant = 'auto' | 'onDark' | 'onLight'
 

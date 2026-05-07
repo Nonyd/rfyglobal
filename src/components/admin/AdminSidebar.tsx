@@ -99,11 +99,11 @@ export function AdminSidebar({ theme, userRole }: AdminSidebarProps) {
       <div className="p-5 border-b" style={{ borderColor: 'var(--a-border)' }}>
         <div className="flex flex-col gap-1">
           <Image
-            src={theme === 'dark' ? '/images/brand-logo-on-dark.png' : '/images/brand-logo-on-light.png'}
+            src={theme === 'dark' ? '/images/logo-white.png' : '/images/logo-dark.png'}
             alt="Room For You"
-            width={240}
-            height={80}
-            className="h-12 w-auto max-w-full object-contain object-left sm:h-14"
+            width={120}
+            height={60}
+            className="h-8 w-auto object-contain"
           />
           <p
             className="font-body text-[10px] uppercase tracking-widest"

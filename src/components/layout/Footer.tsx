@@ -61,7 +61,7 @@ export async function Footer() {
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-12 mb-16">
           <div>
             <Image
-              src="/images/brand-logo-on-dark.png"
+              src="/images/logo-white.png"
               alt="Room For You — with Yadah"
               width={280}
               height={93}

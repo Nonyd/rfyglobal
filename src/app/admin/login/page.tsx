@@ -1,7 +1,7 @@
 import { Suspense } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { AdminLoginForm } from '@/components/admin/AdminLoginForm'
-import { LogoMark } from './LogoMark'
 
 export default function AdminLoginPage() {
   return (
@@ -10,7 +10,14 @@ export default function AdminLoginPage() {
       style={{ background: 'var(--a-bg)' }}
     >
       <div className="mb-10 flex w-full max-w-sm flex-col items-center gap-4">
-        <LogoMark />
+        <Image
+          src="/images/logo-dark.png"
+          alt="Room For You"
+          width={200}
+          height={100}
+          className="mx-auto h-16 w-auto object-contain"
+          priority
+        />
         <Link
           href="/"
           className="font-body text-sm tracking-wide transition-opacity hover:opacity-80"

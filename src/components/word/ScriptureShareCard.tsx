@@ -1,6 +1,6 @@
 'use client'
 
-import { forwardRef } from 'react'
+import { forwardRef, useEffect, useState } from 'react'
 
 interface ScriptureShareCardProps {
   reference: string
@@ -10,6 +10,28 @@ interface ScriptureShareCardProps {
 
 export const ScriptureShareCard = forwardRef<HTMLDivElement, ScriptureShareCardProps>(
   ({ reference, text, translation }, ref) => {
+    const [logoBase64, setLogoBase64] = useState<string | null>(null)
+
+    useEffect(() => {
+      fetch('/images/logo-dark.png')
+        .then((r) => r.blob())
+        .then(
+          (blob) =>
+            new Promise<string>((resolve, reject) => {
+              const reader = new FileReader()
+              reader.onloadend = () => {
+                const result = reader.result
+                if (typeof result === 'string') resolve(result)
+                else reject(new Error('Invalid logo data'))
+              }
+              reader.onerror = () => reject(reader.error)
+              reader.readAsDataURL(blob)
+            }),
+        )
+        .then((base64) => setLogoBase64(base64))
+        .catch(() => setLogoBase64(null))
+    }, [])
+
     return (
       <div
         ref={ref}
@@ -40,45 +62,53 @@ export const ScriptureShareCard = forwardRef<HTMLDivElement, ScriptureShareCardP
           }}
         />
 
-        <div
-          style={{
-            position: 'absolute',
-            top: '48px',
-            left: '80px',
-            right: '80px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          {/* Logo as CSS background (html2canvas often composites <img> PNG alpha as black) */}
-          <div
-            role="img"
-            aria-label="Room For You — with Yadah"
+        {logoBase64 ? (
+          /* eslint-disable-next-line @next/next/no-img-element */
+          <img
+            src={logoBase64}
+            alt="Room For You"
             style={{
-              width: '280px',
-              height: '72px',
-              flexShrink: 0,
-              backgroundColor: '#F5F0E8',
-              backgroundImage: 'url(/images/brand-logo-dark-transparent.png)',
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'left center',
-              backgroundSize: 'contain',
+              position: 'absolute',
+              top: '48px',
+              left: '80px',
+              height: '60px',
+              width: 'auto',
+              objectFit: 'contain',
             }}
           />
+        ) : (
           <p
             style={{
-              fontFamily: 'Arial, sans-serif',
-              fontSize: '11px',
-              color: '#9A8F84',
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
+              position: 'absolute',
+              top: '48px',
+              left: '80px',
+              fontFamily: 'Georgia, serif',
+              fontSize: '16px',
+              fontWeight: '700',
+              color: '#1A1714',
+              letterSpacing: '0.1em',
               margin: 0,
             }}
           >
-            Daily Word
+            ROOM FOR YOU
           </p>
-        </div>
+        )}
+
+        <p
+          style={{
+            position: 'absolute',
+            top: '56px',
+            right: '80px',
+            fontFamily: 'Arial, sans-serif',
+            fontSize: '11px',
+            color: '#9A8F84',
+            letterSpacing: '0.2em',
+            textTransform: 'uppercase',
+            margin: 0,
+          }}
+        >
+          Daily Word
+        </p>
 
         <div
           style={{
