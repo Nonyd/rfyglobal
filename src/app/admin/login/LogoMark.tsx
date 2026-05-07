@@ -15,8 +15,8 @@ export function LogoMark({ className }: { className?: string }) {
         </span>
       ) : (
         <Image
-          src="/images/brand-logo-on-light.png"
-          alt="Room For You"
+          src="/images/brand-logo-dark-transparent.png"
+          alt="Room For You — with Yadah"
           width={300}
           height={100}
           className="h-20 w-auto max-w-[min(100%,320px)] object-contain sm:h-24"

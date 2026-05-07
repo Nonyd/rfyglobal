@@ -53,8 +53,8 @@ export const ScriptureShareCard = forwardRef<HTMLDivElement, ScriptureShareCardP
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src="/images/brand-logo-on-light.png"
-            alt="Room For You"
+            src="/images/brand-logo-dark-transparent.png"
+            alt="Room For You — with Yadah"
             crossOrigin="anonymous"
             style={{
               width: '240px',
