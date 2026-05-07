@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import Image from 'next/image'
 import { getContentMany } from '@/lib/content'
 
 function InstagramGlyph({ className }: { className?: string }) {
@@ -46,6 +45,9 @@ const NAV_LINKS = [
   { label: 'About', href: '/about' },
 ]
 
+const footerMuted = '#585858'
+const footerGold = '#C9A84C'
+
 export async function Footer() {
   const content = await getContentMany([
     'footer.tagline',
@@ -56,18 +58,20 @@ export async function Footer() {
   ])
 
   return (
-    <footer className="bg-void border-t border-ash/40 pt-20 pb-10 px-6">
+    <footer
+      className="border-t border-ash/40 pt-20 pb-10 px-6"
+      style={{ background: '#0F0F0F' }}
+    >
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-12 mb-16">
           <div>
-            <Image
+            <img
               src="/images/logo-white.png"
               alt="Room For You — with Yadah"
-              width={280}
-              height={93}
-              className="h-12 w-auto object-contain mb-4 object-left"
+              className="mb-4 object-contain object-left"
+              style={{ height: '48px', width: 'auto' }}
             />
-            <p className="label-text opacity-40">
+            <p className="font-body text-xs leading-relaxed max-w-md" style={{ color: 'rgba(248,248,248,0.4)' }}>
               {content['footer.tagline'] || 'Jesus to Nations — 2 Cor 5:17-21'}
             </p>
           </div>
@@ -77,7 +81,14 @@ export async function Footer() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="font-body text-[11px] tracking-[0.15em] uppercase text-fog hover:text-gold transition-colors"
+                className="font-body text-[11px] tracking-[0.15em] uppercase transition-colors duration-300"
+                style={{ color: footerMuted }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.color = footerGold
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.color = footerMuted
+                }}
               >
                 {link.label}
               </Link>
@@ -112,7 +123,25 @@ export async function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={`Room For You on ${label}`}
-                  className="group flex h-11 w-11 items-center justify-center rounded-full border border-white/[0.12] bg-white/[0.03] text-fog shadow-sm transition-all duration-300 hover:border-gold/45 hover:bg-gold/[0.07] hover:text-gold hover:shadow-[0_0_24px_rgba(201,168,76,0.12)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/50 focus-visible:ring-offset-2 focus-visible:ring-offset-void"
+                  className="group flex h-11 w-11 items-center justify-center rounded-full border shadow-sm transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(201,168,76,0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0F0F0F]"
+                  style={{
+                    borderColor: 'rgba(255,255,255,0.12)',
+                    backgroundColor: 'rgba(255,255,255,0.03)',
+                    color: footerMuted,
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(201,168,76,0.45)'
+                    e.currentTarget.style.backgroundColor = 'rgba(201,168,76,0.07)'
+                    e.currentTarget.style.color = footerGold
+                    e.currentTarget.style.boxShadow = '0 0 24px rgba(201,168,76,0.12)'
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)'
+                    e.currentTarget.style.backgroundColor = 'rgba(255,255,255,0.03)'
+                    e.currentTarget.style.color = footerMuted
+                    e.currentTarget.style.boxShadow =
+                      '0 1px 2px 0 rgb(0 0 0 / 0.05)'
+                  }}
                 >
                   <Icon className="h-[18px] w-[18px] shrink-0 transition-transform duration-300 group-hover:scale-105" />
                 </a>
@@ -123,30 +152,61 @@ export async function Footer() {
         <div className="gold-line opacity-20 mb-8" />
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="font-body text-xs text-fog">
+          <p className="font-body text-xs" style={{ color: footerMuted }}>
             {content['footer.copyright'] || '© 2026 Room For You · rfyglobal.org · A SonsHub Media Initiative.'}
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
             <Link
               href="/privacy"
-              className="font-body text-xs text-fog hover:text-gold transition-colors"
+              className="font-body text-xs transition-colors duration-300"
+              style={{ color: footerMuted }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = footerGold
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = footerMuted
+              }}
             >
               Privacy Policy
             </Link>
             <Link
               href="/cookies"
-              className="font-body text-xs text-fog hover:text-gold transition-colors"
+              className="font-body text-xs transition-colors duration-300"
+              style={{ color: footerMuted }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = footerGold
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = footerMuted
+              }}
             >
               Cookie Policy
             </Link>
             <Link
               href="/refund"
-              className="font-body text-xs text-fog hover:text-gold transition-colors"
+              className="font-body text-xs transition-colors duration-300"
+              style={{ color: footerMuted }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = footerGold
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = footerMuted
+              }}
             >
               Refund Policy
             </Link>
-            <Link href="/confession" className="font-body text-xs text-fog hover:text-gold transition-colors">
+            <Link
+              href="/confession"
+              className="font-body text-xs transition-colors duration-300"
+              style={{ color: footerMuted }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.color = footerGold
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.color = footerMuted
+              }}
+            >
               The Confession →
             </Link>
           </div>

@@ -222,3 +222,8 @@ img, video, canvas {
   background: linear-gradient(90deg, transparent, #8B5A00, transparent);
   opacity: 0.3;
 }
+
+/*
+  Site footer (Footer.tsx): background is inline #0F0F0F (not bg-void), so .light .bg-void
+  does not apply. Footer text/icons use inline colors — not .text-fog / CSS vars that flip in .light.
+*/

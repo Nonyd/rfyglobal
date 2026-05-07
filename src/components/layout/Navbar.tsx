@@ -71,7 +71,11 @@ export function Navbar() {
             <img
               src={logoSrc}
               alt="Room For You"
-              style={{ height: '48px', width: 'auto', objectFit: 'contain' }}
+              style={{
+                height: isDark ? '48px' : '56px',
+                width: 'auto',
+                objectFit: 'contain',
+              }}
             />
           </Link>
 
