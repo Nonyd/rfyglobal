@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import {
@@ -91,7 +91,9 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ theme, userRole }: AdminSidebarProps) {
   const pathname = usePathname()
+  const { data: session } = useSession()
   const [badges, setBadges] = useState({ prayers: 0, testimonies: 0, messages: 0 })
+  const userEmail = session?.user?.email ?? 'admin@rfyglobal.org'
 
   useEffect(() => {
     const load = async () => {
@@ -246,7 +248,7 @@ export function AdminSidebar({ theme, userRole }: AdminSidebarProps) {
             className="font-body text-xs truncate flex-1 mr-2"
             style={{ color: 'var(--a-text-muted)' }}
           >
-            admin@rfyglobal.org
+            {userEmail}
           </p>
           <button
             onClick={() => signOut({ callbackUrl: '/admin/login' })}

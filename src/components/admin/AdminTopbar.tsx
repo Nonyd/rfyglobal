@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { Sun, Moon, Bell, Menu } from 'lucide-react'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 import { AdminMobileDrawer } from './AdminMobileDrawer'
 
 const PAGE_TITLES: Record<string, string> = {
@@ -33,6 +34,7 @@ interface AdminTopbarProps {
 export function AdminTopbar({ toggleTheme, theme }: AdminTopbarProps) {
   const pathname = usePathname()
   const router = useRouter()
+  const { data: session } = useSession()
   const title =
     Object.entries(PAGE_TITLES)
       .reverse()
@@ -47,6 +49,14 @@ export function AdminTopbar({ toggleTheme, theme }: AdminTopbarProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const userName = session?.user?.name?.trim() || session?.user?.email?.split('@')[0] || 'Admin'
+  const userEmail = session?.user?.email ?? ''
+  const initials = userName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join('') || 'AD'
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -229,14 +239,28 @@ export function AdminTopbar({ toggleTheme, theme }: AdminTopbarProps) {
           {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
         </button>
 
-        <div
-          className="w-8 h-8 rounded-full flex items-center justify-center font-body text-xs font-bold"
-          style={{
-            background: 'var(--a-gold)',
-            color: 'var(--a-text-inverse)',
-          }}
-        >
-          AD
+        <div className="flex items-center gap-2">
+          <div
+            className="hidden md:flex flex-col text-right min-w-0"
+            style={{ color: 'var(--a-text-muted)' }}
+          >
+            <span className="font-body text-[11px] font-medium truncate" style={{ color: 'var(--a-text)' }}>
+              {userName}
+            </span>
+            {userEmail ? (
+              <span className="font-body text-[10px] truncate">{userEmail}</span>
+            ) : null}
+          </div>
+          <div
+            className="w-8 h-8 rounded-full flex items-center justify-center font-body text-xs font-bold"
+            style={{
+              background: 'var(--a-gold)',
+              color: 'var(--a-text-inverse)',
+            }}
+            title={userName}
+          >
+            {initials}
+          </div>
         </div>
         </div>
       </header>
