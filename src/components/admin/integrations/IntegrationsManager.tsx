@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { ChevronDown, ChevronUp, Save, Shield, ToggleLeft, ToggleRight } from 'lucide-react'
+import { ChevronDown, ChevronUp, Save, Shield } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { AdminToggle } from '@/components/shared/Toggle'
 import { cn } from '@/lib/utils'
 
 interface ServiceConfig {
@@ -236,15 +237,12 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
                       </button>
                     </div>
                   ) : null}
-                  <button
-                    type="button"
-                    onClick={() => void toggleActive(service.id)}
-                    className="transition-colors"
-                    style={{ color: 'var(--a-text-muted)' }}
-                    title={isActive ? 'Disable' : 'Enable'}
-                  >
-                    {isActive ? <ToggleRight size={22} style={{ color: 'var(--a-gold)' }} /> : <ToggleLeft size={22} />}
-                  </button>
+                  <AdminToggle
+                    checked={isActive}
+                    onChange={() => void toggleActive(service.id)}
+                    size="sm"
+                    aria-label={isActive ? 'Disable integration' : 'Enable integration'}
+                  />
                   <button
                     type="button"
                     onClick={() => setExpanded(isExpanded ? null : service.id)}

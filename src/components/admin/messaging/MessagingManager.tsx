@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { format } from 'date-fns'
+import { AdminToggle } from '@/components/shared/Toggle'
 import toast from 'react-hot-toast'
 
 type MessageRow = {
@@ -391,17 +392,13 @@ export function MessagingManager() {
                   color: 'var(--a-text)',
                 }}
               />
-              <div className="mb-2 flex items-center gap-2">
-                <input
-                  id="sendEmailToggle"
-                  type="checkbox"
+              <div className="mb-2">
+                <AdminToggle
                   checked={sendEmailNow}
-                  onChange={(e) => setSendEmailNow(e.target.checked)}
-                  className="accent-[var(--a-gold)]"
+                  onChange={(v) => setSendEmailNow(v)}
+                  label="Also send as email (Brevo)"
+                  size="sm"
                 />
-                <label htmlFor="sendEmailToggle" className="font-body text-xs" style={{ color: 'var(--a-text-secondary)' }}>
-                  Also send as email (Brevo)
-                </label>
               </div>
               <button
                 type="button"
@@ -556,18 +553,12 @@ export function MessagingManager() {
                 className="w-full resize-none border p-2 font-body text-sm"
                 style={{ borderColor: 'var(--a-border)', background: 'var(--a-bg)', color: 'var(--a-text)' }}
               />
-              <div className="flex items-center gap-2">
-                <input
-                  id="modalEmail"
-                  type="checkbox"
-                  checked={modalSendEmail}
-                  onChange={(e) => setModalSendEmail(e.target.checked)}
-                  className="accent-[var(--a-gold)]"
-                />
-                <label htmlFor="modalEmail" className="font-body text-xs" style={{ color: 'var(--a-text-secondary)' }}>
-                  Send as email
-                </label>
-              </div>
+              <AdminToggle
+                checked={modalSendEmail}
+                onChange={(v) => setModalSendEmail(v)}
+                label="Send as email"
+                size="sm"
+              />
             </div>
 
             <div className="mt-4 flex gap-2">

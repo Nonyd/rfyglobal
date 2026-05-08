@@ -143,10 +143,18 @@ export function PrayerManager() {
                   <p className="mt-1 line-clamp-2 font-body text-sm" style={{ color: 'var(--a-text-secondary)' }}>
                     {r.body}
                   </p>
-                  <p className="mt-2 font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
-                    {r.isAnonymous ? 'Anonymous' : r.name || '—'} · {r.email} ·{' '}
-                    {format(new Date(r.createdAt), 'MMM d, yyyy h:mm a')}
+                  <p className="mt-2 font-body text-sm font-medium" style={{ color: 'var(--a-text-secondary)' }}>
+                    {r.isAnonymous ? 'Anonymous' : (r.name ?? 'Community Member')}
                   </p>
+                  {!r.isAnonymous ? (
+                    <p className="mt-1 font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
+                      {r.email} · {format(new Date(r.createdAt), 'MMM d, yyyy h:mm a')}
+                    </p>
+                  ) : (
+                    <p className="mt-1 font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
+                      Anonymous · {format(new Date(r.createdAt), 'MMM d, yyyy h:mm a')}
+                    </p>
+                  )}
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <button
@@ -222,6 +230,21 @@ export function PrayerManager() {
                     className="mt-4 border p-4"
                     style={{ borderColor: 'var(--a-gold-border)', background: 'var(--a-gold-light)' }}
                   >
+                    {r.isAnonymous && (
+                      <div
+                        className="mb-4 flex items-start gap-2 border p-3"
+                        style={{
+                          borderColor: 'rgba(201,168,76,0.3)',
+                          background: 'rgba(201,168,76,0.05)',
+                        }}
+                      >
+                        <span className="shrink-0 text-sm text-gold">🔒</span>
+                        <p className="font-body text-xs leading-relaxed" style={{ color: 'var(--a-text-muted)' }}>
+                          This request was submitted anonymously. Your reply will be sent to their email, but their
+                          address is kept private from the admin view.
+                        </p>
+                      </div>
+                    )}
                     <label className="mb-2 block font-body text-xs uppercase tracking-wider text-mist">
                       Email reply
                     </label>

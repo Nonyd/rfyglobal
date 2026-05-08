@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { FieldType, type CommunityMember, type JoinFormField } from '@prisma/client'
 import { formatDate } from '@/lib/utils'
 import toast from 'react-hot-toast'
+import { AdminToggle } from '@/components/shared/Toggle'
 
 interface MembersManagerProps {
   initialMembers: CommunityMember[]
@@ -332,21 +333,11 @@ export function MembersManager({ initialMembers, total, extraFields: initialFiel
                   />
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setNewField((p) => ({ ...p, required: !p.required }))}
-                    className="relative w-10 h-5 rounded-full transition-colors"
-                    style={{ background: newField.required ? 'var(--a-gold)' : 'var(--a-border)' }}
-                  >
-                    <span
-                      className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${newField.required ? 'translate-x-5' : 'translate-x-0.5'}`}
-                    />
-                  </button>
-                  <span className="text-sm font-body" style={{ color: 'var(--a-text-secondary)' }}>
-                    Required
-                  </span>
-                </div>
+                <AdminToggle
+                  checked={newField.required}
+                  onChange={(val) => setNewField((p) => ({ ...p, required: val }))}
+                  label="Required"
+                />
 
                 <button
                   type="button"

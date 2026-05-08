@@ -23,7 +23,7 @@ import { FieldTypePicker } from './FieldTypePicker'
 import toast from 'react-hot-toast'
 import type { FormFieldInput } from '@/lib/validations/form'
 import type { AppFieldType } from '@/lib/form-field-metadata'
-import { cn } from '@/lib/utils'
+import { AdminToggle } from '@/components/shared/Toggle'
 
 function apiErrorMessage(body: unknown): string {
   if (!body || typeof body !== 'object') return 'Failed to save form'
@@ -251,29 +251,18 @@ export function FormBuilderEditor({ mode, initialData }: FormBuilderEditorProps)
               </p>
             </div>
 
-            <div className="flex items-center gap-3 pt-1">
-              <button
-                type="button"
-                onClick={() => setDesiredActive(!desiredActive)}
-                className={cn(
-                  'relative inline-flex h-5 w-9 items-center rounded-full transition-colors',
-                  desiredActive ? '' : ''
-                )}
-                style={{ background: desiredActive ? 'var(--a-gold)' : 'var(--a-border-strong)' }}
-              >
-                <span
-                  className={cn(
-                    'inline-block h-3.5 w-3.5 rounded-full transition-transform',
-                    desiredActive ? 'translate-x-4' : 'translate-x-0.5'
-                  )}
-                  style={{ background: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}
-                />
-              </button>
-              <div>
-                <p className="text-xs font-body" style={{ color: 'var(--a-text)' }}>Published (live on site)</p>
+            <div className="flex items-start gap-3 pt-1">
+              <AdminToggle
+                checked={desiredActive}
+                onChange={(val) => setDesiredActive(val)}
+                aria-label="Published live on site"
+              />
+              <div className="min-w-0 pt-0.5">
+                <p className="text-xs font-body" style={{ color: 'var(--a-text)' }}>
+                  Published (live on site)
+                </p>
                 <p className="text-[10px] font-body" style={{ color: 'var(--a-text-muted)' }}>
-                  When you publish, this controls visibility. Save as Draft always keeps the form
-                  off.
+                  When you publish, this controls visibility. Save as Draft always keeps the form off.
                 </p>
               </div>
             </div>

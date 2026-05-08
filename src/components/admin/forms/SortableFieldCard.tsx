@@ -4,6 +4,7 @@ import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { GripVertical, Trash2, Plus, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { AdminToggle } from '@/components/shared/Toggle'
 import type { FormFieldInput } from '@/lib/validations/form'
 import {
   FIELD_TYPE_LABELS,
@@ -130,26 +131,12 @@ export function SortableFieldCard({ field, onUpdate, onRemove }: SortableFieldCa
         </div>
       ) : null}
 
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={() => onUpdate({ required: !field.required })}
-          className={cn(
-            'relative inline-flex h-5 w-9 items-center rounded-full transition-colors',
-            field.required ? '' : ''
-          )}
-          style={{ background: field.required ? 'var(--a-gold)' : 'var(--a-border-strong)' }}
-        >
-          <span
-            className={cn(
-              'inline-block h-3.5 w-3.5 rounded-full transition-transform',
-              field.required ? 'translate-x-4' : 'translate-x-0.5'
-            )}
-            style={{ background: '#FFFFFF', boxShadow: '0 1px 3px rgba(0,0,0,0.2)' }}
-          />
-        </button>
-        <span className="text-xs font-body" style={{ color: 'var(--a-text-muted)' }}>Required</span>
-      </div>
+      <AdminToggle
+        checked={field.required}
+        onChange={(val) => onUpdate({ required: val })}
+        label="Required"
+        size="sm"
+      />
     </div>
   )
 }

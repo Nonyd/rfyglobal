@@ -6,6 +6,7 @@ import { X, CheckCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
 import { UploadZone } from '@/components/shared/UploadZone'
+import { Toggle } from '@/components/shared/Toggle'
 
 interface TestimonySubmitModalProps {
   isOpen: boolean
@@ -27,6 +28,8 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
   const [form, setForm] = useState({
     email: '',
     name: '',
+    phone: '',
+    location: '',
     title: '',
     body: '',
     videoUrl: '',
@@ -48,7 +51,16 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
     onClose()
     setTimeout(() => {
       setSubmitted(false)
-      setForm({ email: '', name: '', title: '', body: '', videoUrl: '', isAnonymous: false })
+      setForm({
+        email: '',
+        name: '',
+        phone: '',
+        location: '',
+        title: '',
+        body: '',
+        videoUrl: '',
+        isAnonymous: false,
+      })
       setImageUrls([])
       setNotMember(false)
     }, 300)
@@ -64,8 +76,8 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setNotMember(false)
-    if (!form.email.trim() || !form.title.trim()) {
-      toast.error('Email and title are required.')
+    if (!form.email.trim() || !form.title.trim() || !form.phone.trim() || !form.location.trim()) {
+      toast.error('Please fill in all required fields.')
       return
     }
 
@@ -77,6 +89,8 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
         body: JSON.stringify({
           email: form.email.trim(),
           name: form.name.trim() || undefined,
+          phone: form.phone.trim(),
+          location: form.location.trim(),
           isAnonymous: form.isAnonymous,
           title: form.title.trim(),
           body: form.body.trim() || undefined,
@@ -86,8 +100,11 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
       })
       const data = await res.json()
       if (!res.ok) {
-        if (data.notMember) setNotMember(true)
-        else toast.error(messageFromApiError(data.error))
+        if (data.notMember) {
+          setNotMember(true)
+          return
+        }
+        toast.error(messageFromApiError(data.error))
         return
       }
       setSubmitted(true)
@@ -172,7 +189,7 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
 
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                      <label style={labelStyle}>Email *</label>
+                      <label style={labelStyle}>Community Member Email *</label>
                       <input
                         type="email"
                         required
@@ -181,12 +198,12 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
                           setForm((p) => ({ ...p, email: e.target.value }))
                           setNotMember(false)
                         }}
-                        placeholder="Community member email"
+                        placeholder="your@email.com"
                         style={inputStyle}
                         onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
                         onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
                       />
-                      <p className="mt-1 font-body text-[11px]" style={{ color: '#585858' }}>
+                      <p className="mt-1 font-body text-xs" style={{ color: '#585858' }}>
                         Must match the email you used to join Room For You.
                       </p>
                     </div>
@@ -194,42 +211,34 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
                     <AnimatePresence>
                       {notMember && (
                         <motion.div
-                          initial={{ opacity: 0, y: -4 }}
+                          initial={{ opacity: 0, y: -8 }}
                           animate={{ opacity: 1, y: 0 }}
                           exit={{ opacity: 0 }}
-                          className="flex items-start gap-2 px-3 py-2"
-                          style={{
-                            background: 'rgba(239,68,68,0.08)',
-                            border: '1px solid rgba(239,68,68,0.3)',
-                          }}
+                          className="flex items-start gap-3 border p-4"
+                          style={{ borderColor: 'rgba(239,68,68,0.4)', background: 'rgba(239,68,68,0.06)' }}
                         >
-                          <span className="shrink-0 text-sm text-red-400">⚠</span>
-                          <p className="font-body text-xs leading-relaxed" style={{ color: '#FCA5A5' }}>
-                            Not a member yet.{' '}
-                            <Link href="/join" className="underline" style={{ color: '#C9A84C' }}>
-                              Join the community
-                            </Link>{' '}
-                            first.
-                          </p>
+                          <span className="mt-0.5 shrink-0 text-red-400">⚠</span>
+                          <div>
+                            <p className="font-body text-sm" style={{ color: '#FCA5A5' }}>
+                              This email is not registered with Room For You.
+                            </p>
+                            <p className="mt-1 font-body text-xs" style={{ color: 'rgba(252,165,165,0.7)' }}>
+                              Please{' '}
+                              <Link href="/join" className="underline" style={{ color: '#C9A84C' }}>
+                                join the community
+                              </Link>{' '}
+                              first — it only takes a minute.
+                            </p>
+                          </div>
                         </motion.div>
                       )}
                     </AnimatePresence>
 
-                    <div className="flex items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() => setForm((p) => ({ ...p, isAnonymous: !p.isAnonymous }))}
-                        className="relative h-5 w-10 shrink-0 rounded-full transition-colors"
-                        style={{ background: form.isAnonymous ? '#C9A84C' : 'rgba(255,255,255,0.15)' }}
-                      >
-                        <span
-                          className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-transform ${
-                            form.isAnonymous ? 'translate-x-5' : 'translate-x-0.5'
-                          }`}
-                        />
-                      </button>
-                      <span className="font-body text-sm text-mist">Submit anonymously on the site</span>
-                    </div>
+                    <Toggle
+                      checked={form.isAnonymous}
+                      onChange={(val) => setForm((p) => ({ ...p, isAnonymous: val }))}
+                      label="Submit anonymously on the public page"
+                    />
 
                     {!form.isAnonymous && (
                       <div>
@@ -244,6 +253,33 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
                         />
                       </div>
                     )}
+
+                    <div>
+                      <label style={labelStyle}>Phone Number *</label>
+                      <input
+                        type="tel"
+                        required
+                        value={form.phone}
+                        onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
+                        placeholder="+234..."
+                        style={inputStyle}
+                        onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+                        onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
+                      />
+                    </div>
+
+                    <div>
+                      <label style={labelStyle}>Location (City, Country) *</label>
+                      <input
+                        required
+                        value={form.location}
+                        onChange={(e) => setForm((p) => ({ ...p, location: e.target.value }))}
+                        placeholder="e.g. Abuja, Nigeria"
+                        style={inputStyle}
+                        onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+                        onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
+                      />
+                    </div>
 
                     <div>
                       <label style={labelStyle}>Title *</label>
@@ -315,7 +351,7 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
 
                     <button
                       type="submit"
-                      disabled={submitting}
+                      disabled={submitting || notMember}
                       className="mt-2 w-full py-4 font-body text-xs font-semibold uppercase tracking-widest transition-all duration-300 disabled:opacity-50"
                       style={{ background: '#C9A84C', color: '#0F0F0F' }}
                     >

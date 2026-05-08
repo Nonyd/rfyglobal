@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Edit, Trash2, Volume2, Calendar, Shuffle, X, Upload } from 'lucide-react'
 import { UploadZone } from '@/components/shared/UploadZone'
+import { AdminToggle } from '@/components/shared/Toggle'
 import { formatDate } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import toast from 'react-hot-toast'
@@ -326,26 +327,12 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
                       Publish
                     </button>
                   ) : null}
-                  <button
-                    type="button"
-                    onClick={() => toggleActive(s)}
-                    className="relative h-5 w-9 rounded-full transition-colors"
-                    style={{
-                      background: s.isActive ? 'var(--a-gold)' : 'var(--a-border-strong)',
-                    }}
+                  <AdminToggle
+                    checked={s.isActive}
+                    onChange={() => void toggleActive(s)}
+                    size="sm"
                     aria-label={s.isActive ? 'Deactivate' : 'Activate'}
-                  >
-                    <span
-                      className={cn(
-                        'absolute top-0.5 h-4 w-4 rounded-full transition-transform',
-                        s.isActive ? 'translate-x-4' : 'translate-x-0.5',
-                      )}
-                      style={{
-                        background: '#FFFFFF',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                      }}
-                    />
-                  </button>
+                  />
                   <button
                     type="button"
                     onClick={() => openEdit(s)}
@@ -590,29 +577,11 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
                   )}
                 </div>
 
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setIsActive(!isActive)}
-                    className="relative h-5 w-10 rounded-full transition-colors"
-                    style={{
-                      background: isActive ? 'var(--a-gold)' : 'var(--a-border-strong)',
-                    }}
-                    aria-label="Toggle active"
-                  >
-                    <span
-                      className={cn(
-                        'absolute top-0.5 h-4 w-4 rounded-full transition-transform',
-                        isActive ? 'translate-x-5' : 'translate-x-0.5',
-                      )}
-                      style={{
-                        background: '#FFFFFF',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                      }}
-                    />
-                  </button>
-                  <span className="font-body text-sm" style={{ color: 'var(--a-text-secondary)' }}>{isActive ? 'Active' : 'Inactive'}</span>
-                </div>
+                <AdminToggle
+                  checked={isActive}
+                  onChange={(val) => setIsActive(val)}
+                  label={isActive ? 'Active' : 'Inactive'}
+                />
 
                 <button
                   type="button"

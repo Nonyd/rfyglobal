@@ -4,6 +4,7 @@ import { useState } from 'react'
 import type { AutomationSettings, EmailLog, CommunityMember } from '@prisma/client'
 import { formatDate } from '@/lib/utils'
 import toast from 'react-hot-toast'
+import { AdminToggle } from '@/components/shared/Toggle'
 
 type LogRow = EmailLog & {
   member: Pick<CommunityMember, 'name' | 'email'> | null
@@ -133,30 +134,16 @@ export function AutomationManager({ settings: initial, recentLogs }: AutomationM
         </div>
 
         <div className="flex flex-col gap-4">
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={isDevotionalActive}
-              onChange={(e) => setIsDevotionalActive(e.target.checked)}
-              className="rounded border"
-              style={{ borderColor: 'var(--a-border)' }}
-            />
-            <span className="font-body text-sm" style={{ color: 'var(--a-text)' }}>
-              Daily devotional emails active (cron respects this)
-            </span>
-          </label>
-          <label className="flex items-center gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={isEventReminderActive}
-              onChange={(e) => setIsEventReminderActive(e.target.checked)}
-              className="rounded border"
-              style={{ borderColor: 'var(--a-border)' }}
-            />
-            <span className="font-body text-sm" style={{ color: 'var(--a-text)' }}>
-              Event reminder emails active (cron respects this)
-            </span>
-          </label>
+          <AdminToggle
+            checked={isDevotionalActive}
+            onChange={(v) => setIsDevotionalActive(v)}
+            label="Daily devotional emails active (cron respects this)"
+          />
+          <AdminToggle
+            checked={isEventReminderActive}
+            onChange={(v) => setIsEventReminderActive(v)}
+            label="Event reminder emails active (cron respects this)"
+          />
         </div>
 
         <button

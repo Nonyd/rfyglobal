@@ -15,6 +15,8 @@ const VideoUrlSchema = z.preprocess(
 const TestimonySchema = z.object({
   email: z.string().email(),
   name: z.string().optional(),
+  phone: z.string().min(7).max(20),
+  location: z.string().min(1).max(200),
   isAnonymous: z.boolean().default(false),
   title: z.string().min(3).max(200),
   body: z.string().max(5000).optional(),
@@ -36,7 +38,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const { email, name, isAnonymous, title, body: testimonyBody, imageUrls, videoUrl } = parsed.data
+  const { email, name, phone, location, isAnonymous, title, body: testimonyBody, imageUrls, videoUrl } =
+    parsed.data
 
   const member = await findCommunityMemberByEmail(email)
 
@@ -53,6 +56,8 @@ export async function POST(req: NextRequest) {
   const testimony = await db.testimony.create({
     data: {
       email: member.email,
+      phone,
+      location,
       name: isAnonymous ? null : (name || member.name),
       isAnonymous,
       title,

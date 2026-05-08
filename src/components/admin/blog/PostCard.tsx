@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { Edit, Eye, Trash2, Globe, EyeOff } from 'lucide-react'
+import { Edit, Eye, Trash2 } from 'lucide-react'
+import { AdminToggle } from '@/components/shared/Toggle'
 import { formatDate } from '@/lib/utils'
 import toast from 'react-hot-toast'
 
@@ -84,17 +85,12 @@ export function PostCard({ post }: PostCardProps) {
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          <button
-            type="button"
-            onClick={togglePublish}
-            className="p-2 transition-colors"
-            style={{ color: 'var(--a-text-secondary)' }}
-            title={isPublished ? 'Unpublish' : 'Publish'}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--a-gold)')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--a-text-secondary)')}
-          >
-            {isPublished ? <Globe size={16} style={{ color: 'var(--a-gold)' }} /> : <EyeOff size={16} />}
-          </button>
+          <AdminToggle
+            checked={isPublished}
+            onChange={() => void togglePublish()}
+            size="sm"
+            aria-label={isPublished ? 'Unpublish post' : 'Publish post'}
+          />
           <Link
             href={`/blog/${post.slug}`}
             target="_blank"

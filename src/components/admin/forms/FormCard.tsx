@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { useState } from 'react'
-import { Edit, Eye, Copy, Trash2, ToggleLeft, ToggleRight, ExternalLink } from 'lucide-react'
+import { Edit, Eye, Copy, Trash2, ExternalLink } from 'lucide-react'
+import { AdminToggle } from '@/components/shared/Toggle'
 import toast from 'react-hot-toast'
 
 interface FormCardProps {
@@ -86,19 +87,14 @@ export function FormCard({ form }: FormCardProps) {
           </div>
         </div>
 
-        <div className="flex items-center gap-1 shrink-0 flex-wrap">
-          <button
-            type="button"
-            onClick={toggleActive}
+        <div className="flex items-center gap-2 shrink-0 flex-wrap">
+          <AdminToggle
+            checked={isActive}
             disabled={loading}
-            className="p-2 transition-colors disabled:opacity-50"
-            style={{ color: 'var(--a-text-muted)' }}
-            title={isActive ? 'Deactivate' : 'Activate'}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--a-gold)')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--a-text-muted)')}
-          >
-            {isActive ? <ToggleRight size={18} style={{ color: 'var(--a-gold)' }} /> : <ToggleLeft size={18} />}
-          </button>
+            onChange={() => void toggleActive()}
+            size="sm"
+            aria-label={isActive ? 'Deactivate form' : 'Activate form'}
+          />
           <button
             type="button"
             onClick={copyLink}

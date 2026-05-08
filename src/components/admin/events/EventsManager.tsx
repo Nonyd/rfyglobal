@@ -21,6 +21,7 @@ import toast from 'react-hot-toast'
 import { formatDate } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { UploadZone } from '@/components/shared/UploadZone'
+import { AdminToggle } from '@/components/shared/Toggle'
 
 type EventRow = {
   id: string
@@ -985,42 +986,24 @@ export function EventsManager() {
                             />
                           </div>
 
-                          <div className="flex items-center justify-between gap-3">
-                            <div className="flex items-center gap-2">
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  if (isEmail) return
-                                  void saveFieldChanges(field.id, { required: !currentRequired })
-                                }}
-                                disabled={isEmail}
-                                className="relative h-4 w-8 rounded-full transition-colors disabled:opacity-50"
-                                style={{
-                                  background: currentRequired ? 'var(--a-gold)' : 'var(--a-border)',
-                                }}
-                              >
-                                <span
-                                  className={`absolute top-0.5 h-3 w-3 rounded-full bg-white transition-transform ${
-                                    currentRequired ? 'translate-x-4' : 'translate-x-0.5'
-                                  }`}
-                                />
-                              </button>
-                              <span className="font-body text-xs" style={{ color: 'var(--a-text-secondary)' }}>
-                                Required
-                              </span>
-                            </div>
-                            <label className="flex cursor-pointer items-center gap-2 font-body text-xs">
-                              <input
-                                type="checkbox"
-                                checked={field.isActive}
-                                disabled={isEmail}
-                                onChange={(e) =>
-                                  void saveFieldChanges(field.id, { isActive: e.target.checked })
-                                }
-                                className="accent-gold disabled:opacity-50"
-                              />
-                              <span style={{ color: 'var(--a-text-secondary)' }}>Active</span>
-                            </label>
+                          <div className="flex flex-wrap items-center justify-between gap-3">
+                            <AdminToggle
+                              checked={currentRequired}
+                              disabled={isEmail}
+                              onChange={(val) => {
+                                if (isEmail) return
+                                void saveFieldChanges(field.id, { required: val })
+                              }}
+                              label="Required"
+                              size="sm"
+                            />
+                            <AdminToggle
+                              checked={field.isActive}
+                              disabled={isEmail}
+                              onChange={(val) => void saveFieldChanges(field.id, { isActive: val })}
+                              label="Active"
+                              size="sm"
+                            />
                           </div>
                         </div>
                       )

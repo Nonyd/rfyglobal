@@ -17,6 +17,7 @@ import {
   type UploadFailure,
   type UploadPartialResult,
 } from '@/components/shared/UploadZone'
+import { AdminToggle } from '@/components/shared/Toggle'
 import toast from 'react-hot-toast'
 import { format } from 'date-fns'
 import type { GalleryImage, GalleryEvent } from '@prisma/client'
@@ -1211,30 +1212,19 @@ function EditImagePanel({
         </p>
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <span
           className="font-body text-xs uppercase tracking-widest"
           style={{ color: 'var(--a-text-secondary)' }}
         >
           Visibility
         </span>
-        <button
-          type="button"
-          onClick={() => setIsActive((v) => !v)}
-          className="relative h-6 w-12 rounded-full transition-colors"
-          style={{
-            background: isActive ? 'var(--a-gold)' : 'var(--a-border)',
-          }}
+        <AdminToggle
+          checked={isActive}
+          onChange={(v) => setIsActive(v)}
+          size="lg"
           aria-label="Toggle visibility"
-        >
-          <span
-            className="absolute top-0.5 h-5 w-5 rounded-full transition-transform"
-            style={{
-              background: 'var(--a-surface)',
-              transform: isActive ? 'translateX(26px)' : 'translateX(2px)',
-            }}
-          />
-        </button>
+        />
       </div>
 
       <button

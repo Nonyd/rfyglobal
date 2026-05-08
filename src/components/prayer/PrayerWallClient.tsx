@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
+import { Toggle } from '@/components/shared/Toggle'
 
 function messageFromApiError(error: unknown): string {
   if (typeof error === 'string') return error
@@ -157,23 +158,11 @@ export function PrayerWallClient() {
         )}
       </AnimatePresence>
 
-      <div className="flex items-center gap-3">
-        <button
-          type="button"
-          onClick={() => setForm((p) => ({ ...p, isAnonymous: !p.isAnonymous }))}
-          className="relative w-10 h-5 rounded-full transition-colors"
-          style={{ background: form.isAnonymous ? '#C9A84C' : 'rgba(255,255,255,0.15)' }}
-        >
-          <span
-            className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
-              form.isAnonymous ? 'translate-x-5' : 'translate-x-0.5'
-            }`}
-          />
-        </button>
-        <span className="font-body text-sm" style={{ color: '#A0A0A0' }}>
-          Submit anonymously (your name won&apos;t be shown to the team)
-        </span>
-      </div>
+      <Toggle
+        checked={form.isAnonymous}
+        onChange={(val) => setForm((p) => ({ ...p, isAnonymous: val }))}
+        label={"Submit anonymously (your name won\u2019t be shown to the team)"}
+      />
 
       {!form.isAnonymous && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
