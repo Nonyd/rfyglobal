@@ -18,6 +18,7 @@ const NAV_LINKS = [
   { label: 'Blog', href: '/blog' },
   { label: 'About', href: '/about' },
   { label: 'Partner', href: '/partner' },
+  { label: 'Contact', href: '/contact' },
 ]
 
 const DESKTOP_NAV_LINKS = NAV_LINKS.filter((l) => l.href !== '/')

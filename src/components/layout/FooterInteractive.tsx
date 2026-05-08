@@ -135,6 +135,22 @@ export function FooterCommunityLinks() {
       >
         Testimonies
       </a>
+      <a
+        href="/contact"
+        style={{ color: '#A0A0A0', fontSize: '12px', fontFamily: 'General Sans, sans-serif' }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = '#C9A84C')}
+        onMouseLeave={(e) => (e.currentTarget.style.color = '#A0A0A0')}
+      >
+        Contact
+      </a>
+      <a
+        href="/faq"
+        style={{ color: '#A0A0A0', fontSize: '12px', fontFamily: 'General Sans, sans-serif' }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = '#C9A84C')}
+        onMouseLeave={(e) => (e.currentTarget.style.color = '#A0A0A0')}
+      >
+        FAQs
+      </a>
     </div>
   )
 }

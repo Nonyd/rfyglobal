@@ -41,3 +41,14 @@ export async function GET(req: NextRequest) {
     totalPages: Math.ceil(total / limit) || 1,
   })
 }
+
+export async function DELETE() {
+  const session = await auth()
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (session.user.role !== 'SUPER_ADMIN') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  await db.activityLog.deleteMany({})
+  return NextResponse.json({ success: true })
+}

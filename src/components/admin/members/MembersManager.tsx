@@ -1,12 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Download, X } from 'lucide-react'
+import { Plus, Download, X, Trash2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FieldType, type CommunityMember, type JoinFormField } from '@prisma/client'
 import { formatDate } from '@/lib/utils'
 import toast from 'react-hot-toast'
 import { AdminToggle } from '@/components/shared/Toggle'
+import { useBulkSelect } from '@/hooks/useBulkSelect'
+import { BulkActionBar } from '@/components/admin/shared/BulkActionBar'
+import { SelectCheckbox } from '@/components/admin/shared/SelectCheckbox'
 
 interface MembersManagerProps {
   initialMembers: CommunityMember[]
@@ -36,6 +39,7 @@ export function MembersManager({ initialMembers, total, extraFields: initialFiel
     order: initialFields.length,
   })
   const [savingField, setSavingField] = useState(false)
+  const bulk = useBulkSelect(members)
 
   const loadMore = async () => {
     setLoading(true)
@@ -103,6 +107,24 @@ export function MembersManager({ initialMembers, total, extraFields: initialFiel
     } finally {
       setSavingField(false)
     }
+  }
+
+  const bulkDelete = async () => {
+    if (!bulk.selectedCount) return
+    if (!confirm(`Delete ${bulk.selectedCount} member${bulk.selectedCount > 1 ? 's' : ''}? This cannot be undone.`)) return
+    const res = await fetch('/api/join/bulk-delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: bulk.selectedArray }),
+    })
+    if (!res.ok) {
+      toast.error('Failed to delete members')
+      return
+    }
+    toast.success(`${bulk.selectedCount} members deleted`)
+    bulk.reset()
+    const deletedSet = new Set(bulk.selectedArray)
+    setMembers((prev) => prev.filter((m) => !deletedSet.has(m.id)))
   }
 
   return (
@@ -178,6 +200,12 @@ export function MembersManager({ initialMembers, total, extraFields: initialFiel
           <table className="w-full font-body text-sm">
             <thead>
               <tr style={{ background: 'var(--a-sidebar)', borderBottom: `1px solid var(--a-border)` }}>
+                <th className="px-4 py-3" style={{ width: '40px' }}>
+                  <SelectCheckbox
+                    checked={bulk.isAllSelected}
+                    onChange={(v) => (v ? bulk.selectAll() : bulk.deselectAll())}
+                  />
+                </th>
                 {['Name', 'Email', 'Phone', 'Location', 'Joined', 'Status'].map((h) => (
                   <th key={h} className="text-left px-4 py-3 text-xs uppercase tracking-widest" style={{ color: 'var(--a-gold)' }}>
                     {h}
@@ -194,6 +222,9 @@ export function MembersManager({ initialMembers, total, extraFields: initialFiel
                     background: i % 2 === 0 ? 'var(--a-surface)' : 'var(--a-bg)',
                   }}
                 >
+                  <td className="px-4 py-3">
+                    <SelectCheckbox checked={bulk.isSelected(m.id)} onChange={() => bulk.toggle(m.id)} />
+                  </td>
                   <td className="px-4 py-3 font-medium" style={{ color: 'var(--a-text)' }}>
                     {m.name}
                   </td>
@@ -244,6 +275,22 @@ export function MembersManager({ initialMembers, total, extraFields: initialFiel
           </div>
         )}
       </div>
+
+      <BulkActionBar
+        selectedCount={bulk.selectedCount}
+        onDeselectAll={bulk.deselectAll}
+        onSelectAll={bulk.selectAll}
+        isAllSelected={bulk.isAllSelected}
+        totalCount={members.length}
+        actions={[
+          {
+            label: 'Delete',
+            icon: <Trash2 size={12} />,
+            onClick: () => void bulkDelete(),
+            variant: 'danger',
+          },
+        ]}
+      />
 
       <AnimatePresence>
         {addFieldOpen && (

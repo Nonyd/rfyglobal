@@ -26,6 +26,7 @@ import {
   Settings,
   Star,
   MessageSquare,
+  HelpCircle,
 } from 'lucide-react'
 import { canAccess } from '@/lib/permissions'
 
@@ -60,6 +61,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Gallery', href: '/admin/gallery', icon: Images },
       { label: 'Forms', href: '/admin/forms', icon: ClipboardList },
       { label: 'Testimonies', href: '/admin/testimonies', icon: Star, badgeKey: 'testimonies' },
+      { label: 'FAQs', href: '/admin/faq', icon: HelpCircle },
     ],
   },
   {

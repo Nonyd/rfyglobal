@@ -18,6 +18,8 @@ const CMS_SECTIONS = [
     icon: Heart,
   },
   { href: '/admin/cms/footer', label: 'Footer', desc: 'Tagline, copyright, social links', icon: Globe },
+  { href: '/admin/cms/contact', label: 'Contact Page', desc: 'Contact heading, links, address', icon: FileText },
+  { href: '/admin/cms/faq', label: 'FAQs Page', desc: 'FAQ page heading and subheading', icon: FileText },
   { href: '/admin/cms/seo', label: 'SEO Defaults', desc: 'OG image, meta description', icon: Settings2 },
 ]
 

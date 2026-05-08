@@ -9,6 +9,9 @@ import { formatDate } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import toast from 'react-hot-toast'
 import type { Scripture } from '@prisma/client'
+import { useBulkSelect } from '@/hooks/useBulkSelect'
+import { BulkActionBar } from '@/components/admin/shared/BulkActionBar'
+import { SelectCheckbox } from '@/components/admin/shared/SelectCheckbox'
 
 const TRANSLATIONS = ['KJV', 'NIV', 'ESV', 'NKJV', 'AMP', 'NLT']
 
@@ -49,6 +52,7 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
   }
 
   const displayedScriptures = scriptures.filter((s) => (tab === 'drafts' ? s.isDraft : !s.isDraft))
+  const bulk = useBulkSelect(displayedScriptures)
 
   const openNew = () => {
     setEditing(null)
@@ -203,6 +207,32 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
     }
   }
 
+  const bulkDelete = async () => {
+    if (!bulk.selectedCount) return
+    if (!confirm(`Delete ${bulk.selectedCount} scripture${bulk.selectedCount > 1 ? 's' : ''}?`)) return
+    await Promise.all(bulk.selectedArray.map((id) => fetch(`/api/scripture/${id}`, { method: 'DELETE' })))
+    toast.success(`${bulk.selectedCount} scriptures deleted`)
+    bulk.reset()
+    await loadScriptures()
+  }
+
+  const bulkPublish = async () => {
+    if (!bulk.selectedCount) return
+    await Promise.all(
+      bulk.selectedArray.map((id) =>
+        fetch(`/api/scripture/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ isDraft: false, isActive: true }),
+        }),
+      ),
+    )
+    toast.success(`${bulk.selectedCount} scriptures published`)
+    bulk.reset()
+    await loadScriptures()
+    setTab('published')
+  }
+
   return (
     <div className="relative">
       <div className="mb-8 flex items-center justify-between">
@@ -269,7 +299,7 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
             <div
               key={s.id}
               className={cn(
-                'border p-5 transition-all',
+                'group relative border p-5 pl-12 transition-all',
                 s.isActive ? '' : 'opacity-60',
               )}
               style={{
@@ -277,6 +307,13 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
                 background: s.isActive ? 'var(--a-gold-light)' : 'var(--a-surface)',
               }}
             >
+              <div className="absolute left-4 top-4">
+                <div
+                  className={bulk.isSelected(s.id) ? 'opacity-100' : 'opacity-0 transition-opacity group-hover:opacity-100'}
+                >
+                  <SelectCheckbox checked={bulk.isSelected(s.id)} onChange={() => bulk.toggle(s.id)} />
+                </div>
+              </div>
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
                   <div className="mb-2 flex flex-wrap items-center gap-3">
@@ -735,6 +772,20 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
           </>
         ) : null}
       </AnimatePresence>
+
+      <BulkActionBar
+        selectedCount={bulk.selectedCount}
+        onDeselectAll={bulk.deselectAll}
+        onSelectAll={bulk.selectAll}
+        isAllSelected={bulk.isAllSelected}
+        totalCount={displayedScriptures.length}
+        actions={[
+          ...(tab === 'drafts'
+            ? [{ label: 'Publish All', onClick: () => void bulkPublish(), variant: 'primary' as const }]
+            : []),
+          { label: 'Delete', icon: <Trash2 size={12} />, onClick: () => void bulkDelete(), variant: 'danger' as const },
+        ]}
+      />
     </div>
   )
 }

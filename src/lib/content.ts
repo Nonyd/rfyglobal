@@ -69,6 +69,17 @@ const DEFAULTS: Record<string, string> = {
   'footer.instagram': 'https://instagram.com/roomforyou',
   'footer.youtube': 'https://youtube.com/@roomforyou',
   'footer.twitter': 'https://twitter.com/roomforyou',
+  'contact.heading': 'We would love\nto hear from you.',
+  'contact.subheading':
+    'Reach out with questions, partnership enquiries, or just to say hello. We read every message.',
+  'contact.email': 'hello@rfyglobal.org',
+  'contact.whatsapp': '',
+  'contact.instagram': 'https://instagram.com/roomforyou',
+  'contact.youtube': 'https://youtube.com/@roomforyou',
+  'contact.twitter': 'https://x.com/roomforyou',
+  'contact.address': 'Abuja, Nigeria',
+  'faq.heading': 'Frequently Asked\nQuestions.',
+  'faq.subheading': "Can't find what you're looking for? Reach out via our contact page.",
 
   'seo.defaultTitle': 'Room For You — with Yadah',
   'seo.defaultDescription':

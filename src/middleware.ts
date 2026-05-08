@@ -18,6 +18,7 @@ const ROUTE_PERMISSIONS: Record<string, string> = {
   '/admin/blog': 'blog',
   '/admin/study': 'study',
   '/admin/activity': 'activity',
+  '/admin/faq': 'faq',
 }
 
 const SORTED_ADMIN_ROUTES = Object.entries(ROUTE_PERMISSIONS).sort(

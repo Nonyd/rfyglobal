@@ -5,7 +5,11 @@ import { useSession } from 'next-auth/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
+import { Trash2 } from 'lucide-react'
 import type { PrayerRequest, PrayerRequestStatus } from '@prisma/client'
+import { useBulkSelect } from '@/hooks/useBulkSelect'
+import { BulkActionBar } from '@/components/admin/shared/BulkActionBar'
+import { SelectCheckbox } from '@/components/admin/shared/SelectCheckbox'
 
 type Tab = 'PENDING' | 'PRAYED' | 'REPLIED'
 
@@ -21,6 +25,7 @@ export function PrayerManager() {
   const [replyId, setReplyId] = useState<string | null>(null)
   const [replyText, setReplyText] = useState('')
   const [replySending, setReplySending] = useState(false)
+  const bulk = useBulkSelect(requests)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -96,6 +101,31 @@ export function PrayerManager() {
     load()
   }
 
+  const bulkDelete = async () => {
+    if (!bulk.selectedCount) return
+    if (!confirm(`Delete ${bulk.selectedCount} prayer request${bulk.selectedCount > 1 ? 's' : ''}?`)) return
+    await Promise.all(bulk.selectedArray.map((id) => fetch(`/api/admin/prayer/${id}`, { method: 'DELETE' })))
+    toast.success(`${bulk.selectedCount} requests deleted`)
+    bulk.reset()
+    await load()
+  }
+
+  const bulkMarkPrayed = async () => {
+    if (!bulk.selectedCount) return
+    await Promise.all(
+      bulk.selectedArray.map((id) =>
+        fetch(`/api/admin/prayer/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'PRAYED' }),
+        }),
+      ),
+    )
+    toast.success(`${bulk.selectedCount} requests marked as prayed`)
+    bulk.reset()
+    await load()
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap gap-2">
@@ -132,9 +162,16 @@ export function PrayerManager() {
           {requests.map((r) => (
             <div
               key={r.id}
-              className="border p-4"
+              className="group relative border p-4 pl-10"
               style={{ borderColor: 'var(--a-border)', background: 'var(--a-surface)' }}
             >
+              <div className="absolute left-3 top-3">
+                <div
+                  className={bulk.isSelected(r.id) ? 'opacity-100' : 'opacity-0 transition-opacity group-hover:opacity-100'}
+                >
+                  <SelectCheckbox checked={bulk.isSelected(r.id)} onChange={() => bulk.toggle(r.id)} />
+                </div>
+              </div>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <p className="font-display text-base font-semibold" style={{ color: 'var(--a-text)' }}>
@@ -312,6 +349,29 @@ export function PrayerManager() {
           </button>
         </div>
       )}
+
+      <BulkActionBar
+        selectedCount={bulk.selectedCount}
+        onDeselectAll={bulk.deselectAll}
+        onSelectAll={bulk.selectAll}
+        isAllSelected={bulk.isAllSelected}
+        totalCount={requests.length}
+        actions={[
+          {
+            label: 'Mark Prayed',
+            icon: <span>🙏</span>,
+            onClick: () => void bulkMarkPrayed(),
+            variant: 'primary',
+          },
+          {
+            label: 'Delete',
+            icon: <Trash2 size={12} />,
+            onClick: () => void bulkDelete(),
+            variant: 'danger',
+            disabled: !isSuper,
+          },
+        ]}
+      />
     </div>
   )
 }

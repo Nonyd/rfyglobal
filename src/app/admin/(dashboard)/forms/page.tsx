@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import { db } from '@/lib/db'
-import { FormCard } from '@/components/admin/forms/FormCard'
+import { FormsManager } from '@/components/admin/forms/FormsManager'
 import { Plus } from 'lucide-react'
 
 export default async function FormsPage() {
@@ -37,11 +37,7 @@ export default async function FormsPage() {
           <p className="text-sm mt-2 font-body" style={{ color: 'var(--a-text-muted)' }}>Create your first form to get started</p>
         </div>
       ) : (
-        <div className="grid gap-4">
-          {forms.map((form) => (
-            <FormCard key={form.id} form={form} />
-          ))}
-        </div>
+        <FormsManager initialForms={forms} />
       )}
     </div>
   )

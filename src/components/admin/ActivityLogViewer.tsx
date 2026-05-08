@@ -3,6 +3,11 @@
 import { useState, useMemo } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import type { ActivityLog, User } from '@prisma/client'
+import toast from 'react-hot-toast'
+import { Trash2 } from 'lucide-react'
+import { useBulkSelect } from '@/hooks/useBulkSelect'
+import { BulkActionBar } from '@/components/admin/shared/BulkActionBar'
+import { SelectCheckbox } from '@/components/admin/shared/SelectCheckbox'
 
 type LogWithUser = ActivityLog & {
   user: Pick<User, 'name' | 'email' | 'role'>
@@ -27,12 +32,14 @@ interface ActivityLogViewerProps {
   initialLogs: LogWithUser[]
   users: Pick<User, 'id' | 'name' | 'email'>[]
   initialTotalPages?: number
+  isSuperAdmin?: boolean
 }
 
 export function ActivityLogViewer({
   initialLogs,
   users,
   initialTotalPages = 1,
+  isSuperAdmin = false,
 }: ActivityLogViewerProps) {
   const [logs, setLogs] = useState(initialLogs)
   const [moduleFilter, setModuleFilter] = useState('All')
@@ -52,6 +59,7 @@ export function ActivityLogViewer({
       }),
     [logs, moduleFilter, userFilter]
   )
+  const bulk = useBulkSelect(filtered)
 
   const loadMore = async () => {
     if (page >= totalPages || loading) return
@@ -73,6 +81,36 @@ export function ActivityLogViewer({
     }
   }
 
+  const clearAllLogs = async () => {
+    if (!confirm('Clear all activity logs? This cannot be undone.')) return
+    const res = await fetch('/api/admin/activity', { method: 'DELETE' })
+    if (!res.ok) {
+      toast.error('Failed to clear logs')
+      return
+    }
+    setLogs([])
+    bulk.reset()
+    toast.success('All logs cleared')
+  }
+
+  const bulkDelete = async () => {
+    if (!bulk.selectedCount) return
+    if (!confirm(`Delete ${bulk.selectedCount} activity log entr${bulk.selectedCount > 1 ? 'ies' : 'y'}?`)) return
+    const res = await fetch('/api/admin/activity/bulk-delete', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: bulk.selectedArray }),
+    })
+    if (!res.ok) {
+      toast.error('Failed to delete log entries')
+      return
+    }
+    const removed = new Set(bulk.selectedArray)
+    setLogs((prev) => prev.filter((log) => !removed.has(log.id)))
+    bulk.reset()
+    toast.success('Selected entries deleted')
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
@@ -84,6 +122,16 @@ export function ActivityLogViewer({
             All admin actions across the platform
           </p>
         </div>
+        {isSuperAdmin && (
+          <button
+            type="button"
+            onClick={() => void clearAllLogs()}
+            className="border px-3 py-2 font-body text-xs uppercase tracking-widest"
+            style={{ borderColor: 'var(--a-border)', color: 'var(--a-red)' }}
+          >
+            Clear All Logs
+          </button>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-3 mb-6">
@@ -133,6 +181,9 @@ export function ActivityLogViewer({
                   borderBottom: `1px solid var(--a-border)`,
                 }}
               >
+                <th className="px-4 py-3">
+                  <SelectCheckbox checked={bulk.isAllSelected} onChange={(v) => (v ? bulk.selectAll() : bulk.deselectAll())} />
+                </th>
                 {['Action', 'Module', 'User', 'When'].map((h) => (
                   <th
                     key={h}
@@ -153,6 +204,9 @@ export function ActivityLogViewer({
                     background: i % 2 === 0 ? 'var(--a-surface)' : 'var(--a-bg)',
                   }}
                 >
+                  <td className="px-4 py-3">
+                    <SelectCheckbox checked={bulk.isSelected(log.id)} onChange={() => bulk.toggle(log.id)} />
+                  </td>
                   <td className="px-4 py-3" style={{ color: 'var(--a-text)' }}>
                     {log.action}
                   </td>
@@ -198,6 +252,21 @@ export function ActivityLogViewer({
           </div>
         )}
       </div>
+      <BulkActionBar
+        selectedCount={bulk.selectedCount}
+        onDeselectAll={bulk.deselectAll}
+        onSelectAll={bulk.selectAll}
+        isAllSelected={bulk.isAllSelected}
+        totalCount={filtered.length}
+        actions={[
+          {
+            label: 'Delete',
+            icon: <Trash2 size={12} />,
+            onClick: () => void bulkDelete(),
+            variant: 'danger',
+          },
+        ]}
+      />
     </div>
   )
 }

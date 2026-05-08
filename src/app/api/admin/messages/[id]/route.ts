@@ -82,3 +82,11 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   return NextResponse.json(message, { status: 201 })
 }
+
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  const session = await auth()
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  await db.messageThread.delete({ where: { id: params.id } })
+  return NextResponse.json({ success: true })
+}

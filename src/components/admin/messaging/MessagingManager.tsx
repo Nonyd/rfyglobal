@@ -4,6 +4,10 @@ import { useCallback, useEffect, useState } from 'react'
 import { format } from 'date-fns'
 import { AdminToggle } from '@/components/shared/Toggle'
 import toast from 'react-hot-toast'
+import { Trash2 } from 'lucide-react'
+import { useBulkSelect } from '@/hooks/useBulkSelect'
+import { BulkActionBar } from '@/components/admin/shared/BulkActionBar'
+import { SelectCheckbox } from '@/components/admin/shared/SelectCheckbox'
 
 type MessageRow = {
   id: string
@@ -73,6 +77,7 @@ export function MessagingManager() {
   const [formSubs, setFormSubs] = useState<FormSubmissionRow[]>([])
   const [cityFilter, setCityFilter] = useState('')
   const [allMembers, setAllMembers] = useState<CommunityMemberRow[]>([])
+  const bulk = useBulkSelect(threads)
 
   const loadThreads = useCallback(async () => {
     setLoadingList(true)
@@ -269,6 +274,27 @@ export function MessagingManager() {
     }
   }
 
+  const bulkDelete = async () => {
+    if (!bulk.selectedCount) return
+    if (!confirm(`Delete ${bulk.selectedCount} thread${bulk.selectedCount > 1 ? 's' : ''}?`)) return
+    await Promise.all(bulk.selectedArray.map((id) => fetch(`/api/admin/messages/${id}`, { method: 'DELETE' })))
+    toast.success(`${bulk.selectedCount} threads deleted`)
+    if (selectedId && bulk.selectedArray.includes(selectedId)) {
+      setSelectedId(null)
+      setThreadDetail(null)
+    }
+    bulk.reset()
+    await loadThreads()
+  }
+
+  const bulkMarkRead = async () => {
+    if (!bulk.selectedCount) return
+    await Promise.all(bulk.selectedArray.map((id) => fetch(`/api/admin/messages/${id}/read`, { method: 'POST' })))
+    toast.success(`${bulk.selectedCount} threads marked as read`)
+    bulk.reset()
+    await loadThreads()
+  }
+
   return (
     <div className="flex min-h-[calc(100vh-140px)] flex-col gap-4 lg:flex-row">
       <div
@@ -292,10 +318,8 @@ export function MessagingManager() {
             <p className="p-4 font-body text-xs text-mist">No threads yet.</p>
           ) : (
             threads.map((t) => (
-              <button
+              <div
                 key={t.id}
-                type="button"
-                onClick={() => openThread(t.id)}
                 className="flex w-full gap-3 border-b p-3 text-left transition-colors"
                 style={{
                   borderColor: 'var(--a-border)',
@@ -305,6 +329,8 @@ export function MessagingManager() {
                   background: selectedId === t.id ? 'var(--a-gold-active)' : 'transparent',
                 }}
               >
+                <SelectCheckbox checked={bulk.isSelected(t.id)} onChange={() => bulk.toggle(t.id)} size="sm" />
+                <button type="button" onClick={() => openThread(t.id)} className="flex min-w-0 flex-1 gap-3 text-left">
                 <div
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-body text-xs font-bold"
                   style={{ background: 'var(--a-gold-light)', color: 'var(--a-gold)' }}
@@ -322,7 +348,8 @@ export function MessagingManager() {
                     {format(new Date(t.lastAt), 'MMM d, h:mm a')}
                   </p>
                 </div>
-              </button>
+                </button>
+              </div>
             ))
           )}
         </div>
@@ -583,6 +610,18 @@ export function MessagingManager() {
           </div>
         </div>
       )}
+
+      <BulkActionBar
+        selectedCount={bulk.selectedCount}
+        onDeselectAll={bulk.deselectAll}
+        onSelectAll={bulk.selectAll}
+        isAllSelected={bulk.isAllSelected}
+        totalCount={threads.length}
+        actions={[
+          { label: 'Mark Read', onClick: () => void bulkMarkRead(), variant: 'default' },
+          { label: 'Delete', icon: <Trash2 size={12} />, onClick: () => void bulkDelete(), variant: 'danger' },
+        ]}
+      />
     </div>
   )
 }

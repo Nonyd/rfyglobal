@@ -22,6 +22,9 @@ import { formatDate } from '@/lib/utils'
 import { cn } from '@/lib/utils'
 import { UploadZone } from '@/components/shared/UploadZone'
 import { AdminToggle } from '@/components/shared/Toggle'
+import { useBulkSelect } from '@/hooks/useBulkSelect'
+import { BulkActionBar } from '@/components/admin/shared/BulkActionBar'
+import { SelectCheckbox } from '@/components/admin/shared/SelectCheckbox'
 
 type EventRow = {
   id: string
@@ -72,6 +75,7 @@ export function EventsManager() {
   const [newField, setNewField] = useState(emptyNewField)
   const [addingField, setAddingField] = useState(false)
   const [fieldEdits, setFieldEdits] = useState<Record<string, Partial<EventFormField>>>({})
+  const bulk = useBulkSelect(events)
 
   const openRegistrations = async (ev: EventRow) => {
     setRegistrationsEvent(ev)
@@ -332,6 +336,15 @@ export function EventsManager() {
     await load()
   }
 
+  const bulkDelete = async () => {
+    if (!bulk.selectedCount) return
+    if (!confirm(`Delete ${bulk.selectedCount} event${bulk.selectedCount > 1 ? 's' : ''}?`)) return
+    await Promise.all(bulk.selectedArray.map((id) => fetch(`/api/events/${id}`, { method: 'DELETE' })))
+    toast.success(`${bulk.selectedCount} events deleted`)
+    bulk.reset()
+    await load()
+  }
+
   if (loading) {
     return (
       <div className="flex justify-center py-24" style={{ color: 'var(--a-text-muted)' }}>
@@ -365,11 +378,18 @@ export function EventsManager() {
             <div
               key={e.id}
               className={cn(
-                'flex flex-wrap items-start justify-between gap-4 border p-5 transition-opacity',
+                'group relative flex flex-wrap items-start justify-between gap-4 border p-5 pl-12 transition-opacity',
                 past ? 'opacity-50' : 'opacity-100'
               )}
               style={{ borderColor: 'var(--a-gold-border)', background: 'var(--a-surface)' }}
             >
+              <div className="absolute left-4 top-4">
+                <div
+                  className={bulk.isSelected(e.id) ? 'opacity-100' : 'opacity-0 transition-opacity group-hover:opacity-100'}
+                >
+                  <SelectCheckbox checked={bulk.isSelected(e.id)} onChange={() => bulk.toggle(e.id)} />
+                </div>
+              </div>
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="font-display text-lg" style={{ color: 'var(--a-text)' }}>{e.title}</h3>
@@ -1089,6 +1109,17 @@ export function EventsManager() {
           </>
         )}
       </AnimatePresence>
+
+      <BulkActionBar
+        selectedCount={bulk.selectedCount}
+        onDeselectAll={bulk.deselectAll}
+        onSelectAll={bulk.selectAll}
+        isAllSelected={bulk.isAllSelected}
+        totalCount={events.length}
+        actions={[
+          { label: 'Delete', icon: <Trash2 size={12} />, onClick: () => void bulkDelete(), variant: 'danger' },
+        ]}
+      />
     </div>
   )
 }

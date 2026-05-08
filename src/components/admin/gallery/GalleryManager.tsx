@@ -12,6 +12,8 @@ import {
   Upload,
   Images,
 } from 'lucide-react'
+import { BulkActionBar } from '@/components/admin/shared/BulkActionBar'
+import { SelectCheckbox } from '@/components/admin/shared/SelectCheckbox'
 import {
   UploadZone,
   type UploadFailure,
@@ -532,22 +534,9 @@ export function GalleryManager() {
                   style={{ borderColor: 'var(--a-border)' }}
                 >
                   {selectMode && (
-                    <button
-                      type="button"
-                      onClick={() => toggleSelect(image.id)}
-                      className="absolute left-2 top-2 z-20 flex h-6 w-6 items-center justify-center"
-                      style={{
-                        background: isSelected ? 'var(--a-gold)' : 'rgba(0,0,0,0.6)',
-                        border: `2px solid ${
-                          isSelected ? 'var(--a-gold)' : 'rgba(255,255,255,0.4)'
-                        }`,
-                      }}
-                      aria-label={isSelected ? 'Deselect image' : 'Select image'}
-                    >
-                      {isSelected && (
-                        <span className="text-xs font-bold text-void">✓</span>
-                      )}
-                    </button>
+                    <div className="absolute left-2 top-2 z-20">
+                      <SelectCheckbox checked={isSelected} onChange={() => toggleSelect(image.id)} />
+                    </div>
                   )}
 
                   {!image.isActive && (
@@ -617,42 +606,23 @@ export function GalleryManager() {
       </section>
 
       {/* ── BULK SELECT BAR ── */}
-      <AnimatePresence>
-        {selectMode && selectedIds.size > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            className="fixed bottom-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-4 px-6 py-3 shadow-xl"
-            style={{
-              background: 'var(--a-surface)',
-              border: '1px solid var(--a-border)',
-              boxShadow: 'var(--a-shadow-md)',
-            }}
-          >
-            <p className="font-body text-sm font-medium" style={{ color: 'var(--a-text)' }}>
-              {selectedIds.size} image{selectedIds.size > 1 ? 's' : ''} selected
-            </p>
-            <button
-              type="button"
-              onClick={() => void bulkDelete()}
-              className="flex items-center gap-2 px-4 py-2 font-body text-xs font-medium text-white"
-              style={{ background: 'var(--a-red)' }}
-            >
-              <Trash2 size={12} /> Delete Selected
-            </button>
-            <button
-              type="button"
-              onClick={deselectAll}
-              className="p-1.5 transition-colors"
-              style={{ color: 'var(--a-text-muted)' }}
-              aria-label="Clear selection"
-            >
-              <X size={16} />
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {selectMode && (
+        <BulkActionBar
+          selectedCount={selectedIds.size}
+          onDeselectAll={deselectAll}
+          onSelectAll={selectAll}
+          isAllSelected={allSelected}
+          totalCount={images.length}
+          actions={[
+            {
+              label: 'Delete Selected',
+              icon: <Trash2 size={12} />,
+              onClick: () => void bulkDelete(),
+              variant: 'danger',
+            },
+          ]}
+        />
+      )}
 
       {/* ── NEW EVENT PANEL ── */}
       <AnimatePresence>

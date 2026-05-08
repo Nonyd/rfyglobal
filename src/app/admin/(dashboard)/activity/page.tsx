@@ -25,6 +25,11 @@ export default async function ActivityPage() {
   const totalPages = Math.ceil(total / 50) || 1
 
   return (
-    <ActivityLogViewer initialLogs={logs} users={users} initialTotalPages={totalPages} />
+    <ActivityLogViewer
+      initialLogs={logs}
+      users={users}
+      initialTotalPages={totalPages}
+      isSuperAdmin={session.user.role === 'SUPER_ADMIN'}
+    />
   )
 }

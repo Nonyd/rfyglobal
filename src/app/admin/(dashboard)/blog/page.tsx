@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Plus } from 'lucide-react'
 import { db } from '@/lib/db'
-import { PostCard } from '@/components/admin/blog/PostCard'
+import { BlogManager } from '@/components/admin/blog/BlogManager'
 
 export const dynamic = 'force-dynamic'
 
@@ -43,11 +43,7 @@ export default async function AdminBlogPage() {
           <p className="font-display text-2xl italic" style={{ color: 'var(--a-text-muted)' }}>No posts yet</p>
         </div>
       ) : (
-        <div className="space-y-3">
-          {posts.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
-        </div>
+        <BlogManager initialPosts={posts} />
       )}
     </div>
   )

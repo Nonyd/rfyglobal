@@ -465,11 +465,145 @@ async function main() {
         { key: 'partnership.bank.contactEmail', value: 'partner@rfyglobal.org', type: 'TEXT' },
         { key: 'footer.tagline', value: 'Jesus to Nations — 2 Cor 5:17-21', type: 'TEXT' },
         { key: 'footer.copyright', value: '© 2026 Room For You · rfyglobal.org · A SonsHub Media Initiative.', type: 'TEXT' },
+        { key: 'contact.heading', value: 'We would love\nto hear from you.', type: 'TEXT' },
+        {
+          key: 'contact.subheading',
+          value: 'Reach out with questions, partnership enquiries, or just to say hello. We read every message.',
+          type: 'TEXT',
+        },
+        { key: 'contact.email', value: 'hello@rfyglobal.org', type: 'TEXT' },
+        { key: 'contact.address', value: 'Abuja, Nigeria', type: 'TEXT' },
+        { key: 'contact.instagram', value: 'https://instagram.com/roomforyou', type: 'TEXT' },
+        { key: 'contact.youtube', value: 'https://youtube.com/@roomforyou', type: 'TEXT' },
+        { key: 'contact.twitter', value: 'https://x.com/roomforyou', type: 'TEXT' },
+        { key: 'faq.heading', value: 'Frequently Asked\nQuestions.', type: 'TEXT' },
+        {
+          key: 'faq.subheading',
+          value: "Can't find what you're looking for? Reach out via our contact page.",
+          type: 'TEXT',
+        },
       ],
     })
     console.log('✅ Site CMS content seeded')
   } else {
     console.log('⏭️  CMS content already exists — skipping')
+  }
+
+  const existingFaq = await db.faqCategory.count()
+  if (existingFaq === 0) {
+    const faqData = [
+      {
+        title: 'About Room For You',
+        faqs: [
+          {
+            question: 'What is Room For You?',
+            answer:
+              'Room For You is a community of young men and women singing songs of salvation, studying the Word, praying, and getting others saved. It is founded and led by Minister Yadah, an international gospel minister.',
+          },
+          {
+            question: 'Who is Room For You for?',
+            answer:
+              'Room For You is for anyone who wants to grow in their faith, build community with other believers, and be equipped to live out the Gospel. You do not need to have any prior church background - you just need to be willing.',
+          },
+          {
+            question: 'Is Room For You a church?',
+            answer:
+              'Room For You is a community movement, not a denominational church. We gather monthly across cities for worship, prayer, and Bible study. We encourage members to be rooted in a local church while also being part of this community.',
+          },
+        ],
+      },
+      {
+        title: 'Joining & Membership',
+        faqs: [
+          {
+            question: 'How do I join Room For You?',
+            answer:
+              'Simply fill out the Join form on our website at rfyglobal.org/join. It takes less than two minutes. Once you submit, you will receive a confirmation email and be added to our WhatsApp community.',
+          },
+          {
+            question: 'Is there a membership fee?',
+            answer:
+              'No. Joining Room For You is completely free. We believe there should never be a financial barrier to community and fellowship.',
+          },
+          {
+            question: 'Can I join if I am not in Nigeria?',
+            answer:
+              'Absolutely. Room For You is a global community. While our physical gatherings currently focus on Nigerian cities, our online community, daily Word, study portal, and resources are available to everyone worldwide.',
+          },
+        ],
+      },
+      {
+        title: 'Events & Gatherings',
+        faqs: [
+          {
+            question: 'How often does Room For You gather?',
+            answer:
+              'We gather monthly in various cities. Each gathering features worship, prayer, and teaching from the Word. Check the Events page for upcoming dates and locations near you.',
+          },
+          {
+            question: 'Do I need to register for events?',
+            answer:
+              'Yes, we ask that you register in advance so we can plan appropriately. Registration is free and takes only a moment. You can register on the Events page for each specific gathering.',
+          },
+          {
+            question: 'Are events open to the public?',
+            answer:
+              'Yes, our gatherings are open to everyone - you do not need to be a registered community member to attend. However, we encourage you to join the community so you can stay connected and receive updates.',
+          },
+        ],
+      },
+      {
+        title: 'Prayer & Testimonies',
+        faqs: [
+          {
+            question: 'How does the Prayer Wall work?',
+            answer:
+              'You can submit a prayer request on our Prayer Wall page. Your request is completely private - only Minister Yadah and the Room For You prayer team will see it. You must be a registered community member to submit a prayer request.',
+          },
+          {
+            question: 'Can I submit a testimony anonymously?',
+            answer:
+              'Yes. When submitting a testimony, you can choose to submit anonymously. Your name will not appear on the public testimony page, though your email is required to verify your community membership.',
+          },
+        ],
+      },
+      {
+        title: 'Giving & Partnership',
+        faqs: [
+          {
+            question: 'How can I partner with Room For You financially?',
+            answer:
+              'You can give via the Partner page on our website. We accept one-time gifts, monthly giving, and annual partnerships via Paystack, Flutterwave, and direct bank transfer. Every gift goes toward funding gatherings, study resources, and outreach.',
+          },
+          {
+            question: 'Is my giving tax-deductible?',
+            answer:
+              'Room For You operates under SonsHub Media Ltd in Nigeria. Tax deductibility depends on your country of residence and local tax laws. We recommend consulting a tax adviser in your jurisdiction.',
+          },
+          {
+            question: 'Can I request a refund on my gift?',
+            answer:
+              'All financial gifts to Room For You are voluntary and generally non-refundable. However, if a duplicate payment or technical error occurred, please contact us at partner@rfyglobal.org within 14 days and we will review your request.',
+          },
+        ],
+      },
+    ]
+
+    for (let index = 0; index < faqData.length; index++) {
+      const category = faqData[index]
+      const cat = await db.faqCategory.create({
+        data: { title: category.title, order: index },
+      })
+      for (let i = 0; i < category.faqs.length; i++) {
+        const faq = category.faqs[i]
+        await db.faq.create({
+          data: { question: faq.question, answer: faq.answer, categoryId: cat.id, order: i },
+        })
+      }
+    }
+    console.log('✅ FAQ categories and questions seeded')
+  } else {
+    console.log('⏭️  FAQ data already exists — skipping')
   }
 
   console.log('\n🎉 Seeding complete! Room For You database is ready.')

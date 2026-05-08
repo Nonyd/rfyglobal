@@ -429,3 +429,25 @@ model Message {
   sentAt    DateTime      @default(now())
   isRead    Boolean       @default(false)
 }
+
+model FaqCategory {
+  id        String   @id @default(cuid())
+  title     String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  faqs      Faq[]
+}
+
+model Faq {
+  id         String      @id @default(cuid())
+  question   String      @db.Text
+  answer     String      @db.Text
+  categoryId String
+  category   FaqCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  order      Int         @default(0)
+  isActive   Boolean     @default(true)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}

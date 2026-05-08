@@ -4,7 +4,11 @@ import { useCallback, useEffect, useState } from 'react'
 import Image from 'next/image'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
+import { Trash2 } from 'lucide-react'
 import type { Testimony, TestimonyStatus } from '@prisma/client'
+import { useBulkSelect } from '@/hooks/useBulkSelect'
+import { BulkActionBar } from '@/components/admin/shared/BulkActionBar'
+import { SelectCheckbox } from '@/components/admin/shared/SelectCheckbox'
 
 type Tab = 'PENDING' | 'APPROVED' | 'REJECTED'
 
@@ -22,6 +26,7 @@ export function TestimonyManager() {
   const [items, setItems] = useState<Testimony[]>([])
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<Testimony | null>(null)
+  const bulk = useBulkSelect(items)
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -82,6 +87,45 @@ export function TestimonyManager() {
     return parts.join(' ')
   }
 
+  const bulkApprove = async () => {
+    await Promise.all(
+      bulk.selectedArray.map((id) =>
+        fetch(`/api/admin/testimony/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'APPROVED' }),
+        }),
+      ),
+    )
+    toast.success(`${bulk.selectedCount} testimonies approved`)
+    bulk.reset()
+    await load()
+  }
+
+  const bulkReject = async () => {
+    if (!confirm(`Reject ${bulk.selectedCount} testimonies?`)) return
+    await Promise.all(
+      bulk.selectedArray.map((id) =>
+        fetch(`/api/admin/testimony/${id}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ status: 'REJECTED' }),
+        }),
+      ),
+    )
+    toast.success(`${bulk.selectedCount} testimonies rejected`)
+    bulk.reset()
+    await load()
+  }
+
+  const bulkDelete = async () => {
+    if (!confirm(`Delete ${bulk.selectedCount} testimonies?`)) return
+    await Promise.all(bulk.selectedArray.map((id) => fetch(`/api/admin/testimony/${id}`, { method: 'DELETE' })))
+    toast.success(`${bulk.selectedCount} testimonies deleted`)
+    bulk.reset()
+    await load()
+  }
+
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       <div className="space-y-4">
@@ -110,27 +154,34 @@ export function TestimonyManager() {
         ) : (
           <div className="max-h-[70vh] space-y-2 overflow-y-auto pr-1">
             {items.map((t) => (
-              <button
+              <div
                 key={t.id}
-                type="button"
-                onClick={() => setSelected(t)}
-                className="w-full border p-3 text-left transition-colors"
+                className="group relative w-full border p-3 pl-10 text-left transition-colors"
                 style={{
                   borderColor: selected?.id === t.id ? 'var(--a-gold-border)' : 'var(--a-border)',
                   background: selected?.id === t.id ? 'var(--a-gold-active)' : 'var(--a-surface)',
                 }}
               >
-                <p className="font-display text-sm font-semibold" style={{ color: 'var(--a-text)' }}>
-                  {t.title}
-                </p>
-                <p className="mt-1 line-clamp-2 font-body text-xs" style={{ color: 'var(--a-text-secondary)' }}>
-                  {t.body || '—'}
-                </p>
-                <p className="mt-2 font-body text-[10px]" style={{ color: 'var(--a-text-muted)' }}>
-                  {t.isAnonymous ? 'Anonymous' : t.name || '—'} · {mediaFlags(t)} ·{' '}
-                  {format(new Date(t.createdAt), 'MMM d, yyyy')}
-                </p>
-              </button>
+                <div className="absolute left-3 top-3">
+                  <div
+                    className={bulk.isSelected(t.id) ? 'opacity-100' : 'opacity-0 transition-opacity group-hover:opacity-100'}
+                  >
+                    <SelectCheckbox checked={bulk.isSelected(t.id)} onChange={() => bulk.toggle(t.id)} />
+                  </div>
+                </div>
+                <button type="button" onClick={() => setSelected(t)} className="w-full text-left">
+                  <p className="font-display text-sm font-semibold" style={{ color: 'var(--a-text)' }}>
+                    {t.title}
+                  </p>
+                  <p className="mt-1 line-clamp-2 font-body text-xs" style={{ color: 'var(--a-text-secondary)' }}>
+                    {t.body || '—'}
+                  </p>
+                  <p className="mt-2 font-body text-[10px]" style={{ color: 'var(--a-text-muted)' }}>
+                    {t.isAnonymous ? 'Anonymous' : t.name || '—'} · {mediaFlags(t)} ·{' '}
+                    {format(new Date(t.createdAt), 'MMM d, yyyy')}
+                  </p>
+                </button>
+              </div>
             ))}
           </div>
         )}
@@ -240,6 +291,23 @@ export function TestimonyManager() {
           </div>
         )}
       </div>
+
+      <BulkActionBar
+        selectedCount={bulk.selectedCount}
+        onDeselectAll={bulk.deselectAll}
+        onSelectAll={bulk.selectAll}
+        isAllSelected={bulk.isAllSelected}
+        totalCount={items.length}
+        actions={[
+          ...(tab === 'PENDING'
+            ? [
+                { label: 'Approve All', onClick: () => void bulkApprove(), variant: 'primary' as const },
+                { label: 'Reject All', onClick: () => void bulkReject(), variant: 'default' as const },
+              ]
+            : []),
+          { label: 'Delete', icon: <Trash2 size={12} />, onClick: () => void bulkDelete(), variant: 'danger' as const },
+        ]}
+      />
     </div>
   )
 }
