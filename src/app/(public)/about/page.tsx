@@ -30,8 +30,9 @@ const yadahPersonSchema = {
   url: 'https://yadahworld.com',
   image: 'https://rfyglobal.org/images/logo-dark.png',
   sameAs: [
-    'https://instagram.com/iamyadah',
+    'https://instagram.com/rfyglobal',
     'https://youtube.com/@yadah',
+    'https://x.com/rfyglobal',
     'https://yadahworld.com',
   ],
   worksFor: {

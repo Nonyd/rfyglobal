@@ -242,7 +242,7 @@ export function FormBuilderEditor({ mode, initialData }: FormBuilderEditorProps)
                 type="email"
                 value={notifyEmail}
                 onChange={(e) => setNotifyEmail(e.target.value)}
-                placeholder="admin@roomforyou.org"
+                placeholder="admin@rfyglobal.org"
                 className="w-full border px-4 py-3 text-sm font-body focus:outline-none transition-colors"
                 style={{ background: 'var(--a-bg)', borderColor: 'var(--a-border)', color: 'var(--a-text)' }}
               />

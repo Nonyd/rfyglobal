@@ -473,9 +473,9 @@ async function main() {
         },
         { key: 'contact.email', value: 'hello@rfyglobal.org', type: 'TEXT' },
         { key: 'contact.address', value: 'Abuja, Nigeria', type: 'TEXT' },
-        { key: 'contact.instagram', value: 'https://instagram.com/roomforyou', type: 'TEXT' },
-        { key: 'contact.youtube', value: 'https://youtube.com/@roomforyou', type: 'TEXT' },
-        { key: 'contact.twitter', value: 'https://x.com/roomforyou', type: 'TEXT' },
+        { key: 'contact.instagram', value: 'https://instagram.com/rfyglobal', type: 'TEXT' },
+        { key: 'contact.youtube', value: 'https://youtube.com/@yadah', type: 'TEXT' },
+        { key: 'contact.twitter', value: 'https://x.com/rfyglobal', type: 'TEXT' },
         { key: 'faq.heading', value: 'Frequently Asked\nQuestions.', type: 'TEXT' },
         {
           key: 'faq.subheading',

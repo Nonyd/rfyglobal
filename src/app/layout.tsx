@@ -57,8 +57,8 @@ export const metadata: Metadata = {
     description:
       'A global Christian community founded by Minister Yadah. Monthly gatherings. Daily Word. Prayer. Join us.',
     images: ['/og?title=Room+For+You&subtitle=A+Christian+Community+with+Minister+Yadah'],
-    creator: '@roomforyou',
-    site: '@roomforyou',
+    creator: '@rfyglobal',
+    site: '@rfyglobal',
   },
   robots: {
     index: true,
@@ -92,9 +92,9 @@ const organizationSchema = {
   url: 'https://rfyglobal.org',
   logo: 'https://rfyglobal.org/images/logo-dark.png',
   sameAs: [
-    'https://instagram.com/roomforyouyadah',
+    'https://instagram.com/rfyglobal',
     'https://youtube.com/@yadah',
-    'https://x.com/roomforyou',
+    'https://x.com/rfyglobal',
   ],
   description:
     'Room For You is a global Christian community movement founded by Minister Yadah and SonsHub Media. Monthly gatherings. Daily scripture. Prayer support.',

@@ -59,20 +59,20 @@ export function ContactClient({ content }: ContactClientProps) {
     {
       icon: <Instagram size={18} />,
       label: 'Instagram',
-      href: content['contact.instagram'] || 'https://instagram.com/roomforyou',
-      handle: '@roomforyou',
+      href: content['contact.instagram'] || 'https://instagram.com/rfyglobal',
+      handle: '@rfyglobal',
     },
     {
       icon: <Youtube size={18} />,
       label: 'YouTube',
-      href: content['contact.youtube'] || 'https://youtube.com/@roomforyou',
-      handle: 'Room For You',
+      href: content['contact.youtube'] || 'https://youtube.com/@yadah',
+      handle: 'Yadah',
     },
     {
       icon: <Twitter size={18} />,
       label: 'X (Twitter)',
-      href: content['contact.twitter'] || 'https://x.com/roomforyou',
-      handle: '@roomforyou',
+      href: content['contact.twitter'] || 'https://x.com/rfyglobal',
+      handle: '@rfyglobal',
     },
   ]
 
