@@ -7,9 +7,10 @@ import type { Metadata } from 'next'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Join the Community — Room For You',
+  title: 'Join — Become Part of Room For You',
   description:
-    'Join Room For You — a community of young men and women singing songs of salvation, studying the Word, and getting others saved.',
+    'Join the Room For You community with Minister Yadah. Free membership. Daily Word. Monthly gatherings. Prayer support. There is room for you here.',
+  alternates: { canonical: 'https://rfyglobal.org/join' },
 }
 
 export default async function JoinPage() {

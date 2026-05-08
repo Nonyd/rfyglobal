@@ -1,10 +1,10 @@
 {
   "name": "Room For You",
   "short_name": "RFY",
-  "description": "A worship, prayer, study and mentorship community. Jesus to Nations.",
+  "description": "A global Christian community with Minister Yadah",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0A0A0A",
+  "background_color": "#0F0F0F",
   "theme_color": "#C9A84C",
   "icons": [
     {
@@ -17,5 +17,6 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "categories": ["religion", "lifestyle", "education"]
 }

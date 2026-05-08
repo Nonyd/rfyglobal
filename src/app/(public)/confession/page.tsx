@@ -9,7 +9,9 @@ const ConfessionPageClient = dynamic(
 
 export const metadata: Metadata = {
   title: 'The Confession — Room For You',
-  description: 'I am saved by grace through faith. Make this confession yours.',
+  description:
+    'The declaration of every member of Room For You. I am saved by grace through faith. Jesus to Nations. Read the full confession.',
+  alternates: { canonical: 'https://rfyglobal.org/confession' },
 }
 
 export default function ConfessionPage() {

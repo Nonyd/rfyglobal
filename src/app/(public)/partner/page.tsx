@@ -11,8 +11,10 @@ import {
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Partner With Us — Room For You',
-  description: 'Support the vision of Room For You. Your giving fuels the mission of Jesus to Nations.',
+  title: 'Partner — Support the Room For You Mission',
+  description:
+    'Partner with Room For You to fuel the Gospel mission. Every gift supports community gatherings, Bible study resources, and evangelical outreach. Give today.',
+  alternates: { canonical: 'https://rfyglobal.org/partner' },
 }
 
 export const dynamic = 'force-dynamic'

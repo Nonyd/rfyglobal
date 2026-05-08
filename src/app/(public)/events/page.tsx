@@ -6,8 +6,15 @@ import { db } from '@/lib/db'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Events — Room For You',
-  description: 'Upcoming Room For You community meetings across cities.',
+  title: 'Events — Gospel Gatherings with Room For You',
+  description:
+    'Monthly gospel community gatherings hosted by Room For You with Minister Yadah. Physical meetings across Abuja, Lagos, and cities worldwide. Free to attend — come as you are.',
+  alternates: { canonical: 'https://rfyglobal.org/events' },
+  openGraph: {
+    title: 'Gospel Events — Room For You with Minister Yadah',
+    description: 'Monthly community gatherings across cities. Worship, prayer, and the Word. Free to attend.',
+    url: 'https://rfyglobal.org/events',
+  },
 }
 
 export default async function EventsPage() {

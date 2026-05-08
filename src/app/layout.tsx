@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { OrganizationJsonLd, WebsiteJsonLd } from '@/components/seo/JsonLd'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { CookieBanner } from '@/components/shared/CookieBanner'
 import './globals.css'
@@ -9,64 +9,134 @@ const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
 export const metadata: Metadata = {
   metadataBase: new URL('https://rfyglobal.org'),
   title: {
-    default: 'Room For You — with Yadah',
-    template: '%s — Room For You',
+    default: 'Room For You — A Christian Community with Minister Yadah',
+    template: '%s | Room For You',
   },
   description:
-    'A worship, prayer, study, mentorship and evangelism community founded by Minister Yadah. Jesus to Nations. rfyglobal.org',
+    'Room For You is a global Christian community founded by Minister Yadah. We gather monthly across cities for worship, prayer, and Bible study. Join us — there is room for you here.',
   keywords: [
     'Room For You',
-    'Yadah',
     'Minister Yadah',
-    'worship community',
-    'prayer',
-    'bible study',
-    'gospel community',
-    'Nigeria',
-    'Jesus to nations',
-    'rfyglobal',
+    'Yadah',
     'Christian community',
-    'evangelism',
+    'gospel community Nigeria',
+    'Christian community Abuja',
+    'gospel events Abuja',
+    'Christian events Nigeria',
+    'SonsHub Media',
+    'gospel ministry',
+    'Room For You with Yadah',
+    'Jesus to Nations',
+    'Christian worship community',
+    'evangelical community Nigeria',
+    'Yadah music ministry',
   ],
-  authors: [{ name: 'Minister Yadah', url: 'https://yadahworld.com' }],
+  authors: [{ name: 'SonsHub Media', url: 'https://rfyglobal.org' }],
   creator: 'SonsHub Media',
-  publisher: 'Room For You',
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
-  },
+  publisher: 'SonsHub Media',
   openGraph: {
     type: 'website',
-    locale: 'en_NG',
+    locale: 'en_US',
     url: 'https://rfyglobal.org',
     siteName: 'Room For You',
-    title: 'Room For You — with Yadah',
+    title: 'Room For You — A Christian Community with Minister Yadah',
     description:
-      'Building a community of young men and women who sing songs of salvation, study the Word, and get others saved.',
+      'A global community of young men and women singing songs of salvation, studying the Word, praying, and getting others saved. Founded by Minister Yadah.',
     images: [
       {
-        url: '/og-default.png',
+        url: '/og?title=Room+For+You&subtitle=A+Christian+Community+with+Minister+Yadah',
         width: 1200,
         height: 630,
-        alt: 'Room For You — with Yadah',
+        alt: 'Room For You — A Christian Community with Minister Yadah',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Room For You — with Yadah',
-    description: 'Jesus to Nations. A worship, prayer, study and mentorship community.',
-    images: ['/og-default.png'],
-    creator: '@yadahworld',
+    title: 'Room For You — A Christian Community with Minister Yadah',
+    description:
+      'A global Christian community founded by Minister Yadah. Monthly gatherings. Daily Word. Prayer. Join us.',
+    images: ['/og?title=Room+For+You&subtitle=A+Christian+Community+with+Minister+Yadah'],
+    creator: '@roomforyou',
+    site: '@roomforyou',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   icons: {
     icon: '/favicon.ico',
-    apple: '/apple-touch-icon.png',
     shortcut: '/favicon-16x16.png',
+    apple: '/apple-touch-icon.png',
   },
   manifest: '/site.webmanifest',
+  alternates: {
+    canonical: 'https://rfyglobal.org',
+  },
+  category: 'religion',
   ...(googleVerification ? { verification: { google: googleVerification } } : {}),
+}
+
+const organizationSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  name: 'Room For You',
+  alternateName: ['Room For You with Yadah', 'RFY'],
+  url: 'https://rfyglobal.org',
+  logo: 'https://rfyglobal.org/images/logo-dark.png',
+  sameAs: [
+    'https://instagram.com/roomforyouyadah',
+    'https://youtube.com/@yadah',
+    'https://x.com/roomforyou',
+  ],
+  description:
+    'Room For You is a global Christian community movement founded by Minister Yadah and SonsHub Media. Monthly gatherings. Daily scripture. Prayer support.',
+  founder: {
+    '@type': 'Person',
+    name: 'Minister Yadah',
+    alternateName: 'Yadah',
+    jobTitle: 'Gospel Minister & Founder',
+    url: 'https://yadahworld.com',
+  },
+  parentOrganization: {
+    '@type': 'Organization',
+    name: 'SonsHub Media',
+    url: 'https://sonshubmedia.com',
+  },
+  areaServed: {
+    '@type': 'AdministrativeArea',
+    name: 'Global',
+  },
+  knowsAbout: [
+    'Christian community',
+    'Gospel music',
+    'Bible study',
+    'Evangelical outreach',
+    'Prayer ministry',
+  ],
+}
+
+const websiteSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Room For You',
+  url: 'https://rfyglobal.org',
+  description: 'A global Christian community with Minister Yadah',
+  potentialAction: {
+    '@type': 'SearchAction',
+    target: {
+      '@type': 'EntryPoint',
+      urlTemplate: 'https://rfyglobal.org/blog?q={search_term_string}',
+    },
+    'query-input': 'required name=search_term_string',
+  },
 }
 
 export default function RootLayout({
@@ -84,8 +154,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <OrganizationJsonLd />
-        <WebsiteJsonLd />
+        <JsonLd data={[organizationSchema, websiteSchema]} />
         <ThemeProvider>
           {children}
           <CookieBanner />

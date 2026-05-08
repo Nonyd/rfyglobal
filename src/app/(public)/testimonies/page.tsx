@@ -6,8 +6,10 @@ import { db } from '@/lib/db'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Testimonies — Room For You',
-  description: 'Stories of what God has done in the Room For You community.',
+  title: 'Testimonies — What God Has Done in Room For You',
+  description:
+    "Real testimonies from the Room For You community. Stories of healing, salvation, breakthrough, and God's faithfulness. To God be the glory.",
+  alternates: { canonical: 'https://rfyglobal.org/testimonies' },
 }
 
 export const dynamic = 'force-dynamic'

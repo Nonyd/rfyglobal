@@ -4,6 +4,7 @@ import { ensureDefaultEventFields } from '@/lib/event-form-fields'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { SingleEventClient } from '@/components/events/SingleEventClient'
+import { JsonLd } from '@/components/seo/JsonLd'
 import type { Metadata } from 'next'
 
 export async function generateMetadata({
@@ -13,14 +14,47 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const event = await db.event.findFirst({
     where: {
-      isActive: true,
       OR: [{ slug: params.slug }, { id: params.slug }],
     },
   })
+
+  if (!event) {
+    return {
+      title: 'Event — Room For You',
+      description: 'A Room For You community gathering.',
+    }
+  }
+
+  const eventDate = event.date
+    ? new Date(event.date).toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    : ''
+
   return {
-    title: event ? `${event.title} — Room For You` : 'Event',
-    description: event?.description ?? undefined,
-    openGraph: event?.imageUrl ? { images: [event.imageUrl] } : undefined,
+    title: `${event.title} — Room For You`,
+    description:
+      event.description ??
+      `Join Room For You for ${event.title}${event.city ? ` in ${event.city}` : ''}${eventDate ? ` on ${eventDate}` : ''}. Free to attend.`,
+    openGraph: {
+      title: event.title,
+      description: event.description ?? `A Room For You gathering in ${event.city ?? 'your city'}.`,
+      images: event.imageUrl
+        ? [{ url: event.imageUrl, width: 1200, height: 630 }]
+        : [
+            {
+              url: '/og?title=Room+For+You&subtitle=A+Christian+Community+with+Minister+Yadah',
+              width: 1200,
+              height: 630,
+            },
+          ],
+      url: `https://rfyglobal.org/events/${params.slug}`,
+      type: 'website',
+    },
+    alternates: { canonical: `https://rfyglobal.org/events/${params.slug}` },
   }
 }
 
@@ -56,9 +90,50 @@ export default async function SingleEventPage({
     }),
   ])
 
+  const eventSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Event',
+    name: event.title,
+    description: event.description ?? `A Room For You community gathering in ${event.city ?? 'your city'}.`,
+    startDate: event.date?.toISOString(),
+    location: {
+      '@type': 'Place',
+      name: event.venue ?? event.city ?? 'TBD',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: event.city ?? '',
+        addressCountry: 'NG',
+      },
+    },
+    organizer: {
+      '@type': 'Organization',
+      name: 'Room For You',
+      url: 'https://rfyglobal.org',
+    },
+    performer: {
+      '@type': 'Person',
+      name: 'Minister Yadah',
+    },
+    image:
+      event.imageUrl ??
+      'https://rfyglobal.org/og?title=Room+For+You&subtitle=A+Christian+Community+with+Minister+Yadah',
+    url: `https://rfyglobal.org/events/${event.slug ?? event.id}`,
+    eventStatus: 'https://schema.org/EventScheduled',
+    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    isAccessibleForFree: true,
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'NGN',
+      availability: 'https://schema.org/InStock',
+      url: `https://rfyglobal.org/events/${event.slug ?? event.id}`,
+    },
+  }
+
   return (
     <>
       <Navbar />
+      <JsonLd data={eventSchema} />
       <SingleEventClient event={event} otherEvents={otherEvents} fields={fields} />
       <Footer />
     </>

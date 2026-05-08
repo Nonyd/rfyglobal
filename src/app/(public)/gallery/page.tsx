@@ -4,8 +4,10 @@ import { PublicPageHeader, PublicPageShell } from '@/components/layout/PublicPag
 import { PublicGalleryClient } from '@/components/gallery/PublicGalleryClient'
 
 export const metadata: Metadata = {
-  title: 'Gallery — Room For You',
-  description: 'Photos from past Room For You community gatherings across cities.',
+  title: 'Gallery — Moments from Room For You Gatherings',
+  description:
+    'Photos from Room For You community gatherings with Minister Yadah. Real people. Real community. Real encounters with God.',
+  alternates: { canonical: 'https://rfyglobal.org/gallery' },
 }
 
 export const dynamic = 'force-dynamic'

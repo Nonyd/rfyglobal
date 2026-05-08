@@ -5,8 +5,10 @@ import { getContentMany } from '@/lib/content'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'Contact - Room For You',
-  description: 'Get in touch with the Room For You team.',
+  title: 'Contact — Room For You',
+  description:
+    'Get in touch with the Room For You team. Questions about membership, events, partnership, or prayer — we read every message.',
+  alternates: { canonical: 'https://rfyglobal.org/contact' },
 }
 
 export const dynamic = 'force-dynamic'

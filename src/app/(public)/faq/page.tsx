@@ -1,13 +1,16 @@
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { FaqClient } from '@/components/faq/FaqClient'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { db } from '@/lib/db'
 import { getContentMany } from '@/lib/content'
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'FAQs - Room For You',
-  description: 'Frequently asked questions about Room For You.',
+  title: 'FAQs — Room For You',
+  description:
+    'Frequently asked questions about Room For You — joining, events, prayer, giving, testimonies, and more.',
+  alternates: { canonical: 'https://rfyglobal.org/faq' },
 }
 
 export const dynamic = 'force-dynamic'
@@ -23,10 +26,28 @@ export default async function FaqPage() {
     }),
     getContentMany(['faq.heading', 'faq.subheading']),
   ])
+  const faqSchema =
+    categories.length > 0
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: categories.flatMap((cat) =>
+            cat.faqs.map((faq) => ({
+              '@type': 'Question',
+              name: faq.question,
+              acceptedAnswer: {
+                '@type': 'Answer',
+                text: faq.answer,
+              },
+            })),
+          ),
+        }
+      : null
 
   return (
     <>
       <Navbar />
+      {faqSchema && <JsonLd data={faqSchema} />}
       <main className="min-h-screen bg-void pt-32 pb-24 px-6">
         <div className="max-w-4xl mx-auto">
           <p className="label-text mb-4">Help & Support</p>

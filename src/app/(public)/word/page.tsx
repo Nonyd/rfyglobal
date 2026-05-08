@@ -5,8 +5,10 @@ import type { Metadata } from 'next'
 import type { Scripture } from '@prisma/client'
 
 export const metadata: Metadata = {
-  title: 'The Word — Room For You',
-  description: 'Daily scriptures and audio devotionals from Room For You.',
+  title: 'Daily Word — Scripture from Room For You',
+  description:
+    'One scripture every day with audio commentary from Minister Yadah and the Room For You team. Rooted in the Word. Grounded in grace.',
+  alternates: { canonical: 'https://rfyglobal.org/word' },
 }
 
 export const dynamic = 'force-dynamic'

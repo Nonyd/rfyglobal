@@ -8,7 +8,9 @@ export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Study Portal — Room For You',
-  description: 'Bible study materials, tasks, and resources from Room For You.',
+  description:
+    'Free Bible study materials, tasks, and resources from Room For You. Identity in Christ, the discipline of prayer, and more. Open to everyone.',
+  alternates: { canonical: 'https://rfyglobal.org/study' },
 }
 
 export default async function StudyPage() {

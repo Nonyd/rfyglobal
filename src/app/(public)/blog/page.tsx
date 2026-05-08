@@ -8,8 +8,9 @@ import { db } from '@/lib/db'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Blog & Devotionals — Room For You',
+  title: 'Devotionals — Room For You Blog',
   description: 'Devotionals, teachings, and reflections from Room For You.',
+  alternates: { canonical: 'https://rfyglobal.org/blog' },
 }
 
 const coverThumbnailUrl = (url: string) =>

@@ -5,7 +5,9 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Prayer Wall — Room For You',
-  description: 'Submit your prayer request to the Room For You prayer team.',
+  description:
+    'Submit your prayer request to Minister Yadah and the Room For You prayer team. Every request is prayed over personally. Private and confidential.',
+  alternates: { canonical: 'https://rfyglobal.org/prayer' },
 }
 
 export default function PrayerWallPage() {

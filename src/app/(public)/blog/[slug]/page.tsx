@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { PublicPageShell } from '@/components/layout/PublicPageShell'
+import { JsonLd } from '@/components/seo/JsonLd'
 import { formatDate } from '@/lib/utils'
 import { db } from '@/lib/db'
 
@@ -21,10 +22,29 @@ export async function generateMetadata({
   const post = await db.post.findFirst({
     where: { slug: params.slug, isPublished: true },
   })
+  if (!post) return { title: 'Post — Room For You' }
+
   return {
-    title: post ? `${post.title} — Room For You` : 'Post',
-    description: post?.excerpt ?? undefined,
-    openGraph: post?.coverImage ? { images: [post.coverImage] } : undefined,
+    title: `${post.title} — Room For You`,
+    description: post.excerpt ?? post.title,
+    openGraph: {
+      title: post.title,
+      description: post.excerpt ?? post.title,
+      images: post.coverImage
+        ? [{ url: post.coverImage, width: 1200, height: 630 }]
+        : [
+            {
+              url: '/og?title=Room+For+You&subtitle=A+Christian+Community+with+Minister+Yadah',
+              width: 1200,
+              height: 630,
+            },
+          ],
+      url: `https://rfyglobal.org/blog/${params.slug}`,
+      type: 'article',
+      publishedTime: post.publishedAt?.toISOString(),
+      authors: ['Minister Yadah', 'Room For You'],
+    },
+    alternates: { canonical: `https://rfyglobal.org/blog/${params.slug}` },
   }
 }
 
@@ -35,8 +55,40 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
   if (!post) notFound()
 
+  const blogSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    description: post.excerpt ?? post.title,
+    image:
+      post.coverImage ??
+      'https://rfyglobal.org/og?title=Room+For+You&subtitle=A+Christian+Community+with+Minister+Yadah',
+    url: `https://rfyglobal.org/blog/${post.slug}`,
+    datePublished: post.publishedAt?.toISOString(),
+    dateModified: post.updatedAt?.toISOString(),
+    author: {
+      '@type': 'Organization',
+      name: 'Room For You',
+      url: 'https://rfyglobal.org',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Room For You',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://rfyglobal.org/images/logo-dark.png',
+      },
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://rfyglobal.org/blog/${post.slug}`,
+    },
+    keywords: ['Christian devotional', 'gospel teaching', 'Room For You', 'Minister Yadah', 'Bible'],
+  }
+
   return (
     <PublicPageShell mainClassName="pb-20 pt-6 md:pb-24">
+      <JsonLd data={blogSchema} />
       <article className="mx-auto max-w-3xl px-6 pt-20 md:pt-24">
         <Link
           href="/blog"
