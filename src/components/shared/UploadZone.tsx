@@ -49,6 +49,10 @@ interface UploadZoneProps {
   helpText?: string
   className?: string
   preview?: boolean
+  /** When set, POST here instead of `/api/upload` (e.g. public testimony upload). */
+  uploadEndpoint?: string
+  /** Extra JSON fields merged with `{ file }` when `uploadEndpoint` is set (server must accept them). */
+  uploadExtra?: Record<string, unknown>
 }
 
 interface FileState {
@@ -99,6 +103,8 @@ export function UploadZone({
   helpText,
   className,
   preview = false,
+  uploadEndpoint,
+  uploadExtra,
 }: UploadZoneProps) {
   const [fileStates, setFileStates] = useState<FileState[]>([])
   const [isDragging, setIsDragging] = useState(false)
@@ -174,14 +180,18 @@ export function UploadZone({
 
               updateFileState(id, { progress: 30 })
 
-              const res = await fetch('/api/upload', {
+              const payload = uploadEndpoint
+                ? { file: base64, ...(uploadExtra ?? {}) }
+                : {
+                    file: base64,
+                    folder,
+                    resourceType: resolvedResourceType,
+                  }
+
+              const res = await fetch(uploadEndpoint ?? '/api/upload', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  file: base64,
-                  folder,
-                  resourceType: resolvedResourceType,
-                }),
+                body: JSON.stringify(payload),
               })
 
               updateFileState(id, { progress: 90 })
@@ -232,6 +242,8 @@ export function UploadZone({
       onProgress,
       updateFileState,
       validateFiles,
+      uploadEndpoint,
+      uploadExtra,
     ],
   )
 

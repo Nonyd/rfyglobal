@@ -12,9 +12,21 @@ export async function GET(req: NextRequest) {
   const format = searchParams.get('format')
   const page = parseInt(searchParams.get('page') ?? '1')
   const limit = parseInt(searchParams.get('limit') ?? '20')
+  const q = searchParams.get('q')?.trim()
+
+  const memberWhere =
+    q && q.length > 0
+      ? {
+          OR: [
+            { email: { contains: q, mode: 'insensitive' as const } },
+            { name: { contains: q, mode: 'insensitive' as const } },
+          ],
+        }
+      : {}
 
   if (format === 'csv') {
     const members = await db.communityMember.findMany({
+      where: memberWhere,
       orderBy: { createdAt: 'desc' },
     })
 
@@ -42,11 +54,12 @@ export async function GET(req: NextRequest) {
 
   const [members, total] = await Promise.all([
     db.communityMember.findMany({
+      where: memberWhere,
       orderBy: { createdAt: 'desc' },
       skip: (page - 1) * limit,
       take: limit,
     }),
-    db.communityMember.count(),
+    db.communityMember.count({ where: memberWhere }),
   ])
 
   return NextResponse.json({ members, total, page, totalPages: Math.ceil(total / limit) })

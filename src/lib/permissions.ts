@@ -15,6 +15,9 @@ type Permission =
   | 'activity'
   | 'delete'
   | 'finance'
+  | 'prayer'
+  | 'testimony'
+  | 'messages'
 
 const ROLE_PERMISSIONS: Record<string, Permission[]> = {
   SUPER_ADMIN: [
@@ -34,6 +37,9 @@ const ROLE_PERMISSIONS: Record<string, Permission[]> = {
     'activity',
     'delete',
     'finance',
+    'prayer',
+    'testimony',
+    'messages',
   ],
   ADMIN: [
     'scripture',
@@ -44,6 +50,9 @@ const ROLE_PERMISSIONS: Record<string, Permission[]> = {
     'forms',
     'members',
     'activity',
+    'prayer',
+    'testimony',
+    'messages',
   ],
   EDITOR: ['scripture', 'blog', 'study'],
   MEDIA_ADMIN: ['gallery'],
@@ -70,6 +79,9 @@ export function canAccess(role: string, module: string): boolean {
     demo: 'demo',
     users: 'users',
     activity: 'activity',
+    prayer: 'prayer',
+    testimonies: 'testimony',
+    messages: 'messages',
   }
   const permission = moduleMap[module]
   if (!permission) return false

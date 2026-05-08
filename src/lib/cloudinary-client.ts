@@ -11,6 +11,7 @@ export type CloudinaryFolder =
   | 'cms'
   | 'portraits'
   | 'eventImage'
+  | 'testimony'
 
 export type ResourceType = 'image' | 'raw'
 

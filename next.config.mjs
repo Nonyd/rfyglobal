@@ -22,7 +22,7 @@ const securityHeaders = [
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: blob: https: https://res.cloudinary.com",
       "media-src 'self' https://res.cloudinary.com blob:",
-      "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://checkout.paystack.com https://checkout.flutterwave.com https://checkout.payaza.africa",
+      "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://checkout.paystack.com https://checkout.flutterwave.com https://checkout.payaza.africa",
       "connect-src 'self' https://rfyglobal.org https://api.cloudinary.com https://api.paystack.co https://api.flutterwave.com https://api.payaza.africa https://fonts.gstatic.com",
       "worker-src 'self' blob:",
     ].join('; '),

@@ -1,5 +1,5 @@
 import { getContentMany } from '@/lib/content'
-import { FooterLegalLinks, FooterNavLinks, FooterSocialLinks, type FooterSocialItem } from '@/components/layout/FooterInteractive'
+import { FooterLegalLinks, FooterNavLinks, FooterSocialLinks, FooterCommunityLinks, type FooterSocialItem } from '@/components/layout/FooterInteractive'
 
 export async function Footer() {
   const content = await getContentMany([
@@ -57,12 +57,15 @@ export async function Footer() {
 
         <div className="gold-line opacity-20 mb-8" />
 
+        <div className="flex flex-col items-center gap-4 mb-6">
+          <FooterCommunityLinks />
+          <FooterLegalLinks />
+        </div>
+
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="font-body" style={{ color: '#585858', fontSize: '11px' }}>
             {content['footer.copyright'] || '© 2026 Room For You · rfyglobal.org · A SonsHub Media Initiative.'}
           </p>
-
-          <FooterLegalLinks />
         </div>
       </div>
     </footer>

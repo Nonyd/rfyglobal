@@ -116,6 +116,29 @@ export function FooterSocialLinks({ items }: { items: FooterSocialItem[] }) {
   )
 }
 
+export function FooterCommunityLinks() {
+  return (
+    <div className="flex items-center justify-center gap-6 mb-1">
+      <a
+        href="/prayer"
+        style={{ color: '#A0A0A0', fontSize: '12px', fontFamily: 'General Sans, sans-serif' }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = '#C9A84C')}
+        onMouseLeave={(e) => (e.currentTarget.style.color = '#A0A0A0')}
+      >
+        Prayer Wall
+      </a>
+      <a
+        href="/testimonies"
+        style={{ color: '#A0A0A0', fontSize: '12px', fontFamily: 'General Sans, sans-serif' }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = '#C9A84C')}
+        onMouseLeave={(e) => (e.currentTarget.style.color = '#A0A0A0')}
+      >
+        Testimonies
+      </a>
+    </div>
+  )
+}
+
 const LEGAL_LINKS = [
   { href: '/privacy', label: 'Privacy Policy' },
   { href: '/cookies', label: 'Cookie Policy' },

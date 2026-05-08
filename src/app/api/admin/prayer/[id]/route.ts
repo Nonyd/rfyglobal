@@ -1,0 +1,90 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { auth } from '@/lib/auth'
+import { db } from '@/lib/db'
+import { sendEmail } from '@/lib/brevo'
+import { PrayerRequestStatus } from '@prisma/client'
+
+export const runtime = 'nodejs'
+
+function escapeHtml(text: string) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
+export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+  const session = await auth()
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const body = await req.json()
+  const { status, adminNote, sendReply, replyMessage } = body as {
+    status?: string
+    adminNote?: string | null
+    sendReply?: boolean
+    replyMessage?: string
+  }
+
+  const updateData: Record<string, unknown> = {}
+  if (status && Object.values(PrayerRequestStatus).includes(status as PrayerRequestStatus)) {
+    updateData.status = status
+  }
+  if (adminNote !== undefined) updateData.adminNote = adminNote
+  if (status === 'PRAYED') updateData.prayedAt = new Date()
+
+  if (Object.keys(updateData).length > 0) {
+    await db.prayerRequest.update({
+      where: { id: params.id },
+      data: updateData,
+    })
+  }
+
+  let request = await db.prayerRequest.findUnique({ where: { id: params.id } })
+  if (!request) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+  if (sendReply && replyMessage && request.email) {
+    const displayName = request.isAnonymous ? 'Friend' : (request.name || 'Friend')
+    const safeBody = escapeHtml(replyMessage).replace(/\n/g, '<br>')
+    await sendEmail({
+      to: request.email,
+      subject: `Re: Your Prayer Request — ${request.subject}`,
+      html: `
+        <div style="background:#0F0F0F;max-width:600px;margin:0 auto;padding:40px;font-family:Arial,sans-serif;">
+          <p style="color:#C9A84C;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;margin:0 0 8px;">
+            Room For You · Prayer Team
+          </p>
+          <h2 style="color:#F8F8F8;font-size:24px;margin:0 0 24px;">
+            We prayed for you, ${escapeHtml(displayName)}.
+          </h2>
+          <div style="height:1px;background:linear-gradient(90deg,#C9A84C,transparent);margin:0 0 24px;"></div>
+          <p style="color:#A0A0A0;font-size:14px;line-height:1.8;margin:0 0 24px;">
+            ${safeBody}
+          </p>
+          <div style="height:1px;background:linear-gradient(90deg,transparent,#C9A84C,transparent);margin:24px 0;"></div>
+          <p style="color:#585858;font-size:12px;text-align:center;">
+            Room For You · rfyglobal.org · Jesus to Nations
+          </p>
+        </div>
+      `,
+    })
+    await db.prayerRequest.update({
+      where: { id: params.id },
+      data: { status: 'REPLIED' },
+    })
+    request = await db.prayerRequest.findUnique({ where: { id: params.id } })
+  }
+
+  return NextResponse.json(request)
+}
+
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  const session = await auth()
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (session.user.role !== 'SUPER_ADMIN') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
+  await db.prayerRequest.delete({ where: { id: params.id } })
+  return NextResponse.json({ success: true })
+}

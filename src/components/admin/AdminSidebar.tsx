@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
+import { useEffect, useState } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import {
   LayoutDashboard,
@@ -15,6 +16,7 @@ import {
   Settings2,
   Plug,
   Heart,
+  Handshake,
   Database,
   LogOut,
   Users,
@@ -22,6 +24,8 @@ import {
   UserCog,
   History,
   Settings,
+  Star,
+  MessageSquare,
 } from 'lucide-react'
 import { canAccess } from '@/lib/permissions'
 
@@ -30,6 +34,7 @@ type NavItem = {
   href: string
   icon: LucideIcon
   exact?: boolean
+  badgeKey?: 'prayers' | 'testimonies' | 'messages'
 }
 
 type NavGroup = { label: string; items: NavItem[] }
@@ -40,6 +45,8 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: 'Dashboard', href: '/admin', icon: LayoutDashboard, exact: true },
       { label: 'Members', href: '/admin/members', icon: Users },
+      { label: 'Prayer', href: '/admin/prayer', icon: Heart, badgeKey: 'prayers' },
+      { label: 'Messages', href: '/admin/messages', icon: MessageSquare, badgeKey: 'messages' },
       { label: 'Activity', href: '/admin/activity', icon: History },
     ],
   },
@@ -52,6 +59,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Events', href: '/admin/events', icon: Calendar },
       { label: 'Gallery', href: '/admin/gallery', icon: Images },
       { label: 'Forms', href: '/admin/forms', icon: ClipboardList },
+      { label: 'Testimonies', href: '/admin/testimonies', icon: Star, badgeKey: 'testimonies' },
     ],
   },
   {
@@ -60,7 +68,7 @@ const NAV_GROUPS: NavGroup[] = [
       { label: 'Site CMS', href: '/admin/cms', icon: Settings2 },
       { label: 'Automation', href: '/admin/automation', icon: Zap },
       { label: 'Integrations', href: '/admin/integrations', icon: Plug },
-      { label: 'Partnership', href: '/admin/partner', icon: Heart },
+      { label: 'Partnership', href: '/admin/partner', icon: Handshake },
       { label: 'Demo Data', href: '/admin/demo', icon: Database },
       { label: 'Users', href: '/admin/users', icon: UserCog },
     ],
@@ -81,6 +89,28 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ theme, userRole }: AdminSidebarProps) {
   const pathname = usePathname()
+  const [badges, setBadges] = useState({ prayers: 0, testimonies: 0, messages: 0 })
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const res = await fetch('/api/admin/notifications')
+        if (res.ok) {
+          const d = await res.json()
+          setBadges({
+            prayers: d.prayers ?? 0,
+            testimonies: d.testimonies ?? 0,
+            messages: d.messages ?? 0,
+          })
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+    load()
+    const t = setInterval(load, 30000)
+    return () => clearInterval(t)
+  }, [])
 
   const visibleGroups = NAV_GROUPS.map((group) => ({
     ...group,
@@ -137,6 +167,14 @@ export function AdminSidebar({ theme, userRole }: AdminSidebarProps) {
                 const isActive =
                   'exact' in item && item.exact ? pathname === item.href : pathname.startsWith(item.href)
                 const Icon = item.icon
+                const badge =
+                  item.badgeKey === 'prayers'
+                    ? badges.prayers
+                    : item.badgeKey === 'testimonies'
+                      ? badges.testimonies
+                      : item.badgeKey === 'messages'
+                        ? badges.messages
+                        : 0
 
                 return (
                   <Link
@@ -162,7 +200,15 @@ export function AdminSidebar({ theme, userRole }: AdminSidebarProps) {
                     }}
                   >
                     <Icon size={15} />
-                    {item.label}
+                    <span className="flex-1">{item.label}</span>
+                    {badge > 0 && (
+                      <span
+                        className="min-w-[1.25rem] rounded-full px-1.5 py-0.5 text-center font-body text-[10px] font-bold"
+                        style={{ background: 'var(--a-red)', color: '#fff' }}
+                      >
+                        {badge > 99 ? '99+' : badge}
+                      </span>
+                    )}
                   </Link>
                 )
               })}

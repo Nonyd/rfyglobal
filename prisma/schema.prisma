@@ -356,3 +356,74 @@ enum EmailType {
   EVENT_REMINDER_WEEK
   EVENT_REMINDER_DAY
 }
+
+// ── PRAYER REQUESTS ──────────────────────────────────────────
+
+model PrayerRequest {
+  id          String              @id @default(cuid())
+  email       String
+  name        String?
+  isAnonymous Boolean             @default(false)
+  subject     String
+  body        String              @db.Text
+  status      PrayerRequestStatus @default(PENDING)
+  adminNote   String?             @db.Text
+  prayedAt    DateTime?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+}
+
+enum PrayerRequestStatus {
+  PENDING
+  PRAYED
+  REPLIED
+}
+
+// ── TESTIMONIES ───────────────────────────────────────────────
+
+model Testimony {
+  id          String          @id @default(cuid())
+  email       String
+  name        String?
+  isAnonymous Boolean         @default(false)
+  title       String
+  body        String?         @db.Text
+  imageUrls   Json?
+  videoUrl    String?
+  status      TestimonyStatus @default(PENDING)
+  isFeatured  Boolean         @default(false)
+  adminNote   String?
+  publishedAt DateTime?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+enum TestimonyStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ── MESSAGING ─────────────────────────────────────────────────
+
+model MessageThread {
+  id             String    @id @default(cuid())
+  recipientEmail String
+  recipientName  String?
+  subject        String?
+  lastMessage    String?   @db.Text
+  lastAt         DateTime  @default(now())
+  isRead         Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  messages       Message[]
+}
+
+model Message {
+  id        String        @id @default(cuid())
+  threadId  String
+  thread    MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  fromAdmin Boolean       @default(true)
+  body      String        @db.Text
+  sentAt    DateTime      @default(now())
+  isRead    Boolean       @default(false)
+}
