@@ -30,7 +30,7 @@ import {
 } from 'lucide-react'
 import { canAccess } from '@/lib/permissions'
 
-type NavItem = {
+export type NavItem = {
   label: string
   href: string
   icon: LucideIcon
@@ -38,9 +38,9 @@ type NavItem = {
   badgeKey?: 'prayers' | 'testimonies' | 'messages'
 }
 
-type NavGroup = { label: string; items: NavItem[] }
+export type NavGroup = { label: string; items: NavItem[] }
 
-const NAV_GROUPS: NavGroup[] = [
+export const NAV_GROUPS: NavGroup[] = [
   {
     label: 'OVERVIEW',
     items: [
@@ -77,7 +77,7 @@ const NAV_GROUPS: NavGroup[] = [
   },
 ]
 
-function navItemVisible(item: NavItem, userRole: string): boolean {
+export function navItemVisible(item: NavItem, userRole: string): boolean {
   if (item.href === '/admin') return true
   if (item.href === '/admin/users') return userRole === 'SUPER_ADMIN'
   const moduleKey = item.href.replace('/admin/', '').split('/')[0]

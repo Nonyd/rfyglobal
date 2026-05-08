@@ -20,10 +20,10 @@ export function AdminDashboardShell({
   return (
     <div className="flex h-full w-full overflow-hidden">
       <AdminSidebar theme={theme} userRole={userRole} />
-      <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden min-w-0">
         <AdminTopbar toggleTheme={toggleTheme} theme={theme} />
         <main
-          className="flex-1 overflow-y-auto p-6 lg:p-8"
+          className="flex-1 overflow-y-auto p-4 lg:p-6"
           style={{ background: 'var(--a-bg)' }}
         >
           {children}

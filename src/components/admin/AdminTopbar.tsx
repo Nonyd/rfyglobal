@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Sun, Moon, Bell } from 'lucide-react'
+import { Sun, Moon, Bell, Menu } from 'lucide-react'
 import Link from 'next/link'
+import { AdminMobileDrawer } from './AdminMobileDrawer'
 
 const PAGE_TITLES: Record<string, string> = {
   '/admin': 'Dashboard',
@@ -44,6 +45,7 @@ export function AdminTopbar({ toggleTheme, theme }: AdminTopbarProps) {
     total: 0,
   })
   const [menuOpen, setMenuOpen] = useState(false)
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -76,20 +78,32 @@ export function AdminTopbar({ toggleTheme, theme }: AdminTopbarProps) {
   }, [menuOpen])
 
   return (
-    <header
-      className="flex items-center justify-between px-6 lg:px-8 shrink-0 border-b"
-      style={{
-        height: '60px',
-        background: 'var(--a-surface)',
-        borderColor: 'var(--a-border)',
-        boxShadow: 'var(--a-shadow)',
-      }}
-    >
-      <h1 className="font-display text-lg font-semibold" style={{ color: 'var(--a-text)' }}>
-        {title}
-      </h1>
+    <>
+      <header
+        className="flex items-center justify-between px-4 lg:px-8 shrink-0 border-b"
+        style={{
+          height: '60px',
+          background: 'var(--a-surface)',
+          borderColor: 'var(--a-border)',
+          boxShadow: 'var(--a-shadow)',
+        }}
+      >
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setMobileNavOpen(true)}
+            className="lg:hidden flex items-center justify-center w-8 h-8 border transition-all"
+            style={{ borderColor: 'var(--a-border)', color: 'var(--a-text-secondary)' }}
+            aria-label="Open navigation"
+          >
+            <Menu size={16} />
+          </button>
+          <h1 className="font-display text-lg font-semibold" style={{ color: 'var(--a-text)' }}>
+            {title}
+          </h1>
+        </div>
 
-      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3">
         <Link
           href="https://rfyglobal.vercel.app"
           target="_blank"
@@ -224,7 +238,9 @@ export function AdminTopbar({ toggleTheme, theme }: AdminTopbarProps) {
         >
           AD
         </div>
-      </div>
-    </header>
+        </div>
+      </header>
+      <AdminMobileDrawer isOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
+    </>
   )
 }
