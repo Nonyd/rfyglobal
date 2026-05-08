@@ -50,6 +50,7 @@ export async function GET(request: Request) {
             textTransform: 'uppercase',
             margin: '0 0 20px 0',
             fontFamily: 'Arial, sans-serif',
+            display: 'flex',
           }}
         >
           ROOM FOR YOU · RFYGLOBAL.ORG
@@ -62,6 +63,7 @@ export async function GET(request: Request) {
             lineHeight: 1.1,
             margin: '0 0 20px 0',
             maxWidth: '800px',
+            display: 'flex',
           }}
         >
           {title}
@@ -73,6 +75,7 @@ export async function GET(request: Request) {
             margin: 0,
             fontFamily: 'Arial, sans-serif',
             maxWidth: '700px',
+            display: 'flex',
           }}
         >
           {subtitle}
@@ -96,6 +99,7 @@ export async function GET(request: Request) {
               textTransform: 'uppercase',
               margin: 0,
               fontFamily: 'Arial, sans-serif',
+              display: 'flex',
             }}
           >
             Minister Yadah
@@ -106,11 +110,23 @@ export async function GET(request: Request) {
               fontSize: '11px',
               margin: 0,
               fontFamily: 'Arial, sans-serif',
+              display: 'flex',
             }}
           >
             Jesus to Nations — 2 Cor 5:17-21
           </p>
         </div>
+        <div
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: '4px',
+            background: 'linear-gradient(90deg, #C9A84C, #E8C96A, #C9A84C)',
+            display: 'flex',
+          }}
+        />
       </div>
     ),
     {
