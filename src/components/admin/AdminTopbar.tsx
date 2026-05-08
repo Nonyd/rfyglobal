@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { Sun, Moon, Bell, Menu } from 'lucide-react'
 import Link from 'next/link'
@@ -49,6 +49,7 @@ export function AdminTopbar({ toggleTheme, theme }: AdminTopbarProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const closeMobileNav = useCallback(() => setMobileNavOpen(false), [])
   const userName = session?.user?.name?.trim() || session?.user?.email?.split('@')[0] || 'Admin'
   const userEmail = session?.user?.email ?? ''
   const initials = userName
@@ -264,7 +265,7 @@ export function AdminTopbar({ toggleTheme, theme }: AdminTopbarProps) {
         </div>
         </div>
       </header>
-      <AdminMobileDrawer isOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} />
+      <AdminMobileDrawer isOpen={mobileNavOpen} onClose={closeMobileNav} />
     </>
   )
 }
