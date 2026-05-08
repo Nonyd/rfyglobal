@@ -3,6 +3,8 @@ import { auth } from '@/lib/auth'
 import { canAccess } from '@/lib/permissions'
 import { limitAdminLoginByIp } from '@/lib/rate-limit-login'
 
+const LOGIN_RATE_LIMIT_TIMEOUT_MS = 1500
+
 const ROUTE_PERMISSIONS: Record<string, string> = {
   '/admin/cms': 'cms',
   '/admin/integrations': 'integrations',
@@ -34,7 +36,12 @@ export default auth(async (req) => {
       req.headers.get('x-real-ip') ||
       'unknown'
     try {
-      const { success } = await limitAdminLoginByIp(ip)
+      const { success } = await Promise.race([
+        limitAdminLoginByIp(ip),
+        new Promise<{ success: true }>((resolve) =>
+          setTimeout(() => resolve({ success: true }), LOGIN_RATE_LIMIT_TIMEOUT_MS),
+        ),
+      ])
       if (!success) {
         return NextResponse.json(
           {

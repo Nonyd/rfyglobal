@@ -16,25 +16,33 @@ export function AdminLoginForm() {
     e.preventDefault()
     setError(null)
     setPending(true)
-    const result = await signIn('credentials', {
-      email,
-      password,
-      redirect: false,
-      callbackUrl,
-    })
-    setPending(false)
-    if (result?.error) {
-      if (result.status === 429) {
-        setError('Too many login attempts. Try again in 15 minutes.')
+    try {
+      const result = await signIn('credentials', {
+        email,
+        password,
+        redirect: false,
+        callbackUrl,
+      })
+      if (result?.error) {
+        if (result.status === 429) {
+          setError('Too many login attempts. Try again in 15 minutes.')
+          return
+        }
+        setError('Invalid credentials')
         return
       }
-      setError('Invalid credentials')
-      return
-    }
 
-    // Full page navigation so the session cookie is always sent before middleware runs.
-    if (result?.ok) {
-      window.location.assign(result.url ?? callbackUrl)
+      // Full page navigation so the session cookie is always sent before middleware runs.
+      if (result?.ok) {
+        window.location.assign(result.url ?? callbackUrl)
+        return
+      }
+
+      setError('Sign-in failed. Please try again.')
+    } catch {
+      setError('Unable to sign in right now. Please try again.')
+    } finally {
+      setPending(false)
     }
   }
 
