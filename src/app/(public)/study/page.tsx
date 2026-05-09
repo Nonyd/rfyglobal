@@ -3,6 +3,7 @@ import { FileText, CheckSquare, Download } from 'lucide-react'
 import { PublicPageHeader, PublicPageShell } from '@/components/layout/PublicPageShell'
 import { formatDate } from '@/lib/utils'
 import { db } from '@/lib/db'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 
 export const dynamic = 'force-dynamic'
 
@@ -11,6 +12,20 @@ export const metadata: Metadata = {
   description:
     'Free Bible study materials, tasks, and resources from Room For You. Identity in Christ, the discipline of prayer, and more. Open to everyone.',
   alternates: { canonical: 'https://rfyglobal.org/study' },
+  openGraph: {
+    title: 'Study Portal — Room For You',
+    description:
+      'Free Bible study materials, tasks, and resources from Room For You. Identity in Christ, the discipline of prayer, and more. Open to everyone.',
+    url: 'https://rfyglobal.org/study',
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: 'Room For You — A Christian Community with Minister Yadah',
+      },
+    ],
+  },
 }
 
 export default async function StudyPage() {

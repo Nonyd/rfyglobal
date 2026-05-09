@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { JsonLd } from '@/components/seo/JsonLd'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { CookieBanner } from '@/components/shared/CookieBanner'
 import './globals.css'
@@ -42,7 +43,7 @@ export const metadata: Metadata = {
       'A global community of young men and women singing songs of salvation, studying the Word, praying, and getting others saved. Founded by Minister Yadah.',
     images: [
       {
-        url: '/og?title=Room+For+You&subtitle=A+Christian+Community+with+Minister+Yadah',
+        url: DEFAULT_OG_IMAGE,
         width: 1200,
         height: 630,
         alt: 'Room For You — A Christian Community with Minister Yadah',
@@ -54,7 +55,7 @@ export const metadata: Metadata = {
     title: 'Room For You — A Christian Community with Minister Yadah',
     description:
       'A global Christian community founded by Minister Yadah. Monthly gatherings. Daily Word. Prayer. Join us.',
-    images: ['/og?title=Room+For+You&subtitle=A+Christian+Community+with+Minister+Yadah'],
+    images: [DEFAULT_OG_IMAGE],
     creator: '@rfyglobal',
     site: '@rfyglobal',
   },

@@ -2,12 +2,27 @@ import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
 import { PrayerWallClient } from '@/components/prayer/PrayerWallClient'
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 
 export const metadata: Metadata = {
   title: 'Prayer Wall — Room For You',
   description:
     'Submit your prayer request to Minister Yadah and the Room For You prayer team. Every request is prayed over personally. Private and confidential.',
   alternates: { canonical: 'https://rfyglobal.org/prayer' },
+  openGraph: {
+    title: 'Prayer Wall — Room For You',
+    description:
+      'Submit your prayer request to Minister Yadah and the Room For You prayer team. Every request is prayed over personally. Private and confidential.',
+    url: 'https://rfyglobal.org/prayer',
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: 'Room For You — A Christian Community with Minister Yadah',
+      },
+    ],
+  },
 }
 
 export default function PrayerWallPage() {

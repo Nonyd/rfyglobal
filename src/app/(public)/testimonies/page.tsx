@@ -4,12 +4,27 @@ import { TestimonyGrid } from '@/components/testimony/TestimonyGrid'
 import { TestimonySubmitButton } from '@/components/testimony/TestimonySubmitButton'
 import { db } from '@/lib/db'
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 
 export const metadata: Metadata = {
   title: 'Testimonies — What God Has Done in Room For You',
   description:
     "Real testimonies from the Room For You community. Stories of healing, salvation, breakthrough, and God's faithfulness. To God be the glory.",
   alternates: { canonical: 'https://rfyglobal.org/testimonies' },
+  openGraph: {
+    title: 'Testimonies — What God Has Done in Room For You',
+    description:
+      "Real testimonies from the Room For You community. Stories of healing, salvation, breakthrough, and God's faithfulness. To God be the glory.",
+    url: 'https://rfyglobal.org/testimonies',
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: 'Room For You — A Christian Community with Minister Yadah',
+      },
+    ],
+  },
 }
 
 export const dynamic = 'force-dynamic'

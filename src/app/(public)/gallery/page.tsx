@@ -2,12 +2,27 @@ import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { PublicPageHeader, PublicPageShell } from '@/components/layout/PublicPageShell'
 import { PublicGalleryClient } from '@/components/gallery/PublicGalleryClient'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 
 export const metadata: Metadata = {
   title: 'Gallery — Moments from Room For You Gatherings',
   description:
     'Photos from Room For You community gatherings with Minister Yadah. Real people. Real community. Real encounters with God.',
   alternates: { canonical: 'https://rfyglobal.org/gallery' },
+  openGraph: {
+    title: 'Gallery — Moments from Room For You Gatherings',
+    description:
+      'Photos from Room For You community gatherings with Minister Yadah. Real people. Real community. Real encounters with God.',
+    url: 'https://rfyglobal.org/gallery',
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: 'Room For You — A Christian Community with Minister Yadah',
+      },
+    ],
+  },
 }
 
 export const dynamic = 'force-dynamic'

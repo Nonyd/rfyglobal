@@ -1,4 +1,5 @@
 import { db } from '@/lib/db'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 
 const DEFAULTS: Record<string, string> = {
   'landing.hero.eyebrow': 'Worship · Prayer · Study · Community',
@@ -85,7 +86,7 @@ const DEFAULTS: Record<string, string> = {
   'seo.defaultTitle': 'Room For You — with Yadah',
   'seo.defaultDescription':
     'A worship, prayer, study, mentorship and evangelism community founded by Minister Yadah. Jesus to Nations. rfyglobal.org',
-  'seo.ogImage': '/og-default.png',
+  'seo.ogImage': DEFAULT_OG_IMAGE,
 }
 
 export async function getContent(key: string): Promise<string> {

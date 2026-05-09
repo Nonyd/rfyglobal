@@ -4,13 +4,27 @@ import type { Metadata } from 'next'
 import { PublicPageHeader, PublicPageShell } from '@/components/layout/PublicPageShell'
 import { formatDate } from '@/lib/utils'
 import { db } from '@/lib/db'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
   title: 'Devotionals — Room For You Blog',
-  description: 'Devotionals, teachings, and reflections from Room For You.',
+  description: 'Devotional articles from the Room For You community.',
   alternates: { canonical: 'https://rfyglobal.org/blog' },
+  openGraph: {
+    title: 'Devotionals — Room For You Blog',
+    description: 'Deep teaching on salvation, identity in Christ, worship, and Christian living.',
+    url: 'https://rfyglobal.org/blog',
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: 'Room For You Devotionals',
+      },
+    ],
+  },
 }
 
 const coverThumbnailUrl = (url: string) =>

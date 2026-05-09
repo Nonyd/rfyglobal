@@ -3,6 +3,7 @@ import { AboutClient } from '@/components/about/AboutClient'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { getContentMany } from '@/lib/content'
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 
 export const metadata: Metadata = {
   title: 'About — Room For You with Minister Yadah',
@@ -14,6 +15,14 @@ export const metadata: Metadata = {
     description:
       'Room For You was born out of a conviction that every young person deserves a community where they are known and called into purpose.',
     url: 'https://rfyglobal.org/about',
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: 'Room For You — A Christian Community with Minister Yadah',
+      },
+    ],
   },
 }
 

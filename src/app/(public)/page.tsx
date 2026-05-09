@@ -8,6 +8,7 @@ import { CTASection } from '@/components/landing/CTASection'
 import { Footer } from '@/components/layout/Footer'
 import { getContentMany } from '@/lib/content'
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 
 export const metadata: Metadata = {
   title: 'Room For You — A Christian Community with Minister Yadah',
@@ -21,9 +22,10 @@ export const metadata: Metadata = {
     url: 'https://rfyglobal.org',
     images: [
       {
-        url: '/og?title=Room+For+You&subtitle=A+Christian+Community+with+Minister+Yadah',
+        url: DEFAULT_OG_IMAGE,
         width: 1200,
         height: 630,
+        alt: 'Room For You — A Christian Community with Minister Yadah',
       },
     ],
   },

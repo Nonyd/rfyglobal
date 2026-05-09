@@ -1,6 +1,7 @@
 import dynamic from 'next/dynamic'
 import type { Metadata } from 'next'
 import { PublicPageShell } from '@/components/layout/PublicPageShell'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 
 const ConfessionPageClient = dynamic(
   () => import('@/components/confession/ConfessionPageClient').then((m) => m.ConfessionPageClient),
@@ -12,6 +13,20 @@ export const metadata: Metadata = {
   description:
     'The declaration of every member of Room For You. I am saved by grace through faith. Jesus to Nations. Read the full confession.',
   alternates: { canonical: 'https://rfyglobal.org/confession' },
+  openGraph: {
+    title: 'The Confession — Room For You',
+    description:
+      'The declaration of every member of Room For You. I am saved by grace through faith. Jesus to Nations. Read the full confession.',
+    url: 'https://rfyglobal.org/confession',
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: 'Room For You — A Christian Community with Minister Yadah',
+      },
+    ],
+  },
 }
 
 export default function ConfessionPage() {

@@ -6,6 +6,7 @@ import { Footer } from '@/components/layout/Footer'
 import { SingleEventClient } from '@/components/events/SingleEventClient'
 import { JsonLd } from '@/components/seo/JsonLd'
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 
 export async function generateMetadata({
   params,
@@ -44,13 +45,7 @@ export async function generateMetadata({
       description: event.description ?? `A Room For You gathering in ${event.city ?? 'your city'}.`,
       images: event.imageUrl
         ? [{ url: event.imageUrl, width: 1200, height: 630 }]
-        : [
-            {
-              url: '/og?title=Room+For+You&subtitle=A+Christian+Community+with+Minister+Yadah',
-              width: 1200,
-              height: 630,
-            },
-          ],
+        : [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630 }],
       url: `https://rfyglobal.org/events/${params.slug}`,
       type: 'website',
     },
@@ -114,9 +109,7 @@ export default async function SingleEventPage({
       '@type': 'Person',
       name: 'Minister Yadah',
     },
-    image:
-      event.imageUrl ??
-      'https://rfyglobal.org/og?title=Room+For+You&subtitle=A+Christian+Community+with+Minister+Yadah',
+    image: event.imageUrl ?? DEFAULT_OG_IMAGE,
     url: `https://rfyglobal.org/events/${event.slug ?? event.id}`,
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',

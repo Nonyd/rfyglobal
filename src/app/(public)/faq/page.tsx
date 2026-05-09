@@ -5,12 +5,27 @@ import { JsonLd } from '@/components/seo/JsonLd'
 import { db } from '@/lib/db'
 import { getContentMany } from '@/lib/content'
 import type { Metadata } from 'next'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 
 export const metadata: Metadata = {
   title: 'FAQs — Room For You',
   description:
     'Frequently asked questions about Room For You — joining, events, prayer, giving, testimonies, and more.',
   alternates: { canonical: 'https://rfyglobal.org/faq' },
+  openGraph: {
+    title: 'FAQs — Room For You',
+    description:
+      'Frequently asked questions about Room For You — joining, events, prayer, giving, testimonies, and more.',
+    url: 'https://rfyglobal.org/faq',
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: 'Room For You — A Christian Community with Minister Yadah',
+      },
+    ],
+  },
 }
 
 export const dynamic = 'force-dynamic'

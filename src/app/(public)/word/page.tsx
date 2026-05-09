@@ -3,12 +3,27 @@ import { PublicPageHeader, PublicPageShell } from '@/components/layout/PublicPag
 import { WordClientPage } from '@/components/word/WordClientPage'
 import type { Metadata } from 'next'
 import type { Scripture } from '@prisma/client'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 
 export const metadata: Metadata = {
   title: 'Daily Word — Scripture from Room For You',
   description:
     'One scripture every day with audio commentary from Minister Yadah and the Room For You team. Rooted in the Word. Grounded in grace.',
   alternates: { canonical: 'https://rfyglobal.org/word' },
+  openGraph: {
+    title: 'Daily Word — Scripture from Room For You',
+    description:
+      'One scripture every day with audio commentary from Minister Yadah and the Room For You team. Rooted in the Word. Grounded in grace.',
+    url: 'https://rfyglobal.org/word',
+    images: [
+      {
+        url: DEFAULT_OG_IMAGE,
+        width: 1200,
+        height: 630,
+        alt: 'Room For You — A Christian Community with Minister Yadah',
+      },
+    ],
+  },
 }
 
 export const dynamic = 'force-dynamic'

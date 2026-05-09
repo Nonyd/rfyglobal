@@ -6,6 +6,7 @@ import { PublicPageShell } from '@/components/layout/PublicPageShell'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { formatDate } from '@/lib/utils'
 import { db } from '@/lib/db'
+import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 
 export const dynamic = 'force-dynamic'
 
@@ -32,13 +33,7 @@ export async function generateMetadata({
       description: post.excerpt ?? post.title,
       images: post.coverImage
         ? [{ url: post.coverImage, width: 1200, height: 630 }]
-        : [
-            {
-              url: '/og?title=Room+For+You&subtitle=A+Christian+Community+with+Minister+Yadah',
-              width: 1200,
-              height: 630,
-            },
-          ],
+        : [{ url: DEFAULT_OG_IMAGE, width: 1200, height: 630 }],
       url: `https://rfyglobal.org/blog/${params.slug}`,
       type: 'article',
       publishedTime: post.publishedAt?.toISOString(),
@@ -60,9 +55,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
     '@type': 'BlogPosting',
     headline: post.title,
     description: post.excerpt ?? post.title,
-    image:
-      post.coverImage ??
-      'https://rfyglobal.org/og?title=Room+For+You&subtitle=A+Christian+Community+with+Minister+Yadah',
+    image: post.coverImage ?? DEFAULT_OG_IMAGE,
     url: `https://rfyglobal.org/blog/${post.slug}`,
     datePublished: post.publishedAt?.toISOString(),
     dateModified: post.updatedAt?.toISOString(),
