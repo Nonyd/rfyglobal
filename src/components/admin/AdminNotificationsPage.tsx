@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { formatDistanceToNow } from 'date-fns'
 import { ArrowRight, Bell, CheckCheck, Trash2 } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 interface NotificationRow {
   id: string
@@ -52,7 +53,7 @@ export function AdminNotificationsPage() {
 
   const load = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/notifications')
+      const res = await fetch('/api/admin/notifications', { cache: 'no-store' })
       if (res.ok) {
         const data = await res.json()
         setNotifications(data.notifications ?? [])
@@ -78,22 +79,29 @@ export function AdminNotificationsPage() {
   }, [load])
 
   const markAllRead = async () => {
-    await fetch('/api/admin/notifications', {
+    const res = await fetch('/api/admin/notifications', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ markAllRead: true }),
+      cache: 'no-store',
     })
+    if (!res.ok) {
+      toast.error('Could not mark notifications as read')
+      return
+    }
     setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })))
     setTotalUnread(0)
     void load()
   }
 
   const markRead = async (id: string) => {
-    await fetch('/api/admin/notifications', {
+    const res = await fetch('/api/admin/notifications', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),
+      cache: 'no-store',
     })
+    if (!res.ok) return
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)))
     setTotalUnread((t) => Math.max(0, t - 1))
   }

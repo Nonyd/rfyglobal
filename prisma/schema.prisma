@@ -432,12 +432,14 @@ model Message {
 
 // ── ADMIN NOTIFICATIONS (dashboard bell / SSE) ─────────────────
 
+// targetId: optional linked entity (e.g. CommunityMember id for type "member")
 model AdminNotification {
   id        String   @id @default(cuid())
   type      String
   title     String
   body      String?
   link      String
+  targetId  String?
   isRead    Boolean  @default(false)
   createdAt DateTime @default(now())
 }

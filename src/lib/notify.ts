@@ -38,7 +38,11 @@ export function notifySSEClients() {
   })
 }
 
-export async function createNotification(type: NotificationType, body?: string) {
+export async function createNotification(
+  type: NotificationType,
+  body?: string,
+  options?: { targetId?: string },
+) {
   const config = NOTIFICATION_CONFIG[type]
   try {
     await db.adminNotification.create({
@@ -47,6 +51,7 @@ export async function createNotification(type: NotificationType, body?: string) 
         title: config.title,
         body: body ?? null,
         link: config.link,
+        ...(options?.targetId ? { targetId: options.targetId } : {}),
       },
     })
     notifySSEClients()

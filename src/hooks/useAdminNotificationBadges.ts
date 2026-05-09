@@ -43,7 +43,7 @@ export function useAdminNotificationBadges() {
 
   const load = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/notifications')
+      const res = await fetch('/api/admin/notifications', { cache: 'no-store' })
       if (res.ok) {
         const d = await res.json()
         setUnreadByType((d.unreadByType ?? {}) as Record<string, number>)

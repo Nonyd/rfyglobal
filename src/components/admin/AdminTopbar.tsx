@@ -99,7 +99,7 @@ export function AdminTopbar({ toggleTheme, theme }: AdminTopbarProps) {
 
   const fetchNotifications = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/notifications')
+      const res = await fetch('/api/admin/notifications', { cache: 'no-store' })
       if (res.ok) {
         const data = await res.json()
         setNotifications(data.notifications ?? [])
@@ -132,22 +132,26 @@ export function AdminTopbar({ toggleTheme, theme }: AdminTopbarProps) {
   }, [fetchNotifications])
 
   const markAllRead = async () => {
-    await fetch('/api/admin/notifications', {
+    const res = await fetch('/api/admin/notifications', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ markAllRead: true }),
+      cache: 'no-store',
     })
+    if (!res.ok) return
     setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })))
     setUnreadTotal(0)
     await fetchNotifications()
   }
 
   const markRead = async (id: string) => {
-    await fetch('/api/admin/notifications', {
+    const res = await fetch('/api/admin/notifications', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),
+      cache: 'no-store',
     })
+    if (!res.ok) return
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)))
     setUnreadTotal((prev) => Math.max(0, prev - 1))
   }
@@ -191,7 +195,7 @@ export function AdminTopbar({ toggleTheme, theme }: AdminTopbarProps) {
 
         <div className="flex items-center gap-3">
           <Link
-            href="https://rfyglobal.vercel.app"
+            href="https://rfyglobal.org"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden md:flex items-center gap-2 font-body text-xs transition-colors px-3 py-1.5 rounded border"

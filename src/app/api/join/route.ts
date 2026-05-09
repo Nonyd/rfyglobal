@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     },
   })
 
-  await createNotification('member', `${name} joined from ${country}`)
+  await createNotification('member', `${name} joined from ${country}`, { targetId: member.id })
 
   const settings = await db.automationSettings.findFirst()
   const whatsappUrl = settings?.whatsappChannelUrl || ''
