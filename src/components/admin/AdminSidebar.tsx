@@ -3,7 +3,6 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut, useSession } from 'next-auth/react'
-import { useEffect, useState } from 'react'
 import type { LucideIcon } from 'lucide-react'
 import {
   LayoutDashboard,
@@ -27,15 +26,17 @@ import {
   Star,
   MessageSquare,
   HelpCircle,
+  Bell,
 } from 'lucide-react'
 import { canAccess } from '@/lib/permissions'
+import { badgeCountForNav, useAdminNotificationBadges, type NavBadgeKey } from '@/hooks/useAdminNotificationBadges'
 
 export type NavItem = {
   label: string
   href: string
   icon: LucideIcon
   exact?: boolean
-  badgeKey?: 'prayers' | 'testimonies' | 'messages'
+  badgeKey?: NavBadgeKey
 }
 
 export type NavGroup = { label: string; items: NavItem[] }
@@ -45,7 +46,13 @@ export const NAV_GROUPS: NavGroup[] = [
     label: 'OVERVIEW',
     items: [
       { label: 'Dashboard', href: '/admin', icon: LayoutDashboard, exact: true },
-      { label: 'Members', href: '/admin/members', icon: Users },
+      {
+        label: 'Notifications',
+        href: '/admin/notifications',
+        icon: Bell,
+        badgeKey: 'all',
+      },
+      { label: 'Members', href: '/admin/members', icon: Users, badgeKey: 'members' },
       { label: 'Prayer', href: '/admin/prayer', icon: Heart, badgeKey: 'prayers' },
       { label: 'Messages', href: '/admin/messages', icon: MessageSquare, badgeKey: 'messages' },
       { label: 'Activity', href: '/admin/activity', icon: History },
@@ -57,7 +64,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: 'Scripture', href: '/admin/scripture', icon: BookOpen },
       { label: 'Blog', href: '/admin/blog', icon: FileText },
       { label: 'Study', href: '/admin/study', icon: GraduationCap },
-      { label: 'Events', href: '/admin/events', icon: Calendar },
+      { label: 'Events', href: '/admin/events', icon: Calendar, badgeKey: 'events' },
       { label: 'Gallery', href: '/admin/gallery', icon: Images },
       { label: 'Forms', href: '/admin/forms', icon: ClipboardList },
       { label: 'Testimonies', href: '/admin/testimonies', icon: Star, badgeKey: 'testimonies' },
@@ -70,7 +77,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: 'Site CMS', href: '/admin/cms', icon: Settings2 },
       { label: 'Automation', href: '/admin/automation', icon: Zap },
       { label: 'Integrations', href: '/admin/integrations', icon: Plug },
-      { label: 'Partnership', href: '/admin/partner', icon: Handshake },
+      { label: 'Partnership', href: '/admin/partner', icon: Handshake, badgeKey: 'partner' },
       { label: 'Demo Data', href: '/admin/demo', icon: Database },
       { label: 'Users', href: '/admin/users', icon: UserCog },
     ],
@@ -92,38 +99,8 @@ interface AdminSidebarProps {
 export function AdminSidebar({ theme, userRole }: AdminSidebarProps) {
   const pathname = usePathname()
   const { data: session } = useSession()
-  const [badges, setBadges] = useState({ prayers: 0, testimonies: 0, messages: 0 })
+  const { unreadByType, total } = useAdminNotificationBadges()
   const userEmail = session?.user?.email ?? 'admin@rfyglobal.org'
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const res = await fetch('/api/admin/notifications')
-        if (res.ok) {
-          const d = await res.json()
-          const u = (d.unreadByType ?? {}) as Record<string, number>
-          setBadges({
-            prayers: u.prayer ?? 0,
-            testimonies: u.testimony ?? 0,
-            messages: (u.message ?? 0) + (u.contact ?? 0),
-          })
-        }
-      } catch {
-        /* ignore */
-      }
-    }
-    load()
-    const es = new EventSource('/api/admin/notifications/stream')
-    es.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data)
-        if (data.type === 'notification') void load()
-      } catch {
-        /* ignore */
-      }
-    }
-    return () => es.close()
-  }, [])
 
   const visibleGroups = NAV_GROUPS.map((group) => ({
     ...group,
@@ -180,14 +157,7 @@ export function AdminSidebar({ theme, userRole }: AdminSidebarProps) {
                 const isActive =
                   'exact' in item && item.exact ? pathname === item.href : pathname.startsWith(item.href)
                 const Icon = item.icon
-                const badge =
-                  item.badgeKey === 'prayers'
-                    ? badges.prayers
-                    : item.badgeKey === 'testimonies'
-                      ? badges.testimonies
-                      : item.badgeKey === 'messages'
-                        ? badges.messages
-                        : 0
+                const badge = badgeCountForNav(item.badgeKey, unreadByType, total)
 
                 return (
                   <Link

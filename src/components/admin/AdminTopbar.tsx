@@ -11,6 +11,7 @@ import { AdminMobileDrawer } from './AdminMobileDrawer'
 
 const PAGE_TITLES: Record<string, string> = {
   '/admin': 'Dashboard',
+  '/admin/notifications': 'Notifications',
   '/admin/blog': 'Blog & Devotionals',
   '/admin/study': 'Study Portal',
   '/admin/events': 'Events',

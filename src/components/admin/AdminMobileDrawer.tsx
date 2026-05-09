@@ -8,6 +8,7 @@ import { X, LogOut, Moon, Sun } from 'lucide-react'
 import { useSession, signOut } from 'next-auth/react'
 import { useAdminTheme } from '@/hooks/useAdminTheme'
 import { NAV_GROUPS, navItemVisible } from './AdminSidebar'
+import { badgeCountForNav, useAdminNotificationBadges } from '@/hooks/useAdminNotificationBadges'
 
 interface AdminMobileDrawerProps {
   isOpen: boolean
@@ -19,6 +20,7 @@ export function AdminMobileDrawer({ isOpen, onClose }: AdminMobileDrawerProps) {
   const { theme, toggleTheme } = useAdminTheme()
   const { data: session } = useSession()
   const userRole = session?.user?.role ?? 'ADMIN'
+  const { unreadByType, total } = useAdminNotificationBadges()
 
   useEffect(() => {
     onClose()
@@ -102,6 +104,7 @@ export function AdminMobileDrawer({ isOpen, onClose }: AdminMobileDrawerProps) {
                     {section.items.map((item) => {
                       const active = isActive(item.href, item.exact)
                       const Icon = item.icon
+                      const badge = badgeCountForNav(item.badgeKey, unreadByType, total)
                       return (
                         <Link
                           key={item.href}
@@ -114,7 +117,15 @@ export function AdminMobileDrawer({ isOpen, onClose }: AdminMobileDrawerProps) {
                           }}
                         >
                           <Icon size={15} />
-                          {item.label}
+                          <span className="flex-1">{item.label}</span>
+                          {badge > 0 && (
+                            <span
+                              className="min-w-[1.25rem] rounded-full px-1.5 py-0.5 text-center font-body text-[10px] font-bold"
+                              style={{ background: 'var(--a-red)', color: '#fff' }}
+                            >
+                              {badge > 99 ? '99+' : badge}
+                            </span>
+                          )}
                         </Link>
                       )
                     })}

@@ -6,6 +6,7 @@ import { limitAdminLoginByIp } from '@/lib/rate-limit-login'
 const LOGIN_RATE_LIMIT_TIMEOUT_MS = 1500
 
 const ROUTE_PERMISSIONS: Record<string, string> = {
+  '/admin/notifications': 'notifications',
   '/admin/cms': 'cms',
   '/admin/integrations': 'integrations',
   '/admin/automation': 'automation',
