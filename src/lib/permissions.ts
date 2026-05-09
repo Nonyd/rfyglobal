@@ -52,6 +52,7 @@ const ROLE_PERMISSIONS: Record<string, Permission[]> = {
     'forms',
     'members',
     'activity',
+    'partnership',
     'prayer',
     'testimony',
     'messages',
@@ -62,10 +63,12 @@ const ROLE_PERMISSIONS: Record<string, Permission[]> = {
 }
 
 export function hasPermission(role: string, permission: Permission): boolean {
+  if (role === 'SUPER_ADMIN') return true
   return ROLE_PERMISSIONS[role]?.includes(permission) ?? false
 }
 
 export function canAccess(role: string, module: string): boolean {
+  if (role === 'SUPER_ADMIN') return true
   if (module === 'dashboard' || module === '') return true
   const moduleMap: Record<string, Permission> = {
     scripture: 'scripture',

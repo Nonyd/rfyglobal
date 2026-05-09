@@ -430,6 +430,18 @@ model Message {
   isRead    Boolean       @default(false)
 }
 
+// ── ADMIN NOTIFICATIONS (dashboard bell / SSE) ─────────────────
+
+model AdminNotification {
+  id        String   @id @default(cuid())
+  type      String
+  title     String
+  body      String?
+  link      String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
 model FaqCategory {
   id        String   @id @default(cuid())
   title     String

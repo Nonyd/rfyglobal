@@ -3,6 +3,7 @@ import { sendEmail } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
 import { db } from '@/lib/db'
 import { strictRatelimit } from '@/lib/ratelimit'
+import { createNotification } from '@/lib/notify'
 import { z } from 'zod'
 
 export const runtime = 'nodejs'
@@ -52,6 +53,8 @@ export async function POST(req: NextRequest) {
       },
     },
   })
+
+  await createNotification('contact', `From ${name}: ${subject}`)
 
   const safeName = escapeHtml(name)
   await sendEmail({

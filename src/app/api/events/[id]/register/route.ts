@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { strictRatelimit } from '@/lib/ratelimit'
 import { sendEventRegistrationEmail } from '@/lib/emails/event-registration'
 import type { EventFormField } from '@prisma/client'
+import { createNotification } from '@/lib/notify'
 import { z } from 'zod'
 
 export const runtime = 'nodejs'
@@ -129,6 +130,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   } catch (err) {
     console.error('[EventReg] Failed to send confirmation email:', err)
   }
+
+  await createNotification('event_registration', `New registration for ${event.title}`)
 
   return NextResponse.json({ success: true, registrationId: registration.id }, { status: 201 })
 }

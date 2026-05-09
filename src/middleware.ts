@@ -9,6 +9,7 @@ const ROUTE_PERMISSIONS: Record<string, string> = {
   '/admin/cms': 'cms',
   '/admin/integrations': 'integrations',
   '/admin/automation': 'automation',
+  '/admin/partnership': 'partnership',
   '/admin/partner': 'partnership',
   '/admin/demo': 'demo',
   '/admin/users': 'users',

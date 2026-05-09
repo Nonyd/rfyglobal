@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { strictRatelimit } from '@/lib/ratelimit'
 import { findCommunityMemberByEmail } from '@/lib/community-member'
 import { Prisma } from '@prisma/client'
+import { createNotification } from '@/lib/notify'
 import { z } from 'zod'
 
 export const runtime = 'nodejs'
@@ -68,6 +69,8 @@ export async function POST(req: NextRequest) {
       videoUrl: videoUrl ?? null,
     },
   })
+
+  await createNotification('testimony', `"${title}" submitted`)
 
   return NextResponse.json({ success: true, id: testimony.id }, { status: 201 })
 }

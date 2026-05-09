@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { strictRatelimit } from '@/lib/ratelimit'
 import { findCommunityMemberByEmail } from '@/lib/community-member'
+import { createNotification } from '@/lib/notify'
 import { z } from 'zod'
 
 export const runtime = 'nodejs'
@@ -51,6 +52,8 @@ export async function POST(req: NextRequest) {
       body: prayerBody,
     },
   })
+
+  await createNotification('prayer', `Subject: ${subject}`)
 
   return NextResponse.json({ success: true, id: request.id }, { status: 201 })
 }

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getFlutterwaveCredentials } from '@/lib/credentials'
 import { notifyPartnerGivingConfirmationIfNeeded } from '@/lib/emails/partner-confirmation'
+import { notifyPartnerGiftOnce } from '@/lib/notify'
 
 export const runtime = 'nodejs'
 
@@ -30,6 +31,8 @@ export async function POST(req: NextRequest) {
     if (!tx_ref || amount == null) {
       return NextResponse.json({ received: true })
     }
+    const existing = await db.givingRecord.findUnique({ where: { reference: tx_ref } })
+    const previousStatus = existing?.status
     await db.givingRecord.upsert({
       where: { reference: tx_ref },
       update: { status: 'SUCCESS' },
@@ -45,6 +48,7 @@ export async function POST(req: NextRequest) {
       },
     })
     await notifyPartnerGivingConfirmationIfNeeded(tx_ref)
+    await notifyPartnerGiftOnce(tx_ref, previousStatus)
   }
 
   return NextResponse.json({ received: true })

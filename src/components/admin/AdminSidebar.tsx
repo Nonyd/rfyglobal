@@ -101,10 +101,11 @@ export function AdminSidebar({ theme, userRole }: AdminSidebarProps) {
         const res = await fetch('/api/admin/notifications')
         if (res.ok) {
           const d = await res.json()
+          const u = (d.unreadByType ?? {}) as Record<string, number>
           setBadges({
-            prayers: d.prayers ?? 0,
-            testimonies: d.testimonies ?? 0,
-            messages: d.messages ?? 0,
+            prayers: u.prayer ?? 0,
+            testimonies: u.testimony ?? 0,
+            messages: (u.message ?? 0) + (u.contact ?? 0),
           })
         }
       } catch {
@@ -112,8 +113,16 @@ export function AdminSidebar({ theme, userRole }: AdminSidebarProps) {
       }
     }
     load()
-    const t = setInterval(load, 30000)
-    return () => clearInterval(t)
+    const es = new EventSource('/api/admin/notifications/stream')
+    es.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data)
+        if (data.type === 'notification') void load()
+      } catch {
+        /* ignore */
+      }
+    }
+    return () => es.close()
   }, [])
 
   const visibleGroups = NAV_GROUPS.map((group) => ({

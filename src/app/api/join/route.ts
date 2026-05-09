@@ -3,6 +3,7 @@ import { EmailType, Prisma } from '@prisma/client'
 import { db } from '@/lib/db'
 import { strictRatelimit } from '@/lib/ratelimit'
 import { sendConfirmationEmail } from '@/lib/emails/confirmation'
+import { createNotification } from '@/lib/notify'
 import { z } from 'zod'
 
 export const runtime = 'nodejs'
@@ -58,6 +59,8 @@ export async function POST(req: NextRequest) {
         extraFields !== undefined ? (JSON.parse(JSON.stringify(extraFields)) as Prisma.InputJsonValue) : undefined,
     },
   })
+
+  await createNotification('member', `${name} joined from ${country}`)
 
   const settings = await db.automationSettings.findFirst()
   const whatsappUrl = settings?.whatsappChannelUrl || ''

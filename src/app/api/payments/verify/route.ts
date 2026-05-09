@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getFlutterwaveCredentials, getPaystackCredentials } from '@/lib/credentials'
 import { notifyPartnerGivingConfirmationIfNeeded } from '@/lib/emails/partner-confirmation'
+import { notifyPartnerGiftOnce } from '@/lib/notify'
 
 export const runtime = 'nodejs'
 
@@ -21,6 +22,8 @@ export async function GET(req: NextRequest) {
   if (record.status === 'SUCCESS') {
     return NextResponse.json({ status: 'success', reference })
   }
+
+  const previousStatus = record.status
 
   try {
     let verified = false
@@ -42,6 +45,7 @@ export async function GET(req: NextRequest) {
           },
         })
         await notifyPartnerGivingConfirmationIfNeeded(reference)
+        await notifyPartnerGiftOnce(reference, previousStatus)
       }
     } else if (gateway === 'FLUTTERWAVE') {
       if (!transactionId) {
@@ -68,6 +72,7 @@ export async function GET(req: NextRequest) {
             },
           })
           await notifyPartnerGivingConfirmationIfNeeded(reference)
+          await notifyPartnerGiftOnce(reference, previousStatus)
         }
       }
     } else if (gateway === 'PAYAZA') {

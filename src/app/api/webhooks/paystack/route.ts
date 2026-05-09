@@ -4,6 +4,7 @@ import { createHmac } from 'crypto'
 import { db } from '@/lib/db'
 import { getPaystackCredentials } from '@/lib/credentials'
 import { notifyPartnerGivingConfirmationIfNeeded } from '@/lib/emails/partner-confirmation'
+import { notifyPartnerGiftOnce } from '@/lib/notify'
 
 export const runtime = 'nodejs'
 
@@ -36,6 +37,8 @@ export async function POST(req: NextRequest) {
     if (!reference || amount == null) {
       return NextResponse.json({ received: true })
     }
+    const existing = await db.givingRecord.findUnique({ where: { reference } })
+    const previousStatus = existing?.status
     await db.givingRecord.upsert({
       where: { reference },
       update: { status: 'SUCCESS' },
@@ -51,6 +54,7 @@ export async function POST(req: NextRequest) {
       },
     })
     await notifyPartnerGivingConfirmationIfNeeded(reference)
+    await notifyPartnerGiftOnce(reference, previousStatus)
   }
 
   if (event.event === 'subscription.create') {
