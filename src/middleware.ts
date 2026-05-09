@@ -23,6 +23,7 @@ const ROUTE_PERMISSIONS: Record<string, string> = {
   '/admin/study': 'study',
   '/admin/activity': 'activity',
   '/admin/faq': 'faq',
+  '/admin/email-templates': 'email-templates',
 }
 
 const SORTED_ADMIN_ROUTES = Object.entries(ROUTE_PERMISSIONS).sort(

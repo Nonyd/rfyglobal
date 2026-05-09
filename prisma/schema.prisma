@@ -442,6 +442,17 @@ model AdminNotification {
   createdAt DateTime @default(now())
 }
 
+model EmailTemplate {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  name      String
+  subject   String
+  design    Json
+  html      String   @db.Text
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+}
+
 model FaqCategory {
   id        String   @id @default(cuid())
   title     String

@@ -1,4 +1,4 @@
-import { sendEmail } from '@/lib/brevo'
+import { sendEmail, getTemplateHtml, getTemplateSubject } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
 import { db } from '@/lib/db'
 import { format } from 'date-fns'
@@ -41,16 +41,24 @@ export async function sendEventReminderEmails(type: 'WEEK' | 'DAY') {
       select: { id: true, name: true, email: true },
     })
 
-    const subject =
-      type === 'WEEK'
-        ? `Room For You is coming to ${event.city} in 1 week 🙌`
-        : `Room For You is tomorrow in ${event.city}! 🙌`
-
     const emailType = type === 'WEEK' ? 'EVENT_REMINDER_WEEK' : 'EVENT_REMINDER_DAY'
 
     for (const member of members) {
+      const subjectVars = {
+        event_title: event.title,
+        event_city: event.city,
+      }
+      const defaultSubject =
+        type === 'WEEK'
+          ? `Room For You is coming to ${event.city} in 1 week 🙌`
+          : `Room For You is tomorrow in ${event.city}! 🙌`
+      const subject = (await getTemplateSubject('event_reminder', subjectVars)) ?? defaultSubject
+
       try {
-        const html = buildEventReminderEmail({ member, event, type })
+        const htmlVars = buildReminderTemplateVars(member, event, type)
+        const savedHtml = await getTemplateHtml('event_reminder', htmlVars)
+        const html = savedHtml ?? buildEventReminderEmail({ member, event, type })
+
         await sendEmail({
           to: member.email,
           subject,
@@ -84,6 +92,42 @@ export async function sendEventReminderEmails(type: 'WEEK' | 'DAY') {
   }
 
   return { sent, events: events.length }
+}
+
+function escapeHtml(text: string) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
+
+function buildReminderTemplateVars(
+  member: { name: string; email: string },
+  event: {
+    title: string
+    city: string
+    venue: string
+    date: Date
+    time?: string | null
+    description?: string | null
+  },
+  type: 'WEEK' | 'DAY',
+) {
+  const dateStr = format(new Date(event.date), 'EEEE, MMMM do yyyy')
+  const urgency = type === 'DAY' ? 'TOMORROW' : 'NEXT WEEK'
+  const unsub = `https://rfyglobal.org/unsubscribe?email=${encodeURIComponent(member.email)}`
+  return {
+    first_name: escapeHtml(member.name.split(' ')[0]),
+    event_title: escapeHtml(event.title),
+    event_city: escapeHtml(event.city),
+    event_venue: escapeHtml(event.venue),
+    date_str: escapeHtml(dateStr),
+    event_time: event.time ? escapeHtml(event.time) : '',
+    reminder_badge: urgency,
+    event_description: event.description ? escapeHtml(event.description) : '',
+    unsubscribe_url: unsub,
+  }
 }
 
 function buildEventReminderEmail({

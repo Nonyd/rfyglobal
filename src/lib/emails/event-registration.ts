@@ -1,4 +1,4 @@
-import { sendEmail } from '@/lib/brevo'
+import { sendEmail, getTemplateHtml, getTemplateSubject } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
 import { format } from 'date-fns'
 import type { Event } from '@prisma/client'
@@ -15,7 +15,51 @@ export async function sendEventRegistrationEmail({
   const dateStr = format(new Date(event.date), 'EEEE, MMMM do yyyy')
   const firstName = name.split(' ')[0]
 
-  const html = `
+  const subjectVars = {
+    event_title: event.title,
+    first_name: firstName,
+  }
+  const subject =
+    (await getTemplateSubject('event_registration', subjectVars)) ??
+    `You're registered for ${event.title}`
+
+  const htmlVars = {
+    event_title: event.title,
+    first_name: firstName,
+    date_str: dateStr,
+    event_time: event.time ?? '',
+    event_venue: event.venue,
+    event_city: event.city,
+  }
+
+  const savedHtml = await getTemplateHtml('event_registration', htmlVars)
+  const html =
+    savedHtml ??
+    buildDefaultEventRegistrationHtml({
+      firstName,
+      dateStr,
+      event,
+    })
+
+  await sendEmail({
+    to: email,
+    subject,
+    html,
+    fromName: EMAIL_SENDERS.events.name,
+    fromEmail: EMAIL_SENDERS.events.email,
+  })
+}
+
+function buildDefaultEventRegistrationHtml({
+  firstName,
+  dateStr,
+  event,
+}: {
+  firstName: string
+  dateStr: string
+  event: Event
+}) {
+  return `
     <!DOCTYPE html>
     <html>
     <body style="margin:0;padding:0;background:#0F0F0F;font-family:'General Sans',Arial,sans-serif;">
@@ -106,12 +150,4 @@ export async function sendEventRegistrationEmail({
     </body>
     </html>
   `
-
-  await sendEmail({
-    to: email,
-    subject: `You're registered for ${event.title}`,
-    html,
-    fromName: EMAIL_SENDERS.events.name,
-    fromEmail: EMAIL_SENDERS.events.email,
-  })
 }

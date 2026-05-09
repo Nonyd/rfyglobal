@@ -1,4 +1,4 @@
-import { sendEmail } from '@/lib/brevo'
+import { sendEmail, getTemplateHtml, getTemplateSubject } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
 import type { CommunityMember } from '@prisma/client'
 
@@ -7,8 +7,13 @@ interface ConfirmationEmailParams {
   whatsappUrl: string
 }
 
-export async function sendConfirmationEmail({ member, whatsappUrl }: ConfirmationEmailParams) {
-  const html = `
+function escapeHtmlAttr(s: string) {
+  return s.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+}
+
+export function buildDefaultWelcomeHtml(member: CommunityMember, whatsappUrl: string) {
+  const firstName = member.name.split(' ')[0]
+  return `
     <!DOCTYPE html>
     <html>
     <head>
@@ -23,7 +28,7 @@ export async function sendConfirmationEmail({ member, whatsappUrl }: Confirmatio
             Room For You
           </p>
           <h1 style="color:#F8F8F8;font-size:36px;font-weight:700;margin:0 0 8px;line-height:1.1;">
-            Welcome, ${member.name.split(' ')[0]}.
+            Welcome, ${firstName}.
           </h1>
           <p style="color:#C9A84C;font-size:14px;font-style:italic;margin:0 0 40px;">
             There is room for you here.
@@ -75,7 +80,7 @@ export async function sendConfirmationEmail({ member, whatsappUrl }: Confirmatio
             whatsappUrl
               ? `
           <div style="text-align:center;margin:32px 0;">
-            <a href="${whatsappUrl}"
+            <a href="${escapeHtmlAttr(whatsappUrl)}"
               style="display:inline-block;background:#C9A84C;color:#0F0F0F;padding:14px 32px;font-size:13px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;">
               Join the WhatsApp Community →
             </a>
@@ -110,10 +115,28 @@ export async function sendConfirmationEmail({ member, whatsappUrl }: Confirmatio
     </body>
     </html>
   `
+}
+
+export async function sendConfirmationEmail({ member, whatsappUrl }: ConfirmationEmailParams) {
+  const firstName = member.name.split(' ')[0]
+  const whatsappBlock =
+    whatsappUrl.trim().length > 0
+      ? `<div style="text-align:center;margin:32px 0;"><a href="${escapeHtmlAttr(whatsappUrl)}"
+              style="display:inline-block;background:#C9A84C;color:#0F0F0F;padding:14px 32px;font-size:13px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;">
+              Join the WhatsApp Community →
+            </a></div>`
+      : ''
+
+  const vars = { first_name: firstName, whatsapp_block: whatsappBlock }
+  const savedHtml = await getTemplateHtml('welcome', vars)
+  const html = savedHtml ?? buildDefaultWelcomeHtml(member, whatsappUrl)
+
+  const subject =
+    (await getTemplateSubject('welcome', vars)) ?? 'Welcome to Room For You 🏠'
 
   await sendEmail({
     to: member.email,
-    subject: 'Welcome to Room For You 🏠',
+    subject,
     html,
     fromName: EMAIL_SENDERS.hello.name,
     fromEmail: EMAIL_SENDERS.hello.email,

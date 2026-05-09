@@ -27,6 +27,7 @@ import {
   MessageSquare,
   HelpCircle,
   Bell,
+  Mail,
 } from 'lucide-react'
 import { canAccess } from '@/lib/permissions'
 import { badgeCountForNav, useAdminNotificationBadges, type NavBadgeKey } from '@/hooks/useAdminNotificationBadges'
@@ -76,6 +77,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: 'Site CMS', href: '/admin/cms', icon: Settings2 },
       { label: 'Automation', href: '/admin/automation', icon: Zap },
+      { label: 'Email Templates', href: '/admin/email-templates', icon: Mail },
       { label: 'Integrations', href: '/admin/integrations', icon: Plug },
       { label: 'Partnership', href: '/admin/partner', icon: Handshake, badgeKey: 'partner' },
       { label: 'Demo Data', href: '/admin/demo', icon: Database },

@@ -1,7 +1,15 @@
-import { sendEmail } from '@/lib/brevo'
+import { sendEmail, getTemplateHtml, getTemplateSubject } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
 import { db } from '@/lib/db'
 import type { Scripture } from '@prisma/client'
+
+function escapeHtml(text: string) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
 
 export async function sendDailyDevotionalEmails() {
   const today = new Date()
@@ -39,7 +47,7 @@ export async function sendDailyDevotionalEmails() {
     return { sent: 0 }
   }
 
-  const subject = `Today's Word — ${scripture.reference}`
+  const defaultSubject = `Today's Word — ${scripture.reference}`
   const dateStr = today.toLocaleDateString('en-NG', { weekday: 'long', day: 'numeric', month: 'long' })
 
   let sent = 0
@@ -51,8 +59,26 @@ export async function sendDailyDevotionalEmails() {
 
     await Promise.all(
       batch.map(async (member) => {
+        const subjectVars = {
+          reference: scripture!.reference,
+          first_name: member.name.split(' ')[0],
+        }
+        const subject =
+          (await getTemplateSubject('devotional', subjectVars)) ?? defaultSubject
+
         try {
-          const html = buildDevotionalEmail({ member, scripture: scripture!, dateStr })
+          const unsub = `https://rfyglobal.org/unsubscribe?email=${encodeURIComponent(member.email)}`
+          const htmlVars = {
+            reference: scripture!.reference,
+            scripture_text: escapeHtml(scripture!.text),
+            translation: escapeHtml(scripture!.translation),
+            date_str: escapeHtml(dateStr),
+            first_name: escapeHtml(member.name.split(' ')[0]),
+            unsubscribe_url: unsub,
+          }
+          const savedHtml = await getTemplateHtml('devotional', htmlVars)
+          const html = savedHtml ?? buildDevotionalEmail({ member, scripture: scripture!, dateStr })
+
           await sendEmail({
             to: member.email,
             subject,

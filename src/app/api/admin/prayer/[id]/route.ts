@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { sendEmail } from '@/lib/brevo'
+import { sendEmail, getTemplateHtml, getTemplateSubject } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
 import { PrayerRequestStatus } from '@prisma/client'
 
@@ -47,12 +47,13 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if (sendReply && replyMessage && request.email) {
     const displayName = request.isAnonymous ? 'Friend' : (request.name || 'Friend')
     const safeBody = escapeHtml(replyMessage).replace(/\n/g, '<br>')
-    await sendEmail({
-      to: request.email,
-      subject: `Re: Your Prayer Request — ${request.subject}`,
-      fromName: EMAIL_SENDERS.prayer.name,
-      fromEmail: EMAIL_SENDERS.prayer.email,
-      html: `
+    const safeSubject = escapeHtml(request.subject)
+    const vars = {
+      first_name: escapeHtml(displayName),
+      subject: safeSubject,
+      reply_body: safeBody,
+    }
+    const defaultHtml = `
         <div style="background:#0F0F0F;max-width:600px;margin:0 auto;padding:40px;font-family:Arial,sans-serif;">
           <p style="color:#C9A84C;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;margin:0 0 8px;">
             Room For You · Prayer Team
@@ -69,7 +70,18 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
             Room For You · rfyglobal.org · Jesus to Nations
           </p>
         </div>
-      `,
+      `
+    const html = (await getTemplateHtml('prayer_reply', vars)) ?? defaultHtml
+    const subject =
+      (await getTemplateSubject('prayer_reply', vars)) ??
+      `Re: Your Prayer Request — ${request.subject}`
+
+    await sendEmail({
+      to: request.email,
+      subject,
+      fromName: EMAIL_SENDERS.prayer.name,
+      fromEmail: EMAIL_SENDERS.prayer.email,
+      html,
     })
     await db.prayerRequest.update({
       where: { id: params.id },

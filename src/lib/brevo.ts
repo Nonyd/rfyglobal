@@ -1,6 +1,46 @@
 import { BrevoClient } from '@getbrevo/brevo'
 import { getBrevoCredentials } from '@/lib/credentials'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
+import { db } from '@/lib/db'
+
+function escapeRegExp(s: string) {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+export function applyEmailTemplateVariables(text: string, variables: Record<string, string>): string {
+  let result = text
+  for (const [k, v] of Object.entries(variables)) {
+    result = result.replace(new RegExp(`{{\\s*${escapeRegExp(k)}\\s*}}`, 'g'), v)
+  }
+  return result
+}
+
+export async function getTemplateHtml(
+  key: string,
+  variables: Record<string, string> = {},
+): Promise<string | null> {
+  try {
+    const template = await db.emailTemplate.findUnique({ where: { key } })
+    if (!template?.html) return null
+
+    return applyEmailTemplateVariables(template.html, variables)
+  } catch {
+    return null
+  }
+}
+
+export async function getTemplateSubject(
+  key: string,
+  variables: Record<string, string> = {},
+): Promise<string | null> {
+  try {
+    const template = await db.emailTemplate.findUnique({ where: { key } })
+    if (!template?.subject) return null
+    return applyEmailTemplateVariables(template.subject, variables)
+  } catch {
+    return null
+  }
+}
 
 let client: BrevoClient | null = null
 

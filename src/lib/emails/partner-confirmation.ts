@@ -1,5 +1,5 @@
 import type { Prisma } from '@prisma/client'
-import { sendEmail } from '@/lib/brevo'
+import { sendEmail, getTemplateHtml, getTemplateSubject } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
 import { db } from '@/lib/db'
 
@@ -22,7 +22,15 @@ export async function notifyPartnerGivingConfirmationIfNeeded(reference: string)
   const amountStr = record.amount.toLocaleString('en-NG', { minimumFractionDigits: 0 })
   const safeName = escapeHtml(firstName)
 
-  const html = `
+  const vars = {
+    first_name: safeName,
+    amount_display: `${escapeHtml(record.currency)} ${escapeHtml(amountStr)}`,
+  }
+
+  const savedHtml = await getTemplateHtml('partner_confirmation', vars)
+  const html =
+    savedHtml ??
+    `
     <!DOCTYPE html>
     <html>
     <body style="margin:0;padding:0;background:#0F0F0F;font-family:'General Sans',Arial,sans-serif;">
@@ -46,9 +54,13 @@ export async function notifyPartnerGivingConfirmationIfNeeded(reference: string)
     </html>
   `
 
+  const subject =
+    (await getTemplateSubject('partner_confirmation', vars)) ??
+    'Thank you for partnering with Room For You'
+
   await sendEmail({
     to: record.donorEmail,
-    subject: 'Thank you for partnering with Room For You',
+    subject,
     html,
     fromName: EMAIL_SENDERS.partner.name,
     fromEmail: EMAIL_SENDERS.partner.email,

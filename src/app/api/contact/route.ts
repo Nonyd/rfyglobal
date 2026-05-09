@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sendEmail } from '@/lib/brevo'
+import { sendEmail, getTemplateHtml, getTemplateSubject } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
 import { db } from '@/lib/db'
 import { strictRatelimit } from '@/lib/ratelimit'
@@ -57,10 +57,8 @@ export async function POST(req: NextRequest) {
   await createNotification('contact', `From ${name}: ${subject}`)
 
   const safeName = escapeHtml(name)
-  await sendEmail({
-    to: email,
-    subject: 'We received your message — Room For You',
-    html: `
+  const vars = { first_name: safeName }
+  const defaultHtml = `
       <div style="background:#0F0F0F;max-width:600px;margin:0 auto;padding:40px;font-family:Arial,sans-serif;">
         <p style="color:#C9A84C;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;margin:0 0 8px;">
           Room For You
@@ -75,7 +73,15 @@ export async function POST(req: NextRequest) {
           Room For You · rfyglobal.org
         </p>
       </div>
-    `,
+    `
+  const html = (await getTemplateHtml('contact_reply', vars)) ?? defaultHtml
+  const emailSubject =
+    (await getTemplateSubject('contact_reply', vars)) ?? 'We received your message — Room For You'
+
+  await sendEmail({
+    to: email,
+    subject: emailSubject,
+    html,
     fromName: EMAIL_SENDERS.hello.name,
     fromEmail: EMAIL_SENDERS.hello.email,
     replyTo: EMAIL_SENDERS.hello.email,

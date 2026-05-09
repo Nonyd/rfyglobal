@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { sendEmail } from '@/lib/brevo'
+import { sendEmail, getTemplateHtml, getTemplateSubject } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
 import { db } from '@/lib/db'
 
@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
     data: { isSubscribed: false },
   })
 
-  const unsubHtml = `
+  const defaultHtml = `
     <!DOCTYPE html>
     <html>
     <body style="margin:0;padding:0;background:#0F0F0F;font-family:Arial,sans-serif;">
@@ -37,10 +37,13 @@ export async function GET(req: NextRequest) {
     </html>
   `
 
+  const html = (await getTemplateHtml('unsubscribe', {})) ?? defaultHtml
+  const subject = (await getTemplateSubject('unsubscribe', {})) ?? 'You have been unsubscribed'
+
   await sendEmail({
     to: email,
-    subject: 'You have been unsubscribed',
-    html: unsubHtml,
+    subject,
+    html,
     fromName: EMAIL_SENDERS.hello.name,
     fromEmail: EMAIL_SENDERS.hello.email,
   })
