@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { useAdminNotificationStream } from '@/components/admin/AdminNotificationStreamProvider'
 
 export type NavBadgeKey =
   | 'prayers'
@@ -38,6 +39,7 @@ export function badgeCountForNav(
 }
 
 export function useAdminNotificationBadges() {
+  const { subscribe } = useAdminNotificationStream()
   const [unreadByType, setUnreadByType] = useState<Record<string, number>>({})
   const [total, setTotal] = useState(0)
 
@@ -56,17 +58,13 @@ export function useAdminNotificationBadges() {
 
   useEffect(() => {
     void load()
-    const es = new EventSource('/api/admin/notifications/stream')
-    es.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data)
-        if (data.type === 'notification') void load()
-      } catch {
-        /* ignore */
-      }
-    }
-    return () => es.close()
   }, [load])
+
+  useEffect(() => {
+    return subscribe(() => {
+      void load()
+    }, { includePolling: true })
+  }, [subscribe, load])
 
   return { unreadByType, total, refresh: load }
 }

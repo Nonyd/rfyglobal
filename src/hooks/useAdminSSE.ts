@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+import { useAdminNotificationStreamOptional } from '@/components/admin/AdminNotificationStreamProvider'
 
 export type SSEEventType =
   | 'new_prayer'
@@ -22,6 +23,7 @@ interface UseAdminSSEOptions {
 }
 
 export function useAdminSSE({ events, onEvent, enabled = true }: UseAdminSSEOptions) {
+  const stream = useAdminNotificationStreamOptional()
   const eventSourceRef = useRef<EventSource | null>(null)
   const onEventRef = useRef(onEvent)
   const eventsRef = useRef(events)
@@ -38,20 +40,31 @@ export function useAdminSSE({ events, onEvent, enabled = true }: UseAdminSSEOpti
   useEffect(() => {
     if (!enabled) return
 
+    const matches = (eventName: string) =>
+      eventsRef.current.includes(eventName as SSEEventType)
+
+    if (stream) {
+      return stream.subscribe(({ event, source }) => {
+        if (source === 'poll') return
+        const evt = event || 'notification'
+        if (matches(evt)) {
+          onEventRef.current()
+        }
+      })
+    }
+
     let retryTimeout: ReturnType<typeof setTimeout>
 
     const connect = () => {
       const es = new EventSource('/api/admin/notifications/stream')
       eventSourceRef.current = es
 
-      es.onmessage = (event) => {
+      es.onmessage = (ev) => {
         try {
-          const data = JSON.parse(event.data) as { type?: string; event?: string }
-          if (
-            data.type === 'notification' &&
-            data.event &&
-            eventsRef.current.includes(data.event as SSEEventType)
-          ) {
+          const data = JSON.parse(ev.data) as { type?: string; event?: string }
+          if (data.type !== 'notification') return
+          const evt = typeof data.event === 'string' ? data.event : 'notification'
+          if (matches(evt)) {
             onEventRef.current()
           }
         } catch {
@@ -71,5 +84,5 @@ export function useAdminSSE({ events, onEvent, enabled = true }: UseAdminSSEOpti
       eventSourceRef.current?.close()
       clearTimeout(retryTimeout)
     }
-  }, [enabled, key])
+  }, [enabled, key, stream])
 }

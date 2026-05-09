@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { formatDistanceToNow } from 'date-fns'
 import { useSession } from 'next-auth/react'
 import { AdminMobileDrawer } from './AdminMobileDrawer'
+import { useAdminNotificationStream } from './AdminNotificationStreamProvider'
 
 const PAGE_TITLES: Record<string, string> = {
   '/admin': 'Dashboard',
@@ -75,6 +76,7 @@ interface AdminTopbarProps {
 }
 
 export function AdminTopbar({ toggleTheme, theme }: AdminTopbarProps) {
+  const { subscribe } = useAdminNotificationStream()
   const pathname = usePathname()
   const { data: session } = useSession()
   const title =
@@ -112,24 +114,13 @@ export function AdminTopbar({ toggleTheme, theme }: AdminTopbarProps) {
 
   useEffect(() => {
     fetchNotifications()
-
-    const es = new EventSource('/api/admin/notifications/stream')
-
-    es.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data)
-        if (data.type === 'notification') {
-          fetchNotifications()
-        }
-      } catch {
-        /* ignore */
-      }
-    }
-
-    return () => {
-      es.close()
-    }
   }, [fetchNotifications])
+
+  useEffect(() => {
+    return subscribe(() => {
+      void fetchNotifications()
+    }, { includePolling: true })
+  }, [subscribe, fetchNotifications])
 
   const markAllRead = async () => {
     const res = await fetch('/api/admin/notifications', {

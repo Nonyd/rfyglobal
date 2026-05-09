@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { formatDistanceToNow } from 'date-fns'
 import { ArrowRight, Bell, CheckCheck, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { useAdminNotificationStream } from '@/components/admin/AdminNotificationStreamProvider'
 
 interface NotificationRow {
   id: string
@@ -47,6 +48,7 @@ const TYPE_ORDER = [
 ] as const
 
 export function AdminNotificationsPage() {
+  const { subscribe } = useAdminNotificationStream()
   const router = useRouter()
   const [notifications, setNotifications] = useState<NotificationRow[]>([])
   const [totalUnread, setTotalUnread] = useState(0)
@@ -66,17 +68,13 @@ export function AdminNotificationsPage() {
 
   useEffect(() => {
     void load()
-    const es = new EventSource('/api/admin/notifications/stream')
-    es.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data)
-        if (data.type === 'notification') void load()
-      } catch {
-        /* ignore */
-      }
-    }
-    return () => es.close()
   }, [load])
+
+  useEffect(() => {
+    return subscribe(() => {
+      void load()
+    }, { includePolling: true })
+  }, [subscribe, load])
 
   const markAllRead = async () => {
     const res = await fetch('/api/admin/notifications', {
