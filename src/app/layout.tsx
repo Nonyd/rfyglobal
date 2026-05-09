@@ -4,8 +4,6 @@ import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { CookieBanner } from '@/components/shared/CookieBanner'
 import './globals.css'
 
-const googleVerification = process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
-
 export const metadata: Metadata = {
   metadataBase: new URL('https://rfyglobal.org'),
   title: {
@@ -80,8 +78,10 @@ export const metadata: Metadata = {
   alternates: {
     canonical: 'https://rfyglobal.org',
   },
+  verification: {
+    google: 'GCZiAX-mKgEQGfKwNaSv1AkiZ66lA4KZR6FPOr9RjA4',
+  },
   category: 'religion',
-  ...(googleVerification ? { verification: { google: googleVerification } } : {}),
 }
 
 const organizationSchema = {
