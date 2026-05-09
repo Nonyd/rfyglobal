@@ -8,6 +8,8 @@ import { Trash2 } from 'lucide-react'
 import { useBulkSelect } from '@/hooks/useBulkSelect'
 import { BulkActionBar } from '@/components/admin/shared/BulkActionBar'
 import { SelectCheckbox } from '@/components/admin/shared/SelectCheckbox'
+import { useAdminSSE } from '@/hooks/useAdminSSE'
+import { LiveIndicator } from '@/components/admin/shared/LiveIndicator'
 
 type MessageRow = {
   id: string
@@ -79,23 +81,46 @@ export function MessagingManager() {
   const [allMembers, setAllMembers] = useState<CommunityMemberRow[]>([])
   const bulk = useBulkSelect(threads)
 
-  const loadThreads = useCallback(async () => {
-    setLoadingList(true)
+  const loadThreads = useCallback(async (opts?: { silent?: boolean }): Promise<boolean> => {
+    const silent = opts?.silent ?? false
+    if (!silent) setLoadingList(true)
     try {
       const res = await fetch('/api/admin/messages')
       if (!res.ok) throw new Error('fail')
       const data = await res.json()
       setThreads(data as ThreadRow[])
+      return true
     } catch {
-      toast.error('Could not load threads')
+      if (!silent) toast.error('Could not load threads')
+      return false
     } finally {
-      setLoadingList(false)
+      if (!silent) setLoadingList(false)
     }
   }, [])
 
   useEffect(() => {
     loadThreads()
   }, [loadThreads])
+
+  const onMessageSSE = useCallback(() => {
+    void loadThreads({ silent: true }).then((ok) => {
+      if (!ok) return
+      toast('New message received', {
+        icon: '💬',
+        style: {
+          background: 'var(--a-surface)',
+          color: 'var(--a-text)',
+          border: '1px solid rgba(201,168,76,0.3)',
+        },
+        duration: 3000,
+      })
+    })
+  }, [loadThreads])
+
+  useAdminSSE({
+    events: ['new_message'],
+    onEvent: onMessageSSE,
+  })
 
   const openThread = async (id: string) => {
     setSelectedId(id)
@@ -296,7 +321,14 @@ export function MessagingManager() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-140px)] flex-col gap-4 lg:flex-row">
+    <div className="flex min-h-[calc(100vh-140px)] flex-col gap-4">
+      <div className="flex items-center gap-3">
+        <h1 className="font-display text-2xl font-semibold" style={{ color: 'var(--a-text)' }}>
+          Messages
+        </h1>
+        <LiveIndicator />
+      </div>
+      <div className="flex flex-1 flex-col gap-4 lg:flex-row">
       <div
         className="flex w-full flex-col border lg:w-[360px] lg:shrink-0"
         style={{ borderColor: 'var(--a-border)', background: 'var(--a-surface)' }}
@@ -622,6 +654,7 @@ export function MessagingManager() {
           { label: 'Delete', icon: <Trash2 size={12} />, onClick: () => void bulkDelete(), variant: 'danger' },
         ]}
       />
+      </div>
     </div>
   )
 }

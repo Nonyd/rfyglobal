@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Plus, Download, X, Trash2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { FieldType, type CommunityMember, type JoinFormField } from '@prisma/client'
@@ -10,6 +10,8 @@ import { AdminToggle } from '@/components/shared/Toggle'
 import { useBulkSelect } from '@/hooks/useBulkSelect'
 import { BulkActionBar } from '@/components/admin/shared/BulkActionBar'
 import { SelectCheckbox } from '@/components/admin/shared/SelectCheckbox'
+import { useAdminSSE } from '@/hooks/useAdminSSE'
+import { LiveIndicator } from '@/components/admin/shared/LiveIndicator'
 
 interface MembersManagerProps {
   initialMembers: CommunityMember[]
@@ -19,6 +21,7 @@ interface MembersManagerProps {
 
 export function MembersManager({ initialMembers, total, extraFields: initialFields }: MembersManagerProps) {
   const [members, setMembers] = useState(initialMembers)
+  const [memberTotal, setMemberTotal] = useState(total)
   const [extraFields, setExtraFields] = useState(initialFields)
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(false)
@@ -40,6 +43,48 @@ export function MembersManager({ initialMembers, total, extraFields: initialFiel
   })
   const [savingField, setSavingField] = useState(false)
   const bulk = useBulkSelect(members)
+
+  useEffect(() => {
+    setMemberTotal(total)
+  }, [total])
+
+  const reloadMembers = useCallback(async (): Promise<boolean> => {
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/join/members?page=1`)
+      if (!res.ok) throw new Error('fail')
+      const data = await res.json()
+      setMembers(data.members)
+      setMemberTotal(data.total)
+      setPage(1)
+      return true
+    } catch {
+      toast.error('Failed to refresh members')
+      return false
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  const onMemberSSE = useCallback(() => {
+    void reloadMembers().then((ok) => {
+      if (!ok) return
+      toast('New member joined', {
+        icon: '👤',
+        style: {
+          background: 'var(--a-surface)',
+          color: 'var(--a-text)',
+          border: '1px solid rgba(201,168,76,0.3)',
+        },
+        duration: 3000,
+      })
+    })
+  }, [reloadMembers])
+
+  useAdminSSE({
+    events: ['new_member'],
+    onEvent: onMemberSSE,
+  })
 
   const loadMore = async () => {
     setLoading(true)
@@ -131,11 +176,14 @@ export function MembersManager({ initialMembers, total, extraFields: initialFiel
     <div className="relative">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="font-display text-2xl font-semibold" style={{ color: 'var(--a-text)' }}>
-            Community Members
-          </h2>
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="font-display text-2xl font-semibold" style={{ color: 'var(--a-text)' }}>
+              Community Members
+            </h2>
+            <LiveIndicator />
+          </div>
           <p className="font-body text-sm mt-1" style={{ color: 'var(--a-text-muted)' }}>
-            {total.toLocaleString()} registered members
+            {memberTotal.toLocaleString()} registered members
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -261,7 +309,7 @@ export function MembersManager({ initialMembers, total, extraFields: initialFiel
           </table>
         </div>
 
-        {members.length < total && (
+        {members.length < memberTotal && (
           <div className="p-4 text-center border-t" style={{ borderColor: 'var(--a-border)' }}>
             <button
               type="button"
@@ -270,7 +318,7 @@ export function MembersManager({ initialMembers, total, extraFields: initialFiel
               className="font-body text-sm transition-colors disabled:opacity-40"
               style={{ color: 'var(--a-gold)' }}
             >
-              {loading ? 'Loading…' : `Load more (${total - members.length} remaining)`}
+              {loading ? 'Loading…' : `Load more (${memberTotal - members.length} remaining)`}
             </button>
           </div>
         )}

@@ -10,6 +10,8 @@ import type { PrayerRequest, PrayerRequestStatus } from '@prisma/client'
 import { useBulkSelect } from '@/hooks/useBulkSelect'
 import { BulkActionBar } from '@/components/admin/shared/BulkActionBar'
 import { SelectCheckbox } from '@/components/admin/shared/SelectCheckbox'
+import { useAdminSSE } from '@/hooks/useAdminSSE'
+import { LiveIndicator } from '@/components/admin/shared/LiveIndicator'
 
 type Tab = 'PENDING' | 'PRAYED' | 'REPLIED'
 
@@ -27,7 +29,7 @@ export function PrayerManager() {
   const [replySending, setReplySending] = useState(false)
   const bulk = useBulkSelect(requests)
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (): Promise<boolean> => {
     setLoading(true)
     try {
       const res = await fetch(`/api/admin/prayer?status=${tab}&page=${page}`)
@@ -35,8 +37,10 @@ export function PrayerManager() {
       const data = await res.json()
       setRequests(data.requests ?? [])
       setTotal(data.total ?? 0)
+      return true
     } catch {
       toast.error('Could not load prayer requests')
+      return false
     } finally {
       setLoading(false)
     }
@@ -45,6 +49,26 @@ export function PrayerManager() {
   useEffect(() => {
     load()
   }, [load])
+
+  const onPrayerSSE = useCallback(() => {
+    void load().then((ok) => {
+      if (!ok) return
+      toast('New prayer request', {
+        icon: '🙏',
+        style: {
+          background: 'var(--a-surface)',
+          color: 'var(--a-text)',
+          border: '1px solid rgba(201,168,76,0.3)',
+        },
+        duration: 3000,
+      })
+    })
+  }, [load])
+
+  useAdminSSE({
+    events: ['new_prayer'],
+    onEvent: onPrayerSSE,
+  })
 
   const patch = async (id: string, body: Record<string, unknown>) => {
     const res = await fetch(`/api/admin/prayer/${id}`, {
@@ -128,6 +152,12 @@ export function PrayerManager() {
 
   return (
     <div className="space-y-6">
+      <div className="flex flex-wrap items-center gap-3">
+        <h1 className="font-display text-2xl font-semibold" style={{ color: 'var(--a-text)' }}>
+          Prayer requests
+        </h1>
+        <LiveIndicator />
+      </div>
       <div className="flex flex-wrap gap-2">
         {(['PENDING', 'PRAYED', 'REPLIED'] as const).map((t) => (
           <button

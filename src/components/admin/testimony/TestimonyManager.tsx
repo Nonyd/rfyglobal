@@ -9,6 +9,8 @@ import type { Testimony, TestimonyStatus } from '@prisma/client'
 import { useBulkSelect } from '@/hooks/useBulkSelect'
 import { BulkActionBar } from '@/components/admin/shared/BulkActionBar'
 import { SelectCheckbox } from '@/components/admin/shared/SelectCheckbox'
+import { useAdminSSE } from '@/hooks/useAdminSSE'
+import { LiveIndicator } from '@/components/admin/shared/LiveIndicator'
 
 type Tab = 'PENDING' | 'APPROVED' | 'REJECTED'
 
@@ -28,7 +30,7 @@ export function TestimonyManager() {
   const [selected, setSelected] = useState<Testimony | null>(null)
   const bulk = useBulkSelect(items)
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (): Promise<boolean> => {
     setLoading(true)
     try {
       const res = await fetch(`/api/admin/testimony?status=${tab}`)
@@ -40,8 +42,10 @@ export function TestimonyManager() {
         const still = (data as Testimony[]).find((t) => t.id === prev.id)
         return still ?? (data as Testimony[])[0] ?? null
       })
+      return true
     } catch {
       toast.error('Could not load testimonies')
+      return false
     } finally {
       setLoading(false)
     }
@@ -51,6 +55,26 @@ export function TestimonyManager() {
     setSelected(null)
     void load()
   }, [tab, load])
+
+  const onTestimonySSE = useCallback(() => {
+    void load().then((ok) => {
+      if (!ok) return
+      toast('New testimony submitted', {
+        icon: '✨',
+        style: {
+          background: 'var(--a-surface)',
+          color: 'var(--a-text)',
+          border: '1px solid rgba(201,168,76,0.3)',
+        },
+        duration: 3000,
+      })
+    })
+  }, [load])
+
+  useAdminSSE({
+    events: ['new_testimony'],
+    onEvent: onTestimonySSE,
+  })
 
   const patch = async (id: string, body: Record<string, unknown>) => {
     const res = await fetch(`/api/admin/testimony/${id}`, {
@@ -127,7 +151,14 @@ export function TestimonyManager() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-2">
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center gap-3">
+        <h1 className="font-display text-2xl font-semibold" style={{ color: 'var(--a-text)' }}>
+          Testimonies
+        </h1>
+        <LiveIndicator />
+      </div>
+      <div className="grid gap-6 lg:grid-cols-2">
       <div className="space-y-4">
         <div className="flex flex-wrap gap-2">
           {(['PENDING', 'APPROVED', 'REJECTED'] as const).map((t) => (
@@ -308,6 +339,7 @@ export function TestimonyManager() {
           { label: 'Delete', icon: <Trash2 size={12} />, onClick: () => void bulkDelete(), variant: 'danger' as const },
         ]}
       />
+      </div>
     </div>
   )
 }

@@ -22,13 +22,31 @@ const NOTIFICATION_CONFIG: Record<NotificationType, { title: string; link: strin
 
 const sseClients = new Set<(data: string) => void>()
 
+/** Maps persisted notification types to SSE event names for targeted admin page refresh */
+const SSE_EVENT_MAP: Record<NotificationType, string> = {
+  prayer: 'new_prayer',
+  testimony: 'new_testimony',
+  message: 'new_message',
+  member: 'new_member',
+  partner: 'new_partner',
+  event_registration: 'new_event_registration',
+  contact: 'new_message',
+}
+
 export function addSSEClient(send: (data: string) => void) {
   sseClients.add(send)
   return () => sseClients.delete(send)
 }
 
-export function notifySSEClients() {
-  const message = `data: ${JSON.stringify({ type: 'notification' })}\n\n`
+export function notifySSEClients(notificationType?: NotificationType) {
+  const eventType = notificationType ? (SSE_EVENT_MAP[notificationType] ?? 'notification') : 'notification'
+
+  const message = `data: ${JSON.stringify({
+    type: 'notification',
+    event: eventType,
+    timestamp: Date.now(),
+  })}\n\n`
+
   sseClients.forEach((send) => {
     try {
       send(message)
@@ -54,7 +72,7 @@ export async function createNotification(
         ...(options?.targetId ? { targetId: options.targetId } : {}),
       },
     })
-    notifySSEClients()
+    notifySSEClients(type)
   } catch (err) {
     console.error('[notify] Failed to persist admin notification:', err)
   }
