@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getFlutterwaveCredentials } from '@/lib/credentials'
+import { notifyPartnerGivingConfirmationIfNeeded } from '@/lib/emails/partner-confirmation'
 
 export const runtime = 'nodejs'
 
@@ -43,6 +44,7 @@ export async function POST(req: NextRequest) {
         meta: event.data as object,
       },
     })
+    await notifyPartnerGivingConfirmationIfNeeded(tx_ref)
   }
 
   return NextResponse.json({ received: true })

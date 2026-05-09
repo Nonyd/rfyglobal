@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { sendEmail } from '@/lib/brevo'
+import { EMAIL_SENDERS } from '@/lib/email-senders'
 
 export const runtime = 'nodejs'
 
@@ -69,7 +70,9 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     const safe = escapeHtml(messageBody).replace(/\n/g, '<br>')
     await sendEmail({
       to: thread.recipientEmail,
-      subject: thread.subject ?? 'Message from Room For You',
+      subject: thread.subject ?? 'A message from Room For You',
+      fromName: EMAIL_SENDERS.hello.name,
+      fromEmail: EMAIL_SENDERS.hello.email,
       html: `
         <div style="background:#0F0F0F;max-width:600px;margin:0 auto;padding:40px;font-family:Arial,sans-serif;">
           <p style="color:#C9A84C;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;margin:0 0 8px;">Room For You</p>

@@ -1,5 +1,6 @@
 import { BrevoClient } from '@getbrevo/brevo'
 import { getBrevoCredentials } from '@/lib/credentials'
+import { EMAIL_SENDERS } from '@/lib/email-senders'
 
 let client: BrevoClient | null = null
 
@@ -14,16 +15,24 @@ interface SendEmailOptions {
   to: string | string[]
   subject: string
   html: string
+  fromName?: string
+  fromEmail?: string
   replyTo?: string
   /** When true, missing credentials or API errors propagate (for automation / logging). */
   throwOnError?: boolean
 }
 
-export async function sendEmail({ to, subject, html, replyTo, throwOnError }: SendEmailOptions) {
+export async function sendEmail({
+  to,
+  subject,
+  html,
+  fromName = EMAIL_SENDERS.hello.name,
+  fromEmail = EMAIL_SENDERS.hello.email,
+  replyTo,
+  throwOnError,
+}: SendEmailOptions) {
   const creds = await getBrevoCredentials()
   const apiKey = creds?.apiKey || process.env.BREVO_API_KEY
-  const fromEmail = creds?.fromEmail || process.env.BREVO_FROM_EMAIL || 'noreply@rfyglobal.org'
-  const fromName = creds?.fromName || process.env.BREVO_FROM_NAME || 'Room For You'
 
   if (!apiKey) {
     console.error('[Brevo] BREVO_API_KEY is not set')

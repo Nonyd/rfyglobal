@@ -1,4 +1,5 @@
 import { sendEmail } from '@/lib/brevo'
+import { EMAIL_SENDERS } from '@/lib/email-senders'
 import { db } from '@/lib/db'
 import { format } from 'date-fns'
 
@@ -50,7 +51,14 @@ export async function sendEventReminderEmails(type: 'WEEK' | 'DAY') {
     for (const member of members) {
       try {
         const html = buildEventReminderEmail({ member, event, type })
-        await sendEmail({ to: member.email, subject, html, throwOnError: true })
+        await sendEmail({
+          to: member.email,
+          subject,
+          html,
+          fromName: EMAIL_SENDERS.events.name,
+          fromEmail: EMAIL_SENDERS.events.email,
+          throwOnError: true,
+        })
         await db.emailLog.create({
           data: {
             memberId: member.id,

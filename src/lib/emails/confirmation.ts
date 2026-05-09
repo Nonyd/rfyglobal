@@ -1,4 +1,5 @@
 import { sendEmail } from '@/lib/brevo'
+import { EMAIL_SENDERS } from '@/lib/email-senders'
 import type { CommunityMember } from '@prisma/client'
 
 interface ConfirmationEmailParams {
@@ -112,8 +113,10 @@ export async function sendConfirmationEmail({ member, whatsappUrl }: Confirmatio
 
   await sendEmail({
     to: member.email,
-    subject: `Welcome to Room For You, ${member.name.split(' ')[0]} 🙏`,
+    subject: 'Welcome to Room For You 🏠',
     html,
+    fromName: EMAIL_SENDERS.hello.name,
+    fromEmail: EMAIL_SENDERS.hello.email,
     throwOnError: true,
   })
 }

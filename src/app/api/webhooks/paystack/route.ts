@@ -3,6 +3,7 @@ import type { Prisma } from '@prisma/client'
 import { createHmac } from 'crypto'
 import { db } from '@/lib/db'
 import { getPaystackCredentials } from '@/lib/credentials'
+import { notifyPartnerGivingConfirmationIfNeeded } from '@/lib/emails/partner-confirmation'
 
 export const runtime = 'nodejs'
 
@@ -49,6 +50,7 @@ export async function POST(req: NextRequest) {
         meta: event.data as object,
       },
     })
+    await notifyPartnerGivingConfirmationIfNeeded(reference)
   }
 
   if (event.event === 'subscription.create') {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { sendEmail } from '@/lib/brevo'
+import { EMAIL_SENDERS } from '@/lib/email-senders'
 
 export const runtime = 'nodejs'
 
@@ -88,8 +89,10 @@ export async function POST(req: NextRequest) {
         if (sendEmailNow) {
           await sendEmail({
             to: r.email.trim(),
-            subject: subject ?? 'Message from Room For You',
+            subject: subject ?? 'A message from Room For You',
             html: buildMessageEmail(r.name ?? r.email, message),
+            fromName: EMAIL_SENDERS.hello.name,
+            fromEmail: EMAIL_SENDERS.hello.email,
           })
         }
 
@@ -122,8 +125,10 @@ export async function POST(req: NextRequest) {
   if (sendEmailNow) {
     await sendEmail({
       to: recipientEmail.trim(),
-      subject: subject ?? 'Message from Room For You',
+      subject: subject ?? 'A message from Room For You',
       html: buildMessageEmail(recipientName ?? recipientEmail, message),
+      fromName: EMAIL_SENDERS.hello.name,
+      fromEmail: EMAIL_SENDERS.hello.email,
     })
   }
 

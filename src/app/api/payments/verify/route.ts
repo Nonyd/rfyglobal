@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getFlutterwaveCredentials, getPaystackCredentials } from '@/lib/credentials'
+import { notifyPartnerGivingConfirmationIfNeeded } from '@/lib/emails/partner-confirmation'
 
 export const runtime = 'nodejs'
 
@@ -40,6 +41,7 @@ export async function GET(req: NextRequest) {
             meta: { ...(record.meta as object), paystackData: data.data },
           },
         })
+        await notifyPartnerGivingConfirmationIfNeeded(reference)
       }
     } else if (gateway === 'FLUTTERWAVE') {
       if (!transactionId) {
@@ -65,6 +67,7 @@ export async function GET(req: NextRequest) {
               meta: { ...(record.meta as object), flwData: data.data },
             },
           })
+          await notifyPartnerGivingConfirmationIfNeeded(reference)
         }
       }
     } else if (gateway === 'PAYAZA') {

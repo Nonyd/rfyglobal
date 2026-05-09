@@ -1,4 +1,5 @@
 import { sendEmail } from '@/lib/brevo'
+import { EMAIL_SENDERS } from '@/lib/email-senders'
 import { format } from 'date-fns'
 import type { Event } from '@prisma/client'
 
@@ -108,7 +109,9 @@ export async function sendEventRegistrationEmail({
 
   await sendEmail({
     to: email,
-    subject: `You're registered: ${event.title} 🙌`,
+    subject: `You're registered for ${event.title}`,
     html,
+    fromName: EMAIL_SENDERS.events.name,
+    fromEmail: EMAIL_SENDERS.events.email,
   })
 }

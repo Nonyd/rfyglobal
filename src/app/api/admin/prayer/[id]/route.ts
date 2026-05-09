@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { sendEmail } from '@/lib/brevo'
+import { EMAIL_SENDERS } from '@/lib/email-senders'
 import { PrayerRequestStatus } from '@prisma/client'
 
 export const runtime = 'nodejs'
@@ -49,6 +50,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     await sendEmail({
       to: request.email,
       subject: `Re: Your Prayer Request — ${request.subject}`,
+      fromName: EMAIL_SENDERS.prayer.name,
+      fromEmail: EMAIL_SENDERS.prayer.email,
       html: `
         <div style="background:#0F0F0F;max-width:600px;margin:0 auto;padding:40px;font-family:Arial,sans-serif;">
           <p style="color:#C9A84C;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;margin:0 0 8px;">

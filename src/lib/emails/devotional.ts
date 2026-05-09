@@ -1,4 +1,5 @@
 import { sendEmail } from '@/lib/brevo'
+import { EMAIL_SENDERS } from '@/lib/email-senders'
 import { db } from '@/lib/db'
 import type { Scripture } from '@prisma/client'
 
@@ -38,7 +39,7 @@ export async function sendDailyDevotionalEmails() {
     return { sent: 0 }
   }
 
-  const subject = `Today's Word: ${scripture.reference}`
+  const subject = `Today's Word — ${scripture.reference}`
   const dateStr = today.toLocaleDateString('en-NG', { weekday: 'long', day: 'numeric', month: 'long' })
 
   let sent = 0
@@ -52,7 +53,14 @@ export async function sendDailyDevotionalEmails() {
       batch.map(async (member) => {
         try {
           const html = buildDevotionalEmail({ member, scripture: scripture!, dateStr })
-          await sendEmail({ to: member.email, subject, html, throwOnError: true })
+          await sendEmail({
+            to: member.email,
+            subject,
+            html,
+            fromName: EMAIL_SENDERS.word.name,
+            fromEmail: EMAIL_SENDERS.word.email,
+            throwOnError: true,
+          })
           await db.emailLog.create({
             data: {
               memberId: member.id,

@@ -1,9 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { sendEmail } from '@/lib/brevo'
+import { EMAIL_SENDERS } from '@/lib/email-senders'
 import { db } from '@/lib/db'
 import { strictRatelimit } from '@/lib/ratelimit'
 import { z } from 'zod'
 
 export const runtime = 'nodejs'
+
+function escapeHtml(text: string) {
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+}
 
 const ContactSchema = z.object({
   name: z.string().min(2).max(100),
@@ -41,6 +51,31 @@ export async function POST(req: NextRequest) {
         },
       },
     },
+  })
+
+  const safeName = escapeHtml(name)
+  await sendEmail({
+    to: email,
+    subject: 'We received your message — Room For You',
+    html: `
+      <div style="background:#0F0F0F;max-width:600px;margin:0 auto;padding:40px;font-family:Arial,sans-serif;">
+        <p style="color:#C9A84C;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;margin:0 0 8px;">
+          Room For You
+        </p>
+        <p style="color:#F8F8F8;font-size:18px;font-weight:600;margin:0 0 16px;">
+          Hi ${safeName},
+        </p>
+        <p style="color:#A0A0A0;font-size:14px;line-height:1.8;margin:0 0 24px;">
+          Thank you for reaching out. We have received your message and will read it as soon as we can.
+        </p>
+        <p style="color:#585858;font-size:11px;text-align:center;margin:0;">
+          Room For You · rfyglobal.org
+        </p>
+      </div>
+    `,
+    fromName: EMAIL_SENDERS.hello.name,
+    fromEmail: EMAIL_SENDERS.hello.email,
+    replyTo: EMAIL_SENDERS.hello.email,
   })
 
   return NextResponse.json({ success: true }, { status: 201 })

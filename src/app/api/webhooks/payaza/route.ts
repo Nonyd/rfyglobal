@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createHmac } from 'crypto'
 import { db } from '@/lib/db'
 import { getPayazaCredentials } from '@/lib/credentials'
+import { notifyPartnerGivingConfirmationIfNeeded } from '@/lib/emails/partner-confirmation'
 
 export const runtime = 'nodejs'
 
@@ -48,6 +49,7 @@ export async function POST(req: NextRequest) {
           meta: event as object,
         },
       })
+      await notifyPartnerGivingConfirmationIfNeeded(ref)
     }
   }
 
