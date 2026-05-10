@@ -41,7 +41,7 @@ function buildMessageEmail(name: string, message: string) {
 export async function GET(req: NextRequest) {
   try {
     const session = await auth()
-    const denied = forbidUnlessCanAccess(session, 'messages')
+    const denied = await forbidUnlessCanAccess(session, 'messages')
     if (denied) return denied
 
     const { searchParams } = new URL(req.url)
@@ -72,7 +72,7 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const session = await auth()
-  const denied = forbidUnlessCanAccess(session, 'messages')
+  const denied = await forbidUnlessCanAccess(session, 'messages')
   if (denied) return denied
 
   const body = await req.json()

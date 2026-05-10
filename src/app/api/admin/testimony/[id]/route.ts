@@ -17,7 +17,7 @@ export async function PATCH(
 ) {
   try {
     const session = await auth()
-    const denied = forbidUnlessCanAccess(session, 'testimonies')
+    const denied = await forbidUnlessCanAccess(session, 'testimonies')
     if (denied) return denied
 
     const id = await testimonyId(ctx.params)
@@ -75,7 +75,7 @@ export async function DELETE(
 ) {
   try {
     const session = await auth()
-    const denied = forbidUnlessCanAccess(session, 'testimonies')
+    const denied = await forbidUnlessCanAccess(session, 'testimonies')
     if (denied) return denied
 
     const id = await testimonyId(ctx.params)

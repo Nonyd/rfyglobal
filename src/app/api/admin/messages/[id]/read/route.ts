@@ -7,7 +7,7 @@ export const runtime = 'nodejs'
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const session = await auth()
-  const denied = forbidUnlessCanAccess(session, 'messages')
+  const denied = await forbidUnlessCanAccess(session, 'messages')
   if (denied) return denied
 
   await db.message.updateMany({

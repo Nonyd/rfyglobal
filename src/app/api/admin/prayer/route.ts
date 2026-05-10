@@ -8,7 +8,7 @@ export const runtime = 'nodejs'
 
 export async function GET(req: NextRequest) {
   const session = await auth()
-  const denied = forbidUnlessCanAccess(session, 'prayer')
+  const denied = await forbidUnlessCanAccess(session, 'prayer')
   if (denied) return denied
 
   const { searchParams } = new URL(req.url)

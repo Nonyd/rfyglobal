@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic'
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const session = await auth()
-    const denied = forbidUnlessCanAccess(session, 'messages')
+    const denied = await forbidUnlessCanAccess(session, 'messages')
     if (denied) return denied
 
     const thread = await db.messageThread.findUnique({

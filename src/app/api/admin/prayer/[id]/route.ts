@@ -27,7 +27,7 @@ export async function PATCH(
 ) {
   try {
     const session = await auth()
-    const denied = forbidUnlessCanAccess(session, 'prayer')
+    const denied = await forbidUnlessCanAccess(session, 'prayer')
     if (denied) return denied
 
     const id = await prayerId(ctx.params)
@@ -139,7 +139,7 @@ export async function DELETE(
   ctx: { params: { id: string } | Promise<{ id: string }> },
 ) {
   const session = await auth()
-  const denied = forbidUnlessCanAccess(session, 'prayer')
+  const denied = await forbidUnlessCanAccess(session, 'prayer')
   if (denied) return denied
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   if (session.user.role !== 'SUPER_ADMIN') {
