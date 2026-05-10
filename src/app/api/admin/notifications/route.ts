@@ -98,55 +98,69 @@ export async function GET() {
   }
 }
 
+async function mutateNotifications(req: NextRequest) {
+  const session = await auth()
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  let body: Record<string, unknown> = {}
+  try {
+    const raw = await req.text()
+    if (raw?.trim()) body = JSON.parse(raw) as Record<string, unknown>
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+  }
+
+  const markAll =
+    body.markAllRead === true ||
+    body.markAllRead === 'true' ||
+    body.mark_all_read === true ||
+    body.mark_all_read === 'true'
+
+  if (markAll) {
+    await db.adminNotification.updateMany({
+      where: { isRead: false },
+      data: { isRead: true },
+    })
+    try {
+      broadcastSSE({ type: 'notification', event: 'mark_all_read', timestamp: Date.now() })
+    } catch {
+      /* SSE must not fail the mutation */
+    }
+    return NextResponse.json({ success: true })
+  }
+
+  const id = typeof body.id === 'string' ? body.id : undefined
+  if (id) {
+    await db.adminNotification.update({
+      where: { id },
+      data: { isRead: true },
+    })
+    try {
+      broadcastSSE({ type: 'notification', event: 'mark_read', timestamp: Date.now() })
+    } catch {
+      /* SSE must not fail the mutation */
+    }
+    return NextResponse.json({ success: true })
+  }
+
+  return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
+}
+
+/** POST mirrors PATCH — some reverse proxies block PATCH; clients prefer POST for mutations. */
+export async function POST(req: NextRequest) {
+  try {
+    return await mutateNotifications(req)
+  } catch (error) {
+    console.error('[notifications POST]', error)
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+  }
+}
+
 export async function PATCH(req: NextRequest) {
   try {
-    const session = await auth()
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    let body: Record<string, unknown> = {}
-    try {
-      const raw = await req.text()
-      if (raw?.trim()) body = JSON.parse(raw) as Record<string, unknown>
-    } catch {
-      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
-    }
-
-    const markAll =
-      body.markAllRead === true ||
-      body.markAllRead === 'true' ||
-      body.mark_all_read === true ||
-      body.mark_all_read === 'true'
-
-    if (markAll) {
-      await db.adminNotification.updateMany({
-        where: { isRead: false },
-        data: { isRead: true },
-      })
-      try {
-        broadcastSSE({ type: 'notification', event: 'mark_all_read', timestamp: Date.now() })
-      } catch {
-        /* SSE must not fail the mutation */
-      }
-      return NextResponse.json({ success: true })
-    }
-
-    const id = typeof body.id === 'string' ? body.id : undefined
-    if (id) {
-      await db.adminNotification.update({
-        where: { id },
-        data: { isRead: true },
-      })
-      try {
-        broadcastSSE({ type: 'notification', event: 'mark_read', timestamp: Date.now() })
-      } catch {
-        /* SSE must not fail the mutation */
-      }
-      return NextResponse.json({ success: true })
-    }
-
-    return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
+    return await mutateNotifications(req)
   } catch (error) {
     console.error('[notifications PATCH]', error)
     return NextResponse.json({ error: 'Internal error' }, { status: 500 })

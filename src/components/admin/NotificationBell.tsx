@@ -96,7 +96,7 @@ export function NotificationBell() {
 
   const markAllRead = async () => {
     await fetch('/api/admin/notifications', {
-      method: 'PATCH',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ markAllRead: true }),
       cache: 'no-store',
@@ -107,7 +107,7 @@ export function NotificationBell() {
 
   const markRead = async (id: string) => {
     await fetch('/api/admin/notifications', {
-      method: 'PATCH',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),
       cache: 'no-store',

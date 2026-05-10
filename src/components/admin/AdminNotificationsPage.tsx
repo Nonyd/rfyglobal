@@ -81,7 +81,7 @@ export function AdminNotificationsPage() {
 
   const markAllRead = async () => {
     const res = await fetch('/api/admin/notifications', {
-      method: 'PATCH',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ markAllRead: true }),
       cache: 'no-store',
@@ -99,7 +99,7 @@ export function AdminNotificationsPage() {
 
   const markRead = async (id: string) => {
     const res = await fetch('/api/admin/notifications', {
-      method: 'PATCH',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),
       cache: 'no-store',

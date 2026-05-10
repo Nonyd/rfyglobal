@@ -66,6 +66,14 @@ export default auth(async (req) => {
 
   if (isAdminLogin) return NextResponse.next()
 
+  // Global inbox API (+ SSE): signed-in admins only; skip module ACL (sidebar badges + bell).
+  if (pathname.startsWith('/api/admin/notifications')) {
+    if (!req.auth) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+    return NextResponse.next()
+  }
+
   if (isAdminRoute || isApiAdminRoute) {
     if (!req.auth) {
       if (pathname.startsWith('/api/admin')) {
@@ -74,12 +82,6 @@ export default auth(async (req) => {
       const loginUrl = new URL('/admin/login', req.url)
       loginUrl.searchParams.set('callbackUrl', pathname)
       return NextResponse.redirect(loginUrl)
-    }
-
-    // Global inbox: bell + sidebar badges use these routes for every signed-in admin.
-    // Edge JWT role claims can omit or mismatch DB role; don't block PATCH/GET here.
-    if (pathname.startsWith('/api/admin/notifications')) {
-      return NextResponse.next()
     }
 
     const role = req.auth.user?.role ?? 'ADMIN'
