@@ -431,6 +431,31 @@ model Message {
   createdAt DateTime      @default(now())
 }
 
+// ── LIVE CHAT (floating widget / admin inbox) ─────────────────
+
+model LiveChatSession {
+  id           String            @id @default(cuid())
+  name         String
+  email        String
+  sessionToken String            @unique @default(cuid())
+  status       String            @default("active")
+  isOnline     Boolean           @default(false)
+  lastSeenAt   DateTime          @default(now())
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+  messages     LiveChatMessage[]
+}
+
+model LiveChatMessage {
+  id        String          @id @default(cuid())
+  sessionId String
+  session   LiveChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  body      String          @db.Text
+  fromAdmin Boolean         @default(false)
+  isRead    Boolean         @default(false)
+  createdAt DateTime        @default(now())
+}
+
 // ── ADMIN NOTIFICATIONS (dashboard bell / SSE) ─────────────────
 
 // targetId: optional linked entity (e.g. CommunityMember id for type "member")

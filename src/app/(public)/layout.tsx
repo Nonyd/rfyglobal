@@ -1,9 +1,11 @@
 import { Toaster } from 'react-hot-toast'
+import { ChatWidget } from '@/components/chat/ChatWidget'
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       {children}
+      <ChatWidget />
       <Toaster
         position="bottom-center"
         toastOptions={{

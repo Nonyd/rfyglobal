@@ -10,6 +10,9 @@ export type SSEEventType =
   | 'new_member'
   | 'new_partner'
   | 'new_event_registration'
+  | 'new_chat'
+  | 'new_chat_message'
+  | 'chat_reply'
   | 'notification'
 
 function joinEvents(events: SSEEventType[]) {

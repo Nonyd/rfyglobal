@@ -21,6 +21,7 @@ type Permission =
   | 'faq'
   | 'notifications'
   | 'email-templates'
+  | 'live-chat'
 
 const ROLE_PERMISSIONS: Record<string, Permission[]> = {
   SUPER_ADMIN: [
@@ -46,6 +47,7 @@ const ROLE_PERMISSIONS: Record<string, Permission[]> = {
     'faq',
     'notifications',
     'email-templates',
+    'live-chat',
   ],
   ADMIN: [
     'scripture',
@@ -63,6 +65,7 @@ const ROLE_PERMISSIONS: Record<string, Permission[]> = {
     'faq',
     'notifications',
     'email-templates',
+    'live-chat',
   ],
   EDITOR: ['scripture', 'blog', 'study', 'notifications'],
   MEDIA_ADMIN: ['gallery', 'notifications'],
@@ -107,6 +110,7 @@ export function canAccess(role: string, module: string): boolean {
     faq: 'faq',
     notifications: 'notifications',
     'email-templates': 'email-templates',
+    'live-chat': 'live-chat',
   }
   const permission = moduleMap[module]
   if (!permission) return false

@@ -55,6 +55,7 @@ const ROUTE_PERMISSIONS: Record<string, string> = {
   '/admin/testimony': 'testimonies',
   '/admin/prayer': 'prayer',
   '/admin/messages': 'messages',
+  '/admin/live-chat': 'live-chat',
 }
 
 const SORTED_ADMIN_ROUTES = Object.entries(ROUTE_PERMISSIONS).sort(
@@ -126,7 +127,8 @@ export default auth(async (req) => {
     const skipEdgeModuleAcl =
       pathname.startsWith('/api/admin/prayer') ||
       pathname.startsWith('/api/admin/testimony') ||
-      pathname.startsWith('/api/admin/messages')
+      pathname.startsWith('/api/admin/messages') ||
+      pathname.startsWith('/api/admin/live-chat')
 
     if (!skipEdgeModuleAcl) {
       for (const [route, moduleKey] of SORTED_ADMIN_ROUTES) {

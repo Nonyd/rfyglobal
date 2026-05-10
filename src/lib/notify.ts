@@ -1,4 +1,5 @@
 import { db } from '@/lib/db'
+import { broadcastToVisitor } from '@/lib/chat-visitor-sse'
 
 export type NotificationType =
   | 'prayer'
@@ -46,6 +47,10 @@ export function broadcastSSE(payload: Record<string, unknown>): void {
       /* client disconnected */
     }
   })
+
+  if (payload.sessionToken && typeof payload.sessionToken === 'string') {
+    broadcastToVisitor(payload.sessionToken, payload)
+  }
 }
 
 /** Generic refresh pulse for PATCH/DELETE/bulk ops (same SSE channel as notifications). */

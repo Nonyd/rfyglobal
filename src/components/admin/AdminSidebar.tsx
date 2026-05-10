@@ -28,6 +28,7 @@ import {
   HelpCircle,
   Bell,
   Mail,
+  MessageCircle,
 } from 'lucide-react'
 import { canAccess } from '@/lib/permissions'
 import { badgeCountForNav, useAdminNotificationBadges, type NavBadgeKey } from '@/hooks/useAdminNotificationBadges'
@@ -55,6 +56,7 @@ export const NAV_GROUPS: NavGroup[] = [
       },
       { label: 'Members', href: '/admin/members', icon: Users, badgeKey: 'members' },
       { label: 'Prayer', href: '/admin/prayer', icon: Heart, badgeKey: 'prayers' },
+      { label: 'Live Chat', href: '/admin/live-chat', icon: MessageCircle },
       { label: 'Messages', href: '/admin/messages', icon: MessageSquare, badgeKey: 'messages' },
       { label: 'Activity', href: '/admin/activity', icon: History },
     ],
