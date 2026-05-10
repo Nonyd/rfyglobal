@@ -169,8 +169,23 @@ export function ChatWidget() {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full shadow-2xl transition-transform hover:scale-105 relative"
-        style={{ background: '#C9A84C' }}
+        style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          zIndex: 50,
+          width: '56px',
+          height: '56px',
+          borderRadius: '50%',
+          background: '#C9A84C',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+          border: 'none',
+          cursor: 'pointer',
+          transition: 'transform 0.2s ease',
+        }}
         aria-label="Chat with Room For You"
       >
         {open ? (
@@ -189,10 +204,16 @@ export function ChatWidget() {
       </button>
 
       <div
-        className="fixed bottom-24 right-6 z-50 flex flex-col overflow-hidden"
         style={{
+          position: 'fixed',
+          bottom: '96px',
+          right: '24px',
+          zIndex: 50,
           width: 'min(360px, calc(100vw - 24px))',
           height: '500px',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
           background: '#0F0F0F',
           border: '1px solid rgba(201,168,76,0.25)',
           borderRadius: '16px',
