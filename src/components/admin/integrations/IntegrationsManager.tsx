@@ -14,7 +14,7 @@ interface ServiceConfig {
   fields: {
     key: string
     label: string
-    type: 'text' | 'password'
+    type: 'text' | 'password' | 'toggle'
     placeholder?: string
     hint?: string
   }[]
@@ -30,6 +30,12 @@ const SERVICES: ServiceConfig[] = [
       { key: 'publicKey', label: 'Public Key', type: 'text', placeholder: 'pk_live_...' },
       { key: 'secretKey', label: 'Secret Key', type: 'password', placeholder: 'sk_live_...' },
       { key: 'webhookSecret', label: 'Webhook Secret', type: 'password' },
+      {
+        key: 'usdEnabled',
+        label: 'USD Payments',
+        type: 'toggle',
+        hint: 'Enable Dollar ($) on the partner page and paid events. Only turn on after Paystack activates USD on your account.',
+      },
       { key: 'monthlyPlanCode', label: 'Monthly Plan Code', type: 'text', placeholder: 'PLN_...' },
       { key: 'annualPlanCode', label: 'Annual Plan Code', type: 'text', placeholder: 'PLN_...' },
     ],
@@ -113,7 +119,14 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
         service.id,
         {
           ...Object.fromEntries(
-            service.fields.map((field) => [field.key, String(initialData[service.id]?.[field.key] ?? '')])
+            service.fields.map((field) => {
+              if (field.type === 'toggle') {
+                const v = initialData[service.id]?.[field.key]
+                const on = v === true || v === 'true'
+                return [field.key, on ? 'true' : 'false']
+              }
+              return [field.key, String(initialData[service.id]?.[field.key] ?? '')]
+            })
           ),
           ...(PAYMENT_SERVICE_IDS.includes(service.id)
             ? { mode: String(initialData[service.id]?.mode ?? 'test') }
@@ -150,12 +163,16 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
   const saveService = async (serviceId: string) => {
     setSaving(serviceId)
     try {
+      const data: Record<string, unknown> = { ...values[serviceId] }
+      if (serviceId === 'paystack') {
+        data.usdEnabled = values[serviceId].usdEnabled === 'true'
+      }
       const res = await fetch('/api/credentials', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           service: serviceId,
-          data: values[serviceId],
+          data,
           isActive: activeStates[serviceId],
         }),
       })
@@ -256,30 +273,62 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
 
               {isExpanded ? (
                 <div className="border-t px-5 pb-5 pt-4 space-y-4" style={{ borderColor: 'var(--a-border)' }}>
-                  {service.fields.map((field) => (
-                    <div key={field.key}>
-                      <label className="block text-xs uppercase tracking-widest font-body font-medium mb-2" style={{ color: 'var(--a-text-secondary)' }}>
-                        {field.label}
-                      </label>
-                      <input
-                        type="text"
-                        value={values[service.id]?.[field.key] ?? ''}
-                        onChange={(e) => updateValue(service.id, field.key, e.target.value)}
-                        placeholder={field.placeholder}
-                        autoComplete="off"
-                        spellCheck={false}
-                        className="w-full border px-4 py-3 font-mono text-sm focus:outline-none transition-colors"
-                        style={{
-                          background: 'var(--a-bg)',
-                          borderColor: 'var(--a-border)',
-                          color: 'var(--a-text)',
-                        }}
-                        onFocus={(e) => (e.target.style.borderColor = 'var(--a-gold)')}
-                        onBlur={(e) => (e.target.style.borderColor = 'var(--a-border)')}
-                      />
-                      {field.hint ? <p className="text-xs font-body mt-1" style={{ color: 'var(--a-text-muted)' }}>{field.hint}</p> : null}
-                    </div>
-                  ))}
+                  {service.fields.map((field) =>
+                    field.type === 'toggle' ? (
+                      <div
+                        key={field.key}
+                        className="flex items-start justify-between gap-4 border-t pt-4"
+                        style={{ borderColor: 'var(--a-border)' }}
+                      >
+                        <div className="min-w-0 pr-2">
+                          <p className="font-body text-sm font-medium" style={{ color: 'var(--a-text)' }}>
+                            {field.label}
+                          </p>
+                          {field.hint ? (
+                            <p className="mt-1 font-body text-xs leading-relaxed" style={{ color: 'var(--a-text-muted)' }}>
+                              {field.hint}
+                            </p>
+                          ) : null}
+                        </div>
+                        <AdminToggle
+                          checked={values[service.id]?.[field.key] === 'true'}
+                          onChange={(checked) => updateValue(service.id, field.key, checked ? 'true' : 'false')}
+                          size="sm"
+                          aria-label={`${field.label} toggle`}
+                        />
+                      </div>
+                    ) : (
+                      <div key={field.key}>
+                        <label
+                          className="mb-2 block font-body text-xs font-medium uppercase tracking-widest"
+                          style={{ color: 'var(--a-text-secondary)' }}
+                        >
+                          {field.label}
+                        </label>
+                        <input
+                          type={field.type === 'password' ? 'password' : 'text'}
+                          value={values[service.id]?.[field.key] ?? ''}
+                          onChange={(e) => updateValue(service.id, field.key, e.target.value)}
+                          placeholder={field.placeholder}
+                          autoComplete="off"
+                          spellCheck={false}
+                          className="w-full border px-4 py-3 font-mono text-sm transition-colors focus:outline-none"
+                          style={{
+                            background: 'var(--a-bg)',
+                            borderColor: 'var(--a-border)',
+                            color: 'var(--a-text)',
+                          }}
+                          onFocus={(e) => (e.target.style.borderColor = 'var(--a-gold)')}
+                          onBlur={(e) => (e.target.style.borderColor = 'var(--a-border)')}
+                        />
+                        {field.hint ? (
+                          <p className="mt-1 font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
+                            {field.hint}
+                          </p>
+                        ) : null}
+                      </div>
+                    )
+                  )}
 
                   <div className="flex items-center justify-between pt-2">
                     <p className="text-xs font-body" style={{ color: 'var(--a-text-muted)' }}>Values shown masked - type to update</p>

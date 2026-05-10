@@ -154,11 +154,14 @@ export function EventRegistrationModal({
   const [submitted, setSubmitted] = useState(false)
   const [primaryEmailDuplicate, setPrimaryEmailDuplicate] = useState(false)
   const [paymentCurrency, setPaymentCurrency] = useState<'NGN' | 'USD'>('NGN')
+  const [paystackUsdEnabled, setPaystackUsdEnabled] = useState(false)
 
   const feeNgn = registrationFeeNgn ?? 0
   const feeUsd = registrationFeeUsd ?? 0
   const requiresPayment = feeNgn > 0 || feeUsd > 0
-  const bothCurrencies = feeNgn > 0 && feeUsd > 0
+  const bothCurrencies = feeNgn > 0 && feeUsd > 0 && paystackUsdEnabled
+  const usdOnlyBlocked =
+    requiresPayment && feeUsd > 0 && feeNgn <= 0 && !paystackUsdEnabled
 
   const primaryEmailField = useMemo(() => {
     const emails = fields.filter((f) => f.type === 'EMAIL').sort((a, b) => a.order - b.order)
@@ -167,9 +170,18 @@ export function EventRegistrationModal({
 
   useEffect(() => {
     if (!isOpen) return
-    if (feeNgn > 0 && feeUsd <= 0) setPaymentCurrency('NGN')
-    else if (feeUsd > 0 && feeNgn <= 0) setPaymentCurrency('USD')
-  }, [isOpen, feeNgn, feeUsd])
+    fetch('/api/payments/settings')
+      .then((r) => r.json())
+      .then((d: { usdEnabled?: boolean }) => setPaystackUsdEnabled(d.usdEnabled === true))
+      .catch(() => setPaystackUsdEnabled(false))
+  }, [isOpen])
+
+  useEffect(() => {
+    if (!isOpen) return
+    if (feeNgn > 0 && (feeUsd <= 0 || !paystackUsdEnabled)) setPaymentCurrency('NGN')
+    else if (feeUsd > 0 && feeNgn <= 0 && paystackUsdEnabled) setPaymentCurrency('USD')
+    else if (feeNgn > 0 && feeUsd > 0 && !paystackUsdEnabled) setPaymentCurrency('NGN')
+  }, [isOpen, feeNgn, feeUsd, paystackUsdEnabled])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -192,8 +204,17 @@ export function EventRegistrationModal({
           return
         }
 
-        const currency =
-          bothCurrencies ? paymentCurrency : feeNgn > 0 ? 'NGN' : 'USD'
+        if (usdOnlyBlocked) {
+          toast.error('USD checkout is not available yet. Please contact the organizers.')
+          return
+        }
+
+        const currency: 'NGN' | 'USD' =
+          feeNgn > 0 && (feeUsd <= 0 || !paystackUsdEnabled)
+            ? 'NGN'
+            : feeUsd > 0 && feeNgn <= 0
+              ? 'USD'
+              : paymentCurrency
         const major = currency === 'NGN' ? feeNgn : feeUsd
         if (major <= 0) {
           toast.error('Invalid ticket price configuration.')
@@ -510,6 +531,19 @@ export function EventRegistrationModal({
 
                       {requiresPayment ? (
                         <div className="space-y-3 pt-2">
+                          {usdOnlyBlocked ? (
+                            <div
+                              className="px-3 py-2 font-body text-xs leading-relaxed"
+                              style={{
+                                background: 'rgba(239,68,68,0.08)',
+                                border: '1px solid rgba(239,68,68,0.35)',
+                                color: '#FCA5A5',
+                              }}
+                            >
+                              This event is priced in US dollars only, but USD checkout is turned off in admin
+                              settings until Paystack enables USD. Please contact the organizers.
+                            </div>
+                          ) : null}
                           <p className="font-body text-xs leading-relaxed" style={{ color: '#A0A0A0' }}>
                             {bothCurrencies ? (
                               <>
@@ -555,7 +589,7 @@ export function EventRegistrationModal({
 
                       <button
                         type="submit"
-                        disabled={submitting || primaryEmailDuplicate}
+                        disabled={submitting || primaryEmailDuplicate || usdOnlyBlocked}
                         className="mt-2 w-full py-4 font-body text-xs font-semibold uppercase tracking-widest transition-all duration-300 disabled:opacity-50"
                         style={{ background: '#C9A84C', color: '#0F0F0F' }}
                       >

@@ -59,3 +59,5 @@ export async function paystackRequest<T = Record<string, unknown>>(
   }
   return data
 }
+
+export { getPaystackCredentials } from '@/lib/credentials'

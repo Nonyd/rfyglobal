@@ -219,6 +219,10 @@ async function handlePhasePaystackInitiate(
     return NextResponse.json({ error: 'Paystack is currently unavailable' }, { status: 503 })
   }
 
+  if (input.currency === 'USD' && !creds.usdEnabled) {
+    return NextResponse.json({ error: 'USD payments are not enabled.' }, { status: 400 })
+  }
+
   const appUrl = process.env.NEXT_PUBLIC_APP_URL
   if (!appUrl) {
     return NextResponse.json({ error: 'Server configuration error' }, { status: 500 })

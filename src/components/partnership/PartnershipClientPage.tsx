@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import type { LucideIcon } from 'lucide-react'
 import { BookOpen, Check, Copy, Globe, Landmark } from 'lucide-react'
@@ -79,6 +79,24 @@ export function PartnershipClientPage({
   const [gateway, setGateway] = useState<Gateway>((enabledGateways[0]?.id ?? 'PAYSTACK') as Gateway)
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [paystackUsdEnabled, setPaystackUsdEnabled] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/payments/settings')
+      .then((r) => r.json())
+      .then((data: { usdEnabled?: boolean }) => {
+        setPaystackUsdEnabled(data.usdEnabled === true)
+      })
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    if (!paystackUsdEnabled && currency === 'USD') {
+      setCurrency('NGN')
+      setAmount(5000)
+      setCustomAmount('')
+    }
+  }, [paystackUsdEnabled, currency])
 
   const presetList = currency === 'NGN' ? PRESET_AMOUNTS_NGN : PRESET_AMOUNTS_USD
   const activeAmount = customAmount ? parseFloat(customAmount) : amount
@@ -245,25 +263,40 @@ export function PartnershipClientPage({
               <div>
                 <p className="mb-3 font-body text-xs uppercase tracking-widest text-text-muted">Currency</p>
                 <div className="flex">
-                  {(['NGN', 'USD'] as const).map((c) => (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCurrency('NGN')
+                      setAmount(5000)
+                      setCustomAmount('')
+                    }}
+                    className={cn(
+                      'flex-1 py-3 text-sm font-body tracking-wide border transition-all',
+                      currency === 'NGN'
+                        ? 'border-gold bg-gold text-charcoal'
+                        : 'border-theme text-text-secondary hover:border-gold/40 hover:text-text-primary'
+                    )}
+                  >
+                    ₦ Naira
+                  </button>
+                  {paystackUsdEnabled ? (
                     <button
-                      key={c}
                       type="button"
                       onClick={() => {
-                        setCurrency(c)
-                        setAmount(c === 'NGN' ? 5000 : 25)
+                        setCurrency('USD')
+                        setAmount(25)
                         setCustomAmount('')
                       }}
                       className={cn(
                         'flex-1 py-3 text-sm font-body tracking-wide border transition-all',
-                        currency === c
+                        currency === 'USD'
                           ? 'border-gold bg-gold text-charcoal'
                           : 'border-theme text-text-secondary hover:border-gold/40 hover:text-text-primary'
                       )}
                     >
-                      {c === 'NGN' ? '₦ Naira' : '$ Dollar'}
+                      $ Dollar
                     </button>
-                  ))}
+                  ) : null}
                 </div>
               </div>
             ) : null}
