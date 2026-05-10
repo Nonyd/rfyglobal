@@ -68,13 +68,19 @@ const ROLE_PERMISSIONS: Record<string, Permission[]> = {
   MEDIA_ADMIN: ['gallery', 'notifications'],
 }
 
+function normalizeRoleKey(role: string): string {
+  return role.trim().toUpperCase().replace(/\s+/g, '_')
+}
+
 export function hasPermission(role: string, permission: Permission): boolean {
-  if (role === 'SUPER_ADMIN') return true
-  return ROLE_PERMISSIONS[role]?.includes(permission) ?? false
+  const key = normalizeRoleKey(role || 'ADMIN')
+  if (key === 'SUPER_ADMIN') return true
+  return ROLE_PERMISSIONS[key]?.includes(permission) ?? false
 }
 
 export function canAccess(role: string, module: string): boolean {
-  if (role === 'SUPER_ADMIN') return true
+  const key = normalizeRoleKey(role || 'ADMIN')
+  if (key === 'SUPER_ADMIN') return true
   if (module === 'dashboard' || module === '') return true
   const moduleMap: Record<string, Permission> = {
     scripture: 'scripture',
@@ -100,5 +106,5 @@ export function canAccess(role: string, module: string): boolean {
   }
   const permission = moduleMap[module]
   if (!permission) return false
-  return hasPermission(role, permission)
+  return hasPermission(key, permission)
 }

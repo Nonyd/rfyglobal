@@ -76,6 +76,12 @@ export default auth(async (req) => {
       return NextResponse.redirect(loginUrl)
     }
 
+    // Global inbox: bell + sidebar badges use these routes for every signed-in admin.
+    // Edge JWT role claims can omit or mismatch DB role; don't block PATCH/GET here.
+    if (pathname.startsWith('/api/admin/notifications')) {
+      return NextResponse.next()
+    }
+
     const role = req.auth.user?.role ?? 'ADMIN'
 
     const pathForAcl = pathname.startsWith('/api/admin')
