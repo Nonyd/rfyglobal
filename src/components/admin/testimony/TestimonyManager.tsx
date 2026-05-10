@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import Image from 'next/image'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
-import { Trash2 } from 'lucide-react'
+import { Trash2, X } from 'lucide-react'
 import type { Testimony, TestimonyStatus } from '@prisma/client'
 import { useBulkSelect } from '@/hooks/useBulkSelect'
 import { BulkActionBar } from '@/components/admin/shared/BulkActionBar'
@@ -28,7 +28,22 @@ export function TestimonyManager() {
   const [items, setItems] = useState<Testimony[]>([])
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<Testimony | null>(null)
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
   const bulk = useBulkSelect(items)
+
+  useEffect(() => {
+    setLightboxSrc(null)
+  }, [selected?.id])
+
+  useEffect(() => {
+    if (!lightboxSrc) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setLightboxSrc(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [lightboxSrc])
 
   const load = useCallback(async (): Promise<boolean> => {
     setLoading(true)
@@ -77,29 +92,48 @@ export function TestimonyManager() {
   })
 
   const patch = async (id: string, body: Record<string, unknown>) => {
-    const res = await fetch(`/api/admin/testimony/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    })
-    if (!res.ok) {
-      toast.error('Update failed')
-      return
+    setSaving(true)
+    try {
+      const res = await fetch(`/api/admin/testimony/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      const payload = (await res.json().catch(() => null)) as { error?: string } | null
+      if (!res.ok) {
+        const msg =
+          payload && typeof payload.error === 'string' && payload.error.trim()
+            ? payload.error
+            : res.status === 403
+              ? 'You do not have permission to update testimonies'
+              : 'Update failed'
+        toast.error(msg)
+        return
+      }
+      toast.success('Saved')
+      await load()
+    } finally {
+      setSaving(false)
     }
-    toast.success('Saved')
-    load()
   }
 
   const del = async (id: string) => {
     if (!confirm('Delete this testimony?')) return
     const res = await fetch(`/api/admin/testimony/${id}`, { method: 'DELETE' })
+    const payload = (await res.json().catch(() => null)) as { error?: string } | null
     if (!res.ok) {
-      toast.error('Delete failed')
+      const msg =
+        payload && typeof payload.error === 'string' && payload.error.trim()
+          ? payload.error
+          : res.status === 403
+            ? 'You do not have permission to delete'
+            : 'Delete failed'
+      toast.error(msg)
       return
     }
     toast.success('Deleted')
     if (selected?.id === id) setSelected(null)
-    load()
+    await load()
   }
 
   const mediaFlags = (t: Testimony) => {
@@ -112,40 +146,60 @@ export function TestimonyManager() {
   }
 
   const bulkApprove = async () => {
-    await Promise.all(
+    if (!bulk.selectedCount) return
+    const results = await Promise.all(
       bulk.selectedArray.map((id) =>
         fetch(`/api/admin/testimony/${id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: 'APPROVED' }),
-        }),
+        }).then((r) => r.ok),
       ),
     )
-    toast.success(`${bulk.selectedCount} testimonies approved`)
+    const failed = results.filter((ok) => !ok).length
+    if (failed > 0) {
+      toast.error(`${failed} of ${results.length} could not be approved`)
+    } else {
+      toast.success(`${bulk.selectedCount} testimonies approved`)
+    }
     bulk.reset()
     await load()
   }
 
   const bulkReject = async () => {
+    if (!bulk.selectedCount) return
     if (!confirm(`Reject ${bulk.selectedCount} testimonies?`)) return
-    await Promise.all(
+    const results = await Promise.all(
       bulk.selectedArray.map((id) =>
         fetch(`/api/admin/testimony/${id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: 'REJECTED' }),
-        }),
+        }).then((r) => r.ok),
       ),
     )
-    toast.success(`${bulk.selectedCount} testimonies rejected`)
+    const failed = results.filter((ok) => !ok).length
+    if (failed > 0) {
+      toast.error(`${failed} of ${results.length} could not be rejected`)
+    } else {
+      toast.success(`${bulk.selectedCount} testimonies rejected`)
+    }
     bulk.reset()
     await load()
   }
 
   const bulkDelete = async () => {
+    if (!bulk.selectedCount) return
     if (!confirm(`Delete ${bulk.selectedCount} testimonies?`)) return
-    await Promise.all(bulk.selectedArray.map((id) => fetch(`/api/admin/testimony/${id}`, { method: 'DELETE' })))
-    toast.success(`${bulk.selectedCount} testimonies deleted`)
+    const results = await Promise.all(
+      bulk.selectedArray.map((id) => fetch(`/api/admin/testimony/${id}`, { method: 'DELETE' }).then((r) => r.ok)),
+    )
+    const failed = results.filter((ok) => !ok).length
+    if (failed > 0) {
+      toast.error(`${failed} of ${results.length} could not be deleted`)
+    } else {
+      toast.success(`${bulk.selectedCount} testimonies deleted`)
+    }
     bulk.reset()
     await load()
   }
@@ -263,13 +317,16 @@ export function TestimonyManager() {
             {parseImages(selected.imageUrls).length > 0 && (
               <div className="grid grid-cols-2 gap-2">
                 {parseImages(selected.imageUrls).map((url) => (
-                  <div
+                  <button
                     key={url}
-                    className="relative aspect-video w-full overflow-hidden border"
+                    type="button"
+                    onClick={() => setLightboxSrc(url)}
+                    className="relative aspect-video w-full cursor-zoom-in overflow-hidden border text-left outline-none ring-gold transition-opacity hover:opacity-95 focus-visible:ring-2"
                     style={{ borderColor: 'var(--a-border)' }}
+                    aria-label="View full image"
                   >
                     <Image src={url} alt="" fill className="object-cover" sizes="400px" />
-                  </div>
+                  </button>
                 ))}
               </div>
             )}
@@ -284,16 +341,18 @@ export function TestimonyManager() {
                 <>
                   <button
                     type="button"
+                    disabled={saving}
                     onClick={() => patch(selected.id, { status: 'APPROVED' as TestimonyStatus })}
-                    className="rounded px-3 py-1.5 font-body text-xs font-semibold uppercase"
+                    className="rounded px-3 py-1.5 font-body text-xs font-semibold uppercase disabled:opacity-50"
                     style={{ background: 'var(--a-gold)', color: 'var(--a-text-inverse)' }}
                   >
-                    Approve
+                    {saving ? 'Saving…' : 'Approve'}
                   </button>
                   <button
                     type="button"
+                    disabled={saving}
                     onClick={() => patch(selected.id, { status: 'REJECTED' as TestimonyStatus })}
-                    className="rounded border px-3 py-1.5 font-body text-xs"
+                    className="rounded border px-3 py-1.5 font-body text-xs disabled:opacity-50"
                     style={{ borderColor: 'var(--a-border)', color: 'var(--a-text-secondary)' }}
                   >
                     Reject
@@ -303,8 +362,9 @@ export function TestimonyManager() {
               {selected.status === 'APPROVED' && (
                 <button
                   type="button"
+                  disabled={saving}
                   onClick={() => patch(selected.id, { isFeatured: !selected.isFeatured })}
-                  className="rounded border px-3 py-1.5 font-body text-xs"
+                  className="rounded border px-3 py-1.5 font-body text-xs disabled:opacity-50"
                   style={{ borderColor: 'var(--a-gold-border)', color: 'var(--a-gold)' }}
                 >
                   {selected.isFeatured ? 'Unfeature' : 'Feature'}
@@ -312,8 +372,9 @@ export function TestimonyManager() {
               )}
               <button
                 type="button"
+                disabled={saving}
                 onClick={() => del(selected.id)}
-                className="rounded border px-3 py-1.5 font-body text-xs"
+                className="rounded border px-3 py-1.5 font-body text-xs disabled:opacity-50"
                 style={{ borderColor: 'var(--a-border)', color: 'var(--a-red)' }}
               >
                 Delete
@@ -322,6 +383,37 @@ export function TestimonyManager() {
           </div>
         )}
       </div>
+
+      {lightboxSrc ? (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/88 p-4 backdrop-blur-sm"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Full image"
+          onClick={() => setLightboxSrc(null)}
+        >
+          <button
+            type="button"
+            onClick={() => setLightboxSrc(null)}
+            className="absolute right-4 top-4 rounded-full border p-2 shadow-lg transition-colors hover:opacity-90"
+            style={{
+              borderColor: 'var(--a-gold-border)',
+              background: 'var(--a-surface)',
+              color: 'var(--a-text)',
+            }}
+            aria-label="Close image"
+          >
+            <X className="h-5 w-5" strokeWidth={2} />
+          </button>
+          {/* eslint-disable-next-line @next/next/no-img-element -- lightbox needs intrinsic dimensions / any remote URL */}
+          <img
+            src={lightboxSrc}
+            alt=""
+            className="max-h-[90vh] max-w-[95vw] object-contain shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      ) : null}
 
       <BulkActionBar
         selectedCount={bulk.selectedCount}

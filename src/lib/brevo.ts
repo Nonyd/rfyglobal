@@ -51,6 +51,13 @@ function getClient(): BrevoClient {
   return client
 }
 
+export type SendEmailResult = { ok: true } | { ok: false; error: string }
+
+function sendErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message
+  return typeof error === 'string' ? error : 'Failed to send email'
+}
+
 interface SendEmailOptions {
   to: string | string[]
   subject: string
@@ -70,14 +77,17 @@ export async function sendEmail({
   fromEmail = EMAIL_SENDERS.hello.email,
   replyTo,
   throwOnError,
-}: SendEmailOptions) {
+}: SendEmailOptions): Promise<SendEmailResult> {
   const creds = await getBrevoCredentials()
   const apiKey = creds?.apiKey || process.env.BREVO_API_KEY
 
   if (!apiKey) {
     console.error('[Brevo] BREVO_API_KEY is not set')
     if (throwOnError) throw new Error('Brevo API key is not configured')
-    return
+    return {
+      ok: false,
+      error: 'Email is not configured. Add a Brevo API key in Integrations or set BREVO_API_KEY.',
+    }
   }
 
   const recipients = Array.isArray(to) ? to.map((email) => ({ email })) : [{ email: to }]
@@ -94,8 +104,10 @@ export async function sendEmail({
       htmlContent: html,
       ...(replyTo ? { replyTo: { email: replyTo } } : {}),
     })
+    return { ok: true }
   } catch (error) {
     console.error('[Brevo] Failed to send email:', error)
     if (throwOnError) throw error
+    return { ok: false, error: sendErrorMessage(error) }
   }
 }

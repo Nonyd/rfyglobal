@@ -7,6 +7,8 @@ const LOGIN_RATE_LIMIT_TIMEOUT_MS = 1500
 
 const ROUTE_PERMISSIONS: Record<string, string> = {
   '/admin/notifications': 'notifications',
+  '/admin/email-templates': 'email-templates',
+  '/admin/testimonies': 'testimonies',
   '/admin/cms': 'cms',
   '/admin/integrations': 'integrations',
   '/admin/automation': 'automation',
@@ -23,7 +25,9 @@ const ROUTE_PERMISSIONS: Record<string, string> = {
   '/admin/study': 'study',
   '/admin/activity': 'activity',
   '/admin/faq': 'faq',
-  '/admin/email-templates': 'email-templates',
+  '/admin/testimony': 'testimonies',
+  '/admin/prayer': 'prayer',
+  '/admin/messages': 'messages',
 }
 
 const SORTED_ADMIN_ROUTES = Object.entries(ROUTE_PERMISSIONS).sort(

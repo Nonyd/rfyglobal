@@ -101,8 +101,13 @@ export function PrayerManager() {
           replyMessage: replyText.trim(),
         }),
       })
+      const data = (await res.json().catch(() => null)) as { error?: string } | null
       if (!res.ok) {
-        toast.error('Could not send reply')
+        const msg =
+          data && typeof data.error === 'string' && data.error.trim()
+            ? data.error
+            : 'Could not send reply'
+        toast.error(msg)
         return
       }
       toast.success('Reply sent')
