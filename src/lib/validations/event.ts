@@ -9,6 +9,8 @@ export const CreateEventSchema = z.object({
   time: z.string().optional(),
   imageUrl: z.union([z.string().url(), z.literal('')]).optional(),
   isActive: z.boolean().default(true),
+  registrationFeeNgn: z.number().min(0).optional().nullable(),
+  registrationFeeUsd: z.number().min(0).optional().nullable(),
 })
 
 export type CreateEventInput = z.infer<typeof CreateEventSchema>

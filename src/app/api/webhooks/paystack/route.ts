@@ -14,7 +14,10 @@ export async function POST(req: NextRequest) {
   const creds = await getPaystackCredentials()
   if (!creds) return NextResponse.json({ error: 'Not configured' }, { status: 503 })
 
-  const hash = createHmac('sha512', creds.webhookSecret).update(rawBody).digest('hex')
+  const signingSecret = (creds.webhookSecret?.trim() || creds.secretKey)?.trim()
+  if (!signingSecret) return NextResponse.json({ error: 'Not configured' }, { status: 503 })
+
+  const hash = createHmac('sha512', signingSecret).update(rawBody).digest('hex')
   if (hash !== signature) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
   }
@@ -32,14 +35,32 @@ export async function POST(req: NextRequest) {
       amount?: number
       currency?: string
       customer?: { email?: string; metadata?: { donor_name?: string } }
+      metadata?: Record<string, unknown>
+      plan?: unknown
     }
     const { reference, amount, customer } = data
     if (!reference || amount == null) {
       return NextResponse.json({ received: true })
     }
+
+    const meta = data.metadata ?? {}
+    const givingType = (meta.type as string) ?? (meta.givingType as string) ?? 'partnership'
+
+    // Paid event registrations are finalized in POST /api/payments/verify (draft → attendee row).
+    if (givingType === 'event') {
+      return NextResponse.json({ received: true })
+    }
+
     await db.givingRecord.upsert({
       where: { reference },
-      update: { status: 'SUCCESS' },
+      update: {
+        status: 'SUCCESS',
+        meta: {
+          ...(typeof meta === 'object' ? meta : {}),
+          paystackWebhook: event.data as Prisma.InputJsonValue,
+          givingType,
+        } as Prisma.InputJsonValue,
+      },
       create: {
         reference,
         amount: amount / 100,
@@ -47,15 +68,24 @@ export async function POST(req: NextRequest) {
         gateway: 'PAYSTACK',
         status: 'SUCCESS',
         donorEmail: customer?.email ?? null,
-        donorName: customer?.metadata?.donor_name ?? null,
-        meta: event.data as object,
+        donorName:
+          (meta.name as string) ??
+          customer?.metadata?.donor_name ??
+          (meta.donor_name as string) ??
+          null,
+        meta: {
+          ...(typeof meta === 'object' ? meta : {}),
+          paystackWebhook: event.data as Prisma.InputJsonValue,
+          givingType,
+        } as Prisma.InputJsonValue,
       },
     })
+
     await notifyPartnerGivingConfirmationIfNeeded(reference)
     const gift = await db.givingRecord.findUnique({ where: { reference } })
     if (gift?.status === 'SUCCESS') {
       const donor = gift.donorName?.trim() || gift.donorEmail?.trim() || 'Anonymous'
-      await notifyPartnerGiftOnce(reference, gift.amount, donor)
+      await notifyPartnerGiftOnce(reference, gift.amount, donor, gift.currency)
     }
   }
 

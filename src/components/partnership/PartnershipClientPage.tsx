@@ -16,7 +16,8 @@ type BankDetails = {
   contactEmail?: string
 } | null
 
-const PRESET_AMOUNTS = [1000, 2500, 5000, 10000, 25000, 50000]
+const PRESET_AMOUNTS_NGN = [1000, 2500, 5000, 10000, 25000, 50000]
+const PRESET_AMOUNTS_USD = [5, 10, 25, 50, 100, 250]
 
 const GATEWAYS: {
   id: Gateway
@@ -70,6 +71,7 @@ export function PartnershipClientPage({
     gw.id === 'PAYSTACK' ? gateways.paystack : gw.id === 'FLUTTERWAVE' ? gateways.flutterwave : gateways.payaza
   )
   const [frequency, setFrequency] = useState<Frequency>('ONE_TIME')
+  const [currency, setCurrency] = useState<'NGN' | 'USD'>('NGN')
   const [amount, setAmount] = useState<number>(5000)
   const [customAmount, setCustomAmount] = useState('')
   const [donorName, setDonorName] = useState('')
@@ -78,7 +80,8 @@ export function PartnershipClientPage({
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
 
-  const activeAmount = customAmount ? parseInt(customAmount, 10) : amount
+  const presetList = currency === 'NGN' ? PRESET_AMOUNTS_NGN : PRESET_AMOUNTS_USD
+  const activeAmount = customAmount ? parseFloat(customAmount) : amount
 
   const handleGive = async () => {
     if (!donorName.trim()) {
@@ -89,8 +92,16 @@ export function PartnershipClientPage({
       toast.error('Please enter your email')
       return
     }
-    if (!activeAmount || Number.isNaN(activeAmount) || activeAmount < minimumAmount) {
-      toast.error(`Minimum gift is ₦${minimumAmount.toLocaleString()}`)
+    const minOk =
+      gateway === 'PAYSTACK' && currency === 'USD'
+        ? activeAmount >= 1
+        : activeAmount >= minimumAmount
+    if (!activeAmount || Number.isNaN(activeAmount) || !minOk) {
+      toast.error(
+        gateway === 'PAYSTACK' && currency === 'USD'
+          ? 'Minimum gift is $1'
+          : `Minimum gift is ₦${minimumAmount.toLocaleString()}`
+      )
       return
     }
     if (enabledGateways.length === 0) {
@@ -106,6 +117,32 @@ export function PartnershipClientPage({
 
     setLoading(true)
     try {
+      if (gateway === 'PAYSTACK') {
+        const freqMap: Record<Frequency, 'one_time' | 'monthly' | 'annual'> = {
+          ONE_TIME: 'one_time',
+          MONTHLY: 'monthly',
+          ANNUAL: 'annual',
+        }
+        const smallest = Math.round(activeAmount * 100)
+        const res = await fetch('/api/payments/initiate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: donorEmail.trim(),
+            name: donorName.trim(),
+            amount: smallest,
+            currency,
+            frequency: freqMap[frequency],
+            type: 'partnership',
+            callbackUrl: `${window.location.origin}/partner/verify`,
+          }),
+        })
+        const data = await res.json()
+        if (!res.ok) throw new Error(typeof data.error === 'string' ? data.error : firstApiError(data.error))
+        if (data.authorizationUrl) window.location.href = data.authorizationUrl as string
+        return
+      }
+
       const res = await fetch('/api/payments/initiate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -204,6 +241,33 @@ export function PartnershipClientPage({
 
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
           <div className="space-y-8">
+            {gateway === 'PAYSTACK' ? (
+              <div>
+                <p className="mb-3 font-body text-xs uppercase tracking-widest text-text-muted">Currency</p>
+                <div className="flex">
+                  {(['NGN', 'USD'] as const).map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      onClick={() => {
+                        setCurrency(c)
+                        setAmount(c === 'NGN' ? 5000 : 25)
+                        setCustomAmount('')
+                      }}
+                      className={cn(
+                        'flex-1 py-3 text-sm font-body tracking-wide border transition-all',
+                        currency === c
+                          ? 'border-gold bg-gold text-charcoal'
+                          : 'border-theme text-text-secondary hover:border-gold/40 hover:text-text-primary'
+                      )}
+                    >
+                      {c === 'NGN' ? '₦ Naira' : '$ Dollar'}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
             <div>
               <p className="mb-3 font-body text-xs uppercase tracking-widest text-text-muted">Giving Frequency</p>
               <div className="flex">
@@ -231,7 +295,7 @@ export function PartnershipClientPage({
             <div>
               <p className="mb-3 font-body text-xs uppercase tracking-widest text-text-muted">Select Amount</p>
               <div className="grid grid-cols-3 gap-2">
-                {PRESET_AMOUNTS.map((a) => (
+                {presetList.map((a) => (
                   <button
                     key={a}
                     type="button"
@@ -246,7 +310,8 @@ export function PartnershipClientPage({
                         : 'border-theme text-text-secondary hover:border-gold/40 hover:text-text-primary'
                     )}
                   >
-                    ₦{a.toLocaleString()}
+                    {currency === 'NGN' ? '₦' : '$'}
+                    {a.toLocaleString()}
                   </button>
                 ))}
               </div>
@@ -255,7 +320,9 @@ export function PartnershipClientPage({
             <div>
               <p className="mb-3 font-body text-xs uppercase tracking-widest text-text-muted">Or Enter Amount</p>
               <div className="flex items-center border border-theme transition-colors focus-within:border-gold">
-                <span className="border-r border-theme px-4 py-3 font-body text-gold">₦</span>
+                <span className="border-r border-theme px-4 py-3 font-body text-gold">
+                  {currency === 'NGN' ? '₦' : '$'}
+                </span>
                 <input
                   type="number"
                   value={customAmount}
@@ -311,7 +378,11 @@ export function PartnershipClientPage({
                     <button
                       key={gw.id}
                       type="button"
-                      onClick={() => !disabled && setGateway(gw.id)}
+                      onClick={() => {
+                        if (disabled) return
+                        setGateway(gw.id)
+                        if (gw.id !== 'PAYSTACK') setCurrency('NGN')
+                      }}
                       disabled={disabled}
                       className={cn(
                         'w-full flex items-center justify-between p-4 border transition-all text-left',
@@ -352,7 +423,11 @@ export function PartnershipClientPage({
             >
               {loading
                 ? 'Processing…'
-                : `Give ₦${(activeAmount || 0).toLocaleString()} ${frequency === 'MONTHLY' ? '/ month' : frequency === 'ANNUAL' ? '/ year' : ''}`}
+                : `Give ${gateway === 'PAYSTACK' && currency === 'USD' ? '$' : '₦'}${
+                    gateway === 'PAYSTACK' && currency === 'USD'
+                      ? (activeAmount || 0).toLocaleString(undefined, { maximumFractionDigits: 2 })
+                      : (activeAmount || 0).toLocaleString()
+                  } ${frequency === 'MONTHLY' ? '/ month' : frequency === 'ANNUAL' ? '/ year' : ''}`}
             </button>
           </div>
         </div>

@@ -16,6 +16,7 @@ export async function notifyPartnerGivingConfirmationIfNeeded(reference: string)
   if (!record || record.status !== 'SUCCESS' || !record.donorEmail) return
 
   const meta = (record.meta ?? {}) as Record<string, unknown>
+  if (meta.givingType === 'event') return
   if (meta.partnerConfirmationSent) return
 
   const firstName = record.donorName?.split(' ')[0] ?? 'Friend'

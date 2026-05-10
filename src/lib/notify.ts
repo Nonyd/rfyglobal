@@ -96,6 +96,7 @@ export async function notifyPartnerGiftOnce(
   paymentId: string,
   amount: number,
   name: string,
+  currency = 'NGN',
 ): Promise<void> {
   try {
     const existing = await db.adminNotification.findFirst({
@@ -106,7 +107,11 @@ export async function notifyPartnerGiftOnce(
     })
     if (existing) return
 
-    await createNotification('partner', `${paymentId} — ₦${amount.toLocaleString()} from ${name}`)
+    const amountLabel =
+      currency === 'USD'
+        ? `$${amount.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`
+        : `₦${amount.toLocaleString()}`
+    await createNotification('partner', `${paymentId} — ${amountLabel} from ${name}`)
   } catch (error) {
     console.error('[notify] notifyPartnerGiftOnce error:', error)
   }

@@ -1,23 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { strictRatelimit } from '@/lib/ratelimit'
-import { sendEventRegistrationEmail } from '@/lib/emails/event-registration'
-import { createNotification } from '@/lib/notify'
-import { extractMappedEventFields } from '@/lib/event-registration-map'
 import { z } from 'zod'
+import { extractMappedEventFields } from '@/lib/event-registration-map'
 
 export const runtime = 'nodejs'
 
-const RegisterSchema = z.object({
+const BodySchema = z.object({
   fields: z.record(z.string(), z.string()),
 })
 
+/** Validates registration fields and stores them until Paystack checkout completes. */
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
   const ip =
     req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
     req.headers.get('x-real-ip') ??
     'anonymous'
-  const { success } = await strictRatelimit.limit(`event-reg:${ip}`)
+  const { success } = await strictRatelimit.limit(`event-draft:${ip}`)
   if (!success) {
     return NextResponse.json({ error: 'Too many requests' }, { status: 429 })
   }
@@ -35,11 +34,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   const feeNgn = event.registrationFeeNgn ?? 0
   const feeUsd = event.registrationFeeUsd ?? 0
-  if (feeNgn > 0 || feeUsd > 0) {
-    return NextResponse.json(
-      { error: 'This event requires payment. Complete checkout from the event page.' },
-      { status: 400 },
-    )
+  if (feeNgn <= 0 && feeUsd <= 0) {
+    return NextResponse.json({ error: 'This event does not require payment.' }, { status: 400 })
   }
 
   if (new Date(event.date) < new Date()) {
@@ -47,7 +43,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   }
 
   const body = await req.json()
-  const parsed = RegisterSchema.safeParse(body)
+  const parsed = BodySchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json({ error: 'Invalid submission' }, { status: 400 })
   }
@@ -63,7 +59,7 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     return NextResponse.json({ error: 'Registration is not available for this event.' }, { status: 400 })
   }
 
-  const { email, name, phone, location, expectations } = extractMappedEventFields(formFields, fieldValues)
+  const { email } = extractMappedEventFields(formFields, fieldValues)
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   if (!email || !emailRegex.test(email)) {
@@ -93,25 +89,16 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     )
   }
 
-  const registration = await db.eventRegistration.create({
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000)
+
+  const draft = await db.eventRegistrationDraft.create({
     data: {
       eventId: event.id,
-      name: name || email,
+      fields: fieldValues,
       email,
-      phone: phone || 'N/A',
-      location: location || 'N/A',
-      expectations,
-      extraFields: fieldValues,
+      expiresAt,
     },
   })
 
-  try {
-    await sendEventRegistrationEmail({ name: name || email, email, event })
-  } catch (err) {
-    console.error('[EventReg] Failed to send confirmation email:', err)
-  }
-
-  await createNotification('event_registration', `New registration for ${event.title}`)
-
-  return NextResponse.json({ success: true, registrationId: registration.id }, { status: 201 })
+  return NextResponse.json({ draftId: draft.id }, { status: 201 })
 }

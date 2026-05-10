@@ -11,3 +11,19 @@ export const InitiatePaymentSchema = z.object({
 })
 
 export type InitiatePaymentInput = z.infer<typeof InitiatePaymentSchema>
+
+/** Paystack checkout from partner/events — amounts in smallest unit (kobo / cents). */
+export const PhasePaystackInitiateSchema = z.object({
+  email: z.string().email(),
+  name: z.string().min(1).max(200),
+  amount: z.number().int().positive(),
+  currency: z.enum(['NGN', 'USD']),
+  frequency: z.enum(['one_time', 'monthly', 'annual']).default('one_time'),
+  type: z.enum(['partnership', 'event']),
+  eventId: z.string().optional(),
+  draftId: z.string().optional(),
+  metadata: z.record(z.string(), z.unknown()).optional(),
+  callbackUrl: z.string().url().optional(),
+})
+
+export type PhasePaystackInitiateInput = z.infer<typeof PhasePaystackInitiateSchema>

@@ -10,11 +10,15 @@ import { useEmailCheck } from '@/hooks/useEmailCheck'
 interface EventRegistrationModalProps {
   isOpen: boolean
   onClose: () => void
+  eventId: string
   eventSlug: string
   eventTitle: string
   eventDate: string
   eventCity: string
   fields: EventFormField[]
+  registrationFeeNgn?: number | null
+  registrationFeeUsd?: number | null
+  paystackEnabled?: boolean
 }
 
 function jsonStringList(options: unknown): string[] {
@@ -122,24 +126,50 @@ function EventPrimaryEmailField({
   )
 }
 
+function getEmailNameFromFields(fields: EventFormField[], fieldValues: Record<string, string>) {
+  const emailField = fields.find((f) => f.type === 'EMAIL')
+  const email = emailField ? (fieldValues[emailField.id] ?? '').trim() : ''
+  const nameField =
+    fields.find((f) => f.type === 'SHORT_TEXT' && f.order === 0) ??
+    fields.find((f) => f.type === 'SHORT_TEXT' && f.label.toLowerCase().includes('name'))
+  const name = nameField ? (fieldValues[nameField.id] ?? '').trim() : ''
+  return { email, name }
+}
+
 export function EventRegistrationModal({
   isOpen,
   onClose,
+  eventId,
   eventSlug,
   eventTitle,
   eventDate,
   eventCity,
   fields,
+  registrationFeeNgn = 0,
+  registrationFeeUsd = 0,
+  paystackEnabled = false,
 }: EventRegistrationModalProps) {
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [primaryEmailDuplicate, setPrimaryEmailDuplicate] = useState(false)
+  const [paymentCurrency, setPaymentCurrency] = useState<'NGN' | 'USD'>('NGN')
+
+  const feeNgn = registrationFeeNgn ?? 0
+  const feeUsd = registrationFeeUsd ?? 0
+  const requiresPayment = feeNgn > 0 || feeUsd > 0
+  const bothCurrencies = feeNgn > 0 && feeUsd > 0
 
   const primaryEmailField = useMemo(() => {
     const emails = fields.filter((f) => f.type === 'EMAIL').sort((a, b) => a.order - b.order)
     return emails[0]
   }, [fields])
+
+  useEffect(() => {
+    if (!isOpen) return
+    if (feeNgn > 0 && feeUsd <= 0) setPaymentCurrency('NGN')
+    else if (feeUsd > 0 && feeNgn <= 0) setPaymentCurrency('USD')
+  }, [isOpen, feeNgn, feeUsd])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -156,6 +186,75 @@ export function EventRegistrationModal({
 
     setSubmitting(true)
     try {
+      if (requiresPayment) {
+        if (!paystackEnabled) {
+          toast.error('Online payment is not available for this event right now.')
+          return
+        }
+
+        const currency =
+          bothCurrencies ? paymentCurrency : feeNgn > 0 ? 'NGN' : 'USD'
+        const major = currency === 'NGN' ? feeNgn : feeUsd
+        if (major <= 0) {
+          toast.error('Invalid ticket price configuration.')
+          return
+        }
+
+        const { email, name } = getEmailNameFromFields(fields, fieldValues)
+        if (!email) {
+          toast.error('Please enter your email before continuing to payment.')
+          return
+        }
+
+        const draftRes = await fetch(
+          `/api/events/${encodeURIComponent(eventSlug)}/registration-draft`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fields: fieldValues }),
+          }
+        )
+        const draftData = await draftRes.json()
+        if (!draftRes.ok) {
+          if (draftData.alreadyRegistered) {
+            toast.error('You are already registered for this event!')
+          } else {
+            toast.error(messageFromApiError(draftData.error))
+          }
+          return
+        }
+
+        const draftId = draftData.draftId as string
+        const smallest = Math.round(major * 100)
+        const origin = typeof window !== 'undefined' ? window.location.origin : ''
+        const initRes = await fetch('/api/payments/initiate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email,
+            name: name || email,
+            amount: smallest,
+            currency,
+            frequency: 'one_time',
+            type: 'event',
+            eventId,
+            draftId,
+            callbackUrl: `${origin}/events/${encodeURIComponent(eventSlug)}/verify`,
+          }),
+        })
+        const initData = await initRes.json()
+        if (!initRes.ok) {
+          toast.error(
+            typeof initData.error === 'string' ? initData.error : messageFromApiError(initData.error)
+          )
+          return
+        }
+        if (initData.authorizationUrl) {
+          window.location.href = initData.authorizationUrl as string
+        }
+        return
+      }
+
       const res = await fetch(`/api/events/${encodeURIComponent(eventSlug)}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -409,13 +508,64 @@ export function EventRegistrationModal({
                         </div>
                       ))}
 
+                      {requiresPayment ? (
+                        <div className="space-y-3 pt-2">
+                          <p className="font-body text-xs leading-relaxed" style={{ color: '#A0A0A0' }}>
+                            {bothCurrencies ? (
+                              <>
+                                Pay{' '}
+                                <strong style={{ color: '#C9A84C' }}>
+                                  {paymentCurrency === 'NGN'
+                                    ? `₦${feeNgn.toLocaleString()}`
+                                    : `$${feeUsd.toLocaleString()}`}
+                                </strong>{' '}
+                                to complete registration (secured by Paystack).
+                              </>
+                            ) : (
+                              <>
+                                Pay{' '}
+                                <strong style={{ color: '#C9A84C' }}>
+                                  {feeNgn > 0 ? `₦${feeNgn.toLocaleString()}` : `$${feeUsd.toLocaleString()}`}
+                                </strong>{' '}
+                                to complete registration (secured by Paystack).
+                              </>
+                            )}
+                          </p>
+                          {bothCurrencies ? (
+                            <div className="flex gap-2">
+                              {(['NGN', 'USD'] as const).map((c) => (
+                                <button
+                                  key={c}
+                                  type="button"
+                                  onClick={() => setPaymentCurrency(c)}
+                                  className="flex-1 py-2.5 font-body text-xs font-semibold uppercase tracking-widest transition-all"
+                                  style={{
+                                    background: paymentCurrency === c ? '#C9A84C' : 'transparent',
+                                    color: paymentCurrency === c ? '#0F0F0F' : '#A0A0A0',
+                                    border: `1px solid ${paymentCurrency === c ? '#C9A84C' : 'rgba(255,255,255,0.12)'}`,
+                                  }}
+                                >
+                                  {c === 'NGN' ? '₦ Naira' : '$ Dollar'}
+                                </button>
+                              ))}
+                            </div>
+                          ) : null}
+                        </div>
+                      ) : null}
+
                       <button
                         type="submit"
                         disabled={submitting || primaryEmailDuplicate}
                         className="mt-2 w-full py-4 font-body text-xs font-semibold uppercase tracking-widest transition-all duration-300 disabled:opacity-50"
                         style={{ background: '#C9A84C', color: '#0F0F0F' }}
                       >
-                        {submitting ? 'Registering…' : 'Complete Registration →'}
+                        {submitting
+                          ? requiresPayment
+                            ? 'Redirecting…'
+                            : 'Registering…'
+                          : requiresPayment
+                            ? 'Continue to Payment →'
+                            : 'Complete Registration →'}
                       </button>
 
                       <p className="text-center font-body text-xs" style={{ color: '#585858' }}>

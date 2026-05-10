@@ -12,15 +12,30 @@ export function PaymentVerifyContent() {
 
   const verify = useCallback(() => {
     const gateway = params.get('gateway')
-    const ref = params.get('ref')
-    const transactionId = params.get('transaction_id')
+    const ref =
+      params.get('ref') ?? params.get('reference') ?? params.get('trxref')
 
-    if (!gateway || !ref) {
+    if (!ref) {
       setStatus('error')
       return
     }
 
-    const url = `/api/payments/verify?gateway=${encodeURIComponent(gateway)}&ref=${encodeURIComponent(ref)}${transactionId ? `&transaction_id=${encodeURIComponent(transactionId)}` : ''}`
+    if (!gateway) {
+      fetch('/api/payments/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reference: ref }),
+      })
+        .then((r) => r.json())
+        .then((data: { success?: boolean }) => {
+          if (data.success) setStatus('success')
+          else setStatus('failed')
+        })
+        .catch(() => setStatus('error'))
+      return
+    }
+
+    const url = `/api/payments/verify?gateway=${encodeURIComponent(gateway)}&ref=${encodeURIComponent(ref)}${params.get('transaction_id') ? `&transaction_id=${encodeURIComponent(params.get('transaction_id')!)}` : ''}`
 
     fetch(url)
       .then((r) => r.json())

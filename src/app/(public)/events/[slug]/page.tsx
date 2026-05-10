@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation'
 import { db } from '@/lib/db'
+import { getPaystackCredentials } from '@/lib/credentials'
 import { ensureDefaultEventFields } from '@/lib/event-form-fields'
 import { Navbar } from '@/components/layout/Navbar'
 import { Footer } from '@/components/layout/Footer'
@@ -69,7 +70,7 @@ export default async function SingleEventPage({
 
   await ensureDefaultEventFields(event.id)
 
-  const [otherEvents, fields] = await Promise.all([
+  const [otherEvents, fields, paystack] = await Promise.all([
     db.event.findMany({
       where: {
         isActive: true,
@@ -83,6 +84,7 @@ export default async function SingleEventPage({
       where: { eventId: event.id, isActive: true },
       orderBy: { order: 'asc' },
     }),
+    getPaystackCredentials(),
   ])
 
   const eventSchema = {
@@ -127,7 +129,12 @@ export default async function SingleEventPage({
     <>
       <Navbar />
       <JsonLd data={eventSchema} />
-      <SingleEventClient event={event} otherEvents={otherEvents} fields={fields} />
+      <SingleEventClient
+        event={event}
+        otherEvents={otherEvents}
+        fields={fields}
+        paystackEnabled={paystack?.isActive ?? false}
+      />
       <Footer />
     </>
   )

@@ -13,9 +13,10 @@ interface SingleEventClientProps {
   event: Event
   otherEvents: Event[]
   fields: EventFormField[]
+  paystackEnabled: boolean
 }
 
-export function SingleEventClient({ event, otherEvents, fields }: SingleEventClientProps) {
+export function SingleEventClient({ event, otherEvents, fields, paystackEnabled }: SingleEventClientProps) {
   const [registrationOpen, setRegistrationOpen] = useState(false)
 
   const dateFormatted = format(new Date(event.date), 'EEEE, MMMM do yyyy')
@@ -310,11 +311,15 @@ export function SingleEventClient({ event, otherEvents, fields }: SingleEventCli
       <EventRegistrationModal
         isOpen={registrationOpen}
         onClose={() => setRegistrationOpen(false)}
+        eventId={event.id}
         eventSlug={event.slug ?? event.id}
         eventTitle={event.title}
         eventDate={dateFormatted}
         eventCity={event.city}
         fields={fields}
+        registrationFeeNgn={event.registrationFeeNgn}
+        registrationFeeUsd={event.registrationFeeUsd}
+        paystackEnabled={paystackEnabled}
       />
     </main>
   )

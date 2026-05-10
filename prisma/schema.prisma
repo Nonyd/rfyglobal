@@ -170,20 +170,25 @@ model StudyTask {
 // ─── EVENTS ───────────────────────────────────────────────────────────
 
 model Event {
-  id             String              @id @default(cuid())
-  title          String
-  slug           String?             @unique
-  description    String?             @db.Text
-  city           String
-  venue          String
-  date           DateTime
-  time           String?
-  imageUrl       String?
-  isActive       Boolean             @default(true)
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
-  registrations  EventRegistration[]
-  formFields     EventFormField[]
+  id                   String                   @id @default(cuid())
+  title                String
+  slug                 String?                  @unique
+  description          String?                  @db.Text
+  city                 String
+  venue                String
+  date                 DateTime
+  time                 String?
+  imageUrl             String?
+  /// Major units (naira). 0 or null = no NGN ticket price.
+  registrationFeeNgn   Float?
+  /// Major units (dollars). 0 or null = no USD ticket price.
+  registrationFeeUsd   Float?
+  isActive             Boolean                  @default(true)
+  createdAt            DateTime                 @default(now())
+  updatedAt            DateTime                 @updatedAt
+  registrations        EventRegistration[]
+  formFields           EventFormField[]
+  registrationDrafts   EventRegistrationDraft[]
 }
 
 model EventFormField {
@@ -215,6 +220,20 @@ model EventRegistration {
   createdAt    DateTime @default(now())
 
   @@unique([eventId, email])
+}
+
+/// Holds validated registration field values while the user completes Paystack checkout.
+model EventRegistrationDraft {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  fields    Json
+  email     String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+
+  @@index([eventId])
+  @@index([email])
 }
 
 // ─── PARTNERSHIP / GIVING ─────────────────────────────────────────────

@@ -36,6 +36,8 @@ type EventRow = {
   date: string
   time: string | null
   imageUrl: string | null
+  registrationFeeNgn: number | null
+  registrationFeeUsd: number | null
   isActive: boolean
   _count?: { registrations: number }
 }
@@ -48,6 +50,8 @@ const emptyForm = {
   date: '',
   time: '',
   imageUrl: '',
+  registrationFeeNgn: '' as string | number,
+  registrationFeeUsd: '' as string | number,
   isActive: true,
 }
 
@@ -287,6 +291,8 @@ export function EventsManager() {
       date: `${y}-${m}-${day}`,
       time: e.time ?? '',
       imageUrl: e.imageUrl ?? '',
+      registrationFeeNgn: e.registrationFeeNgn ?? '',
+      registrationFeeUsd: e.registrationFeeUsd ?? '',
       isActive: e.isActive,
     })
     setPanelOpen(true)
@@ -298,6 +304,12 @@ export function EventsManager() {
       return
     }
     const dateIso = new Date(`${form.date}T12:00:00`).toISOString()
+    const parseFee = (v: string | number) => {
+      if (v === '' || v === null || v === undefined) return null
+      const n = typeof v === 'number' ? v : parseFloat(v)
+      return Number.isFinite(n) && n >= 0 ? n : null
+    }
+
     const payload = {
       title: form.title.trim(),
       description: form.description.trim() || undefined,
@@ -306,6 +318,8 @@ export function EventsManager() {
       date: dateIso,
       time: form.time.trim() || undefined,
       imageUrl: form.imageUrl.trim() || '',
+      registrationFeeNgn: parseFee(form.registrationFeeNgn),
+      registrationFeeUsd: parseFee(form.registrationFeeUsd),
       isActive: form.isActive,
     }
 
@@ -622,6 +636,40 @@ export function EventsManager() {
                 />
               )}
             </div>
+            <Field label="Registration fee (₦ Naira, optional)">
+              <input
+                type="number"
+                min={0}
+                step="1"
+                value={form.registrationFeeNgn}
+                onChange={(ev) =>
+                  setForm((f) => ({ ...f, registrationFeeNgn: ev.target.value === '' ? '' : ev.target.value }))
+                }
+                placeholder="0 = free in NGN"
+                className="w-full border px-3 py-2 font-body text-sm focus:outline-none"
+                style={{ borderColor: 'var(--a-border)', background: 'var(--a-bg)', color: 'var(--a-text)' }}
+              />
+              <p className="mt-1 font-body text-[11px]" style={{ color: 'var(--a-text-muted)' }}>
+                Requires Paystack. Visitors can pay in NGN when this is set.
+              </p>
+            </Field>
+            <Field label="Registration fee ($ USD, optional)">
+              <input
+                type="number"
+                min={0}
+                step="0.01"
+                value={form.registrationFeeUsd}
+                onChange={(ev) =>
+                  setForm((f) => ({ ...f, registrationFeeUsd: ev.target.value === '' ? '' : ev.target.value }))
+                }
+                placeholder="0 = free in USD"
+                className="w-full border px-3 py-2 font-body text-sm focus:outline-none"
+                style={{ borderColor: 'var(--a-border)', background: 'var(--a-bg)', color: 'var(--a-text)' }}
+              />
+              <p className="mt-1 font-body text-[11px]" style={{ color: 'var(--a-text-muted)' }}>
+                Enable USD on your Paystack account. Visitors choose ₦ or $ when both are set.
+              </p>
+            </Field>
             <label className="flex cursor-pointer items-center gap-2 font-body text-sm" style={{ color: 'var(--a-text-secondary)' }}>
               <input
                 type="checkbox"
