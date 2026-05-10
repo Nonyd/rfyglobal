@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     },
   })
 
-  await createNotification('prayer', `Subject: ${subject}`)
+  await createNotification('prayer', 'New prayer request submitted')
 
   return NextResponse.json({ success: true, id: request.id }, { status: 201 })
 }

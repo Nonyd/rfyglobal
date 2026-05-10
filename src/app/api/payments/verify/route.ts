@@ -23,8 +23,6 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ status: 'success', reference })
   }
 
-  const previousStatus = record.status
-
   try {
     let verified = false
 
@@ -45,7 +43,12 @@ export async function GET(req: NextRequest) {
           },
         })
         await notifyPartnerGivingConfirmationIfNeeded(reference)
-        await notifyPartnerGiftOnce(reference, previousStatus)
+        const gift = await db.givingRecord.findUnique({ where: { reference } })
+        if (gift) {
+          const donor =
+            gift.donorName?.trim() || gift.donorEmail?.trim() || 'Anonymous'
+          await notifyPartnerGiftOnce(reference, gift.amount, donor)
+        }
       }
     } else if (gateway === 'FLUTTERWAVE') {
       if (!transactionId) {
@@ -72,7 +75,12 @@ export async function GET(req: NextRequest) {
             },
           })
           await notifyPartnerGivingConfirmationIfNeeded(reference)
-          await notifyPartnerGiftOnce(reference, previousStatus)
+          const gift = await db.givingRecord.findUnique({ where: { reference } })
+          if (gift) {
+            const donor =
+              gift.donorName?.trim() || gift.donorEmail?.trim() || 'Anonymous'
+            await notifyPartnerGiftOnce(reference, gift.amount, donor)
+          }
         }
       }
     } else if (gateway === 'PAYAZA') {

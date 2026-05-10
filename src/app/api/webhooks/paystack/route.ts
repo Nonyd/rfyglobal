@@ -37,8 +37,6 @@ export async function POST(req: NextRequest) {
     if (!reference || amount == null) {
       return NextResponse.json({ received: true })
     }
-    const existing = await db.givingRecord.findUnique({ where: { reference } })
-    const previousStatus = existing?.status
     await db.givingRecord.upsert({
       where: { reference },
       update: { status: 'SUCCESS' },
@@ -54,7 +52,11 @@ export async function POST(req: NextRequest) {
       },
     })
     await notifyPartnerGivingConfirmationIfNeeded(reference)
-    await notifyPartnerGiftOnce(reference, previousStatus)
+    const gift = await db.givingRecord.findUnique({ where: { reference } })
+    if (gift?.status === 'SUCCESS') {
+      const donor = gift.donorName?.trim() || gift.donorEmail?.trim() || 'Anonymous'
+      await notifyPartnerGiftOnce(reference, gift.amount, donor)
+    }
   }
 
   if (event.event === 'subscription.create') {

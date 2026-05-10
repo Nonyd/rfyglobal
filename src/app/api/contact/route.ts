@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     },
   })
 
-  await createNotification('contact', `From ${name}: ${subject}`)
+  await createNotification('contact', `New message from ${name}`)
 
   const safeName = escapeHtml(name)
   const vars = { first_name: safeName }

@@ -73,7 +73,7 @@ export function AdminNotificationsPage() {
   useEffect(() => {
     return subscribe(() => {
       void load()
-    }, { includePolling: true })
+    })
   }, [subscribe, load])
 
   const markAllRead = async () => {

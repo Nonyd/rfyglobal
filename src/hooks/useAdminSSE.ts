@@ -44,8 +44,7 @@ export function useAdminSSE({ events, onEvent, enabled = true }: UseAdminSSEOpti
       eventsRef.current.includes(eventName as SSEEventType)
 
     if (stream) {
-      return stream.subscribe(({ event, source }) => {
-        if (source === 'poll') return
+      return stream.subscribe(({ event }) => {
         const evt = event || 'notification'
         if (matches(evt)) {
           onEventRef.current()

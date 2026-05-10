@@ -36,8 +36,6 @@ export async function POST(req: NextRequest) {
   if (event.event_type === 'successful') {
     const ref = event.transaction_data?.merchant_transaction_reference
     if (ref) {
-      const existing = await db.givingRecord.findUnique({ where: { reference: ref } })
-      const previousStatus = existing?.status
       await db.givingRecord.upsert({
         where: { reference: ref },
         update: { status: 'SUCCESS' },
@@ -53,7 +51,11 @@ export async function POST(req: NextRequest) {
         },
       })
       await notifyPartnerGivingConfirmationIfNeeded(ref)
-      await notifyPartnerGiftOnce(ref, previousStatus)
+      const gift = await db.givingRecord.findUnique({ where: { reference: ref } })
+      if (gift?.status === 'SUCCESS') {
+        const donor = gift.donorName?.trim() || gift.donorEmail?.trim() || 'Anonymous'
+        await notifyPartnerGiftOnce(ref, gift.amount, donor)
+      }
     }
   }
 

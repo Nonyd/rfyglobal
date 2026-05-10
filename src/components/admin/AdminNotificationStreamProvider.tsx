@@ -10,46 +10,33 @@ import {
   type ReactNode,
 } from 'react'
 
-/** One shared SSE connection + optional polling for the admin dashboard */
-export type NotificationStreamPayload = { event: string; source: 'sse' | 'poll' }
+/** One shared SSE connection for the admin dashboard (badges, full notifications page). */
+export type NotificationStreamPayload = { event: string; source: 'sse' }
 
 type ListenerEntry = {
   fn: (payload: NotificationStreamPayload) => void
-  includePolling: boolean
 }
 
 export type AdminNotificationStreamApi = {
-  subscribe: (
-    listener: (payload: NotificationStreamPayload) => void,
-    options?: { includePolling?: boolean },
-  ) => () => void
+  subscribe: (listener: (payload: NotificationStreamPayload) => void) => () => void
 }
 
 const AdminNotificationStreamContext = createContext<AdminNotificationStreamApi | null>(null)
-
-const POLL_MS = 60_000
 
 export function AdminNotificationStreamProvider({ children }: { children: ReactNode }) {
   const listenersRef = useRef(new Map<number, ListenerEntry>())
   const nextIdRef = useRef(0)
 
-  const subscribe = useCallback(
-    (listener: (payload: NotificationStreamPayload) => void, options?: { includePolling?: boolean }) => {
-      const id = ++nextIdRef.current
-      listenersRef.current.set(id, {
-        fn: listener,
-        includePolling: options?.includePolling ?? false,
-      })
-      return () => {
-        listenersRef.current.delete(id)
-      }
-    },
-    [],
-  )
+  const subscribe = useCallback((listener: (payload: NotificationStreamPayload) => void) => {
+    const id = ++nextIdRef.current
+    listenersRef.current.set(id, { fn: listener })
+    return () => {
+      listenersRef.current.delete(id)
+    }
+  }, [])
 
   const broadcast = useCallback((payload: NotificationStreamPayload) => {
-    listenersRef.current.forEach(({ fn, includePolling }) => {
-      if (payload.source === 'poll' && !includePolling) return
+    listenersRef.current.forEach(({ fn }) => {
       try {
         fn(payload)
       } catch {
@@ -91,13 +78,6 @@ export function AdminNotificationStreamProvider({ children }: { children: ReactN
       clearTimeout(retryTimeout)
       es?.close()
     }
-  }, [broadcast])
-
-  useEffect(() => {
-    const poll = setInterval(() => {
-      broadcast({ event: 'poll', source: 'poll' })
-    }, POLL_MS)
-    return () => clearInterval(poll)
   }, [broadcast])
 
   const value = useMemo<AdminNotificationStreamApi>(() => ({ subscribe }), [subscribe])

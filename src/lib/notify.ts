@@ -1,4 +1,3 @@
-import type { PaymentStatus } from '@prisma/client'
 import { db } from '@/lib/db'
 
 export type NotificationType =
@@ -20,9 +19,6 @@ const NOTIFICATION_CONFIG: Record<NotificationType, { title: string; link: strin
   contact: { title: 'New Contact Form Submission', link: '/admin/messages' },
 }
 
-const sseClients = new Set<(data: string) => void>()
-
-/** Maps persisted notification types to SSE event names for targeted admin page refresh */
 const SSE_EVENT_MAP: Record<NotificationType, string> = {
   prayer: 'new_prayer',
   testimony: 'new_testimony',
@@ -33,59 +29,77 @@ const SSE_EVENT_MAP: Record<NotificationType, string> = {
   contact: 'new_message',
 }
 
-export function addSSEClient(send: (data: string) => void) {
+type SSESendFn = (data: string) => void
+const sseClients = new Set<SSESendFn>()
+
+export function addSSEClient(send: SSESendFn): () => void {
   sseClients.add(send)
   return () => sseClients.delete(send)
 }
 
-export function notifySSEClients(notificationType?: NotificationType) {
-  const eventType = notificationType ? (SSE_EVENT_MAP[notificationType] ?? 'notification') : 'notification'
-
-  const message = `data: ${JSON.stringify({
-    type: 'notification',
-    event: eventType,
-    timestamp: Date.now(),
-  })}\n\n`
-
+export function broadcastSSE(payload: Record<string, unknown>): void {
+  const message = `data: ${JSON.stringify(payload)}\n\n`
   sseClients.forEach((send) => {
     try {
       send(message)
     } catch {
-      /* disconnected */
+      /* client disconnected */
     }
   })
+}
+
+/** Generic refresh pulse for PATCH/DELETE/bulk ops (same SSE channel as notifications). */
+export function notifySSEClients(): void {
+  broadcastSSE({ type: 'notification', event: 'refresh', timestamp: Date.now() })
 }
 
 export async function createNotification(
   type: NotificationType,
   body?: string,
-  options?: { targetId?: string },
-) {
-  const config = NOTIFICATION_CONFIG[type]
+  opts?: { targetId?: string },
+): Promise<void> {
   try {
+    const config = NOTIFICATION_CONFIG[type]
+
     await db.adminNotification.create({
       data: {
         type,
         title: config.title,
         body: body ?? null,
         link: config.link,
-        ...(options?.targetId ? { targetId: options.targetId } : {}),
+        isRead: false,
+        ...(opts?.targetId ? { targetId: opts.targetId } : {}),
       },
     })
-    notifySSEClients(type)
-  } catch (err) {
-    console.error('[notify] Failed to persist admin notification:', err)
+
+    broadcastSSE({
+      type: 'notification',
+      event: SSE_EVENT_MAP[type],
+      notificationType: type,
+      timestamp: Date.now(),
+    })
+  } catch (error) {
+    console.error('[notify] createNotification error:', error)
   }
 }
 
-/** Fire once when a gift transitions to SUCCESS (avoids duplicate webhook/verify pings). */
+/** One admin notification per payment reference (deduped by reference substring in body). */
 export async function notifyPartnerGiftOnce(
-  reference: string,
-  previousStatus: PaymentStatus | null | undefined,
-) {
-  if (previousStatus === 'SUCCESS') return
-  const rec = await db.givingRecord.findUnique({ where: { reference } })
-  if (!rec || rec.status !== 'SUCCESS') return
-  const name = rec.donorName?.trim() || rec.donorEmail?.trim() || 'Partner'
-  await createNotification('partner', `₦${rec.amount.toLocaleString()} gift from ${name}`)
+  paymentId: string,
+  amount: number,
+  name: string,
+): Promise<void> {
+  try {
+    const existing = await db.adminNotification.findFirst({
+      where: {
+        type: 'partner',
+        body: { contains: paymentId },
+      },
+    })
+    if (existing) return
+
+    await createNotification('partner', `${paymentId} — ₦${amount.toLocaleString()} from ${name}`)
+  } catch (error) {
+    console.error('[notify] notifyPartnerGiftOnce error:', error)
+  }
 }

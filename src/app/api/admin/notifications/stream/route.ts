@@ -12,42 +12,53 @@ export async function GET(req: NextRequest) {
   }
 
   const encoder = new TextEncoder()
+  let cleanup: (() => void) | null = null
+  let keepAliveInterval: ReturnType<typeof setInterval> | null = null
 
   const stream = new ReadableStream({
     start(controller) {
-      controller.enqueue(encoder.encode('data: {"type":"connected"}\n\n'))
-
-      const send = (data: string) => {
+      const enqueue = (data: string) => {
         try {
           controller.enqueue(encoder.encode(data))
         } catch {
-          /* closed */
+          /* Controller closed */
         }
       }
 
-      const cleanup = addSSEClient(send)
+      enqueue('data: {"type":"connected"}\n\n')
 
-      const keepAlive = setInterval(() => {
+      cleanup = addSSEClient(enqueue)
+
+      keepAliveInterval = setInterval(() => {
         try {
-          controller.enqueue(encoder.encode('data: {"type":"ping"}\n\n'))
+          enqueue('data: {"type":"ping"}\n\n')
         } catch {
-          clearInterval(keepAlive)
-          cleanup()
+          if (keepAliveInterval) clearInterval(keepAliveInterval)
+          if (cleanup) cleanup()
         }
-      }, 30000)
+      }, 25000)
 
       req.signal.addEventListener('abort', () => {
-        clearInterval(keepAlive)
-        cleanup()
-        controller.close()
+        if (keepAliveInterval) clearInterval(keepAliveInterval)
+        if (cleanup) cleanup()
+        try {
+          controller.close()
+        } catch {
+          /* already closed */
+        }
       })
+    },
+    cancel() {
+      if (keepAliveInterval) clearInterval(keepAliveInterval)
+      if (cleanup) cleanup()
     },
   })
 
   return new Response(stream, {
+    status: 200,
     headers: {
       'Content-Type': 'text/event-stream',
-      'Cache-Control': 'no-cache',
+      'Cache-Control': 'no-cache, no-transform',
       Connection: 'keep-alive',
       'X-Accel-Buffering': 'no',
     },

@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
     },
   })
 
-  await createNotification('testimony', `"${title}" submitted`)
+  await createNotification('testimony', 'New testimony submitted')
 
   return NextResponse.json({ success: true, id: testimony.id }, { status: 201 })
 }

@@ -63,7 +63,7 @@ export function useAdminNotificationBadges() {
   useEffect(() => {
     return subscribe(() => {
       void load()
-    }, { includePolling: true })
+    })
   }, [subscribe, load])
 
   return { unreadByType, total, refresh: load }
