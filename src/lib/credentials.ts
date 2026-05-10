@@ -10,8 +10,6 @@ export interface PaystackCredentials {
   annualPlanCode: string
   isActive: boolean
   mode: 'test' | 'live'
-  /** Dollar checkout on partner / events — default false until Paystack enables USD */
-  usdEnabled: boolean
 }
 
 export interface FlutterwaveCredentials {
@@ -72,17 +70,7 @@ async function fetchCredential<T>(service: string): Promise<T | null> {
   }
 }
 
-export const getPaystackCredentials = cache(async (): Promise<PaystackCredentials | null> => {
-  const raw = await fetchCredential<Omit<PaystackCredentials, 'usdEnabled'> & { usdEnabled?: unknown }>(
-    'paystack',
-  )
-  if (!raw) return null
-  const u = raw.usdEnabled
-  return {
-    ...raw,
-    usdEnabled: u === true || u === 'true',
-  }
-})
+export const getPaystackCredentials = cache(() => fetchCredential<PaystackCredentials>('paystack'))
 export const getFlutterwaveCredentials = cache(() =>
   fetchCredential<FlutterwaveCredentials>('flutterwave')
 )
@@ -92,4 +80,5 @@ export const getBankTransferCredentials = cache(() =>
 )
 export const getBrevoCredentials = cache(() => fetchCredential<BrevoCredentials>('brevo'))
 export const getEbulkSMSCredentials = cache(() => fetchCredential<EbulkSMSCredentials>('ebulksms'))
-export const getPaymentSettings = cache(() => fetchCredential<PaymentSettings>('paymentSettings'))
+/** Minimum gift amount + optional keys in same Credential row as global USD toggle. */
+export const getMinimumGiftSettings = cache(() => fetchCredential<PaymentSettings>('paymentSettings'))

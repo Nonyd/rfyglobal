@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { ChevronDown, ChevronUp, Save, Shield } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { ChevronDown, ChevronUp, Save, Settings, Shield } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { AdminToggle } from '@/components/shared/Toggle'
 import { cn } from '@/lib/utils'
@@ -30,12 +30,6 @@ const SERVICES: ServiceConfig[] = [
       { key: 'publicKey', label: 'Public Key', type: 'text', placeholder: 'pk_live_...' },
       { key: 'secretKey', label: 'Secret Key', type: 'password', placeholder: 'sk_live_...' },
       { key: 'webhookSecret', label: 'Webhook Secret', type: 'password' },
-      {
-        key: 'usdEnabled',
-        label: 'USD Payments',
-        type: 'toggle',
-        hint: 'Enable Dollar ($) on the partner page and paid events. Only turn on after Paystack activates USD on your account.',
-      },
       { key: 'monthlyPlanCode', label: 'Monthly Plan Code', type: 'text', placeholder: 'PLN_...' },
       { key: 'annualPlanCode', label: 'Annual Plan Code', type: 'text', placeholder: 'PLN_...' },
     ],
@@ -139,6 +133,37 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
     Object.fromEntries(SERVICES.map((service) => [service.id, Boolean(initialData[service.id]?.isActive ?? true)]))
   )
   const [saving, setSaving] = useState<string | null>(null)
+  const [paymentSettings, setPaymentSettings] = useState({ usdEnabled: false })
+  const [savingPaymentSettings, setSavingPaymentSettings] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/admin/payment-settings')
+      .then((r) => (r.ok ? r.json() : { usdEnabled: false }))
+      .then((data: { usdEnabled?: boolean }) =>
+        setPaymentSettings({ usdEnabled: data.usdEnabled === true }),
+      )
+      .catch(() => {})
+  }, [])
+
+  const savePaymentSetting = async (key: 'usdEnabled', value: boolean) => {
+    const prev = paymentSettings.usdEnabled
+    setSavingPaymentSettings(true)
+    setPaymentSettings((p) => ({ ...p, [key]: value }))
+    try {
+      const res = await fetch('/api/admin/payment-settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [key]: value }),
+      })
+      if (!res.ok) throw new Error('Failed')
+      toast.success('Payment settings saved')
+    } catch {
+      toast.error('Failed to save settings')
+      setPaymentSettings((p) => ({ ...p, [key]: prev }))
+    } finally {
+      setSavingPaymentSettings(false)
+    }
+  }
 
   const updateValue = (serviceId: string, key: string, value: string) => {
     setValues((prev) => ({ ...prev, [serviceId]: { ...prev[serviceId], [key]: value } }))
@@ -164,9 +189,6 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
     setSaving(serviceId)
     try {
       const data: Record<string, unknown> = { ...values[serviceId] }
-      if (serviceId === 'paystack') {
-        data.usdEnabled = values[serviceId].usdEnabled === 'true'
-      }
       const res = await fetch('/api/credentials', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -199,6 +221,53 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
         <p className="text-sm font-body leading-relaxed" style={{ color: 'var(--a-text-secondary)' }}>
           All credentials are encrypted with AES-256-GCM before storage. Keys are masked and never returned in plain text.
         </p>
+      </div>
+
+      <div
+        className="mb-3 border p-5"
+        style={{ borderColor: 'var(--a-border)', background: 'var(--a-surface)' }}
+      >
+        <div className="mb-4 flex items-center gap-3">
+          <div
+            className="flex h-9 w-9 items-center justify-center"
+            style={{ background: 'var(--a-bg)' }}
+          >
+            <Settings size={16} style={{ color: 'var(--a-gold)' }} />
+          </div>
+          <div>
+            <p className="font-body text-sm font-semibold" style={{ color: 'var(--a-text)' }}>
+              Payment Settings
+            </p>
+            <p className="font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
+              Global settings applied across all payment gateways
+            </p>
+          </div>
+        </div>
+
+        <div
+          className="flex items-start justify-between gap-4 border-t py-4"
+          style={{ borderColor: 'var(--a-border)' }}
+        >
+          <div className="min-w-0 flex-1">
+            <p className="font-body text-sm font-medium" style={{ color: 'var(--a-text)' }}>
+              USD Payments ($)
+            </p>
+            <p
+              className="mt-1 font-body text-xs leading-relaxed"
+              style={{ color: 'var(--a-text-muted)' }}
+            >
+              Show Dollar ($) on the partnership and paid event flows. Only activate after confirming USD is
+              enabled on your payment gateway accounts.
+            </p>
+          </div>
+          <AdminToggle
+            checked={paymentSettings.usdEnabled}
+            onChange={(val) => void savePaymentSetting('usdEnabled', val)}
+            size="sm"
+            disabled={savingPaymentSettings}
+            aria-label="USD Payments"
+          />
+        </div>
       </div>
 
       <div className="space-y-3">

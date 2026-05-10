@@ -5,7 +5,7 @@ import {
   getBankTransferCredentials,
   getFlutterwaveCredentials,
   getPayazaCredentials,
-  getPaymentSettings,
+  getMinimumGiftSettings,
   getPaystackCredentials,
 } from '@/lib/credentials'
 import type { Metadata } from 'next'
@@ -55,7 +55,7 @@ export default async function PartnerPage() {
     getFlutterwaveCredentials(),
     getPayazaCredentials(),
     getBankTransferCredentials(),
-    getPaymentSettings(),
+    getMinimumGiftSettings(),
   ])
   const isTestMode =
     (paystack?.isActive && paystack?.mode === 'test') ||

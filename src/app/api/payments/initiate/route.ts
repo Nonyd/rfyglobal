@@ -4,10 +4,11 @@ import { InitiatePaymentSchema, PhasePaystackInitiateSchema } from '@/lib/valida
 import { generateReference } from '@/lib/utils'
 import {
   getFlutterwaveCredentials,
+  getMinimumGiftSettings,
   getPayazaCredentials,
-  getPaymentSettings,
   getPaystackCredentials,
 } from '@/lib/credentials'
+import { getPaymentSettings } from '@/lib/payment-settings'
 import { paystackRequest } from '@/lib/paystack'
 import { strictRatelimit } from '@/lib/ratelimit'
 
@@ -67,7 +68,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { amount, currency, donorName, donorEmail, gateway, frequency } = parsed.data
-  const settings = await getPaymentSettings()
+  const settings = await getMinimumGiftSettings()
   const minimum = settings?.minimumGiftAmount ?? 100
   if (amount < minimum) {
     return NextResponse.json(
@@ -219,7 +220,8 @@ async function handlePhasePaystackInitiate(
     return NextResponse.json({ error: 'Paystack is currently unavailable' }, { status: 503 })
   }
 
-  if (input.currency === 'USD' && !creds.usdEnabled) {
+  const globalPayment = await getPaymentSettings()
+  if (input.currency === 'USD' && !globalPayment.usdEnabled) {
     return NextResponse.json({ error: 'USD payments are not enabled.' }, { status: 400 })
   }
 
@@ -241,7 +243,7 @@ async function handlePhasePaystackInitiate(
     callbackUrl: rawCallback,
   } = input
 
-  const settings = await getPaymentSettings()
+  const settings = await getMinimumGiftSettings()
   const minimumNgnMajor = settings?.minimumGiftAmount ?? 100
   const minKobo = minimumNgnMajor * 100
 
