@@ -1,7 +1,6 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
-import { useSession } from 'next-auth/react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
@@ -16,8 +15,6 @@ import { LiveIndicator } from '@/components/admin/shared/LiveIndicator'
 type Tab = 'PENDING' | 'PRAYED' | 'REPLIED'
 
 export function PrayerManager() {
-  const { data: session } = useSession()
-  const isSuper = session?.user?.role === 'SUPER_ADMIN'
   const [tab, setTab] = useState<Tab>('PENDING')
   const [requests, setRequests] = useState<PrayerRequest[]>([])
   const [total, setTotal] = useState(0)
@@ -137,7 +134,7 @@ export function PrayerManager() {
         payload && typeof payload.error === 'string' && payload.error.trim()
           ? payload.error
           : res.status === 403
-            ? 'Only a super admin can delete prayer requests'
+            ? 'You do not have permission to delete prayer requests'
             : 'Delete failed'
       toast.error(msg)
       return
@@ -217,11 +214,7 @@ export function PrayerManager() {
               style={{ borderColor: 'var(--a-border)', background: 'var(--a-surface)' }}
             >
               <div className="absolute left-3 top-3">
-                <div
-                  className={bulk.isSelected(r.id) ? 'opacity-100' : 'opacity-0 transition-opacity group-hover:opacity-100'}
-                >
-                  <SelectCheckbox checked={bulk.isSelected(r.id)} onChange={() => bulk.toggle(r.id)} />
-                </div>
+                <SelectCheckbox checked={bulk.isSelected(r.id)} onChange={() => bulk.toggle(r.id)} />
               </div>
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
@@ -277,16 +270,14 @@ export function PrayerManager() {
                   >
                     Reply by email
                   </button>
-                  {isSuper && (
-                    <button
-                      type="button"
-                      onClick={() => remove(r.id)}
-                      className="rounded border px-3 py-1.5 font-body text-xs"
-                      style={{ borderColor: 'var(--a-border)', color: 'var(--a-red)' }}
-                    >
-                      Delete
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => remove(r.id)}
+                    className="rounded border px-3 py-1.5 font-body text-xs"
+                    style={{ borderColor: 'var(--a-border)', color: 'var(--a-red)' }}
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
 
@@ -419,7 +410,6 @@ export function PrayerManager() {
             icon: <Trash2 size={12} />,
             onClick: () => void bulkDelete(),
             variant: 'danger',
-            disabled: !isSuper,
           },
         ]}
       />

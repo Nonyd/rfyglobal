@@ -17,20 +17,25 @@ export async function forbidUnlessCanAccess(
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  let role =
-    typeof session.user.role === 'string' && session.user.role.trim()
-      ? session.user.role.trim()
-      : 'ADMIN'
+  let role = 'ADMIN'
+  if (session.user.role !== undefined && session.user.role !== null) {
+    const s = String(session.user.role).trim()
+    if (s) role = s
+  }
 
   const userId = session.user.id
-  if (userId && userId !== 'env-admin') {
+
+  // Mirror auth session callback: env login always runs as ADMIN for ACL.
+  if (userId === 'env-admin') {
+    role = 'ADMIN'
+  } else if (userId) {
     try {
       const row = await db.user.findUnique({
         where: { id: userId },
         select: { role: true, isActive: true },
       })
       if (row?.isActive) {
-        role = row.role
+        role = String(row.role)
       }
     } catch {
       /* keep JWT/session role */

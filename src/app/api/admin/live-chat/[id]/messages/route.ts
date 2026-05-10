@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
+import { forbidUnlessCanAccess } from '@/lib/admin-api-access'
 import { db } from '@/lib/db'
 
 export const runtime = 'nodejs'
@@ -16,7 +17,8 @@ export async function GET(
 ) {
   try {
     const sessionUser = await auth()
-    if (!sessionUser) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const denied = await forbidUnlessCanAccess(sessionUser, 'live-chat')
+    if (denied) return denied
 
     const id = await idFromParams(ctx.params)
     const chatSession = await db.liveChatSession.findUnique({

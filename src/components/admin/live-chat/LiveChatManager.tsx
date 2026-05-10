@@ -1,9 +1,12 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Search, MessageCircle, Send, X } from 'lucide-react'
+import { Search, MessageCircle, Send, X, Trash2 } from 'lucide-react'
 import { useAdminSSE } from '@/hooks/useAdminSSE'
 import { LiveIndicator } from '@/components/admin/shared/LiveIndicator'
+import { useBulkSelect } from '@/hooks/useBulkSelect'
+import { BulkActionBar } from '@/components/admin/shared/BulkActionBar'
+import { SelectCheckbox } from '@/components/admin/shared/SelectCheckbox'
 import toast from 'react-hot-toast'
 
 interface LiveMsg {
@@ -79,6 +82,15 @@ export function LiveChatManager() {
   const bottomRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
+  const filtered = sessions.filter(
+    (s) =>
+      !search ||
+      s.name.toLowerCase().includes(search.toLowerCase()) ||
+      s.email.toLowerCase().includes(search.toLowerCase()),
+  )
+
+  const bulk = useBulkSelect(filtered)
+
   const loadSessions = useCallback(async () => {
     try {
       const res = await fetch('/api/admin/live-chat')
@@ -128,6 +140,41 @@ export function LiveChatManager() {
     }, [loadSessions, active, loadSession]),
   })
 
+  const removeSession = async (id: string) => {
+    if (!confirm('Delete this conversation and all messages permanently?')) return
+    try {
+      const res = await fetch(`/api/admin/live-chat/${id}`, { method: 'DELETE' })
+      if (!res.ok) {
+        const msg = res.status === 403 ? 'You do not have permission to delete' : 'Could not delete'
+        toast.error(msg)
+        return
+      }
+      toast.success('Conversation deleted')
+      if (active?.id === id) setActive(null)
+      bulk.reset()
+      await loadSessions()
+    } catch {
+      toast.error('Could not delete')
+    }
+  }
+
+  const bulkDeleteSessions = async () => {
+    if (!bulk.selectedCount) return
+    if (!confirm(`Delete ${bulk.selectedCount} conversation${bulk.selectedCount > 1 ? 's' : ''}?`)) return
+    let failed = 0
+    await Promise.all(
+      bulk.selectedArray.map(async (id) => {
+        const res = await fetch(`/api/admin/live-chat/${id}`, { method: 'DELETE' })
+        if (!res.ok) failed++
+      }),
+    )
+    if (failed > 0) toast.error(`${failed} could not be deleted`)
+    else toast.success(`${bulk.selectedCount} deleted`)
+    if (active && bulk.selectedArray.includes(active.id)) setActive(null)
+    bulk.reset()
+    await loadSessions()
+  }
+
   const sendReply = async () => {
     if (!active || !replyBody.trim() || sending) return
     setSending(true)
@@ -150,13 +197,6 @@ export function LiveChatManager() {
       textareaRef.current?.focus()
     }
   }
-
-  const filtered = sessions.filter(
-    (s) =>
-      !search ||
-      s.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.email.toLowerCase().includes(search.toLowerCase()),
-  )
 
   const groups = active ? groupByDate(active.messages) : []
 
@@ -219,17 +259,23 @@ export function LiveChatManager() {
               const online = visitorLikelyOnline(session)
 
               return (
-                <button
+                <div
                   key={session.id}
-                  type="button"
-                  onClick={() => void loadSession(session.id)}
-                  className="w-full border-b px-4 py-3 text-left transition-colors"
+                  className="group relative border-b transition-colors"
                   style={{
                     borderColor: 'var(--a-border)',
                     background: isSel ? 'var(--a-gold-light)' : 'transparent',
                     borderLeft: `3px solid ${isSel ? 'var(--a-gold)' : 'transparent'}`,
                   }}
                 >
+                  <div className="absolute left-3 top-3 z-10">
+                    <SelectCheckbox checked={bulk.isSelected(session.id)} onChange={() => bulk.toggle(session.id)} />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => void loadSession(session.id)}
+                    className="w-full px-4 py-3 pl-10 text-left"
+                  >
                   <div className="flex items-start gap-2.5">
                     <div className="relative mt-0.5 shrink-0">
                       <div
@@ -284,7 +330,8 @@ export function LiveChatManager() {
                       <span className="mt-1.5 h-2 w-2 shrink-0 rounded-full" style={{ background: 'var(--a-gold)' }} />
                     )}
                   </div>
-                </button>
+                  </button>
+                </div>
               )
             })
           )}
@@ -333,14 +380,25 @@ export function LiveChatManager() {
                   </span>
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={() => setActive(null)}
-                className="ml-auto flex h-8 w-8 items-center justify-center"
-                style={{ color: 'var(--a-text-muted)' }}
-              >
-                <X size={14} />
-              </button>
+              <div className="ml-auto flex shrink-0 items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => void removeSession(active.id)}
+                  className="flex h-8 w-8 items-center justify-center"
+                  style={{ color: 'var(--a-red)' }}
+                  title="Delete conversation"
+                >
+                  <Trash2 size={14} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActive(null)}
+                  className="flex h-8 w-8 items-center justify-center"
+                  style={{ color: 'var(--a-text-muted)' }}
+                >
+                  <X size={14} />
+                </button>
+              </div>
             </div>
 
             <div className="flex-1 overflow-y-auto px-6 py-6">
@@ -468,6 +526,22 @@ export function LiveChatManager() {
           </>
         )}
       </div>
+
+      <BulkActionBar
+        selectedCount={bulk.selectedCount}
+        onDeselectAll={bulk.deselectAll}
+        onSelectAll={bulk.selectAll}
+        isAllSelected={bulk.isAllSelected}
+        totalCount={filtered.length}
+        actions={[
+          {
+            label: 'Delete',
+            icon: <Trash2 size={12} />,
+            onClick: () => void bulkDeleteSessions(),
+            variant: 'danger',
+          },
+        ]}
+      />
     </div>
   )
 }

@@ -141,10 +141,6 @@ export async function DELETE(
   const session = await auth()
   const denied = await forbidUnlessCanAccess(session, 'prayer')
   if (denied) return denied
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  if (session.user.role !== 'SUPER_ADMIN') {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-  }
 
   const id = await prayerId(ctx.params)
   if (!id) return NextResponse.json({ error: 'Invalid request' }, { status: 400 })

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { Prisma } from '@prisma/client'
 import { auth } from '@/lib/auth'
+import { forbidUnlessCanAccess } from '@/lib/admin-api-access'
 import { db } from '@/lib/db'
 import { sendEmail } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
@@ -23,7 +25,8 @@ export async function POST(
 ) {
   try {
     const sessionUser = await auth()
-    if (!sessionUser) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const denied = await forbidUnlessCanAccess(sessionUser, 'live-chat')
+    if (denied) return denied
 
     const id = await idFromParams(ctx.params)
     const chatSession = await db.liveChatSession.findUnique({
@@ -95,6 +98,27 @@ export async function POST(
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error('[admin live-chat reply]', error)
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+  }
+}
+
+export async function DELETE(
+  _req: NextRequest,
+  ctx: { params: { id: string } | Promise<{ id: string }> },
+) {
+  try {
+    const sessionUser = await auth()
+    const denied = await forbidUnlessCanAccess(sessionUser, 'live-chat')
+    if (denied) return denied
+
+    const id = await idFromParams(ctx.params)
+    await db.liveChatSession.delete({ where: { id } })
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
+    console.error('[admin live-chat DELETE]', error)
     return NextResponse.json({ error: 'Internal error' }, { status: 500 })
   }
 }
