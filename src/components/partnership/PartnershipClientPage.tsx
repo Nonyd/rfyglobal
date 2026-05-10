@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import toast from 'react-hot-toast'
-import { Copy, Check } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
+import { BookOpen, Check, Copy, Globe, Landmark } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 type Frequency = 'ONE_TIME' | 'MONTHLY' | 'ANNUAL'
@@ -161,30 +162,37 @@ export function PartnershipClientPage({
 
       <section className="max-w-5xl mx-auto px-6 pb-20">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            {
-              icon: '🏛',
-              title: content['partnership.card1.title'],
-              desc: content['partnership.card1.desc'],
-            },
-            {
-              icon: '📖',
-              title: content['partnership.card2.title'],
-              desc: content['partnership.card2.desc'],
-            },
-            {
-              icon: '🌍',
-              title: content['partnership.card3.title'],
-              desc: content['partnership.card3.desc'],
-            },
-          ].map((item) => (
+          {(
+            [
+              {
+                Icon: Landmark,
+                title: content['partnership.card1.title'],
+                desc: content['partnership.card1.desc'],
+              },
+              {
+                Icon: BookOpen,
+                title: content['partnership.card2.title'],
+                desc: content['partnership.card2.desc'],
+              },
+              {
+                Icon: Globe,
+                title: content['partnership.card3.title'],
+                desc: content['partnership.card3.desc'],
+              },
+            ] satisfies { Icon: LucideIcon; title: string; desc: string }[]
+          ).map(({ Icon, title, desc }) => (
             <div
-              key={item.title}
+              key={title}
               className="rfy-card p-6 transition-colors hover:border-gold/35"
             >
-              <div className="mb-4 text-3xl">{item.icon}</div>
-              <h3 className="mb-2 font-display text-lg text-text-primary">{item.title}</h3>
-              <p className="font-body text-sm leading-relaxed text-text-secondary">{item.desc}</p>
+              <div
+                className="mb-4 flex h-11 w-11 items-center justify-center rounded-full border border-gold/30 bg-gold/[0.06]"
+                aria-hidden
+              >
+                <Icon className="h-5 w-5 text-gold" strokeWidth={1.35} />
+              </div>
+              <h3 className="mb-2 font-display text-lg text-text-primary">{title}</h3>
+              <p className="font-body text-sm leading-relaxed text-text-secondary">{desc}</p>
             </div>
           ))}
         </div>
