@@ -409,25 +409,26 @@ enum TestimonyStatus {
 // ── MESSAGING ─────────────────────────────────────────────────
 
 model MessageThread {
-  id             String    @id @default(cuid())
-  recipientEmail String
-  recipientName  String?
-  subject        String?
-  lastMessage    String?   @db.Text
-  lastAt         DateTime  @default(now())
-  isRead         Boolean   @default(false)
-  createdAt      DateTime  @default(now())
-  messages       Message[]
+  id         String    @id @default(cuid())
+  subject    String
+  fromName   String
+  fromEmail  String
+  phone      String?
+  status     String    @default("open") // 'open' | 'archived'
+  replyToken String    @unique @default(cuid())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  messages   Message[]
 }
 
 model Message {
   id        String        @id @default(cuid())
   threadId  String
   thread    MessageThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
-  fromAdmin Boolean       @default(true)
   body      String        @db.Text
-  sentAt    DateTime      @default(now())
+  fromAdmin Boolean       @default(false)
   isRead    Boolean       @default(false)
+  createdAt DateTime      @default(now())
 }
 
 // ── ADMIN NOTIFICATIONS (dashboard bell / SSE) ─────────────────

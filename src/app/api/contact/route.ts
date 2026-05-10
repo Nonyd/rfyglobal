@@ -38,23 +38,23 @@ export async function POST(req: NextRequest) {
 
   const thread = await db.messageThread.create({
     data: {
-      recipientEmail: email,
-      recipientName: name,
-      subject: `[Contact] ${subject}`,
-      lastMessage: message,
-      lastAt: new Date(),
-      isRead: false,
+      subject: subject.trim() || `Message from ${name}`,
+      fromName: name.trim(),
+      fromEmail: email.trim(),
+      status: 'open',
       messages: {
         create: {
-          body: `**From:** ${name} (${email})\n\n${message}`,
+          body: message.trim(),
           fromAdmin: false,
-          sentAt: new Date(),
+          isRead: false,
         },
       },
     },
   })
 
-  await createNotification('contact', `New message from ${name}`, { targetId: thread.id })
+  await createNotification('contact', `${name}: "${message.trim().slice(0, 80)}…"`, {
+    targetId: thread.id,
+  })
 
   const safeName = escapeHtml(name)
   const vars = { first_name: safeName }

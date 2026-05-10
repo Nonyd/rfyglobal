@@ -1,0 +1,63 @@
+import Image from 'next/image'
+import { db } from '@/lib/db'
+import { notFound } from 'next/navigation'
+import { ReplyForm } from '@/components/reply/ReplyForm'
+
+export const metadata = {
+  title: 'Reply — Room For You',
+  robots: { index: false },
+}
+
+export default async function ReplyPage({
+  params,
+}: {
+  params: { token: string }
+}) {
+  const thread = await db.messageThread.findUnique({
+    where: { replyToken: params.token },
+    include: {
+      messages: {
+        orderBy: { createdAt: 'desc' },
+        take: 3,
+      },
+    },
+  })
+
+  if (!thread || thread.status === 'archived') notFound()
+
+  return (
+    <div
+      className="flex min-h-screen items-center justify-center px-4 py-16"
+      style={{ background: '#0F0F0F' }}
+    >
+      <div className="w-full max-w-lg">
+        <div className="mb-10 flex justify-center">
+          <Image src="/images/logo-white.png" alt="Room For You" width={180} height={48} priority />
+        </div>
+
+        <div
+          className="mb-6 border px-5 py-4"
+          style={{
+            borderColor: 'rgba(201,168,76,0.2)',
+            background: 'rgba(201,168,76,0.04)',
+          }}
+        >
+          <p
+            className="font-body mb-2 text-[10px] uppercase tracking-widest"
+            style={{ color: '#C9A84C' }}
+          >
+            Replying to Room For You
+          </p>
+          <p className="font-body mb-1 text-sm font-semibold" style={{ color: '#F8F8F8' }}>
+            {thread.subject}
+          </p>
+          <p className="font-body text-xs" style={{ color: '#A0A0A0' }}>
+            {thread.fromName} · {thread.fromEmail}
+          </p>
+        </div>
+
+        <ReplyForm token={params.token} fromName={thread.fromName} />
+      </div>
+    </div>
+  )
+}

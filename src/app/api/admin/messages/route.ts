@@ -37,22 +37,35 @@ function buildMessageEmail(name: string, message: string) {
   `
 }
 
-export async function GET() {
-  const session = await auth()
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+export async function GET(req: NextRequest) {
+  try {
+    const session = await auth()
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const threads = await db.messageThread.findMany({
-    orderBy: { lastAt: 'desc' },
-    include: {
-      messages: {
-        orderBy: { sentAt: 'desc' },
-        take: 1,
+    const { searchParams } = new URL(req.url)
+    const status = searchParams.get('status')
+
+    const threads = await db.messageThread.findMany({
+      where: status && status !== 'all' ? { status } : undefined,
+      include: {
+        messages: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+        },
+        _count: {
+          select: {
+            messages: { where: { isRead: false, fromAdmin: false } },
+          },
+        },
       },
-      _count: { select: { messages: true } },
-    },
-  })
+      orderBy: { updatedAt: 'desc' },
+    })
 
-  return NextResponse.json(threads)
+    return NextResponse.json(threads)
+  } catch (error) {
+    console.error('[messages GET]', error)
+    return NextResponse.json({ error: 'Internal error' }, { status: 500 })
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -60,37 +73,51 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const { recipientEmail, recipientName, subject, message, sendEmailNow } = body as {
+  const {
+    recipientEmail,
+    recipientName,
+    fromEmail,
+    fromName,
+    subject,
+    message,
+    sendEmailNow,
+  } = body as {
     recipientEmail?: string
     recipientName?: string | null
+    fromEmail?: string
+    fromName?: string | null
     subject?: string | null
     message: string
     sendEmailNow?: boolean
     recipients?: { email: string; name?: string }[]
   }
 
+  const resolvedEmail = (fromEmail ?? recipientEmail)?.trim()
+  const resolvedName = (fromName ?? recipientName ?? '').trim() || resolvedEmail || 'Recipient'
+
   if (Array.isArray(body.recipients)) {
     const results = await Promise.allSettled(
       body.recipients.map(async (r: { email: string; name?: string }) => {
+        const emailAddr = r.email.trim()
+        const displayName = (r.name ?? '').trim() || emailAddr
+        const subj = subject?.trim() || 'A message from Room For You'
         const thread = await db.messageThread.create({
           data: {
-            recipientEmail: r.email.trim(),
-            recipientName: r.name ?? null,
-            subject: subject ?? null,
-            lastMessage: message,
-            lastAt: new Date(),
-            isRead: false,
+            fromEmail: emailAddr,
+            fromName: displayName,
+            subject: subj,
+            status: 'open',
             messages: {
-              create: { body: message, fromAdmin: true },
+              create: { body: message, fromAdmin: true, isRead: true },
             },
           },
         })
 
         if (sendEmailNow) {
           await sendEmail({
-            to: r.email.trim(),
-            subject: subject ?? 'A message from Room For You',
-            html: buildMessageEmail(r.name ?? r.email, message),
+            to: emailAddr,
+            subject: subj,
+            html: buildMessageEmail(displayName, message),
             fromName: EMAIL_SENDERS.hello.name,
             fromEmail: EMAIL_SENDERS.hello.email,
           })
@@ -103,20 +130,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, count: results.length })
   }
 
-  if (!recipientEmail || !message) {
-    return NextResponse.json({ error: 'recipientEmail and message are required' }, { status: 400 })
+  if (!resolvedEmail || !message) {
+    return NextResponse.json(
+      { error: 'fromEmail (or recipientEmail) and message are required' },
+      { status: 400 },
+    )
   }
+
+  const subj = subject?.trim() || 'A message from Room For You'
 
   const thread = await db.messageThread.create({
     data: {
-      recipientEmail: recipientEmail.trim(),
-      recipientName: recipientName ?? null,
-      subject: subject ?? null,
-      lastMessage: message,
-      lastAt: new Date(),
-      isRead: false,
+      fromEmail: resolvedEmail,
+      fromName: resolvedName,
+      subject: subj,
+      status: 'open',
       messages: {
-        create: { body: message, fromAdmin: true },
+        create: { body: message, fromAdmin: true, isRead: true },
       },
     },
     include: { messages: true },
@@ -124,9 +154,9 @@ export async function POST(req: NextRequest) {
 
   if (sendEmailNow) {
     await sendEmail({
-      to: recipientEmail.trim(),
-      subject: subject ?? 'A message from Room For You',
-      html: buildMessageEmail(recipientName ?? recipientEmail, message),
+      to: resolvedEmail,
+      subject: subj,
+      html: buildMessageEmail(resolvedName, message),
       fromName: EMAIL_SENDERS.hello.name,
       fromEmail: EMAIL_SENDERS.hello.email,
     })

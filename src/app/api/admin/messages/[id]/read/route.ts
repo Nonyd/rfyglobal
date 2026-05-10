@@ -8,8 +8,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   const session = await auth()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  await db.messageThread.update({
-    where: { id: params.id },
+  await db.message.updateMany({
+    where: { threadId: params.id, isRead: false, fromAdmin: false },
     data: { isRead: true },
   })
 

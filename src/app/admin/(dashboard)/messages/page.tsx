@@ -1,5 +1,5 @@
-import { MessagingManager } from '@/components/admin/messaging/MessagingManager'
+import { MessagesPage } from '@/components/admin/messaging/MessagesPage'
 
 export default function AdminMessagesPage() {
-  return <MessagingManager />
+  return <MessagesPage />
 }
