@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
 
   const { name, email, subject, message } = parsed.data
 
-  await db.messageThread.create({
+  const thread = await db.messageThread.create({
     data: {
       recipientEmail: email,
       recipientName: name,
@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
     },
   })
 
-  await createNotification('contact', `New message from ${name}`)
+  await createNotification('contact', `New message from ${name}`, { targetId: thread.id })
 
   const safeName = escapeHtml(name)
   const vars = { first_name: safeName }

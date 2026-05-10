@@ -44,7 +44,10 @@ export function NotificationBell() {
 
   const fetchNotifications = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/notifications', { cache: 'no-store' })
+      const res = await fetch('/api/admin/notifications', {
+        cache: 'no-store',
+        credentials: 'same-origin',
+      })
       if (!res.ok) return
       const data = await res.json()
       setNotifications(data.notifications ?? [])
@@ -97,6 +100,7 @@ export function NotificationBell() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ markAllRead: true }),
       cache: 'no-store',
+      credentials: 'same-origin',
     })
     await fetchNotifications()
   }
@@ -107,6 +111,7 @@ export function NotificationBell() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),
       cache: 'no-store',
+      credentials: 'same-origin',
     })
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)))
     setUnreadTotal((prev) => Math.max(0, prev - 1))
@@ -118,6 +123,7 @@ export function NotificationBell() {
     await fetch(`/api/admin/notifications?id=${encodeURIComponent(id)}`, {
       method: 'DELETE',
       cache: 'no-store',
+      credentials: 'same-origin',
     })
     setNotifications((prev) => prev.filter((n) => n.id !== id))
     await fetchNotifications()

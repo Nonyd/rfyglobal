@@ -68,6 +68,9 @@ export default auth(async (req) => {
 
   if (isAdminRoute || isApiAdminRoute) {
     if (!req.auth) {
+      if (pathname.startsWith('/api/admin')) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+      }
       const loginUrl = new URL('/admin/login', req.url)
       loginUrl.searchParams.set('callbackUrl', pathname)
       return NextResponse.redirect(loginUrl)
@@ -82,6 +85,9 @@ export default auth(async (req) => {
     for (const [route, moduleKey] of SORTED_ADMIN_ROUTES) {
       if (pathForAcl.startsWith(route)) {
         if (!canAccess(role, moduleKey)) {
+          if (pathname.startsWith('/api/admin')) {
+            return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+          }
           return NextResponse.redirect(new URL('/admin?unauthorized=1', req.url))
         }
         break

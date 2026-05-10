@@ -105,23 +105,44 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const body = await req.json()
+    let body: Record<string, unknown> = {}
+    try {
+      const raw = await req.text()
+      if (raw?.trim()) body = JSON.parse(raw) as Record<string, unknown>
+    } catch {
+      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+    }
 
-    if (body.markAllRead) {
+    const markAll =
+      body.markAllRead === true ||
+      body.markAllRead === 'true' ||
+      body.mark_all_read === true ||
+      body.mark_all_read === 'true'
+
+    if (markAll) {
       await db.adminNotification.updateMany({
         where: { isRead: false },
         data: { isRead: true },
       })
-      broadcastSSE({ type: 'notification', event: 'mark_all_read', timestamp: Date.now() })
+      try {
+        broadcastSSE({ type: 'notification', event: 'mark_all_read', timestamp: Date.now() })
+      } catch {
+        /* SSE must not fail the mutation */
+      }
       return NextResponse.json({ success: true })
     }
 
-    if (body.id) {
+    const id = typeof body.id === 'string' ? body.id : undefined
+    if (id) {
       await db.adminNotification.update({
-        where: { id: body.id },
+        where: { id },
         data: { isRead: true },
       })
-      broadcastSSE({ type: 'notification', event: 'mark_read', timestamp: Date.now() })
+      try {
+        broadcastSSE({ type: 'notification', event: 'mark_read', timestamp: Date.now() })
+      } catch {
+        /* SSE must not fail the mutation */
+      }
       return NextResponse.json({ success: true })
     }
 

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
+import { broadcastSSE } from '@/lib/notify'
 import { db } from '@/lib/db'
 import { sendEmail } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
@@ -31,6 +32,38 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     where: { id: params.id },
     data: { isRead: true },
   })
+
+  const legacyWindowStart = new Date(thread.createdAt.getTime() - 120_000)
+  const legacyWindowEnd = new Date(thread.createdAt.getTime() + 120_000)
+
+  const marked = await db.adminNotification.updateMany({
+    where: {
+      isRead: false,
+      type: { in: ['contact', 'message'] },
+      OR: [
+        { targetId: params.id, type: { in: ['contact', 'message'] } },
+        ...(thread.recipientName
+          ? [
+              {
+                targetId: null,
+                type: 'contact' as const,
+                body: `New message from ${thread.recipientName}`,
+                createdAt: { gte: legacyWindowStart, lte: legacyWindowEnd },
+              },
+            ]
+          : []),
+      ],
+    },
+    data: { isRead: true },
+  })
+
+  if (marked.count > 0) {
+    try {
+      broadcastSSE({ type: 'notification', event: 'thread_read', timestamp: Date.now() })
+    } catch {
+      /* ignore */
+    }
+  }
 
   return NextResponse.json(thread)
 }

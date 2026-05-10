@@ -126,7 +126,9 @@ export function MessagingManager() {
     setSelectedId(id)
     setLoadingThread(true)
     try {
-      const res = await fetch(`/api/admin/messages/${id}`)
+      const res = await fetch(`/api/admin/messages/${id}`, {
+        credentials: 'same-origin',
+      })
       if (!res.ok) throw new Error('fail')
       const data = await res.json()
       setThreadDetail(data as ThreadRow)

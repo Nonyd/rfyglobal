@@ -55,7 +55,10 @@ export function AdminNotificationsPage() {
 
   const load = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/notifications', { cache: 'no-store' })
+      const res = await fetch('/api/admin/notifications', {
+        cache: 'no-store',
+        credentials: 'same-origin',
+      })
       if (res.ok) {
         const data = await res.json()
         setNotifications(data.notifications ?? [])
@@ -82,9 +85,11 @@ export function AdminNotificationsPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ markAllRead: true }),
       cache: 'no-store',
+      credentials: 'same-origin',
     })
     if (!res.ok) {
-      toast.error('Could not mark notifications as read')
+      const err = (await res.json().catch(() => null)) as { error?: string } | null
+      toast.error(err?.error ?? `Could not mark notifications as read (${res.status})`)
       return
     }
     setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })))
@@ -98,6 +103,7 @@ export function AdminNotificationsPage() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),
       cache: 'no-store',
+      credentials: 'same-origin',
     })
     if (!res.ok) return
     setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, isRead: true } : n)))
@@ -107,7 +113,10 @@ export function AdminNotificationsPage() {
   const dismiss = async (id: string, e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    await fetch(`/api/admin/notifications?id=${encodeURIComponent(id)}`, { method: 'DELETE' })
+    await fetch(`/api/admin/notifications?id=${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      credentials: 'same-origin',
+    })
     setNotifications((prev) => prev.filter((n) => n.id !== id))
     void load()
   }
