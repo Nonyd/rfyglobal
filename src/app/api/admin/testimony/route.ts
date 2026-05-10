@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { forbidUnlessCanAccess } from '@/lib/admin-api-access'
 import { TestimonyStatus } from '@prisma/client'
 
 export const runtime = 'nodejs'
@@ -8,7 +9,8 @@ export const runtime = 'nodejs'
 export async function GET(req: NextRequest) {
   try {
     const session = await auth()
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const denied = forbidUnlessCanAccess(session, 'testimonies')
+    if (denied) return denied
 
     const { searchParams } = new URL(req.url)
     const statusParam = searchParams.get('status')

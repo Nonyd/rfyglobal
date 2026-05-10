@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { forbidUnlessCanAccess } from '@/lib/admin-api-access'
 import { Prisma, TestimonyStatus } from '@prisma/client'
 
 export const runtime = 'nodejs'
@@ -16,7 +17,8 @@ export async function PATCH(
 ) {
   try {
     const session = await auth()
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const denied = forbidUnlessCanAccess(session, 'testimonies')
+    if (denied) return denied
 
     const id = await testimonyId(ctx.params)
     if (!id) return NextResponse.json({ error: 'Invalid testimony id' }, { status: 400 })
@@ -73,7 +75,8 @@ export async function DELETE(
 ) {
   try {
     const session = await auth()
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const denied = forbidUnlessCanAccess(session, 'testimonies')
+    if (denied) return denied
 
     const id = await testimonyId(ctx.params)
     if (!id) return NextResponse.json({ error: 'Invalid testimony id' }, { status: 400 })

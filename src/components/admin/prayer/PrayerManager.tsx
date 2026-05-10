@@ -76,8 +76,15 @@ export function PrayerManager() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
     })
+    const payload = (await res.json().catch(() => null)) as { error?: string } | null
     if (!res.ok) {
-      toast.error('Update failed')
+      const msg =
+        payload && typeof payload.error === 'string' && payload.error.trim()
+          ? payload.error
+          : res.status === 403
+            ? 'You do not have permission to update prayer requests'
+            : 'Update failed'
+      toast.error(msg)
       return
     }
     toast.success('Updated')
@@ -106,7 +113,9 @@ export function PrayerManager() {
         const msg =
           data && typeof data.error === 'string' && data.error.trim()
             ? data.error
-            : 'Could not send reply'
+            : res.status === 403
+              ? 'You do not have permission to send replies'
+              : 'Could not send reply'
         toast.error(msg)
         return
       }
@@ -122,8 +131,15 @@ export function PrayerManager() {
   const remove = async (id: string) => {
     if (!confirm('Delete this prayer request permanently?')) return
     const res = await fetch(`/api/admin/prayer/${id}`, { method: 'DELETE' })
+    const payload = (await res.json().catch(() => null)) as { error?: string } | null
     if (!res.ok) {
-      toast.error('Delete failed')
+      const msg =
+        payload && typeof payload.error === 'string' && payload.error.trim()
+          ? payload.error
+          : res.status === 403
+            ? 'Only a super admin can delete prayer requests'
+            : 'Delete failed'
+      toast.error(msg)
       return
     }
     toast.success('Deleted')

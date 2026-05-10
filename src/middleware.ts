@@ -1,9 +1,36 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
+import type { Session } from 'next-auth'
 import { auth } from '@/lib/auth'
 import { canAccess } from '@/lib/permissions'
 import { limitAdminLoginByIp } from '@/lib/rate-limit-login'
 
 const LOGIN_RATE_LIMIT_TIMEOUT_MS = 1500
+
+type NextAuthRequest = NextRequest & { auth: Session | null }
+
+/**
+ * Middleware runs on the Edge; Prisma in the Auth session callback often cannot run there, so `req.auth`
+ * may fall back to a stale JWT `role`. The `/api/auth/session` route runs on Node and hydrates role from
+ * the DB — use it for ACL so SUPER_ADMIN / role changes match the admin UI.
+ */
+async function roleForAdminAcl(req: NextAuthRequest): Promise<string> {
+  try {
+    const sessionUrl = new URL('/api/auth/session', req.nextUrl.origin)
+    const res = await fetch(sessionUrl, {
+      headers: { cookie: req.headers.get('cookie') ?? '' },
+      cache: 'no-store',
+    })
+    if (res.ok) {
+      const data = (await res.json()) as { user?: { role?: string } }
+      const r = data?.user?.role
+      if (typeof r === 'string' && r.trim()) return r.trim()
+    }
+  } catch {
+    /* use JWT claims below */
+  }
+  const fallback = req.auth?.user?.role
+  return typeof fallback === 'string' && fallback.trim() ? fallback.trim() : 'ADMIN'
+}
 
 const ROUTE_PERMISSIONS: Record<string, string> = {
   '/admin/notifications': 'notifications',
@@ -88,21 +115,30 @@ export default auth(async (req) => {
       return NextResponse.redirect(loginUrl)
     }
 
-    const role = req.auth.user?.role ?? 'ADMIN'
+    const role = await roleForAdminAcl(req)
 
     const pathForAcl = pathname.startsWith('/api/admin')
       ? pathname.replace(/^\/api\/admin/, '/admin')
       : pathname
 
-    for (const [route, moduleKey] of SORTED_ADMIN_ROUTES) {
-      if (pathForAcl.startsWith(route)) {
-        if (!canAccess(role, moduleKey)) {
-          if (pathname.startsWith('/api/admin')) {
-            return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    // These APIs enforce `canAccess` inside route handlers with Node `auth()` (fresh DB role).
+    // Edge middleware + JWT often disagree with the admin UI after role changes.
+    const skipEdgeModuleAcl =
+      pathname.startsWith('/api/admin/prayer') ||
+      pathname.startsWith('/api/admin/testimony') ||
+      pathname.startsWith('/api/admin/messages')
+
+    if (!skipEdgeModuleAcl) {
+      for (const [route, moduleKey] of SORTED_ADMIN_ROUTES) {
+        if (pathForAcl.startsWith(route)) {
+          if (!canAccess(role, moduleKey)) {
+            if (pathname.startsWith('/api/admin')) {
+              return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+            }
+            return NextResponse.redirect(new URL('/admin?unauthorized=1', req.url))
           }
-          return NextResponse.redirect(new URL('/admin?unauthorized=1', req.url))
+          break
         }
-        break
       }
     }
   }

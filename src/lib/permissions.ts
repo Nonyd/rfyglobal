@@ -69,7 +69,10 @@ const ROLE_PERMISSIONS: Record<string, Permission[]> = {
 }
 
 function normalizeRoleKey(role: string): string {
-  return role.trim().toUpperCase().replace(/\s+/g, '_')
+  const r = role.trim().toUpperCase().replace(/[\s-]+/g, '_')
+  // JWT / UI drift: treat common variants as SUPER_ADMIN
+  if (r === 'SUPERADMIN') return 'SUPER_ADMIN'
+  return r
 }
 
 export function hasPermission(role: string, permission: Permission): boolean {
@@ -94,6 +97,7 @@ export function canAccess(role: string, module: string): boolean {
     integrations: 'integrations',
     automation: 'automation',
     partner: 'partnership',
+    partnership: 'partnership',
     demo: 'demo',
     users: 'users',
     activity: 'activity',

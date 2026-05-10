@@ -1,11 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { forbidUnlessCanAccess } from '@/lib/admin-api-access'
 import { sendEmail, getTemplateHtml, getTemplateSubject } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
 import { PrayerRequestStatus } from '@prisma/client'
 
 export const runtime = 'nodejs'
+
+async function prayerId(params: { id: string } | Promise<{ id: string }>): Promise<string | undefined> {
+  const p = await Promise.resolve(params)
+  return p?.id?.trim() || undefined
+}
 
 function escapeHtml(text: string) {
   return text
@@ -15,16 +21,23 @@ function escapeHtml(text: string) {
     .replace(/"/g, '&quot;')
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(
+  req: NextRequest,
+  ctx: { params: { id: string } | Promise<{ id: string }> },
+) {
   try {
     const session = await auth()
-    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const denied = forbidUnlessCanAccess(session, 'prayer')
+    if (denied) return denied
 
-    const id = params?.id
+    const id = await prayerId(ctx.params)
     if (!id) return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
 
-    const body = await req.json()
-    const { status, adminNote, sendReply, replyMessage } = body as {
+    const body = await req.json().catch(() => null)
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
+    }
+    const { status, adminNote, sendReply, replyMessage } = body as unknown as {
       status?: string
       adminNote?: string | null
       sendReply?: boolean
@@ -121,13 +134,21 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(
+  req: NextRequest,
+  ctx: { params: { id: string } | Promise<{ id: string }> },
+) {
   const session = await auth()
+  const denied = forbidUnlessCanAccess(session, 'prayer')
+  if (denied) return denied
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   if (session.user.role !== 'SUPER_ADMIN') {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  await db.prayerRequest.delete({ where: { id: params.id } })
+  const id = await prayerId(ctx.params)
+  if (!id) return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
+
+  await db.prayerRequest.delete({ where: { id } })
   return NextResponse.json({ success: true })
 }
