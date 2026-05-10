@@ -9,6 +9,7 @@ export type NotificationType =
   | 'partner'
   | 'event_registration'
   | 'contact'
+  | 'live_chat'
 
 const NOTIFICATION_CONFIG: Record<NotificationType, { title: string; link: string }> = {
   prayer: { title: 'New Prayer Request', link: '/admin/prayer' },
@@ -18,6 +19,7 @@ const NOTIFICATION_CONFIG: Record<NotificationType, { title: string; link: strin
   partner: { title: 'New Partnership Gift', link: '/admin/partner' },
   event_registration: { title: 'New Event Registration', link: '/admin/events' },
   contact: { title: 'New Contact Form Submission', link: '/admin/messages' },
+  live_chat: { title: 'New Live Chat Message', link: '/admin/live-chat' },
 }
 
 const SSE_EVENT_MAP: Record<NotificationType, string> = {
@@ -28,6 +30,7 @@ const SSE_EVENT_MAP: Record<NotificationType, string> = {
   partner: 'new_partner',
   event_registration: 'new_event_registration',
   contact: 'new_message',
+  live_chat: 'new_chat_message',
 }
 
 type SSESendFn = (data: string) => void

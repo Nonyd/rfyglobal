@@ -22,6 +22,7 @@ const TYPE_ICONS: Record<string, string> = {
   partner: '💛',
   event_registration: '📅',
   contact: '📩',
+  live_chat: '💬',
 }
 
 function timeAgo(dateStr: string): string {

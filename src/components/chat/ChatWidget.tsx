@@ -173,7 +173,7 @@ export function ChatWidget() {
           position: 'fixed',
           bottom: '24px',
           right: '24px',
-          zIndex: 50,
+          zIndex: 9999,
           width: '56px',
           height: '56px',
           borderRadius: '50%',
@@ -181,10 +181,17 @@ export function ChatWidget() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+          boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
           border: 'none',
           cursor: 'pointer',
           transition: 'transform 0.2s ease',
+          flexShrink: 0,
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.transform = 'scale(1.05)'
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.transform = 'scale(1)'
         }}
         aria-label="Chat with Room For You"
       >
@@ -195,8 +202,23 @@ export function ChatWidget() {
         )}
         {!open && unread > 0 && (
           <span
-            className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white font-bold"
-            style={{ background: '#E53E3E', color: 'white', fontSize: '10px' }}
+            style={{
+              position: 'absolute',
+              top: '-4px',
+              right: '-4px',
+              width: '20px',
+              height: '20px',
+              borderRadius: '50%',
+              background: '#E53E3E',
+              color: 'white',
+              fontSize: '10px',
+              fontWeight: 700,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              border: '2px solid #0F0F0F',
+              fontFamily: 'Arial, sans-serif',
+            }}
           >
             {unread > 9 ? '9+' : unread}
           </span>
@@ -208,16 +230,16 @@ export function ChatWidget() {
           position: 'fixed',
           bottom: '96px',
           right: '24px',
-          zIndex: 50,
-          width: 'min(360px, calc(100vw - 24px))',
+          zIndex: 9998,
+          width: 'min(360px, calc(100vw - 32px))',
           height: '500px',
-          display: 'flex',
-          flexDirection: 'column',
-          overflow: 'hidden',
           background: '#0F0F0F',
           border: '1px solid rgba(201,168,76,0.25)',
           borderRadius: '16px',
           boxShadow: '0 24px 64px rgba(0,0,0,0.5)',
+          display: 'flex',
+          flexDirection: 'column',
+          overflow: 'hidden',
           transform: open ? 'translateY(0) scale(1)' : 'translateY(16px) scale(0.96)',
           opacity: open ? 1 : 0,
           pointerEvents: open ? 'all' : 'none',

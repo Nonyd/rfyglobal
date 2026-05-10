@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { sendEmail } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
-import { broadcastSSE } from '@/lib/notify'
+import { broadcastSSE, createNotification } from '@/lib/notify'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -44,6 +44,12 @@ export async function POST(req: NextRequest) {
       sessionId: session.id,
       timestamp: Date.now(),
     })
+
+    try {
+      await createNotification('live_chat', `${session.name} started a live chat`)
+    } catch {
+      /* bell notification must not block chat */
+    }
 
     await sendEmail({
       to: 'hello@rfyglobal.org',

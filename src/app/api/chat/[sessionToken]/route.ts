@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { broadcastSSE } from '@/lib/notify'
+import { broadcastSSE, createNotification } from '@/lib/notify'
 import { sendEmail } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
 
@@ -62,6 +62,16 @@ export async function POST(
         isRead: false,
       },
     })
+
+    const trimmed = body.trim()
+    try {
+      await createNotification(
+        'live_chat',
+        `${session.name}: "${trimmed.slice(0, 80)}${trimmed.length > 80 ? '…' : ''}"`,
+      )
+    } catch {
+      /* bell notification must not block chat */
+    }
 
     await db.liveChatSession.update({
       where: { id: session.id },
