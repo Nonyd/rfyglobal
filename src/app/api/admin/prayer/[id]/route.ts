@@ -148,3 +148,10 @@ export async function DELETE(
   await db.prayerRequest.delete({ where: { id } })
   return NextResponse.json({ success: true })
 }
+
+export async function POST(req: NextRequest, ctx: { params: { id: string } | Promise<{ id: string }> }) {
+  const methodOverride = req.headers.get('X-HTTP-Method-Override')
+  if (methodOverride === 'DELETE') return DELETE(req, ctx)
+  if (methodOverride === 'PATCH') return PATCH(req, ctx)
+  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 })
+}

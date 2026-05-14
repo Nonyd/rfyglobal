@@ -78,6 +78,10 @@ export async function GET(_req: NextRequest, ctx: { params: { id: string } | Pro
 
 export async function POST(req: NextRequest, ctx: { params: { id: string } | Promise<{ id: string }> }) {
   try {
+    if (req.headers.get('X-HTTP-Method-Override') === 'DELETE') {
+      return DELETE(req, ctx)
+    }
+
     const session = await auth()
     const denied = await forbidUnlessCanAccess(session, 'messages')
     if (denied) return denied

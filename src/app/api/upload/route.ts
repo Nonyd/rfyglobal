@@ -7,6 +7,10 @@ export const runtime = 'nodejs'
 type UploadFolder = keyof typeof UPLOAD_FOLDERS
 
 export async function POST(req: NextRequest) {
+  if (req.headers.get('X-HTTP-Method-Override') === 'DELETE') {
+    return DELETE(req)
+  }
+
   const session = await auth()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 

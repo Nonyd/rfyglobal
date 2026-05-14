@@ -52,3 +52,10 @@ export async function DELETE() {
   await db.activityLog.deleteMany({})
   return NextResponse.json({ success: true })
 }
+
+export async function POST(req: NextRequest) {
+  if (req.headers.get('X-HTTP-Method-Override') === 'DELETE') {
+    return DELETE()
+  }
+  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 })
+}

@@ -30,6 +30,10 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
+  if (req.headers.get('X-HTTP-Method-Override') === 'DELETE') {
+    return DELETE(req)
+  }
+
   const session = await auth()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 

@@ -22,3 +22,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
   return NextResponse.json({ ok: true })
 }
+
+export async function POST(req: NextRequest, ctx: { params: { id: string } }) {
+  if (req.headers.get('X-HTTP-Method-Override') === 'PATCH') {
+    return PATCH(req, ctx)
+  }
+  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 })
+}

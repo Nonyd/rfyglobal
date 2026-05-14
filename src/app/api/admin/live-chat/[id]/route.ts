@@ -20,6 +20,10 @@ export async function POST(
   ctx: { params: { id: string } | Promise<{ id: string }> },
 ) {
   try {
+    if (req.headers.get('X-HTTP-Method-Override') === 'DELETE') {
+      return DELETE(req, ctx)
+    }
+
     const sessionUser = await auth()
     const denied = await forbidUnlessCanAccess(sessionUser, 'live-chat')
     if (denied) return denied

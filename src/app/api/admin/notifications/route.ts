@@ -148,9 +148,30 @@ async function mutateNotifications(req: NextRequest) {
   return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
 }
 
+async function deleteNotification(req: NextRequest) {
+  const session = await auth()
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
+  const { searchParams } = new URL(req.url)
+  const id = searchParams.get('id')
+
+  if (!id) {
+    return NextResponse.json({ error: 'No ID provided' }, { status: 400 })
+  }
+
+  await db.adminNotification.delete({ where: { id } })
+  broadcastSSE({ type: 'notification', event: 'deleted', timestamp: Date.now() })
+  return NextResponse.json({ success: true })
+}
+
 /** POST mirrors PATCH — some reverse proxies block PATCH; clients prefer POST for mutations. */
 export async function POST(req: NextRequest) {
   try {
+    if (req.headers.get('X-HTTP-Method-Override') === 'DELETE') {
+      return await deleteNotification(req)
+    }
     return await mutateNotifications(req)
   } catch (error) {
     console.error('[notifications POST]', error)
@@ -169,21 +190,7 @@ export async function PATCH(req: NextRequest) {
 
 export async function DELETE(req: NextRequest) {
   try {
-    const session = await auth()
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const { searchParams } = new URL(req.url)
-    const id = searchParams.get('id')
-
-    if (!id) {
-      return NextResponse.json({ error: 'No ID provided' }, { status: 400 })
-    }
-
-    await db.adminNotification.delete({ where: { id } })
-    broadcastSSE({ type: 'notification', event: 'deleted', timestamp: Date.now() })
-    return NextResponse.json({ success: true })
+    return await deleteNotification(req)
   } catch (error) {
     console.error('[notifications DELETE]', error)
     return NextResponse.json({ error: 'Internal error' }, { status: 500 })
