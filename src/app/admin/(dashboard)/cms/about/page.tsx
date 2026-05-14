@@ -17,7 +17,7 @@ const FIELDS: CMSField[] = [
     type: 'textarea',
     hint: 'Full biography shown on the About page',
   },
-  { key: 'about.yadah.image', label: 'Yadah Portrait (About page)', type: 'image' },
+  { key: 'about.yadah.image', label: 'Yadah Portrait (About page)', type: 'image', hint: 'After uploading, click “Save this field” (or Save All) so the About page shows the new image.' },
   { key: 'about.yadah.musicLink', label: 'Music Link', type: 'url' },
   { key: 'about.cta.headline', label: 'CTA Headline', type: 'text' },
   { key: 'about.cta.subtext', label: 'CTA Subtext', type: 'text' },

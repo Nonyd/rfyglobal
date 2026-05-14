@@ -59,10 +59,23 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
   useEffect(() => setMounted(true), [])
   const isDark = !mounted || resolvedTheme === 'dark'
 
-  const portrait = content['about.yadah.image']
-  const portraitUrl = portrait.includes('cloudinary.com')
-    ? portrait.replace('/upload/', '/upload/w_600,h_700,c_fill,f_auto,q_auto,g_face/')
+  const rawImage = (content['about.yadah.image'] ?? '').trim()
+  const fallbackPortrait = '/images/yadah-portrait.svg'
+  const portrait = rawImage || fallbackPortrait
+
+  /**
+   * CMS uploads are usually https://res.cloudinary.com/.../image/upload/...
+   * Apply light transforms for raster photos only. Skip for SVGs (optimizer/Cloudinary crop quirks).
+   * Avoid `g_face` — it can fail when no face is detected, which breaks the image on the page.
+   */
+  const isRasterCloudinary =
+    /^https?:\/\/res\.cloudinary\.com\//i.test(portrait) && !/\.svg(\?|#|$)/i.test(portrait.split('?')[0])
+
+  const portraitUrl = isRasterCloudinary
+    ? portrait.replace('/upload/', '/upload/w_600,h_700,c_fill,f_auto,q_auto/')
     : portrait
+
+  const portraitUnoptimized = /\.svg(\?|#|$)/i.test(portraitUrl)
   const bioParagraphs = content['about.yadah.bio'].split(/\n\n+/).filter(Boolean)
 
   return (
@@ -288,6 +301,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
               height={700}
               className="relative z-10 h-[500px] w-full object-cover lg:h-[600px]"
               priority
+              unoptimized={portraitUnoptimized}
             />
             <div className="absolute bottom-0 left-0 right-0 z-20 h-1 bg-gradient-to-r from-gold/60 to-transparent" />
           </motion.div>

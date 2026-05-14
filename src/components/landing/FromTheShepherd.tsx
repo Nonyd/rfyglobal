@@ -91,6 +91,7 @@ export function FromTheShepherd({ content }: { content: Record<string, string> }
                 fill
                 className="object-cover object-top"
                 sizes="(max-width: 1024px) 100vw, 40vw"
+                unoptimized={/\.svg(\?|#|$)/i.test(portraitUrl.split('?')[0])}
               />
               <div
                 className="absolute bottom-0 left-0 right-0 h-1/3 pointer-events-none"
