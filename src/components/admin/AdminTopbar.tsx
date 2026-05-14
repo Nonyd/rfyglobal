@@ -84,19 +84,7 @@ export function AdminTopbar({ toggleTheme, theme }: AdminTopbarProps) {
             href="https://rfyglobal.org"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden md:flex items-center gap-2 font-body text-xs transition-colors px-3 py-1.5 rounded border"
-            style={{
-              color: 'var(--a-text-muted)',
-              borderColor: 'var(--a-border)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = 'var(--a-gold)'
-              e.currentTarget.style.borderColor = 'var(--a-gold-border)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = 'var(--a-text-muted)'
-              e.currentTarget.style.borderColor = 'var(--a-border)'
-            }}
+            className="hidden md:flex items-center gap-2 font-body text-xs transition-colors px-3 py-1.5 rounded border border-[var(--a-border)] text-[var(--a-text-muted)] hover:border-[var(--a-gold-border)] hover:text-[var(--a-gold)]"
           >
             <span
               className="w-1.5 h-1.5 rounded-full bg-green-500"
@@ -110,20 +98,7 @@ export function AdminTopbar({ toggleTheme, theme }: AdminTopbarProps) {
           <button
             type="button"
             onClick={toggleTheme}
-            className="w-8 h-8 flex items-center justify-center rounded border transition-all"
-            style={{
-              background: 'var(--a-surface)',
-              borderColor: 'var(--a-border)',
-              color: 'var(--a-text-secondary)',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.borderColor = 'var(--a-gold-border)'
-              e.currentTarget.style.color = 'var(--a-gold)'
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.borderColor = 'var(--a-border)'
-              e.currentTarget.style.color = 'var(--a-text-secondary)'
-            }}
+            className="w-8 h-8 flex items-center justify-center rounded border transition-all bg-[var(--a-surface)] border-[var(--a-border)] text-[var(--a-text-secondary)] hover:border-[var(--a-gold-border)] hover:text-[var(--a-gold)]"
             title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
           >
             {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}

@@ -167,24 +167,11 @@ export function AdminSidebar({ theme, userRole }: AdminSidebarProps) {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className="flex items-center gap-2.5 px-3 py-2 rounded text-sm font-body font-medium transition-all duration-150 group"
-                    style={{
-                      background: isActive ? 'var(--a-gold-active)' : 'transparent',
-                      color: isActive ? 'var(--a-gold)' : 'var(--a-text-secondary)',
-                      borderLeft: isActive ? '2px solid var(--a-gold)' : '2px solid transparent',
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.background = 'var(--a-sidebar-hover)'
-                        e.currentTarget.style.color = 'var(--a-text)'
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isActive) {
-                        e.currentTarget.style.background = 'transparent'
-                        e.currentTarget.style.color = 'var(--a-text-secondary)'
-                      }
-                    }}
+                    className={`flex items-center gap-2.5 px-3 py-2 rounded text-sm font-body font-medium transition-all duration-150 group border-l-2 ${
+                      isActive
+                        ? 'border-[var(--a-gold)] bg-[var(--a-gold-active)] text-[var(--a-gold)]'
+                        : 'border-transparent text-[var(--a-text-secondary)] hover:bg-[var(--a-sidebar-hover)] hover:text-[var(--a-text)]'
+                    }`}
                   >
                     <Icon size={15} />
                     <span className="flex-1">{item.label}</span>
@@ -207,21 +194,11 @@ export function AdminSidebar({ theme, userRole }: AdminSidebarProps) {
       <div className="p-4 border-t" style={{ borderColor: 'var(--a-border)' }}>
         <Link
           href="/admin/settings"
-          className="flex items-center gap-2 px-3 py-2 text-sm font-body transition-all mb-1 rounded"
-          style={{
-            color: pathname === '/admin/settings' ? 'var(--a-gold)' : 'var(--a-text-muted)',
-            background: pathname === '/admin/settings' ? 'var(--a-gold-active)' : 'transparent',
-          }}
-          onMouseEnter={(e) => {
-            if (pathname !== '/admin/settings') {
-              e.currentTarget.style.color = 'var(--a-text)'
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (pathname !== '/admin/settings') {
-              e.currentTarget.style.color = 'var(--a-text-muted)'
-            }
-          }}
+          className={`flex items-center gap-2 px-3 py-2 text-sm font-body transition-all mb-1 rounded ${
+            pathname === '/admin/settings'
+              ? 'bg-[var(--a-gold-active)] text-[var(--a-gold)]'
+              : 'text-[var(--a-text-muted)] hover:text-[var(--a-text)]'
+          }`}
         >
           <Settings size={14} />
           Account Settings
@@ -234,12 +211,10 @@ export function AdminSidebar({ theme, userRole }: AdminSidebarProps) {
             {userEmail}
           </p>
           <button
+            type="button"
             onClick={() => signOut({ callbackUrl: '/admin/login' })}
-            className="p-1.5 rounded transition-colors"
+            className="p-1.5 rounded transition-colors text-[var(--a-text-muted)] hover:text-[var(--a-red)]"
             title="Sign out"
-            style={{ color: 'var(--a-text-muted)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--a-red)')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--a-text-muted)')}
           >
             <LogOut size={14} />
           </button>

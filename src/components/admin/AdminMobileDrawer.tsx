@@ -83,8 +83,7 @@ export function AdminMobileDrawer({ isOpen, onClose }: AdminMobileDrawerProps) {
               <button
                 type="button"
                 onClick={onClose}
-                className="w-7 h-7 flex items-center justify-center transition-colors"
-                style={{ color: 'var(--a-text-muted)' }}
+                className="w-7 h-7 flex items-center justify-center transition-colors text-[var(--a-text-muted)] hover:text-[var(--a-text)]"
                 aria-label="Close navigation"
               >
                 <X size={16} />
@@ -109,12 +108,11 @@ export function AdminMobileDrawer({ isOpen, onClose }: AdminMobileDrawerProps) {
                         <Link
                           key={item.href}
                           href={item.href}
-                          className="flex items-center gap-3 px-3 py-2.5 font-body text-sm transition-all"
-                          style={{
-                            background: active ? 'var(--a-gold-active)' : 'transparent',
-                            color: active ? 'var(--a-gold)' : 'var(--a-text-secondary)',
-                            borderLeft: active ? '2px solid var(--a-gold)' : '2px solid transparent',
-                          }}
+                          className={`flex items-center gap-3 px-3 py-2.5 font-body text-sm transition-all border-l-2 ${
+                            active
+                              ? 'border-[var(--a-gold)] bg-[var(--a-gold-active)] text-[var(--a-gold)]'
+                              : 'border-transparent text-[var(--a-text-secondary)] hover:bg-[var(--a-sidebar-hover)] hover:text-[var(--a-text)]'
+                          }`}
                         >
                           <Icon size={15} />
                           <span className="flex-1">{item.label}</span>
@@ -138,8 +136,7 @@ export function AdminMobileDrawer({ isOpen, onClose }: AdminMobileDrawerProps) {
               <button
                 type="button"
                 onClick={toggleTheme}
-                className="flex items-center gap-3 w-full px-3 py-2.5 font-body text-sm transition-all"
-                style={{ color: 'var(--a-text-secondary)' }}
+                className="flex items-center gap-3 w-full px-3 py-2.5 font-body text-sm transition-all text-[var(--a-text-secondary)] hover:bg-[var(--a-sidebar-hover)] hover:text-[var(--a-text)] rounded"
               >
                 {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
                 {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
@@ -148,8 +145,7 @@ export function AdminMobileDrawer({ isOpen, onClose }: AdminMobileDrawerProps) {
               <button
                 type="button"
                 onClick={() => signOut({ callbackUrl: '/admin/login' })}
-                className="flex items-center gap-3 w-full px-3 py-2.5 font-body text-sm transition-all"
-                style={{ color: 'var(--a-text-muted)' }}
+                className="flex items-center gap-3 w-full px-3 py-2.5 font-body text-sm transition-all text-[var(--a-text-muted)] hover:text-[var(--a-red)] rounded"
               >
                 <LogOut size={15} />
                 Sign Out
