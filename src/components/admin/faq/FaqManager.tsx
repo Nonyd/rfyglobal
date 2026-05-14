@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useCallback, useEffect, useState } from 'react'
 import { Plus, Pencil, Trash2 } from 'lucide-react'
 import { AdminToggle } from '@/components/shared/Toggle'
@@ -38,7 +39,7 @@ export function FaqManager() {
   const loadFaqs = useCallback(async () => {
     setLoading(true)
     try {
-      const res = await fetch('/api/admin/faq')
+      const res = await adminFetch('/api/admin/faq')
       const data = (await res.json()) as FaqCategory[]
       setCategories(data)
       if (!selectedCategoryId && data.length > 0) setSelectedCategoryId(data[0].id)
@@ -55,7 +56,7 @@ export function FaqManager() {
 
   const addCategory = async () => {
     if (!newCategoryTitle.trim()) return
-    const res = await fetch('/api/admin/faq', {
+    const res = await adminFetch('/api/admin/faq', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'category', title: newCategoryTitle }),
@@ -69,7 +70,7 @@ export function FaqManager() {
 
   const addFaq = async () => {
     if (!newFaq.question.trim() || !newFaq.answer.trim() || !selectedCategoryId) return
-    const res = await fetch('/api/admin/faq', {
+    const res = await adminFetch('/api/admin/faq', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'faq', ...newFaq, categoryId: selectedCategoryId }),
@@ -82,7 +83,7 @@ export function FaqManager() {
   }
 
   const updateCategory = async (id: string, data: Record<string, unknown>) => {
-    const res = await fetch(`/api/admin/faq/${id}`, {
+    const res = await adminFetch(`/api/admin/faq/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'category', ...data }),
@@ -92,7 +93,7 @@ export function FaqManager() {
   }
 
   const updateFaq = async (id: string, data: Record<string, unknown>) => {
-    const res = await fetch(`/api/admin/faq/${id}`, {
+    const res = await adminFetch(`/api/admin/faq/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -104,7 +105,7 @@ export function FaqManager() {
 
   const deleteCategory = async (id: string) => {
     if (!confirm('Delete this category and all its FAQs?')) return
-    await fetch(`/api/admin/faq/${id}`, {
+    await adminFetch(`/api/admin/faq/${id}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'category' }),
@@ -116,7 +117,7 @@ export function FaqManager() {
 
   const deleteFaq = async (id: string) => {
     if (!confirm('Delete this FAQ?')) return
-    await fetch(`/api/admin/faq/${id}`, {
+    await adminFetch(`/api/admin/faq/${id}`, {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ type: 'faq' }),

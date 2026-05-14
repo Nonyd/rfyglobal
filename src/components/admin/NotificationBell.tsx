@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Bell, X, CheckCheck } from 'lucide-react'
 import Link from 'next/link'
@@ -45,7 +46,7 @@ export function NotificationBell() {
 
   const fetchNotifications = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/notifications', {
+      const res = await adminFetch('/api/admin/notifications', {
         cache: 'no-store',
         credentials: 'same-origin',
       })
@@ -96,7 +97,7 @@ export function NotificationBell() {
   }, [fetchNotifications])
 
   const markAllRead = async () => {
-    await fetch('/api/admin/notifications', {
+    await adminFetch('/api/admin/notifications', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ markAllRead: true }),
@@ -107,7 +108,7 @@ export function NotificationBell() {
   }
 
   const markRead = async (id: string) => {
-    await fetch('/api/admin/notifications', {
+    await adminFetch('/api/admin/notifications', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),
@@ -121,7 +122,7 @@ export function NotificationBell() {
   const dismiss = async (id: string, e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    await fetch(`/api/admin/notifications?id=${encodeURIComponent(id)}`, {
+    await adminFetch(`/api/admin/notifications?id=${encodeURIComponent(id)}`, {
       method: 'DELETE',
       cache: 'no-store',
       credentials: 'same-origin',

@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Search, Mail, Send, X, Trash2 } from 'lucide-react'
 import { useAdminSSE } from '@/hooks/useAdminSSE'
@@ -91,7 +92,7 @@ export function MessagesPage() {
 
   const loadThreads = useCallback(async () => {
     try {
-      const res = await fetch(`/api/admin/messages?status=${filter}`)
+      const res = await adminFetch(`/api/admin/messages?status=${filter}`)
       if (res.ok) setThreads(await res.json())
     } catch {
       /* ignore */
@@ -109,7 +110,7 @@ export function MessagesPage() {
   const loadThread = useCallback(async (id: string) => {
     setLoadingThread(true)
     try {
-      const res = await fetch(`/api/admin/messages/${id}/messages`)
+      const res = await adminFetch(`/api/admin/messages/${id}/messages`)
       if (res.ok) {
         const data = await res.json()
         setActiveThread(data)
@@ -141,7 +142,7 @@ export function MessagesPage() {
   const removeThread = async (id: string) => {
     if (!confirm('Delete this conversation permanently?')) return
     try {
-      const res = await fetch(`/api/admin/messages/${id}`, { method: 'DELETE' })
+      const res = await adminFetch(`/api/admin/messages/${id}`, { method: 'DELETE' })
       if (!res.ok) {
         const msg = res.status === 403 ? 'You do not have permission to delete' : 'Could not delete'
         toast.error(msg)
@@ -162,7 +163,7 @@ export function MessagesPage() {
     let failed = 0
     await Promise.all(
       bulk.selectedArray.map(async (id) => {
-        const res = await fetch(`/api/admin/messages/${id}`, { method: 'DELETE' })
+        const res = await adminFetch(`/api/admin/messages/${id}`, { method: 'DELETE' })
         if (!res.ok) failed++
       }),
     )
@@ -177,7 +178,7 @@ export function MessagesPage() {
     if (!activeThread || !replyBody.trim() || sending) return
     setSending(true)
     try {
-      const res = await fetch(`/api/admin/messages/${activeThread.id}`, {
+      const res = await adminFetch(`/api/admin/messages/${activeThread.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ body: replyBody.trim() }),

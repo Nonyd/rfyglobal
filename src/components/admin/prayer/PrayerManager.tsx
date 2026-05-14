@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useCallback, useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { format } from 'date-fns'
@@ -29,7 +30,7 @@ export function PrayerManager() {
   const load = useCallback(async (): Promise<boolean> => {
     setLoading(true)
     try {
-      const res = await fetch(`/api/admin/prayer?status=${tab}&page=${page}`)
+      const res = await adminFetch(`/api/admin/prayer?status=${tab}&page=${page}`)
       if (!res.ok) throw new Error('Failed to load')
       const data = await res.json()
       setRequests(data.requests ?? [])
@@ -68,7 +69,7 @@ export function PrayerManager() {
   })
 
   const patch = async (id: string, body: Record<string, unknown>) => {
-    const res = await fetch(`/api/admin/prayer/${id}`, {
+    const res = await adminFetch(`/api/admin/prayer/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -97,7 +98,7 @@ export function PrayerManager() {
     }
     setReplySending(true)
     try {
-      const res = await fetch(`/api/admin/prayer/${id}`, {
+      const res = await adminFetch(`/api/admin/prayer/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -127,7 +128,7 @@ export function PrayerManager() {
 
   const remove = async (id: string) => {
     if (!confirm('Delete this prayer request permanently?')) return
-    const res = await fetch(`/api/admin/prayer/${id}`, { method: 'DELETE' })
+    const res = await adminFetch(`/api/admin/prayer/${id}`, { method: 'DELETE' })
     const payload = (await res.json().catch(() => null)) as { error?: string } | null
     if (!res.ok) {
       const msg =
@@ -146,7 +147,7 @@ export function PrayerManager() {
   const bulkDelete = async () => {
     if (!bulk.selectedCount) return
     if (!confirm(`Delete ${bulk.selectedCount} prayer request${bulk.selectedCount > 1 ? 's' : ''}?`)) return
-    await Promise.all(bulk.selectedArray.map((id) => fetch(`/api/admin/prayer/${id}`, { method: 'DELETE' })))
+    await Promise.all(bulk.selectedArray.map((id) => adminFetch(`/api/admin/prayer/${id}`, { method: 'DELETE' })))
     toast.success(`${bulk.selectedCount} requests deleted`)
     bulk.reset()
     await load()
@@ -156,7 +157,7 @@ export function PrayerManager() {
     if (!bulk.selectedCount) return
     await Promise.all(
       bulk.selectedArray.map((id) =>
-        fetch(`/api/admin/prayer/${id}`, {
+        adminFetch(`/api/admin/prayer/${id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: 'PRAYED' }),

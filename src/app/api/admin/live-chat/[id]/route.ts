@@ -6,6 +6,7 @@ import { db } from '@/lib/db'
 import { sendEmail } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
 import { broadcastSSE } from '@/lib/notify'
+import { paramId } from '@/lib/api-route-params'
 
 function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
@@ -13,11 +14,6 @@ function escapeHtml(s: string): string {
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
-
-async function idFromParams(params: { id: string } | Promise<{ id: string }>) {
-  const p = await Promise.resolve(params)
-  return p.id
-}
 
 export async function POST(
   req: NextRequest,
@@ -28,7 +24,9 @@ export async function POST(
     const denied = await forbidUnlessCanAccess(sessionUser, 'live-chat')
     if (denied) return denied
 
-    const id = await idFromParams(ctx.params)
+    const id = await paramId(ctx.params)
+    if (!id) return NextResponse.json({ error: 'Bad request' }, { status: 400 })
+
     const chatSession = await db.liveChatSession.findUnique({
       where: { id },
     })
@@ -111,7 +109,9 @@ export async function DELETE(
     const denied = await forbidUnlessCanAccess(sessionUser, 'live-chat')
     if (denied) return denied
 
-    const id = await idFromParams(ctx.params)
+    const id = await paramId(ctx.params)
+    if (!id) return NextResponse.json({ error: 'Bad request' }, { status: 400 })
+
     await db.liveChatSession.delete({ where: { id } })
     return NextResponse.json({ success: true })
   } catch (error) {

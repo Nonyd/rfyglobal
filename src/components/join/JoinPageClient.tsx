@@ -277,23 +277,6 @@ export function JoinPageClient({ extraFields, whatsappUrl }: JoinPageClientProps
                 <span className="text-gold"> Jesus to Nations.</span>
               </p>
             </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.7, delay: 1.2 }}
-              className="flex items-center gap-8 mt-10"
-            >
-              {[
-                { value: '100M+', label: 'Streams' },
-                { value: '600K+', label: 'Community' },
-              ].map((s) => (
-                <div key={s.label}>
-                  <p className="font-display text-snow text-2xl font-semibold">{s.value}</p>
-                  <p className="label-text opacity-50">{s.label}</p>
-                </div>
-              ))}
-            </motion.div>
           </div>
         </div>
 

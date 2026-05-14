@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useState } from 'react'
 import { Database, CheckCircle, AlertCircle, Loader2 } from 'lucide-react'
 
@@ -17,7 +18,7 @@ export function DemoDataManager() {
     setResults([])
 
     try {
-      const res = await fetch('/api/admin/demo', { method: 'POST' })
+      const res = await adminFetch('/api/admin/demo', { method: 'POST' })
       const data = await res.json()
 
       if (!res.ok || !data.success) {

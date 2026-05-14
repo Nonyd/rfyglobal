@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import Link from 'next/link'
 import { useState } from 'react'
 import { Edit, Eye, ExternalLink, Trash2 } from 'lucide-react'
@@ -22,7 +23,7 @@ export function FormsManager({ initialForms }: { initialForms: FormRow[] }) {
   const bulk = useBulkSelect(forms)
 
   const toggleActive = async (id: string, isActive: boolean) => {
-    const res = await fetch(`/api/forms/${id}`, {
+    const res = await adminFetch(`/api/forms/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ isActive }),
@@ -34,7 +35,7 @@ export function FormsManager({ initialForms }: { initialForms: FormRow[] }) {
 
   const deleteFormRequest = async (id: string): Promise<{ ok: true } | { ok: false; error: string }> => {
     try {
-      const res = await fetch(`/api/forms/${id}`, { method: 'DELETE' })
+      const res = await adminFetch(`/api/forms/${id}`, { method: 'DELETE' })
       if (res.ok) return { ok: true }
       const data = (await res.json().catch(() => ({}))) as { error?: unknown }
       const msg =

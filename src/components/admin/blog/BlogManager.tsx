@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import Link from 'next/link'
 import { useState } from 'react'
 import { Edit, Eye, Trash2 } from 'lucide-react'
@@ -25,7 +26,7 @@ export function BlogManager({ initialPosts }: { initialPosts: BlogPost[] }) {
   const bulk = useBulkSelect(posts)
 
   const patchPost = async (id: string, isPublished: boolean) => {
-    const res = await fetch(`/api/blog/${id}`, {
+    const res = await adminFetch(`/api/blog/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ isPublished }),
@@ -36,7 +37,7 @@ export function BlogManager({ initialPosts }: { initialPosts: BlogPost[] }) {
   }
 
   const removePost = async (id: string) => {
-    const res = await fetch(`/api/blog/${id}`, { method: 'DELETE' })
+    const res = await adminFetch(`/api/blog/${id}`, { method: 'DELETE' })
     if (!res.ok) return false
     setPosts((prev) => prev.filter((p) => p.id !== id))
     return true

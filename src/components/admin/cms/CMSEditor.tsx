@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useState } from 'react'
 import { UploadZone } from '@/components/shared/UploadZone'
 import type { CloudinaryFolder } from '@/lib/cloudinary-client'
@@ -36,7 +37,7 @@ export function CMSEditor({ title, description, fields, initialValues, defaults 
   const saveField = async (key: string) => {
     setSaving(key)
     try {
-      const res = await fetch('/api/cms', {
+      const res = await adminFetch('/api/cms', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ key, value: values[key] }),
@@ -52,7 +53,7 @@ export function CMSEditor({ title, description, fields, initialValues, defaults 
   }
 
   const resetField = async (key: string) => {
-    const res = await fetch('/api/cms', {
+    const res = await adminFetch('/api/cms', {
       method: 'DELETE',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ key }),
@@ -76,7 +77,7 @@ export function CMSEditor({ title, description, fields, initialValues, defaults 
     try {
       const results = await Promise.all(
         changed.map((f) =>
-          fetch('/api/cms', {
+          adminFetch('/api/cms', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ key: f.key, value: values[f.key] }),

@@ -2,18 +2,22 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { forbidUnlessCanAccess } from '@/lib/admin-api-access'
+import { paramId } from '@/lib/api-route-params'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, ctx: { params: { id: string } | Promise<{ id: string }> }) {
   try {
     const session = await auth()
     const denied = await forbidUnlessCanAccess(session, 'messages')
     if (denied) return denied
 
+    const id = await paramId(ctx.params)
+    if (!id) return NextResponse.json({ error: 'Bad request' }, { status: 400 })
+
     const thread = await db.messageThread.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         messages: { orderBy: { createdAt: 'asc' } },
       },
@@ -22,7 +26,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     if (!thread) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
     await db.message.updateMany({
-      where: { threadId: params.id, isRead: false, fromAdmin: false },
+      where: { threadId: id, isRead: false, fromAdmin: false },
       data: { isRead: true },
     })
 

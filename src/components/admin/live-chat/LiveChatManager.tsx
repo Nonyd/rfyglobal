@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { Search, MessageCircle, Send, X, Trash2 } from 'lucide-react'
 import { useAdminSSE } from '@/hooks/useAdminSSE'
@@ -93,7 +94,7 @@ export function LiveChatManager() {
 
   const loadSessions = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/live-chat')
+      const res = await adminFetch('/api/admin/live-chat')
       if (res.ok) setSessions(await res.json())
     } catch {
       /* ignore */
@@ -111,7 +112,7 @@ export function LiveChatManager() {
   const loadSession = useCallback(async (id: string) => {
     setLoadingSession(true)
     try {
-      const res = await fetch(`/api/admin/live-chat/${id}/messages`)
+      const res = await adminFetch(`/api/admin/live-chat/${id}/messages`)
       if (res.ok) {
         const data = (await res.json()) as LiveSessionRow & { messages: LiveMsg[] }
         setActive(data)
@@ -143,7 +144,7 @@ export function LiveChatManager() {
   const removeSession = async (id: string) => {
     if (!confirm('Delete this conversation and all messages permanently?')) return
     try {
-      const res = await fetch(`/api/admin/live-chat/${id}`, { method: 'DELETE' })
+      const res = await adminFetch(`/api/admin/live-chat/${id}`, { method: 'DELETE' })
       if (!res.ok) {
         const msg = res.status === 403 ? 'You do not have permission to delete' : 'Could not delete'
         toast.error(msg)
@@ -164,7 +165,7 @@ export function LiveChatManager() {
     let failed = 0
     await Promise.all(
       bulk.selectedArray.map(async (id) => {
-        const res = await fetch(`/api/admin/live-chat/${id}`, { method: 'DELETE' })
+        const res = await adminFetch(`/api/admin/live-chat/${id}`, { method: 'DELETE' })
         if (!res.ok) failed++
       }),
     )
@@ -179,7 +180,7 @@ export function LiveChatManager() {
     if (!active || !replyBody.trim() || sending) return
     setSending(true)
     try {
-      const res = await fetch(`/api/admin/live-chat/${active.id}`, {
+      const res = await adminFetch(`/api/admin/live-chat/${active.id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ body: replyBody.trim() }),

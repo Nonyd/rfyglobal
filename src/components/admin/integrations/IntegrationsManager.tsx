@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useState, useEffect } from 'react'
 import { ChevronDown, ChevronUp, Save, Settings, Shield } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -137,7 +138,7 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
   const [savingPaymentSettings, setSavingPaymentSettings] = useState(false)
 
   useEffect(() => {
-    fetch('/api/admin/payment-settings')
+    adminFetch('/api/admin/payment-settings')
       .then((r) => (r.ok ? r.json() : { usdEnabled: false }))
       .then((data: { usdEnabled?: boolean }) =>
         setPaymentSettings({ usdEnabled: data.usdEnabled === true }),
@@ -150,7 +151,7 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
     setSavingPaymentSettings(true)
     setPaymentSettings((p) => ({ ...p, [key]: value }))
     try {
-      const res = await fetch('/api/admin/payment-settings', {
+      const res = await adminFetch('/api/admin/payment-settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ [key]: value }),
@@ -172,7 +173,7 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
   const toggleActive = async (serviceId: string) => {
     const next = !activeStates[serviceId]
     setActiveStates((prev) => ({ ...prev, [serviceId]: next }))
-    const res = await fetch(`/api/credentials/${serviceId}`, {
+    const res = await adminFetch(`/api/credentials/${serviceId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ isActive: next }),
@@ -189,7 +190,7 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
     setSaving(serviceId)
     try {
       const data: Record<string, unknown> = { ...values[serviceId] }
-      const res = await fetch('/api/credentials', {
+      const res = await adminFetch('/api/credentials', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

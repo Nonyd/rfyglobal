@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useCallback, useEffect, useState } from 'react'
 import { Plus, Download, X, Trash2 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -51,7 +52,7 @@ export function MembersManager({ initialMembers, total, extraFields: initialFiel
   const reloadMembers = useCallback(async (): Promise<boolean> => {
     setLoading(true)
     try {
-      const res = await fetch(`/api/join/members?page=1`)
+      const res = await adminFetch(`/api/join/members?page=1`)
       if (!res.ok) throw new Error('fail')
       const data = await res.json()
       setMembers(data.members)
@@ -89,7 +90,7 @@ export function MembersManager({ initialMembers, total, extraFields: initialFiel
   const loadMore = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`/api/join/members?page=${page + 1}`)
+      const res = await adminFetch(`/api/join/members?page=${page + 1}`)
       const data = await res.json()
       setMembers((prev) => [...prev, ...data.members])
       setPage((p) => p + 1)
@@ -103,7 +104,7 @@ export function MembersManager({ initialMembers, total, extraFields: initialFiel
   const toggleSubscribed = async (m: CommunityMember) => {
     setTogglingId(m.id)
     try {
-      const res = await fetch(`/api/join/members/${m.id}`, {
+      const res = await adminFetch(`/api/join/members/${m.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isSubscribed: !m.isSubscribed }),
@@ -127,7 +128,7 @@ export function MembersManager({ initialMembers, total, extraFields: initialFiel
     }
     setSavingField(true)
     try {
-      const res = await fetch('/api/join/fields', {
+      const res = await adminFetch('/api/join/fields', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -157,7 +158,7 @@ export function MembersManager({ initialMembers, total, extraFields: initialFiel
   const bulkDelete = async () => {
     if (!bulk.selectedCount) return
     if (!confirm(`Delete ${bulk.selectedCount} member${bulk.selectedCount > 1 ? 's' : ''}? This cannot be undone.`)) return
-    const res = await fetch('/api/join/bulk-delete', {
+    const res = await adminFetch('/api/join/bulk-delete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ids: bulk.selectedArray }),

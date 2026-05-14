@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import type { ReactNode } from 'react'
 import { useEditor, EditorContent, type Editor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
@@ -67,7 +68,7 @@ function EditorToolbar({ editor }: { editor: Editor }) {
           reader.readAsDataURL(file)
         })
 
-        const res = await fetch('/api/upload', {
+        const res = await adminFetch('/api/upload', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ file: base64, folder: 'blogInline', resourceType: 'image' }),

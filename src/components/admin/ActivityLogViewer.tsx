@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useState, useMemo } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 import type { ActivityLog, User } from '@prisma/client'
@@ -71,7 +72,7 @@ export function ActivityLogViewer({
         ...(moduleFilter !== 'All' && { module: moduleFilter }),
         ...(userFilter !== 'All' && { userId: userFilter }),
       })
-      const res = await fetch(`/api/admin/activity?${params}`)
+      const res = await adminFetch(`/api/admin/activity?${params}`)
       const data = await res.json()
       setLogs((prev) => [...prev, ...(data.logs ?? [])])
       setPage((p) => p + 1)
@@ -83,7 +84,7 @@ export function ActivityLogViewer({
 
   const clearAllLogs = async () => {
     if (!confirm('Clear all activity logs? This cannot be undone.')) return
-    const res = await fetch('/api/admin/activity', { method: 'DELETE' })
+    const res = await adminFetch('/api/admin/activity', { method: 'DELETE' })
     if (!res.ok) {
       toast.error('Failed to clear logs')
       return
@@ -96,7 +97,7 @@ export function ActivityLogViewer({
   const bulkDelete = async () => {
     if (!bulk.selectedCount) return
     if (!confirm(`Delete ${bulk.selectedCount} activity log entr${bulk.selectedCount > 1 ? 'ies' : 'y'}?`)) return
-    const res = await fetch('/api/admin/activity/bulk-delete', {
+    const res = await adminFetch('/api/admin/activity/bulk-delete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ids: bulk.selectedArray }),

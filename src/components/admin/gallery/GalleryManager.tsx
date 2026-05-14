@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useCallback, useEffect, useState } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -65,7 +66,7 @@ export function GalleryManager() {
 
   const loadEvents = useCallback(async () => {
     try {
-      const res = await fetch('/api/gallery/events')
+      const res = await adminFetch('/api/gallery/events')
       if (!res.ok) throw new Error('Failed to load events')
       const data = (await res.json()) as EventWithCount[]
       setEvents(data)
@@ -81,7 +82,7 @@ export function GalleryManager() {
         selectedEventId === 'all'
           ? '/api/gallery?includeHidden=true&limit=1000'
           : `/api/gallery/events/${selectedEventId}`
-      const res = await fetch(url)
+      const res = await adminFetch(url)
       if (!res.ok) throw new Error('Failed to load images')
       const data = (await res.json()) as
         | ImageWithEvent[]
@@ -111,7 +112,7 @@ export function GalleryManager() {
     }
     setSavingEvent(true)
     try {
-      const res = await fetch('/api/gallery/events', {
+      const res = await adminFetch('/api/gallery/events', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newEventForm),
@@ -131,7 +132,7 @@ export function GalleryManager() {
   }
 
   const updateEvent = async (eventId: string, updates: Partial<EventForm> & { isActive?: boolean }) => {
-    const res = await fetch(`/api/gallery/events/${eventId}`, {
+    const res = await adminFetch(`/api/gallery/events/${eventId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates),
@@ -147,7 +148,7 @@ export function GalleryManager() {
 
   const deleteEvent = async (eventId: string) => {
     if (!confirm('Delete this event and ALL its photos? This cannot be undone.')) return
-    const res = await fetch(`/api/gallery/events/${eventId}`, { method: 'DELETE' })
+    const res = await adminFetch(`/api/gallery/events/${eventId}`, { method: 'DELETE' })
     if (res.ok) {
       await loadEvents()
       if (selectedEventId === eventId) {
@@ -178,7 +179,7 @@ export function GalleryManager() {
     const count = selectedIds.size
     if (!confirm(`Delete ${count} image${count > 1 ? 's' : ''}? This cannot be undone.`)) return
 
-    const res = await fetch('/api/gallery/images/bulk-delete', {
+    const res = await adminFetch('/api/gallery/images/bulk-delete', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ ids: Array.from(selectedIds) }),
@@ -197,7 +198,7 @@ export function GalleryManager() {
   }
 
   const toggleImageActive = async (image: ImageWithEvent) => {
-    const res = await fetch(`/api/gallery/${image.id}`, {
+    const res = await adminFetch(`/api/gallery/${image.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ isActive: !image.isActive }),
@@ -212,7 +213,7 @@ export function GalleryManager() {
   }
 
   const saveImageEdit = async (id: string, updates: Partial<ImageWithEvent>) => {
-    const res = await fetch(`/api/gallery/${id}`, {
+    const res = await adminFetch(`/api/gallery/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(updates),
@@ -247,7 +248,7 @@ export function GalleryManager() {
         await Promise.all(
           result.succeeded.map(async (item, idx) => {
             try {
-              const res = await fetch('/api/gallery', {
+              const res = await adminFetch('/api/gallery', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

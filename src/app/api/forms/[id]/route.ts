@@ -1,16 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
+import { paramId } from '@/lib/api-route-params'
 import { UpdateFormSchema } from '@/lib/validations/form'
 
 export const runtime = 'nodejs'
 
-export async function GET(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, ctx: { params: { id: string } | Promise<{ id: string }> }) {
   const session = await auth()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+  const id = await paramId(ctx.params)
+  if (!id) return NextResponse.json({ error: 'Bad request' }, { status: 400 })
+
   const form = await db.form.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { fields: { orderBy: { order: 'asc' } } },
   })
 
@@ -18,11 +22,14 @@ export async function GET(_req: NextRequest, { params }: { params: { id: string 
   return NextResponse.json(form)
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, ctx: { params: { id: string } | Promise<{ id: string }> }) {
   const session = await auth()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const existing = await db.form.findUnique({ where: { id: params.id } })
+  const id = await paramId(ctx.params)
+  if (!id) return NextResponse.json({ error: 'Bad request' }, { status: 400 })
+
+  const existing = await db.form.findUnique({ where: { id } })
   if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   const body = await req.json()
@@ -41,7 +48,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 
   await db.form.update({
-    where: { id: params.id },
+    where: { id },
     data: {
       ...formData,
       notifyEmail:
@@ -54,10 +61,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   })
 
   if (fields) {
-    await db.formField.deleteMany({ where: { formId: params.id } })
+    await db.formField.deleteMany({ where: { formId: id } })
     await db.formField.createMany({
       data: fields.map((f, i) => ({
-        formId: params.id,
+        formId: id,
         label: f.label,
         type: f.type,
         placeholder: f.placeholder ?? null,
@@ -69,23 +76,26 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   }
 
   const updated = await db.form.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: { fields: { orderBy: { order: 'asc' } } },
   })
 
   return NextResponse.json(updated)
 }
 
-export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
+export async function DELETE(_req: NextRequest, ctx: { params: { id: string } | Promise<{ id: string }> }) {
   try {
     const session = await auth()
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-    const existing = await db.form.findUnique({ where: { id: params.id } })
+    const id = await paramId(ctx.params)
+    if (!id) return NextResponse.json({ error: 'Bad request' }, { status: 400 })
+
+    const existing = await db.form.findUnique({ where: { id } })
     if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
-    await db.formSubmission.deleteMany({ where: { formId: params.id } })
-    await db.form.delete({ where: { id: params.id } })
+    await db.formSubmission.deleteMany({ where: { formId: id } })
+    await db.form.delete({ where: { id } })
 
     return NextResponse.json({ success: true })
   } catch (error) {

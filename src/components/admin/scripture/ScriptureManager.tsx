@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Edit, Trash2, Volume2, Calendar, Shuffle, X, Upload } from 'lucide-react'
@@ -45,7 +46,7 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
   const [isActive, setIsActive] = useState(true)
 
   const loadScriptures = async () => {
-    const res = await fetch('/api/scripture')
+    const res = await adminFetch('/api/scripture')
     if (!res.ok) throw new Error('Failed to load scriptures')
     const data = (await res.json()) as Scripture[]
     setScriptures(data)
@@ -92,7 +93,7 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
     try {
       const formData = new FormData()
       formData.append('file', bulkFile)
-      const res = await fetch('/api/scripture/bulk-upload', {
+      const res = await adminFetch('/api/scripture/bulk-upload', {
         method: 'POST',
         body: formData,
       })
@@ -141,7 +142,7 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
       const url = editing ? `/api/scripture/${editing.id}` : '/api/scripture'
       const method = editing ? 'PATCH' : 'POST'
 
-      const res = await fetch(url, {
+      const res = await adminFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -169,7 +170,7 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Delete this scripture?')) return
-    const res = await fetch(`/api/scripture/${id}`, { method: 'DELETE' })
+    const res = await adminFetch(`/api/scripture/${id}`, { method: 'DELETE' })
     if (res.ok) {
       setScriptures((prev) => prev.filter((s) => s.id !== id))
       toast.success('Scripture deleted')
@@ -179,7 +180,7 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
   }
 
   const toggleActive = async (s: Scripture) => {
-    const res = await fetch(`/api/scripture/${s.id}`, {
+    const res = await adminFetch(`/api/scripture/${s.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ isActive: !s.isActive }),
@@ -192,7 +193,7 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
   }
 
   const publishDraft = async (scriptureId: string) => {
-    const res = await fetch(`/api/scripture/${scriptureId}`, {
+    const res = await adminFetch(`/api/scripture/${scriptureId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ isDraft: false, isActive: true }),
@@ -210,7 +211,7 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
   const bulkDelete = async () => {
     if (!bulk.selectedCount) return
     if (!confirm(`Delete ${bulk.selectedCount} scripture${bulk.selectedCount > 1 ? 's' : ''}?`)) return
-    await Promise.all(bulk.selectedArray.map((id) => fetch(`/api/scripture/${id}`, { method: 'DELETE' })))
+    await Promise.all(bulk.selectedArray.map((id) => adminFetch(`/api/scripture/${id}`, { method: 'DELETE' })))
     toast.success(`${bulk.selectedCount} scriptures deleted`)
     bulk.reset()
     await loadScriptures()
@@ -220,7 +221,7 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
     if (!bulk.selectedCount) return
     await Promise.all(
       bulk.selectedArray.map((id) =>
-        fetch(`/api/scripture/${id}`, {
+        adminFetch(`/api/scripture/${id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ isDraft: false, isActive: true }),

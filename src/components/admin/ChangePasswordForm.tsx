@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useState } from 'react'
 import { Eye, EyeOff, Lock } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -29,7 +30,7 @@ export function ChangePasswordForm() {
 
     setSaving(true)
     try {
-      const res = await fetch('/api/admin/change-password', {
+      const res = await adminFetch('/api/admin/change-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),

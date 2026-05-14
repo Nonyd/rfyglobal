@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useCallback, useEffect, useState } from 'react'
 import {
   ChevronDown,
@@ -59,7 +60,7 @@ export function StudyManager() {
   const [editDescription, setEditDescription] = useState('')
 
   const load = useCallback(async () => {
-    const res = await fetch('/api/study/series')
+    const res = await adminFetch('/api/study/series')
     if (!res.ok) {
       toast.error('Failed to load study series')
       return
@@ -89,7 +90,7 @@ export function StudyManager() {
       toast.error('Title is required')
       return
     }
-    const res = await fetch('/api/study/series', {
+    const res = await adminFetch('/api/study/series', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -110,7 +111,7 @@ export function StudyManager() {
   }
 
   const saveSeriesEdit = async (id: string) => {
-    const res = await fetch(`/api/study/series/${id}`, {
+    const res = await adminFetch(`/api/study/series/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -129,7 +130,7 @@ export function StudyManager() {
 
   const deleteSeries = async (id: string, title: string) => {
     if (!confirm(`Delete series "${title}" and all materials/tasks?`)) return
-    const res = await fetch(`/api/study/series/${id}`, { method: 'DELETE' })
+    const res = await adminFetch(`/api/study/series/${id}`, { method: 'DELETE' })
     if (!res.ok) {
       toast.error('Failed to delete')
       return
@@ -140,7 +141,7 @@ export function StudyManager() {
 
   const deleteMaterial = async (id: string) => {
     if (!confirm('Remove this material?')) return
-    const res = await fetch(`/api/study/materials/${id}`, { method: 'DELETE' })
+    const res = await adminFetch(`/api/study/materials/${id}`, { method: 'DELETE' })
     if (!res.ok) {
       toast.error('Failed to delete')
       return
@@ -151,7 +152,7 @@ export function StudyManager() {
 
   const deleteTask = async (id: string) => {
     if (!confirm('Delete this task?')) return
-    const res = await fetch(`/api/study/tasks/${id}`, { method: 'DELETE' })
+    const res = await adminFetch(`/api/study/tasks/${id}`, { method: 'DELETE' })
     if (!res.ok) {
       toast.error('Failed to delete')
       return
@@ -168,7 +169,7 @@ export function StudyManager() {
     const s = series.find((x) => x.id === seriesId)
     const dueDate =
       taskDue && taskDue.length > 0 ? new Date(taskDue).toISOString() : undefined
-    const res = await fetch('/api/study/tasks', {
+    const res = await adminFetch('/api/study/tasks', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -199,7 +200,7 @@ export function StudyManager() {
     if (!f?.url) return
     const fileType = 'application/octet-stream'
     const s = series.find((x) => x.id === seriesId)
-    const res = await fetch('/api/study/materials', {
+    const res = await adminFetch('/api/study/materials', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({

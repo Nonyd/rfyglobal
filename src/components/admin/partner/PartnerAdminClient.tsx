@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useCallback, useEffect, useState } from 'react'
 import type { GivingRecord } from '@prisma/client'
 import { formatDate } from '@/lib/utils'
@@ -27,7 +28,7 @@ export function PartnerAdminClient({ initialRecords, initialStats }: PartnerAdmi
 
   const reloadPartnerData = useCallback(async (showToast: boolean) => {
     try {
-      const res = await fetch('/api/admin/partner/gifts', { cache: 'no-store' })
+      const res = await adminFetch('/api/admin/partner/gifts', { cache: 'no-store' })
       if (!res.ok) throw new Error('fail')
       const data = (await res.json()) as {
         records: PartnerGiftRow[]

@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
@@ -59,7 +60,7 @@ export function BlogPostEditor({ mode, initialData }: BlogPostEditorProps) {
       const url = mode === 'create' ? '/api/blog' : `/api/blog/${initialData!.id}`
       const method = mode === 'create' ? 'POST' : 'PATCH'
 
-      const res = await fetch(url, {
+      const res = await adminFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

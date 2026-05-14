@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useCallback, useEffect, useState } from 'react'
 import Image from 'next/image'
 import { format } from 'date-fns'
@@ -48,7 +49,7 @@ export function TestimonyManager() {
   const load = useCallback(async (): Promise<boolean> => {
     setLoading(true)
     try {
-      const res = await fetch(`/api/admin/testimony?status=${tab}`)
+      const res = await adminFetch(`/api/admin/testimony?status=${tab}`)
       if (!res.ok) throw new Error('fail')
       const data = await res.json()
       setItems(data as Testimony[])
@@ -94,7 +95,7 @@ export function TestimonyManager() {
   const patch = async (id: string, body: Record<string, unknown>) => {
     setSaving(true)
     try {
-      const res = await fetch(`/api/admin/testimony/${id}`, {
+      const res = await adminFetch(`/api/admin/testimony/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),
@@ -119,7 +120,7 @@ export function TestimonyManager() {
 
   const del = async (id: string) => {
     if (!confirm('Delete this testimony?')) return
-    const res = await fetch(`/api/admin/testimony/${id}`, { method: 'DELETE' })
+    const res = await adminFetch(`/api/admin/testimony/${id}`, { method: 'DELETE' })
     const payload = (await res.json().catch(() => null)) as { error?: string } | null
     if (!res.ok) {
       const msg =
@@ -149,7 +150,7 @@ export function TestimonyManager() {
     if (!bulk.selectedCount) return
     const results = await Promise.all(
       bulk.selectedArray.map((id) =>
-        fetch(`/api/admin/testimony/${id}`, {
+        adminFetch(`/api/admin/testimony/${id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: 'APPROVED' }),
@@ -171,7 +172,7 @@ export function TestimonyManager() {
     if (!confirm(`Reject ${bulk.selectedCount} testimonies?`)) return
     const results = await Promise.all(
       bulk.selectedArray.map((id) =>
-        fetch(`/api/admin/testimony/${id}`, {
+        adminFetch(`/api/admin/testimony/${id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status: 'REJECTED' }),
@@ -192,7 +193,7 @@ export function TestimonyManager() {
     if (!bulk.selectedCount) return
     if (!confirm(`Delete ${bulk.selectedCount} testimonies?`)) return
     const results = await Promise.all(
-      bulk.selectedArray.map((id) => fetch(`/api/admin/testimony/${id}`, { method: 'DELETE' }).then((r) => r.ok)),
+      bulk.selectedArray.map((id) => adminFetch(`/api/admin/testimony/${id}`, { method: 'DELETE' }).then((r) => r.ok)),
     )
     const failed = results.filter((ok) => !ok).length
     if (failed > 0) {

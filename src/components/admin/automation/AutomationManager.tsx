@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useState } from 'react'
 import type { AutomationSettings, EmailLog, CommunityMember } from '@prisma/client'
 import { formatDate } from '@/lib/utils'
@@ -43,7 +44,7 @@ export function AutomationManager({ settings: initial, recentLogs }: AutomationM
   const saveSettings = async () => {
     setSaving(true)
     try {
-      const res = await fetch('/api/automation/settings', {
+      const res = await adminFetch('/api/automation/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -65,7 +66,7 @@ export function AutomationManager({ settings: initial, recentLogs }: AutomationM
   const runDevotional = async () => {
     setRunningDevotional(true)
     try {
-      const res = await fetch('/api/admin/cron/devotional', { method: 'POST' })
+      const res = await adminFetch('/api/admin/cron/devotional', { method: 'POST' })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Failed')
       toast.success(
@@ -81,7 +82,7 @@ export function AutomationManager({ settings: initial, recentLogs }: AutomationM
   const runEventReminders = async () => {
     setRunningEvents(true)
     try {
-      const res = await fetch('/api/admin/cron/event-reminders', { method: 'POST' })
+      const res = await adminFetch('/api/admin/cron/event-reminders', { method: 'POST' })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Failed')
       toast.success(`Week sends: ${data.week?.sent ?? 0}, Day sends: ${data.day?.sent ?? 0}`)

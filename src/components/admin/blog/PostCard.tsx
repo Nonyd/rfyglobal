@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import Link from 'next/link'
 import { useState } from 'react'
 import { Edit, Eye, Trash2 } from 'lucide-react'
@@ -23,7 +24,7 @@ export function PostCard({ post }: PostCardProps) {
   const [isPublished, setIsPublished] = useState(post.isPublished)
 
   const togglePublish = async () => {
-    const res = await fetch(`/api/blog/${post.id}`, {
+    const res = await adminFetch(`/api/blog/${post.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ isPublished: !isPublished }),
@@ -38,7 +39,7 @@ export function PostCard({ post }: PostCardProps) {
 
   const deletePost = async () => {
     if (!confirm(`Delete "${post.title}"?`)) return
-    const res = await fetch(`/api/blog/${post.id}`, { method: 'DELETE' })
+    const res = await adminFetch(`/api/blog/${post.id}`, { method: 'DELETE' })
     if (res.ok) {
       toast.success('Post deleted')
       window.location.reload()

@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useCallback, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { formatDistanceToNow } from 'date-fns'
@@ -55,7 +56,7 @@ export function AdminNotificationsPage() {
 
   const load = useCallback(async () => {
     try {
-      const res = await fetch('/api/admin/notifications', {
+      const res = await adminFetch('/api/admin/notifications', {
         cache: 'no-store',
         credentials: 'same-origin',
       })
@@ -80,7 +81,7 @@ export function AdminNotificationsPage() {
   }, [subscribe, load])
 
   const markAllRead = async () => {
-    const res = await fetch('/api/admin/notifications', {
+    const res = await adminFetch('/api/admin/notifications', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ markAllRead: true }),
@@ -98,7 +99,7 @@ export function AdminNotificationsPage() {
   }
 
   const markRead = async (id: string) => {
-    const res = await fetch('/api/admin/notifications', {
+    const res = await adminFetch('/api/admin/notifications', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id }),
@@ -113,7 +114,7 @@ export function AdminNotificationsPage() {
   const dismiss = async (id: string, e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    await fetch(`/api/admin/notifications?id=${encodeURIComponent(id)}`, {
+    await adminFetch(`/api/admin/notifications?id=${encodeURIComponent(id)}`, {
       method: 'DELETE',
       credentials: 'same-origin',
     })

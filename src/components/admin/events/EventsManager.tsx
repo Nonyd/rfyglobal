@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useCallback, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import Image from 'next/image'
@@ -87,8 +88,8 @@ export function EventsManager() {
     try {
       const slugOrId = encodeURIComponent(ev.slug ?? ev.id)
       const [regsRes, fieldsRes] = await Promise.all([
-        fetch(`/api/events/${slugOrId}/registrations`),
-        fetch(`/api/events/${ev.id}/fields`),
+        adminFetch(`/api/events/${slugOrId}/registrations`),
+        adminFetch(`/api/events/${ev.id}/fields`),
       ])
       const data = (await regsRes.json()) as { registrations?: EventRegistration[] }
       const fieldsData = (await fieldsRes.json()) as EventFormField[] | { error?: string }
@@ -110,7 +111,7 @@ export function EventsManager() {
     setFieldEdits({})
     setLoadingFields(true)
     try {
-      const res = await fetch(`/api/events/${ev.id}/fields`)
+      const res = await adminFetch(`/api/events/${ev.id}/fields`)
       const data = (await res.json()) as EventFormField[] | { error?: string }
       setEventFields(Array.isArray(data) ? data : [])
     } catch {
@@ -135,7 +136,7 @@ export function EventsManager() {
     }
     setAddingField(true)
     try {
-      const res = await fetch(`/api/events/${fieldsEvent.id}/fields`, {
+      const res = await adminFetch(`/api/events/${fieldsEvent.id}/fields`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -160,7 +161,7 @@ export function EventsManager() {
 
   const deleteField = async (fieldId: string) => {
     if (!confirm('Remove this field?') || !fieldsEvent) return
-    const res = await fetch(`/api/events/${fieldsEvent.id}/fields/${fieldId}`, {
+    const res = await adminFetch(`/api/events/${fieldsEvent.id}/fields/${fieldId}`, {
       method: 'DELETE',
     })
     const data = (await res.json().catch(() => ({}))) as { error?: string }
@@ -185,7 +186,7 @@ export function EventsManager() {
     const edits = explicit ?? fieldEdits[fieldId]
     if (!edits || Object.keys(edits).length === 0 || !fieldsEvent) return
     try {
-      const res = await fetch(`/api/events/${fieldsEvent.id}/fields/${fieldId}`, {
+      const res = await adminFetch(`/api/events/${fieldsEvent.id}/fields/${fieldId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(edits),
@@ -220,12 +221,12 @@ export function EventsManager() {
     const orderB = b.order
     try {
       const [resA, resB] = await Promise.all([
-        fetch(`/api/events/${fieldsEvent.id}/fields/${a.id}`, {
+        adminFetch(`/api/events/${fieldsEvent.id}/fields/${a.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ order: orderB }),
         }),
-        fetch(`/api/events/${fieldsEvent.id}/fields/${b.id}`, {
+        adminFetch(`/api/events/${fieldsEvent.id}/fields/${b.id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ order: orderA }),
@@ -250,7 +251,7 @@ export function EventsManager() {
   }
 
   const load = useCallback(async () => {
-    const res = await fetch('/api/events')
+    const res = await adminFetch('/api/events')
     if (!res.ok) {
       toast.error('Failed to load events')
       return
@@ -325,7 +326,7 @@ export function EventsManager() {
 
     const url = editingId ? `/api/events/${editingId}` : '/api/events'
     const method = editingId ? 'PATCH' : 'POST'
-    const res = await fetch(url, {
+    const res = await adminFetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -341,7 +342,7 @@ export function EventsManager() {
 
   const remove = async (id: string, title: string) => {
     if (!confirm(`Delete "${title}"?`)) return
-    const res = await fetch(`/api/events/${id}`, { method: 'DELETE' })
+    const res = await adminFetch(`/api/events/${id}`, { method: 'DELETE' })
     if (!res.ok) {
       toast.error('Failed to delete')
       return
@@ -353,7 +354,7 @@ export function EventsManager() {
   const bulkDelete = async () => {
     if (!bulk.selectedCount) return
     if (!confirm(`Delete ${bulk.selectedCount} event${bulk.selectedCount > 1 ? 's' : ''}?`)) return
-    await Promise.all(bulk.selectedArray.map((id) => fetch(`/api/events/${id}`, { method: 'DELETE' })))
+    await Promise.all(bulk.selectedArray.map((id) => adminFetch(`/api/events/${id}`, { method: 'DELETE' })))
     toast.success(`${bulk.selectedCount} events deleted`)
     bulk.reset()
     await load()

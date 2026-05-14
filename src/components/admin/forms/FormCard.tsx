@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import Link from 'next/link'
 import { useState } from 'react'
 import { Edit, Eye, Copy, Trash2, ExternalLink } from 'lucide-react'
@@ -23,7 +24,7 @@ export function FormCard({ form }: FormCardProps) {
   const toggleActive = async () => {
     setLoading(true)
     try {
-      const res = await fetch(`/api/forms/${form.id}`, {
+      const res = await adminFetch(`/api/forms/${form.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isActive: !isActive }),
@@ -50,7 +51,7 @@ export function FormCard({ form }: FormCardProps) {
   const deleteForm = async () => {
     if (!confirm('Are you sure you want to delete this form?')) return
     try {
-      const res = await fetch(`/api/forms/${form.id}`, { method: 'DELETE' })
+      const res = await adminFetch(`/api/forms/${form.id}`, { method: 'DELETE' })
       if (res.ok) {
         toast.success('Form deleted')
         window.location.reload()

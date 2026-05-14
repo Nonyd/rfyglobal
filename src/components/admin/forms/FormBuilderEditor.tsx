@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import {
@@ -150,7 +151,7 @@ export function FormBuilderEditor({ mode, initialData }: FormBuilderEditorProps)
       const url = mode === 'create' ? '/api/forms' : `/api/forms/${initialData!.id}`
       const method = mode === 'create' ? 'POST' : 'PATCH'
 
-      const res = await fetch(url, {
+      const res = await adminFetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

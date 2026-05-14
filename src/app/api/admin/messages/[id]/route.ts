@@ -6,6 +6,8 @@ import { db } from '@/lib/db'
 import { sendEmail } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
 import { SITE_URL } from '@/lib/seo'
+import { paramId } from '@/lib/api-route-params'
+import { Prisma } from '@prisma/client'
 
 export const runtime = 'nodejs'
 
@@ -17,13 +19,16 @@ function escapeHtml(text: string) {
     .replace(/"/g, '&quot;')
 }
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(_req: NextRequest, ctx: { params: { id: string } | Promise<{ id: string }> }) {
   const session = await auth()
   const denied = await forbidUnlessCanAccess(session, 'messages')
   if (denied) return denied
 
+  const id = await paramId(ctx.params)
+  if (!id) return NextResponse.json({ error: 'Bad request' }, { status: 400 })
+
   const thread = await db.messageThread.findUnique({
-    where: { id: params.id },
+    where: { id },
     include: {
       messages: { orderBy: { createdAt: 'asc' } },
     },
@@ -32,7 +37,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   if (!thread) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   await db.message.updateMany({
-    where: { threadId: params.id, isRead: false, fromAdmin: false },
+    where: { threadId: id, isRead: false, fromAdmin: false },
     data: { isRead: true },
   })
 
@@ -44,7 +49,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       isRead: false,
       type: { in: ['contact', 'message'] },
       OR: [
-        { targetId: params.id },
+        { targetId: id },
         ...(thread.fromName
           ? [
               {
@@ -71,14 +76,17 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   return NextResponse.json(thread)
 }
 
-export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
+export async function POST(req: NextRequest, ctx: { params: { id: string } | Promise<{ id: string }> }) {
   try {
     const session = await auth()
     const denied = await forbidUnlessCanAccess(session, 'messages')
     if (denied) return denied
 
+    const id = await paramId(ctx.params)
+    if (!id) return NextResponse.json({ error: 'Bad request' }, { status: 400 })
+
     const thread = await db.messageThread.findUnique({
-      where: { id: params.id },
+      where: { id },
     })
     if (!thread) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
@@ -154,11 +162,22 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
   }
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const session = await auth()
-  const denied = await forbidUnlessCanAccess(session, 'messages')
-  if (denied) return denied
+export async function DELETE(_req: NextRequest, ctx: { params: { id: string } | Promise<{ id: string }> }) {
+  try {
+    const session = await auth()
+    const denied = await forbidUnlessCanAccess(session, 'messages')
+    if (denied) return denied
 
-  await db.messageThread.delete({ where: { id: params.id } })
-  return NextResponse.json({ success: true })
+    const id = await paramId(ctx.params)
+    if (!id) return NextResponse.json({ error: 'Bad request' }, { status: 400 })
+
+    await db.messageThread.delete({ where: { id } })
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
+    console.error('[admin messages DELETE]', error)
+    return NextResponse.json({ error: 'Failed to delete conversation' }, { status: 500 })
+  }
 }

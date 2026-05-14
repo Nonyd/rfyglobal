@@ -124,29 +124,6 @@ export function Hero() {
             Our Story
           </Link>
         </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1, delay: 2 }}
-          className="absolute bottom-10 left-6 lg:left-16 xl:left-24 flex items-center gap-8"
-        >
-          {[
-            { value: '100M+', label: 'Streams' },
-            { value: '600K+', label: 'Followers' },
-            { value: 'Nations', label: 'Jesus to' },
-          ].map((stat) => (
-            <div key={stat.label} className="flex flex-col">
-              <span
-                className="font-display text-snow text-xl font-semibold"
-                style={{ color: isDark ? '#F8F8F8' : '#0F0C08' }}
-              >
-                {stat.value}
-              </span>
-              <span className="label-text opacity-60">{stat.label}</span>
-            </div>
-          ))}
-        </motion.div>
       </div>
 
       <motion.div

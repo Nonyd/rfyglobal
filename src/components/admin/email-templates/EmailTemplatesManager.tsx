@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useState, useEffect, useRef, type MutableRefObject } from 'react'
 import { Mail, Pencil, Save, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -23,7 +24,7 @@ export function EmailTemplatesManager() {
   }, [])
 
   const loadTemplates = async () => {
-    const res = await fetch('/api/admin/email-templates')
+    const res = await adminFetch('/api/admin/email-templates')
     if (res.ok) {
       const data = (await res.json()) as Array<{ key: string } & Record<string, unknown>>
       const map: Record<string, Record<string, unknown>> = {}
@@ -52,7 +53,7 @@ export function EmailTemplatesManager() {
     unlayer.exportHtml((data: { design: unknown; html: string }) => {
       ;(async () => {
         try {
-          const res = await fetch(`/api/admin/email-templates/${selectedKey}`, {
+          const res = await adminFetch(`/api/admin/email-templates/${selectedKey}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

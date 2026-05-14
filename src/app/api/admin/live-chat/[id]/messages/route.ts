@@ -2,17 +2,13 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { forbidUnlessCanAccess } from '@/lib/admin-api-access'
 import { db } from '@/lib/db'
+import { paramId } from '@/lib/api-route-params'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-async function idFromParams(params: { id: string } | Promise<{ id: string }>) {
-  const p = await Promise.resolve(params)
-  return p.id
-}
-
 export async function GET(
-  req: NextRequest,
+  _req: NextRequest,
   ctx: { params: { id: string } | Promise<{ id: string }> },
 ) {
   try {
@@ -20,7 +16,9 @@ export async function GET(
     const denied = await forbidUnlessCanAccess(sessionUser, 'live-chat')
     if (denied) return denied
 
-    const id = await idFromParams(ctx.params)
+    const id = await paramId(ctx.params)
+    if (!id) return NextResponse.json({ error: 'Bad request' }, { status: 400 })
+
     const chatSession = await db.liveChatSession.findUnique({
       where: { id },
       include: { messages: { orderBy: { createdAt: 'asc' } } },

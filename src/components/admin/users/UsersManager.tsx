@@ -1,5 +1,6 @@
 'use client'
 
+import { adminFetch } from '@/lib/admin-fetch'
 import { useState } from 'react'
 import type { Role, User } from '@prisma/client'
 import toast from 'react-hot-toast'
@@ -60,7 +61,7 @@ export function UsersManager({ initialUsers, currentUserId }: UsersManagerProps)
       toast.error('Email and password required')
       return
     }
-    const res = await fetch('/api/admin/users', {
+    const res = await adminFetch('/api/admin/users', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -90,7 +91,7 @@ export function UsersManager({ initialUsers, currentUserId }: UsersManagerProps)
       toast.error('New password must be at least 8 characters')
       return
     }
-    const res = await fetch(`/api/admin/users/${editUser.id}`, {
+    const res = await adminFetch(`/api/admin/users/${editUser.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -115,7 +116,7 @@ export function UsersManager({ initialUsers, currentUserId }: UsersManagerProps)
       toast.error('Use edit panel to change your own status')
       return
     }
-    const res = await fetch(`/api/admin/users/${u.id}`, {
+    const res = await adminFetch(`/api/admin/users/${u.id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ isActive: !u.isActive }),
@@ -133,7 +134,7 @@ export function UsersManager({ initialUsers, currentUserId }: UsersManagerProps)
   const deleteUser = async (u: UserRow) => {
     if (u.id === currentUserId) return
     if (!confirm(`Delete user ${u.email}?`)) return
-    const res = await fetch(`/api/admin/users/${u.id}`, { method: 'DELETE' })
+    const res = await adminFetch(`/api/admin/users/${u.id}`, { method: 'DELETE' })
     if (!res.ok) {
       const data = await res.json()
       toast.error(data.error ?? 'Delete failed')
