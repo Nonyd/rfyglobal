@@ -5,8 +5,12 @@ import { useCallback, useEffect, useState } from 'react'
 import type { GivingRecord } from '@prisma/client'
 import { formatDate } from '@/lib/utils'
 import toast from 'react-hot-toast'
+import { Trash2 } from 'lucide-react'
 import { useAdminSSE } from '@/hooks/useAdminSSE'
+import { useBulkSelect } from '@/hooks/useBulkSelect'
 import { LiveIndicator } from '@/components/admin/shared/LiveIndicator'
+import { SelectCheckbox } from '@/components/admin/shared/SelectCheckbox'
+import { BulkActionBar } from '@/components/admin/shared/BulkActionBar'
 
 type PartnerGiftRow = Pick<
   GivingRecord,
@@ -25,6 +29,7 @@ interface PartnerAdminClientProps {
 export function PartnerAdminClient({ initialRecords, initialStats }: PartnerAdminClientProps) {
   const [records, setRecords] = useState<PartnerGiftRow[]>(initialRecords)
   const [stats, setStats] = useState(initialStats)
+  const bulk = useBulkSelect(records)
 
   const reloadPartnerData = useCallback(async (showToast: boolean) => {
     try {
@@ -65,6 +70,53 @@ export function PartnerAdminClient({ initialRecords, initialStats }: PartnerAdmi
     events: ['new_partner'],
     onEvent: onPartnerSSE,
   })
+
+  const deleteGiftRequest = async (id: string): Promise<{ ok: true } | { ok: false; error: string }> => {
+    try {
+      const res = await adminFetch(`/api/admin/partner/gifts/${id}`, { method: 'DELETE' })
+      if (res.ok) return { ok: true }
+      const data = (await res.json().catch(() => ({}))) as { error?: unknown }
+      const msg = typeof data.error === 'string' ? data.error : 'Failed to delete record'
+      return { ok: false, error: msg }
+    } catch {
+      return { ok: false, error: 'Network error' }
+    }
+  }
+
+  const deleteOne = async (r: PartnerGiftRow) => {
+    if (!confirm(`Delete this partnership record${r.donorName ? ` (${r.donorName})` : ''}?`)) return
+    const result = await deleteGiftRequest(r.id)
+    if (result.ok) {
+      toast.success('Record deleted')
+      bulk.reset()
+      await reloadPartnerData(false)
+    } else {
+      toast.error(result.error)
+    }
+  }
+
+  const bulkDelete = async () => {
+    if (!bulk.selectedCount) return
+    if (
+      !confirm(
+        `Delete ${bulk.selectedCount} partnership record${bulk.selectedCount > 1 ? 's' : ''}? This cannot be undone.`,
+      )
+    ) {
+      return
+    }
+    const ids = [...bulk.selectedArray]
+    let deleted = 0
+    for (const id of ids) {
+      const result = await deleteGiftRequest(id)
+      if (result.ok) deleted++
+    }
+    if (deleted > 0) {
+      toast.success(`${deleted} record${deleted > 1 ? 's' : ''} deleted`)
+      await reloadPartnerData(false)
+    }
+    if (deleted < ids.length) toast.error('Some records failed to delete')
+    bulk.reset()
+  }
 
   return (
     <div>
@@ -109,10 +161,16 @@ export function PartnerAdminClient({ initialRecords, initialStats }: PartnerAdmi
           <table className="w-full text-sm font-body">
             <thead>
               <tr className="border-b" style={{ borderColor: 'var(--a-border)', background: 'var(--a-surface)' }}>
-                {['Date', 'Name', 'Email', 'Amount', 'Gateway', 'Frequency', 'Status'].map((h) => (
+                <th className="w-10 px-4 py-3">
+                  <SelectCheckbox
+                    checked={bulk.isAllSelected}
+                    onChange={(v) => (v ? bulk.selectAll() : bulk.deselectAll())}
+                  />
+                </th>
+                {['Date', 'Name', 'Email', 'Amount', 'Gateway', 'Frequency', 'Status', 'Actions'].map((h) => (
                   <th
                     key={h}
-                    className="text-left px-4 py-3 text-xs uppercase tracking-widest"
+                    className={`px-4 py-3 text-xs uppercase tracking-widest ${h === 'Actions' ? 'text-right' : 'text-left'}`}
                     style={{ color: 'var(--a-gold)' }}
                   >
                     {h}
@@ -123,6 +181,9 @@ export function PartnerAdminClient({ initialRecords, initialStats }: PartnerAdmi
             <tbody>
               {records.map((r) => (
                 <tr key={r.id} className="border-b transition-colors" style={{ borderColor: 'var(--a-border)' }}>
+                  <td className="px-4 py-3 align-middle">
+                    <SelectCheckbox checked={bulk.isSelected(r.id)} onChange={() => bulk.toggle(r.id)} />
+                  </td>
                   <td className="px-4 py-3" style={{ color: 'var(--a-text-muted)' }}>
                     {formatDate(r.createdAt)}
                   </td>
@@ -157,6 +218,16 @@ export function PartnerAdminClient({ initialRecords, initialStats }: PartnerAdmi
                       {r.status}
                     </span>
                   </td>
+                  <td className="px-4 py-3 text-right">
+                    <button
+                      type="button"
+                      onClick={() => void deleteOne(r)}
+                      className="inline-flex p-1.5 rounded transition-colors text-[var(--a-text-muted)] hover:text-[var(--a-red)]"
+                      title="Delete record"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -170,6 +241,22 @@ export function PartnerAdminClient({ initialRecords, initialStats }: PartnerAdmi
           </div>
         )}
       </div>
+
+      <BulkActionBar
+        selectedCount={bulk.selectedCount}
+        onDeselectAll={bulk.deselectAll}
+        onSelectAll={bulk.selectAll}
+        isAllSelected={bulk.isAllSelected}
+        totalCount={records.length}
+        actions={[
+          {
+            label: 'Delete',
+            icon: <Trash2 size={12} />,
+            onClick: () => void bulkDelete(),
+            variant: 'danger',
+          },
+        ]}
+      />
     </div>
   )
 }
