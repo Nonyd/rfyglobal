@@ -23,6 +23,8 @@
 
   /* ── ADMIN LIGHT MODE (default) ── */
   .admin-layout {
+    /* Inherit readable text + icon (currentColor) — body stays #F8F8F8 for public dark theme */
+    color: var(--a-text);
     --a-bg: #F5F0E8;
     --a-surface: #FFFFFF;
     --a-surface-raised: #FFFFFF;

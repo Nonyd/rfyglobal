@@ -7,6 +7,16 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        /* Semantic tokens (rgb triplets from globals.css :root / .light) */
+        bg: 'rgb(var(--color-bg) / <alpha-value>)',
+        surface: 'rgb(var(--color-surface) / <alpha-value>)',
+        theme: 'rgb(var(--color-border) / <alpha-value>)',
+        text: {
+          primary: 'rgb(var(--color-text-primary) / <alpha-value>)',
+          secondary: 'rgb(var(--color-text-secondary) / <alpha-value>)',
+          muted: 'rgb(var(--color-text-muted) / <alpha-value>)',
+        },
+        'red-brand': '#DC2626',
         void: '#0F0F0F',
         ink: '#1A1A1A',
         smoke: '#242424',

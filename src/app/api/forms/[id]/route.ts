@@ -77,9 +77,19 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: { id: string } }) {
-  const session = await auth()
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  try {
+    const session = await auth()
+    if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  await db.form.delete({ where: { id: params.id } })
-  return NextResponse.json({ success: true })
+    const existing = await db.form.findUnique({ where: { id: params.id } })
+    if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+
+    await db.formSubmission.deleteMany({ where: { formId: params.id } })
+    await db.form.delete({ where: { id: params.id } })
+
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('[forms DELETE]', error)
+    return NextResponse.json({ error: 'Failed to delete form' }, { status: 500 })
+  }
 }

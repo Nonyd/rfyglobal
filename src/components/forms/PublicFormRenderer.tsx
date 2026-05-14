@@ -12,9 +12,9 @@ import { useEmailCheck } from '@/hooks/useEmailCheck'
 type PublicForm = Omit<Form, 'notifyEmail'> & { fields: FormField[] }
 
 const inputClass =
-  'w-full bg-white/[0.03] border border-white/10 text-white px-4 py-3 text-sm font-body focus:border-gold focus:outline-none transition-colors placeholder:text-white/25'
+  'w-full border border-theme bg-surface px-4 py-3 text-sm font-body text-text-primary transition-colors placeholder:text-text-muted/60 focus:border-gold focus:outline-none'
 
-const labelClass = 'block text-xs uppercase tracking-widest text-white/50 mb-2 font-body'
+const labelClass = 'mb-2 block text-xs font-body uppercase tracking-widest text-text-muted'
 
 function FormBuilderEmailField({
   formSlug,
@@ -159,8 +159,8 @@ export function PublicFormRenderer({ form }: { form: PublicForm }) {
         >
           ✓
         </div>
-        <h2 className="font-display text-3xl lg:text-4xl text-white">Thank You</h2>
-        <p className="text-white/55 font-body leading-relaxed max-w-md mx-auto">
+        <h2 className="font-display text-3xl text-text-primary lg:text-4xl">Thank You</h2>
+        <p className="mx-auto max-w-md font-body leading-relaxed text-text-secondary">
           Your response has been received. We&apos;ll be in touch soon.
         </p>
         <Link href="/" className="inline-block text-gold font-body text-sm tracking-wide hover:text-gold-light transition-colors">
@@ -240,7 +240,7 @@ export function PublicFormRenderer({ form }: { form: PublicForm }) {
               </p>
               <div className="space-y-2">
                 {opts.map((o) => (
-                  <label key={o} className="flex items-center gap-3 text-sm text-white/80 font-body cursor-pointer">
+                  <label key={o} className="flex cursor-pointer items-center gap-3 font-body text-sm text-text-secondary">
                     <input
                       type="radio"
                       value={o}
@@ -268,7 +268,7 @@ export function PublicFormRenderer({ form }: { form: PublicForm }) {
               </p>
               <div className="space-y-2">
                 {opts.map((o) => (
-                  <label key={o} className="flex items-center gap-3 text-sm text-white/80 font-body cursor-pointer">
+                  <label key={o} className="flex cursor-pointer items-center gap-3 font-body text-sm text-text-secondary">
                     <input
                       type="checkbox"
                       value={o}

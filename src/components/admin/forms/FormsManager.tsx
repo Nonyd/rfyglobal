@@ -32,18 +32,44 @@ export function FormsManager({ initialForms }: { initialForms: FormRow[] }) {
     return true
   }
 
-  const removeForm = async (id: string) => {
-    const res = await fetch(`/api/forms/${id}`, { method: 'DELETE' })
-    if (!res.ok) return false
-    setForms((prev) => prev.filter((f) => f.id !== id))
-    return true
+  const deleteFormRequest = async (id: string): Promise<{ ok: true } | { ok: false; error: string }> => {
+    try {
+      const res = await fetch(`/api/forms/${id}`, { method: 'DELETE' })
+      if (res.ok) return { ok: true }
+      const data = (await res.json().catch(() => ({}))) as { error?: unknown }
+      const msg =
+        typeof data.error === 'string' ? data.error : 'Failed to delete form'
+      return { ok: false, error: msg }
+    } catch {
+      return { ok: false, error: 'Network error' }
+    }
+  }
+
+  const deleteForm = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this form?')) return
+    const result = await deleteFormRequest(id)
+    if (result.ok) {
+      toast.success('Form deleted')
+      setForms((prev) => prev.filter((f) => f.id !== id))
+    } else {
+      toast.error(result.error)
+    }
   }
 
   const bulkDelete = async () => {
     if (!bulk.selectedCount) return
     if (!confirm(`Delete ${bulk.selectedCount} form${bulk.selectedCount > 1 ? 's' : ''}?`)) return
-    await Promise.all(bulk.selectedArray.map((id) => removeForm(id)))
-    toast.success(`${bulk.selectedCount} forms deleted`)
+    const ids = [...bulk.selectedArray]
+    let deleted = 0
+    for (const id of ids) {
+      const result = await deleteFormRequest(id)
+      if (result.ok) {
+        deleted++
+        setForms((prev) => prev.filter((f) => f.id !== id))
+      }
+    }
+    if (deleted > 0) toast.success(`${deleted} form${deleted > 1 ? 's' : ''} deleted`)
+    if (deleted < ids.length) toast.error('Some forms failed to delete')
     bulk.reset()
   }
 
@@ -74,7 +100,9 @@ export function FormsManager({ initialForms }: { initialForms: FormRow[] }) {
               <Link href={`/forms/${form.slug}`} target="_blank"><ExternalLink size={16} /></Link>
               <Link href={`/admin/forms/${form.id}/entries`}><Eye size={16} /></Link>
               <Link href={`/admin/forms/${form.id}/edit`}><Edit size={16} /></Link>
-              <button type="button" onClick={() => void removeForm(form.id)}><Trash2 size={16} /></button>
+              <button type="button" onClick={() => void deleteForm(form.id)} title="Delete form">
+                <Trash2 size={16} />
+              </button>
             </div>
           </div>
         </div>

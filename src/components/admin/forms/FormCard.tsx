@@ -48,13 +48,18 @@ export function FormCard({ form }: FormCardProps) {
   }
 
   const deleteForm = async () => {
-    if (!confirm(`Delete "${form.title}"? This cannot be undone.`)) return
-    const res = await fetch(`/api/forms/${form.id}`, { method: 'DELETE' })
-    if (res.ok) {
-      toast.success('Form deleted')
-      window.location.reload()
-    } else {
-      toast.error('Failed to delete form')
+    if (!confirm('Are you sure you want to delete this form?')) return
+    try {
+      const res = await fetch(`/api/forms/${form.id}`, { method: 'DELETE' })
+      if (res.ok) {
+        toast.success('Form deleted')
+        window.location.reload()
+      } else {
+        const data = (await res.json().catch(() => ({}))) as { error?: unknown }
+        toast.error(typeof data.error === 'string' ? data.error : 'Failed to delete form')
+      }
+    } catch {
+      toast.error('Network error')
     }
   }
 
