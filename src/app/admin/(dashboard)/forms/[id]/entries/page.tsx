@@ -24,10 +24,7 @@ export default async function FormEntriesPage({ params }: { params: { id: string
     <div>
       <Link
         href="/admin/forms"
-        className="inline-flex items-center gap-2 text-xs font-body mb-6 transition-colors"
-        style={{ color: 'var(--a-text-muted)' }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--a-gold)')}
-        onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--a-text-muted)')}
+        className="inline-flex items-center gap-2 text-xs font-body mb-6 text-[var(--a-text-muted)] transition-colors hover:text-[var(--a-gold)]"
       >
         <ChevronLeft size={14} />
         All forms
