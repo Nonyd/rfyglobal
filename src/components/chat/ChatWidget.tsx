@@ -168,6 +168,7 @@ export function ChatWidget() {
     <>
       <button
         type="button"
+        className="hover:scale-105"
         onClick={() => setOpen((o) => !o)}
         style={{
           position: 'fixed',
@@ -186,12 +187,6 @@ export function ChatWidget() {
           cursor: 'pointer',
           transition: 'transform 0.2s ease',
           flexShrink: 0,
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = 'scale(1.05)'
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = 'scale(1)'
         }}
         aria-label="Chat with Room For You"
       >
