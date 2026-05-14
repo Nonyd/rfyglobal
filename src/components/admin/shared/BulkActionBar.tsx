@@ -61,10 +61,8 @@ export function BulkActionBar({
         {!isAllSelected && (
           <button
             onClick={onSelectAll}
-            className="font-body text-xs transition-colors shrink-0"
+            className="font-body text-xs shrink-0 transition-opacity opacity-100 hover:opacity-70"
             style={{ color: 'var(--a-gold)' }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.7')}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
           >
             Select all {totalCount}
           </button>
@@ -109,10 +107,8 @@ export function BulkActionBar({
 
         <button
           onClick={onDeselectAll}
-          className="ml-1 p-1.5 transition-colors shrink-0"
-          style={{ color: 'var(--a-text-muted)' }}
-          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--a-text)')}
-          onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--a-text-muted)')}
+          type="button"
+          className="ml-1 p-1.5 shrink-0 transition-colors text-[var(--a-text-muted)] hover:text-[var(--a-text)]"
         >
           <X size={16} />
         </button>

@@ -16,20 +16,12 @@ export function SelectCheckbox({ checked, onChange, size = 'md' }: SelectCheckbo
         e.stopPropagation()
         onChange(!checked)
       }}
-      className="shrink-0 flex items-center justify-center transition-all"
-      style={{
-        width: `${dim}px`,
-        height: `${dim}px`,
-        background: checked ? 'var(--a-gold)' : 'transparent',
-        border: `2px solid ${checked ? 'var(--a-gold)' : 'var(--a-border-strong)'}`,
-        borderRadius: '2px',
-      }}
-      onMouseEnter={(e) => {
-        if (!checked) e.currentTarget.style.borderColor = 'var(--a-gold)'
-      }}
-      onMouseLeave={(e) => {
-        if (!checked) e.currentTarget.style.borderColor = 'var(--a-border-strong)'
-      }}
+      className={`shrink-0 flex items-center justify-center rounded-[2px] border-2 transition-colors ${
+        checked
+          ? 'border-[var(--a-gold)] bg-[var(--a-gold)]'
+          : 'border-[var(--a-border-strong)] bg-transparent hover:border-[var(--a-gold)]'
+      }`}
+      style={{ width: `${dim}px`, height: `${dim}px` }}
     >
       {checked && (
         <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
