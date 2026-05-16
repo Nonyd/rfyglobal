@@ -36,3 +36,13 @@ export async function DELETE(
 
   return NextResponse.json({ success: true })
 }
+
+export async function POST(
+  req: NextRequest,
+  ctx: { params: { id: string; registrationId: string } },
+) {
+  if (req.headers.get('X-HTTP-Method-Override') === 'DELETE') {
+    return DELETE(req, ctx)
+  }
+  return NextResponse.json({ error: 'Method not allowed' }, { status: 405 })
+}
