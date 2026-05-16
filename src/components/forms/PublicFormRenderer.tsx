@@ -8,6 +8,8 @@ import { motion } from 'framer-motion'
 import type { Form, FormField } from '@prisma/client'
 import { cn } from '@/lib/utils'
 import { useEmailCheck } from '@/hooks/useEmailCheck'
+import { useRedirectCountdown } from '@/hooks/useRedirectCountdown'
+import { RedirectCountdownBanner } from '@/components/shared/RedirectCountdownBanner'
 
 type PublicForm = Omit<Form, 'notifyEmail'> & { fields: FormField[] }
 
@@ -102,8 +104,15 @@ function FormBuilderEmailField({
 
 export function PublicFormRenderer({ form }: { form: PublicForm }) {
   const [done, setDone] = useState(false)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [emailDupByField, setEmailDupByField] = useState<Record<string, boolean>>({})
+  const {
+    redirectCountdown,
+    pendingRedirectUrl,
+    startRedirect,
+    isRedirecting,
+  } = useRedirectCountdown()
 
   const defaultValues = useMemo(() => {
     const v: Record<string, string | string[]> = {}
@@ -145,11 +154,12 @@ export function PublicFormRenderer({ form }: { form: PublicForm }) {
       if (!res.ok) {
         throw new Error(body.error ?? 'Submission failed')
       }
+      setSuccessMessage(body.message ?? 'Your submission has been received.')
+      setDone(true)
       if (body.redirectUrl) {
-        window.location.href = body.redirectUrl
+        startRedirect(body.redirectUrl)
         return
       }
-      setDone(true)
     } catch (e) {
       toast.error(e instanceof Error ? e.message : 'Something went wrong')
     } finally {
@@ -159,22 +169,30 @@ export function PublicFormRenderer({ form }: { form: PublicForm }) {
 
   if (done) {
     return (
-      <div className="text-center py-16 px-4 space-y-8">
-        <div className="h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent max-w-xs mx-auto" />
+      <div className="text-center px-6 py-12">
         <div
-          className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 text-gold text-2xl"
-          style={{ borderColor: 'rgba(201,168,76,0.5)' }}
+          className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full"
+          style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.3)' }}
         >
-          ✓
+          <span style={{ fontSize: '24px' }}>✓</span>
         </div>
-        <h2 className="font-display text-3xl text-text-primary lg:text-4xl">Thank You</h2>
-        <p className="mx-auto max-w-md font-body leading-relaxed text-text-secondary">
-          Your response has been received. We&apos;ll be in touch soon.
+        <h3 className="font-display mb-3 text-2xl text-text-primary">Thank you!</h3>
+        <p className="font-body mb-4 text-sm leading-relaxed text-text-secondary">
+          {successMessage ?? 'Your submission has been received.'}
         </p>
-        <Link href="/" className="inline-block text-gold font-body text-sm tracking-wide hover:text-gold-light transition-colors">
-          Back to Home
-        </Link>
-        <div className="h-px bg-gradient-to-r from-transparent via-gold/50 to-transparent max-w-xs mx-auto" />
+        {isRedirecting && redirectCountdown !== null && pendingRedirectUrl ? (
+          <RedirectCountdownBanner
+            redirectCountdown={redirectCountdown}
+            pendingRedirectUrl={pendingRedirectUrl}
+          />
+        ) : (
+          <Link
+            href="/"
+            className="inline-block font-body text-sm tracking-wide text-gold transition-colors hover:text-gold-light"
+          >
+            Back to Home
+          </Link>
+        )}
       </div>
     )
   }

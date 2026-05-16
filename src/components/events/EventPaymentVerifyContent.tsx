@@ -3,6 +3,8 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { useRedirectCountdown } from '@/hooks/useRedirectCountdown'
+import { RedirectCountdownBanner } from '@/components/shared/RedirectCountdownBanner'
 
 type Status = 'loading' | 'success' | 'failed' | 'error'
 
@@ -12,6 +14,13 @@ export function EventPaymentVerifyContent() {
   const searchParams = useSearchParams()
   const slug = typeof params.slug === 'string' ? params.slug : ''
   const [status, setStatus] = useState<Status>('loading')
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const {
+    redirectCountdown,
+    pendingRedirectUrl,
+    startRedirect,
+    isRedirecting,
+  } = useRedirectCountdown()
 
   const verify = useCallback(() => {
     const ref =
@@ -27,19 +36,21 @@ export function EventPaymentVerifyContent() {
       body: JSON.stringify({ reference: ref }),
     })
       .then((r) => r.json())
-      .then((data: { success?: boolean; redirectUrl?: string | null }) => {
+      .then((data: { success?: boolean; redirectUrl?: string | null; message?: string }) => {
         if (!data.success) {
           setStatus('failed')
           return
         }
-        if (data.redirectUrl) {
-          window.location.href = data.redirectUrl
-          return
-        }
+        setSuccessMessage(
+          data.message ?? 'Payment received. Check your email for confirmation and event details.',
+        )
         setStatus('success')
+        if (data.redirectUrl) {
+          startRedirect(data.redirectUrl)
+        }
       })
       .catch(() => setStatus('error'))
-  }, [searchParams])
+  }, [searchParams, startRedirect])
 
   useEffect(() => {
     verify()
@@ -64,16 +75,24 @@ export function EventPaymentVerifyContent() {
           <div className="gold-line mx-auto mb-6 max-w-[60px] opacity-40" />
           <h1 className="font-display text-3xl font-bold text-snow">{"You're registered!"}</h1>
           <p className="font-body text-sm leading-relaxed text-mist">
-            Payment received. Check your email for confirmation and event details.
+            {successMessage ??
+              'Payment received. Check your email for confirmation and event details.'}
           </p>
-          <button
-            type="button"
-            onClick={() => router.push(eventUrl)}
-            className="mt-4 inline-block px-8 py-3 font-body text-xs font-semibold uppercase tracking-widest transition-all"
-            style={{ background: '#C9A84C', color: '#0F0F0F' }}
-          >
-            Back to event
-          </button>
+          {isRedirecting && redirectCountdown !== null && pendingRedirectUrl ? (
+            <RedirectCountdownBanner
+              redirectCountdown={redirectCountdown}
+              pendingRedirectUrl={pendingRedirectUrl}
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={() => router.push(eventUrl)}
+              className="mt-4 inline-block px-8 py-3 font-body text-xs font-semibold uppercase tracking-widest transition-all"
+              style={{ background: '#C9A84C', color: '#0F0F0F' }}
+            >
+              Back to event
+            </button>
+          )}
         </div>
       )}
 

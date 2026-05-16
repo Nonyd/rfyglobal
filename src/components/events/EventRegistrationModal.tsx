@@ -6,6 +6,8 @@ import { X, CheckCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
 import type { EventFormField } from '@prisma/client'
 import { useEmailCheck } from '@/hooks/useEmailCheck'
+import { useRedirectCountdown } from '@/hooks/useRedirectCountdown'
+import { RedirectCountdownBanner } from '@/components/shared/RedirectCountdownBanner'
 
 interface EventRegistrationModalProps {
   isOpen: boolean
@@ -152,7 +154,15 @@ export function EventRegistrationModal({
   const [fieldValues, setFieldValues] = useState<Record<string, string>>({})
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
+  const [successMessage, setSuccessMessage] = useState<string | null>(null)
   const [primaryEmailDuplicate, setPrimaryEmailDuplicate] = useState(false)
+  const {
+    redirectCountdown,
+    pendingRedirectUrl,
+    startRedirect,
+    resetRedirect,
+    isRedirecting,
+  } = useRedirectCountdown()
   const [paymentCurrency, setPaymentCurrency] = useState<'NGN' | 'USD'>('NGN')
   const [paystackUsdEnabled, setPaystackUsdEnabled] = useState(false)
 
@@ -293,12 +303,14 @@ export function EventRegistrationModal({
         return
       }
 
+      setSuccessMessage(
+        (data.message as string | undefined) ?? `You are registered for ${eventTitle}!`,
+      )
+      setSubmitted(true)
       if (data.redirectUrl) {
-        window.location.href = data.redirectUrl as string
+        startRedirect(data.redirectUrl as string)
         return
       }
-
-      setSubmitted(true)
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
@@ -310,6 +322,8 @@ export function EventRegistrationModal({
     onClose()
     setTimeout(() => {
       setSubmitted(false)
+      setSuccessMessage(null)
+      resetRedirect()
       setFieldValues({})
     }, 300)
   }
@@ -628,17 +642,25 @@ export function EventRegistrationModal({
                   <p className="mb-2 font-body text-sm leading-relaxed text-mist">You are registered for</p>
                   <p className="font-display mb-6 text-lg text-gold">{eventTitle}</p>
                   <p className="mb-8 font-body text-sm leading-relaxed text-mist">
-                    {`Check your email for confirmation and event details. We'll see you there. 🙌`}
+                    {successMessage ??
+                      `Check your email for confirmation and event details. We'll see you there. 🙌`}
                   </p>
 
-                  <button
-                    type="button"
-                    onClick={handleClose}
-                    className="border px-8 py-3 font-body text-xs uppercase tracking-widest transition-all"
-                    style={{ borderColor: 'rgba(201,168,76,0.4)', color: '#C9A84C' }}
-                  >
-                    Close
-                  </button>
+                  {isRedirecting && redirectCountdown !== null && pendingRedirectUrl ? (
+                    <RedirectCountdownBanner
+                      redirectCountdown={redirectCountdown}
+                      pendingRedirectUrl={pendingRedirectUrl}
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={handleClose}
+                      className="border px-8 py-3 font-body text-xs uppercase tracking-widest transition-all"
+                      style={{ borderColor: 'rgba(201,168,76,0.4)', color: '#C9A84C' }}
+                    >
+                      Close
+                    </button>
+                  )}
                 </div>
               )}
             </div>
