@@ -113,5 +113,13 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
 
   await createNotification('event_registration', `New registration for ${event.title}`)
 
-  return NextResponse.json({ success: true, registrationId: registration.id }, { status: 201 })
+  return NextResponse.json(
+    {
+      success: true,
+      registrationId: registration.id,
+      message: `You are registered for ${event.title}!`,
+      redirectUrl: event.redirectUrl ?? null,
+    },
+    { status: 201 },
+  )
 }

@@ -39,6 +39,7 @@ type EventRow = {
   imageUrl: string | null
   registrationFeeNgn: number | null
   registrationFeeUsd: number | null
+  redirectUrl: string | null
   isActive: boolean
   _count?: { registrations: number }
 }
@@ -53,6 +54,7 @@ const emptyForm = {
   imageUrl: '',
   registrationFeeNgn: '' as string | number,
   registrationFeeUsd: '' as string | number,
+  redirectUrl: '',
   isActive: true,
 }
 
@@ -294,6 +296,7 @@ export function EventsManager() {
       imageUrl: e.imageUrl ?? '',
       registrationFeeNgn: e.registrationFeeNgn ?? '',
       registrationFeeUsd: e.registrationFeeUsd ?? '',
+      redirectUrl: e.redirectUrl ?? '',
       isActive: e.isActive,
     })
     setPanelOpen(true)
@@ -321,6 +324,7 @@ export function EventsManager() {
       imageUrl: form.imageUrl.trim() || '',
       registrationFeeNgn: parseFee(form.registrationFeeNgn),
       registrationFeeUsd: parseFee(form.registrationFeeUsd),
+      redirectUrl: form.redirectUrl.trim() ? form.redirectUrl.trim() : null,
       isActive: form.isActive,
     }
 
@@ -671,6 +675,46 @@ export function EventsManager() {
                 Enable USD on your Paystack account. Visitors choose ₦ or $ when both are set.
               </p>
             </Field>
+            <div className="border-t pt-5 mt-5" style={{ borderColor: 'var(--a-border)' }}>
+              <p
+                className="font-body text-xs uppercase tracking-widest font-semibold mb-4"
+                style={{ color: 'var(--a-text-muted)' }}
+              >
+                After Registration
+              </p>
+              <div>
+                <label
+                  className="font-body text-sm font-medium block mb-1.5"
+                  style={{ color: 'var(--a-text)' }}
+                >
+                  Redirect URL
+                  <span className="ml-2 font-normal text-xs" style={{ color: 'var(--a-text-muted)' }}>
+                    (optional)
+                  </span>
+                </label>
+                <input
+                  type="url"
+                  value={form.redirectUrl}
+                  onChange={(ev) => setForm((f) => ({ ...f, redirectUrl: ev.target.value }))}
+                  placeholder="https://rfyglobal.org/events"
+                  className="w-full px-3 py-2.5 font-body text-sm border outline-none"
+                  style={{
+                    background: 'var(--a-bg)',
+                    borderColor: 'var(--a-border)',
+                    color: 'var(--a-text)',
+                  }}
+                  onFocus={(e) => (e.target.style.borderColor = 'var(--a-gold)')}
+                  onBlur={(e) => (e.target.style.borderColor = 'var(--a-border)')}
+                />
+                <p
+                  className="font-body text-xs mt-1.5 leading-relaxed"
+                  style={{ color: 'var(--a-text-muted)' }}
+                >
+                  Redirect visitors to this URL after successful registration. Leave empty to show
+                  the default confirmation message.
+                </p>
+              </div>
+            </div>
             <label className="flex cursor-pointer items-center gap-2 font-body text-sm" style={{ color: 'var(--a-text-secondary)' }}>
               <input
                 type="checkbox"

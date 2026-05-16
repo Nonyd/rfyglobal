@@ -27,9 +27,16 @@ export function EventPaymentVerifyContent() {
       body: JSON.stringify({ reference: ref }),
     })
       .then((r) => r.json())
-      .then((data: { success?: boolean }) => {
-        if (data.success) setStatus('success')
-        else setStatus('failed')
+      .then((data: { success?: boolean; redirectUrl?: string | null }) => {
+        if (!data.success) {
+          setStatus('failed')
+          return
+        }
+        if (data.redirectUrl) {
+          window.location.href = data.redirectUrl
+          return
+        }
+        setStatus('success')
       })
       .catch(() => setStatus('error'))
   }, [searchParams])

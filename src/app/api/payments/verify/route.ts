@@ -155,7 +155,12 @@ export async function POST(req: NextRequest) {
 
       await createNotification('event_registration', `Paid registration for ${event.title}`)
 
-      return NextResponse.json({ success: true, record })
+      return NextResponse.json({
+        success: true,
+        record,
+        message: `You are registered for ${event.title}!`,
+        redirectUrl: event.redirectUrl ?? null,
+      })
     }
 
     const mergedMeta = {

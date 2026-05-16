@@ -293,6 +293,11 @@ export function EventRegistrationModal({
         return
       }
 
+      if (data.redirectUrl) {
+        window.location.href = data.redirectUrl as string
+        return
+      }
+
       setSubmitted(true)
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : 'Something went wrong')

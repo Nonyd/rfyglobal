@@ -23,6 +23,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   const body: Record<string, unknown> = { ...raw }
   if (typeof body.date === 'string') body.date = new Date(body.date)
   if (body.imageUrl === '') body.imageUrl = null
+  if (body.redirectUrl === '') body.redirectUrl = null
 
   if (body.title || body.city) {
     const current = await db.event.findUnique({ where: { id: params.id } })

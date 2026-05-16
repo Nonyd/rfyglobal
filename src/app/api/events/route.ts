@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
   const parsed = CreateEventSchema.safeParse(body)
   if (!parsed.success) return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
 
-  const { imageUrl, date, ...rest } = parsed.data
+  const { imageUrl, date, redirectUrl, ...rest } = parsed.data
   const slug = await slugFromTitleCity(rest.title, rest.city)
 
   const event = await db.event.create({
@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
       slug,
       date: new Date(date),
       imageUrl: imageUrl && imageUrl.length > 0 ? imageUrl : null,
+      redirectUrl: redirectUrl || null,
     },
   })
 
