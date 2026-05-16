@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const { title, description, slug, notifyEmail, fields, isActive } = parsed.data
+  const { title, description, slug, notifyEmail, redirectUrl, fields, isActive } = parsed.data
 
   const existing = await db.form.findUnique({ where: { slug } })
   if (existing) {
@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
       slug,
       isActive: isActive ?? false,
       notifyEmail: notifyEmail || null,
+      redirectUrl: redirectUrl || null,
       fields: {
         create: fields.map((f, i) => ({
           label: f.label,

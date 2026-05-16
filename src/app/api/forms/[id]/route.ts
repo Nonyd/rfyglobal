@@ -57,6 +57,12 @@ export async function PATCH(req: NextRequest, ctx: { params: { id: string } | Pr
           : formData.notifyEmail
             ? formData.notifyEmail
             : null,
+      redirectUrl:
+        formData.redirectUrl === undefined
+          ? undefined
+          : formData.redirectUrl
+            ? formData.redirectUrl
+            : null,
     },
   })
 

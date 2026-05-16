@@ -86,5 +86,13 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     })
   }
 
-  return NextResponse.json({ success: true, submissionId: submission.id }, { status: 201 })
+  return NextResponse.json(
+    {
+      success: true,
+      submissionId: submission.id,
+      message: 'Thank you for your submission!',
+      redirectUrl: form.redirectUrl ?? null,
+    },
+    { status: 201 }
+  )
 }

@@ -11,6 +11,13 @@ export const FormFieldSchema = z.object({
   order: z.number().int().min(0),
 })
 
+const redirectUrlSchema = z
+  .string()
+  .url()
+  .optional()
+  .nullable()
+  .or(z.literal(''))
+
 export const CreateFormSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200),
   description: z.string().max(1000).optional(),
@@ -21,6 +28,7 @@ export const CreateFormSchema = z.object({
     .max(100)
     .regex(/^[a-z0-9-]+$/, 'Slug must be lowercase letters, numbers, and hyphens only'),
   notifyEmail: z.string().email().optional().or(z.literal('')),
+  redirectUrl: redirectUrlSchema,
   fields: z.array(FormFieldSchema).min(1, 'At least one field is required'),
 })
 

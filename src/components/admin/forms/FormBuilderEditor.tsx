@@ -50,6 +50,7 @@ interface FormBuilderEditorProps {
     description?: string | null
     slug: string
     notifyEmail?: string | null
+    redirectUrl?: string | null
     isActive: boolean
     fields: FormFieldInput[]
   }
@@ -62,6 +63,7 @@ export function FormBuilderEditor({ mode, initialData }: FormBuilderEditorProps)
   const [description, setDescription] = useState(initialData?.description ?? '')
   const [slug, setSlug] = useState(initialData?.slug ?? '')
   const [notifyEmail, setNotifyEmail] = useState(initialData?.notifyEmail ?? '')
+  const [redirectUrl, setRedirectUrl] = useState(initialData?.redirectUrl ?? '')
   const [desiredActive, setDesiredActive] = useState(initialData?.isActive ?? true)
   const [fields, setFields] = useState<(FormFieldInput & { _key: string })[]>(
     (initialData?.fields ?? []).map((f, i) => ({
@@ -140,6 +142,7 @@ export function FormBuilderEditor({ mode, initialData }: FormBuilderEditorProps)
         description: description.trim() || undefined,
         slug: slug.trim(),
         notifyEmail: notifyEmail.trim() || undefined,
+        redirectUrl: redirectUrl.trim() ? redirectUrl.trim() : null,
         isActive: finalActive,
         fields: fields.map((field, i) => {
           const { _key, ...f } = field
@@ -250,6 +253,48 @@ export function FormBuilderEditor({ mode, initialData }: FormBuilderEditorProps)
               <p className="text-[11px] mt-1 font-body" style={{ color: 'var(--a-text-muted)' }}>
                 Receive an email on every submission
               </p>
+            </div>
+
+            <div className="border-t pt-6" style={{ borderColor: 'var(--a-border)' }}>
+              <p
+                className="font-body text-xs uppercase tracking-widest font-semibold mb-4"
+                style={{ color: 'var(--a-text-muted)' }}
+              >
+                After Submission
+              </p>
+              <div>
+                <label
+                  className="font-body text-sm font-medium block mb-1.5"
+                  style={{ color: 'var(--a-text)' }}
+                >
+                  Redirect URL
+                  <span className="ml-2 font-normal text-xs" style={{ color: 'var(--a-text-muted)' }}>
+                    (optional)
+                  </span>
+                </label>
+                <input
+                  type="url"
+                  value={redirectUrl}
+                  onChange={(e) => setRedirectUrl(e.target.value)}
+                  placeholder="https://rfyglobal.org/join"
+                  className="w-full px-3 py-2.5 font-body text-sm border outline-none"
+                  style={{
+                    background: 'var(--a-bg)',
+                    borderColor: 'var(--a-border)',
+                    color: 'var(--a-text)',
+                  }}
+                  onFocus={(e) => (e.target.style.borderColor = 'var(--a-gold)')}
+                  onBlur={(e) => (e.target.style.borderColor = 'var(--a-border)')}
+                />
+                <p
+                  className="font-body text-xs mt-1.5 leading-relaxed"
+                  style={{ color: 'var(--a-text-muted)' }}
+                >
+                  Leave empty to show the thank you message. Enter a URL to redirect visitors to a
+                  different page after submission (e.g. a custom thank you page or the community join
+                  page).
+                </p>
+              </div>
             </div>
 
             <div className="flex items-start gap-3 pt-1">

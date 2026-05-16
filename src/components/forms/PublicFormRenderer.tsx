@@ -137,9 +137,17 @@ export function PublicFormRenderer({ form }: { form: PublicForm }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       })
+      const body = (await res.json().catch(() => ({}))) as {
+        error?: string
+        redirectUrl?: string | null
+        message?: string
+      }
       if (!res.ok) {
-        const body = (await res.json().catch(() => ({}))) as { error?: string }
         throw new Error(body.error ?? 'Submission failed')
+      }
+      if (body.redirectUrl) {
+        window.location.href = body.redirectUrl
+        return
       }
       setDone(true)
     } catch (e) {

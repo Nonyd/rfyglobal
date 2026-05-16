@@ -19,6 +19,7 @@ export default async function EditFormPage({ params }: { params: { id: string } 
         description: form.description,
         slug: form.slug,
         notifyEmail: form.notifyEmail,
+        redirectUrl: form.redirectUrl,
         isActive: form.isActive,
         fields: form.fields.map((f) => ({
           id: f.id,
