@@ -76,6 +76,7 @@ export function EventsManager() {
   const [registrations, setRegistrations] = useState<EventRegistration[]>([])
   const [registrationFormFields, setRegistrationFormFields] = useState<EventFormField[]>([])
   const [loadingRegs, setLoadingRegs] = useState(false)
+  const [deletingRegId, setDeletingRegId] = useState<string | null>(null)
   const [fieldsEvent, setFieldsEvent] = useState<EventRow | null>(null)
   const [eventFields, setEventFields] = useState<EventFormField[]>([])
   const [loadingFields, setLoadingFields] = useState(false)
@@ -105,6 +106,49 @@ export function EventsManager() {
       toast.error('Failed to load registrations')
     } finally {
       setLoadingRegs(false)
+    }
+  }
+
+  const deleteRegistration = async (registration: EventRegistration) => {
+    if (!registrationsEvent) return
+    if (
+      !confirm(
+        `Remove registration for ${registration.name} (${registration.email})? This cannot be undone.`,
+      )
+    ) {
+      return
+    }
+
+    setDeletingRegId(registration.id)
+    try {
+      const slugOrId = encodeURIComponent(registrationsEvent.slug ?? registrationsEvent.id)
+      const res = await adminFetch(
+        `/api/events/${slugOrId}/registrations/${registration.id}`,
+        { method: 'DELETE' },
+      )
+      const data = (await res.json().catch(() => ({}))) as { error?: string }
+      if (!res.ok) {
+        toast.error(typeof data.error === 'string' ? data.error : 'Failed to delete registration')
+        return
+      }
+      setRegistrations((prev) => prev.filter((r) => r.id !== registration.id))
+      setEvents((prev) =>
+        prev.map((e) =>
+          e.id === registrationsEvent.id
+            ? {
+                ...e,
+                _count: {
+                  registrations: Math.max(0, (e._count?.registrations ?? 1) - 1),
+                },
+              }
+            : e,
+        ),
+      )
+      toast.success('Registration removed')
+    } catch {
+      toast.error('Failed to delete registration')
+    } finally {
+      setDeletingRegId(null)
     }
   }
 
@@ -847,6 +891,11 @@ export function EventsManager() {
                             >
                               When
                             </th>
+                            <th
+                              className="w-12 px-3 py-2.5 text-xs uppercase tracking-widest"
+                              style={{ color: 'var(--a-gold)' }}
+                              aria-label="Actions"
+                            />
                           </tr>
                         </thead>
                         <tbody>
@@ -886,6 +935,31 @@ export function EventsManager() {
                               })}
                               <td className="px-3 py-2.5" style={{ color: 'var(--a-text-muted)' }}>
                                 {formatDate(r.createdAt)}
+                              </td>
+                              <td className="px-3 py-2.5">
+                                <button
+                                  type="button"
+                                  onClick={() => void deleteRegistration(r)}
+                                  disabled={deletingRegId === r.id}
+                                  className="p-1.5 transition-colors disabled:opacity-40"
+                                  style={{ color: 'var(--a-text-muted)' }}
+                                  title="Delete registration"
+                                  aria-label={`Delete registration for ${r.name}`}
+                                  onMouseEnter={(e) => {
+                                    if (deletingRegId !== r.id) {
+                                      e.currentTarget.style.color = '#ef4444'
+                                    }
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.color = 'var(--a-text-muted)'
+                                  }}
+                                >
+                                  {deletingRegId === r.id ? (
+                                    <Loader2 size={14} className="animate-spin" />
+                                  ) : (
+                                    <Trash2 size={14} />
+                                  )}
+                                </button>
                               </td>
                             </tr>
                           ))}
