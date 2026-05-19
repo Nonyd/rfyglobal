@@ -7,6 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.join(__dirname, '..')
 const source = path.join(root, 'public/images/favicon-source.png')
 const publicDir = path.join(root, 'public')
+const appDir = path.join(root, 'src/app')
 
 const sizes = [
   { name: 'favicon-16x16.png', size: 16 },
@@ -67,5 +68,15 @@ const png32 = await sharp(source)
   .png()
   .toBuffer()
 
-fs.writeFileSync(path.join(publicDir, 'favicon.ico'), buildIco([png16, png32]))
-console.log('Created favicon.ico')
+const ico = buildIco([png16, png32])
+// Next.js serves favicon from src/app only (public/favicon.ico would conflict).
+fs.writeFileSync(path.join(appDir, 'favicon.ico'), ico)
+fs.copyFileSync(
+  path.join(publicDir, 'android-chrome-192x192.png'),
+  path.join(appDir, 'icon.png'),
+)
+fs.copyFileSync(
+  path.join(publicDir, 'apple-touch-icon.png'),
+  path.join(appDir, 'apple-icon.png'),
+)
+console.log('Created favicon.ico (+ src/app metadata icons)')
