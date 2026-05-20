@@ -1,3 +1,5 @@
+import 'server-only'
+
 import { db } from '@/lib/db'
 import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 

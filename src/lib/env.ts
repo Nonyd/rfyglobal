@@ -1,3 +1,5 @@
+import 'server-only'
+
 /** Production servers must satisfy all keys. Use `SKIP_ENV_VALIDATION=1` only for CI builds that omit secrets. */
 const required = [
   'DATABASE_URL',
