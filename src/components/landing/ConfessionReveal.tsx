@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
-import { cmsLines } from '@/lib/cms-metadata'
+import { cmsLines } from '@/lib/cms-utils'
 
 const DEFAULT_LINES = [
   'I am saved by grace through faith.',

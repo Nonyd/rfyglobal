@@ -215,41 +215,55 @@ export function PartnershipClientPage({
         <div className="h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent mt-12" />
       </section>
 
-      <section className="max-w-5xl mx-auto px-6 pb-20">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {(
-            [
-              {
-                Icon: Landmark,
-                title: content['partnership.card1.title'],
-                desc: content['partnership.card1.desc'],
-              },
-              {
-                Icon: BookOpen,
-                title: content['partnership.card2.title'],
-                desc: content['partnership.card2.desc'],
-              },
-              {
-                Icon: Globe,
-                title: content['partnership.card3.title'],
-                desc: content['partnership.card3.desc'],
-              },
-            ] satisfies { Icon: LucideIcon; title: string; desc: string }[]
-          ).map(({ Icon, title, desc }) => (
+      <section className="max-w-2xl mx-auto px-6 pb-20">
+        <div className="rfy-card p-8 text-center">
+          <h2 className="mb-6 font-display text-2xl text-text-primary">Account Details</h2>
+          <div className="mx-auto mb-8 max-w-sm space-y-4 text-left">
             <div
-              key={title}
-              className="rfy-card p-6 transition-colors hover:border-gold/35"
+              className="flex justify-between py-3 border-b"
+              style={{ borderColor: 'rgba(255,255,255,0.08)' }}
             >
-              <div
-                className="mb-4 flex h-11 w-11 items-center justify-center rounded-full border border-gold/30 bg-gold/[0.06]"
-                aria-hidden
-              >
-                <Icon className="h-5 w-5 text-gold" strokeWidth={1.35} />
-              </div>
-              <h3 className="mb-2 font-display text-lg text-text-primary">{title}</h3>
-              <p className="font-body text-sm leading-relaxed text-text-secondary">{desc}</p>
+              <span className="font-body text-sm text-text-muted">Bank</span>
+              <span className="font-body text-sm text-text-primary">
+                {bankDetails?.bankName ?? content['partnership.bank.bankName']}
+              </span>
             </div>
-          ))}
+            <div
+              className="flex justify-between py-3 border-b"
+              style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+            >
+              <span className="font-body text-sm text-text-muted">Account Name</span>
+              <span className="font-body text-sm text-text-primary">
+                {bankDetails?.accountName ?? content['partnership.bank.accountName']}
+              </span>
+            </div>
+            <div className="flex items-center justify-between py-3">
+              <span className="font-body text-sm text-text-muted">Account Number</span>
+              <div className="flex items-center gap-2">
+                <span className="text-gold font-mono text-sm">
+                  {bankDetails?.accountNumber ?? content['partnership.bank.accountNumber']}
+                </span>
+                <button
+                  type="button"
+                  onClick={copyAccountNumber}
+                  className="p-1.5 text-text-muted transition-colors hover:text-gold"
+                  aria-label="Copy account number"
+                >
+                  {copied ? <Check size={14} className="text-gold" /> : <Copy size={14} />}
+                </button>
+              </div>
+            </div>
+          </div>
+          <p className="font-body text-sm leading-relaxed text-text-muted">
+            After your transfer, please send your name and amount to{' '}
+            <a
+              href={`mailto:${bankDetails?.contactEmail ?? content['partnership.bank.contactEmail']}`}
+              className="text-gold hover:underline"
+            >
+              {bankDetails?.contactEmail ?? content['partnership.bank.contactEmail']}
+            </a>{' '}
+            so we can acknowledge your gift.
+          </p>
         </div>
       </section>
 
@@ -466,56 +480,42 @@ export function PartnershipClientPage({
         </div>
       </section>
 
-      <section className="max-w-2xl mx-auto px-6 pb-24">
+      <section className="max-w-5xl mx-auto px-6 pb-24">
         <div className="h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent mb-16" />
-        <div className="rfy-card p-8 text-center">
-          <h2 className="mb-6 font-display text-2xl text-text-primary">Prefer Bank Transfer?</h2>
-          <div className="mx-auto mb-8 max-w-sm space-y-4 text-left">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {(
+            [
+              {
+                Icon: Landmark,
+                title: content['partnership.card1.title'],
+                desc: content['partnership.card1.desc'],
+              },
+              {
+                Icon: BookOpen,
+                title: content['partnership.card2.title'],
+                desc: content['partnership.card2.desc'],
+              },
+              {
+                Icon: Globe,
+                title: content['partnership.card3.title'],
+                desc: content['partnership.card3.desc'],
+              },
+            ] satisfies { Icon: LucideIcon; title: string; desc: string }[]
+          ).map(({ Icon, title, desc }) => (
             <div
-              className="flex justify-between py-3 border-b"
-              style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+              key={title}
+              className="rfy-card p-6 transition-colors hover:border-gold/35"
             >
-              <span className="font-body text-sm text-text-muted">Bank</span>
-              <span className="font-body text-sm text-text-primary">
-                {bankDetails?.bankName ?? content['partnership.bank.bankName']}
-              </span>
-            </div>
-            <div
-              className="flex justify-between py-3 border-b"
-              style={{ borderColor: 'rgba(255,255,255,0.08)' }}
-            >
-              <span className="font-body text-sm text-text-muted">Account Name</span>
-              <span className="font-body text-sm text-text-primary">
-                {bankDetails?.accountName ?? content['partnership.bank.accountName']}
-              </span>
-            </div>
-            <div className="flex items-center justify-between py-3">
-              <span className="font-body text-sm text-text-muted">Account Number</span>
-              <div className="flex items-center gap-2">
-                <span className="text-gold font-mono text-sm">
-                  {bankDetails?.accountNumber ?? content['partnership.bank.accountNumber']}
-                </span>
-                <button
-                  type="button"
-                  onClick={copyAccountNumber}
-                  className="p-1.5 text-text-muted transition-colors hover:text-gold"
-                  aria-label="Copy account number"
-                >
-                  {copied ? <Check size={14} className="text-gold" /> : <Copy size={14} />}
-                </button>
+              <div
+                className="mb-4 flex h-11 w-11 items-center justify-center rounded-full border border-gold/30 bg-gold/[0.06]"
+                aria-hidden
+              >
+                <Icon className="h-5 w-5 text-gold" strokeWidth={1.35} />
               </div>
+              <h3 className="mb-2 font-display text-lg text-text-primary">{title}</h3>
+              <p className="font-body text-sm leading-relaxed text-text-secondary">{desc}</p>
             </div>
-          </div>
-          <p className="font-body text-sm leading-relaxed text-text-muted">
-            After your transfer, please send your name and amount to{' '}
-            <a
-              href={`mailto:${bankDetails?.contactEmail ?? content['partnership.bank.contactEmail']}`}
-              className="text-gold hover:underline"
-            >
-              {bankDetails?.contactEmail ?? content['partnership.bank.contactEmail']}
-            </a>{' '}
-            so we can acknowledge your gift.
-          </p>
+          ))}
         </div>
       </section>
     </div>

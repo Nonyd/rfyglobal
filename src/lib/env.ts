@@ -13,6 +13,11 @@ const required = [
 ]
 
 export function validateEnv() {
+  // Only validate on the server — client bundles must not throw on missing secrets.
+  if (typeof window !== 'undefined') {
+    return
+  }
+
   const missing = required.filter((key) => !process.env[key])
   if (missing.length > 0) {
     throw new Error(

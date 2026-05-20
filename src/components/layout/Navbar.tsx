@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Menu, X } from 'lucide-react'
+import { X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
@@ -111,16 +111,35 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setMobileOpen((p) => !p)}
-              className="lg:hidden flex items-center justify-center w-9 h-9 border transition-all duration-200"
+              className="lg:hidden group relative inline-flex items-center justify-center min-w-[4.5rem] px-4 py-2.5 font-body text-[10px] font-semibold tracking-[0.28em] uppercase transition-all duration-300"
               style={{
-                borderColor: 'rgba(201,168,76,0.4)',
-                color: isDark || scrolled ? '#F8F8F8' : '#1A1714',
-                background: 'transparent',
+                color: mobileOpen
+                  ? '#0F0F0F'
+                  : isDark || scrolled
+                    ? '#F8F8F8'
+                    : '#1A1714',
+                background: mobileOpen ? '#C9A84C' : 'transparent',
+                border: `1px solid ${mobileOpen ? '#C9A84C' : 'rgba(201,168,76,0.55)'}`,
+                boxShadow: mobileOpen
+                  ? '0 4px 24px rgba(201,168,76,0.35)'
+                  : isDark || scrolled
+                    ? '0 2px 12px rgba(0,0,0,0.2)'
+                    : '0 2px 12px rgba(26,23,20,0.06)',
               }}
-              aria-label="Toggle navigation menu"
+              aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={mobileOpen}
             >
-              {mobileOpen ? <X size={18} /> : <Menu size={18} />}
+              <span
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+                style={{
+                  background:
+                    mobileOpen
+                      ? 'transparent'
+                      : 'linear-gradient(135deg, rgba(201,168,76,0.12) 0%, transparent 60%)',
+                }}
+                aria-hidden
+              />
+              <span className="relative z-[1]">{mobileOpen ? 'Close' : 'Menu'}</span>
             </button>
           </div>
         </div>

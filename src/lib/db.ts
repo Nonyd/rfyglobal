@@ -7,7 +7,7 @@ const skipEnvValidation =
   process.env.SKIP_ENV_VALIDATION === '1' ||
   process.env.NEXT_PHASE === 'phase-production-build'
 
-if (!skipEnvValidation) validateEnv()
+if (typeof window === 'undefined' && !skipEnvValidation) validateEnv()
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined

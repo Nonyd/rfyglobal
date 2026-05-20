@@ -5,7 +5,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { cmsLines } from '@/lib/cms-metadata'
+import { cmsLines } from '@/lib/cms-utils'
 
 gsap.registerPlugin(ScrollTrigger)
 

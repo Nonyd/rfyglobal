@@ -1,7 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { cmsLines } from '@/lib/cms-metadata'
+import { cmsLines } from '@/lib/cms-utils'
 
 const DEFAULT_ACTIVITIES = [
   'Monthly community gatherings across cities',

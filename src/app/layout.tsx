@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { JsonLd } from '@/components/seo/JsonLd'
-import { buildDefaultMetadata, getCmsSeoDefaults } from '@/lib/cms-metadata'
+import { buildDefaultMetadata } from '@/lib/cms-utils'
+import { getCmsSeoDefaults } from '@/lib/cms-metadata'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { CookieBanner } from '@/components/shared/CookieBanner'
 import './globals.css'
