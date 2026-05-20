@@ -18,42 +18,16 @@ const fadeUp = {
   },
 }
 
-const ACTIVITIES = [
-  {
-    number: '01',
-    title: 'Monthly Meetings',
-    desc: 'Physical gatherings across cities where the Word comes alive and community is built.',
-  },
-  {
-    number: '02',
-    title: 'Prayer',
-    desc: "Corporate and personal prayer — we carry one another's burdens before the throne.",
-  },
-  {
-    number: '03',
-    title: 'Online Study',
-    desc: 'Structured Bible study with weekly tasks and materials accessible to everyone.',
-  },
-  {
-    number: '04',
-    title: 'Mentorship',
-    desc: 'One-on-one spiritual mentorship and counseling for growth and accountability.',
-  },
-  {
-    number: '05',
-    title: 'Counseling & Support',
-    desc: "A safe community to receive support and walk through life's challenges together.",
-  },
-  {
-    number: '06',
-    title: 'Evangelical Outreach',
-    desc: 'Foot evangelism and outreaches — taking the Gospel beyond the walls.',
-  },
-]
-
-const CONFESSION_EXCERPT = `I am saved by grace through faith. I am justified and redeemed by the blood of Jesus. I have received mercy because of the sacrifice of Jesus on the cross. God's love has been shed abroad in my heart and I am sealed with the Holy Spirit. I am now a part of God's family! I am committed to learning the value of this family and I grow in both wisdom and stature. I am committed to study and prayers! I am saved and I get others saved. I am reconciled and I reconcile others. On account of me, many come to the knowledge of the Son. It's Jesus to nations — and I am a willing vessel! I live my life in honor of the one who died for me, till his return!`
+function aboutActivities(content: Record<string, string>) {
+  return [1, 2, 3, 4, 5, 6].map((n) => ({
+    number: String(n).padStart(2, '0'),
+    title: content[`about.activities.${n}.title`] ?? '',
+    desc: content[`about.activities.${n}.desc`] ?? '',
+  }))
+}
 
 export function AboutClient({ content }: { content: Record<string, string> }) {
+  const activities = aboutActivities(content)
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
@@ -88,7 +62,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
           variants={fadeUp}
           className="mb-6 font-body text-[10px] uppercase tracking-[0.4em] text-gold"
         >
-          Our Story
+          {content['about.hero.eyebrow'] || 'Our Story'}
         </motion.p>
         <motion.h1
           initial="hidden"
@@ -162,10 +136,10 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
             variants={fadeUp}
             className="mb-16 text-center font-display text-3xl text-text-primary lg:text-4xl"
           >
-            What Room For You Looks Like
+            {content['about.activities.heading'] || 'What Room For You Looks Like'}
           </motion.h2>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {ACTIVITIES.map((item, i) => (
+            {activities.map((item, i) => (
               <motion.div
                 key={item.number}
                 initial="hidden"
@@ -198,7 +172,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
             variants={fadeUp}
             className="mb-12 font-display text-4xl italic text-gold lg:text-5xl"
           >
-            We Declare
+            {content['about.confession.heading'] || 'We Declare'}
           </motion.h2>
           <motion.p
             initial="hidden"
@@ -217,13 +191,13 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
               color: isDark ? 'rgba(248,248,248,0.7)' : '#2C2520',
             }}
           >
-            {CONFESSION_EXCERPT}
+            {content['about.confession.text']}
           </motion.p>
           <Link
             href="/confession"
             className="inline-flex items-center gap-2 font-body text-sm uppercase tracking-widest text-gold hover:underline"
           >
-            Read the full confession →
+            {content['about.confession.link'] || 'Read the full confession →'}
           </Link>
         </div>
       </section>
@@ -243,15 +217,17 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
 
         <div className="relative z-10 mx-auto grid max-w-6xl grid-cols-1 items-center gap-16 lg:grid-cols-2">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}>
-            <p className="font-display mb-2 text-2xl italic text-gold">The Shepherd</p>
+            <p className="font-display mb-2 text-2xl italic text-gold">
+              {content['about.shepherd.heading'] || 'The Shepherd'}
+            </p>
             <h2
               className="font-display mb-1 text-4xl lg:text-5xl"
               style={{ color: isDark ? '#F5F0E8' : '#0F0C08' }}
             >
-              Minister Yadah
+              {content['about.shepherd.name'] || 'Minister Yadah'}
             </h2>
             <p className="mb-1 font-body text-[10px] uppercase tracking-[0.35em] text-gold/60">
-              Founder · Room For You
+              {content['about.shepherd.role'] || 'Founder · Room For You'}
             </p>
             <div className="mb-8 h-px w-24 bg-gold/50" />
 
@@ -270,7 +246,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 font-body text-sm uppercase tracking-widest text-gold hover:underline"
               >
-                Visit yadahworld.com →
+                {content['about.shepherd.websiteLink'] || 'Visit yadahworld.com →'}
               </Link>
               <Link
                 href={content['about.yadah.musicLink']}
@@ -281,7 +257,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
                   color: isDark ? 'rgba(245,240,232,0.5)' : '#7A7066',
                 }}
               >
-                Listen to her music →
+                {content['about.shepherd.musicLinkLabel'] || 'Listen to her music →'}
               </Link>
             </div>
           </motion.div>
@@ -324,7 +300,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
           href="/join"
           className="inline-block bg-gold px-10 py-4 font-body text-sm font-medium uppercase tracking-widest text-black transition-all duration-300 hover:bg-gold-light"
         >
-          Join the Community
+          {content['about.cta.button'] || 'Join the Community'}
         </Link>
         <div className="mx-auto mt-16 h-px max-w-xs bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
       </section>

@@ -7,62 +7,29 @@ import { CommunityHighlights } from '@/components/landing/CommunityHighlights'
 import { CTASection } from '@/components/landing/CTASection'
 import { Footer } from '@/components/layout/Footer'
 import { getContentMany } from '@/lib/content'
+import { HOME_CMS_KEYS } from '@/lib/cms-keys'
+import { getPageMetadata } from '@/lib/cms-metadata'
 import type { Metadata } from 'next'
-import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'Room For You — A Christian Community with Minister Yadah',
-  description:
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata(
+    'Room For You — A Christian Community with Minister Yadah',
     'Room For You is a global Christian community founded by Minister Yadah. Monthly gatherings in Abuja, Lagos, and cities worldwide. Worship. Prayer. Bible Study. There is room for you.',
-  alternates: { canonical: 'https://rfyglobal.org' },
-  openGraph: {
-    title: 'Room For You — A Christian Community with Minister Yadah',
-    description:
-      'Join a community of young believers on fire for Jesus. Monthly gatherings. Daily Word. Prayer wall. Founded by Minister Yadah.',
-    url: 'https://rfyglobal.org',
-    images: [
-      {
-        url: DEFAULT_OG_IMAGE,
-        width: 1200,
-        height: 630,
-        alt: 'Room For You — A Christian Community with Minister Yadah',
-      },
-    ],
-  },
+    '/',
+  )
 }
 
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
-  const content = await getContentMany([
-    'landing.vision.heading',
-    'landing.vision.subheading',
-    'landing.vision.text',
-    'landing.cta.headline',
-    'landing.cta.subtext',
-    'landing.cta.button',
-    'shepherd.quote',
-    'shepherd.name',
-    'shepherd.title',
-    'shepherd.portrait',
-    'shepherd.image',
-    'shepherd.link',
-    'highlights.1.title',
-    'highlights.1.desc',
-    'highlights.2.title',
-    'highlights.2.desc',
-    'highlights.3.title',
-    'highlights.3.desc',
-    'highlights.4.title',
-    'highlights.4.desc',
-  ])
+  const content = await getContentMany([...HOME_CMS_KEYS])
 
   return (
     <main>
-      <Hero />
+      <Hero content={content} />
       <ScriptureStrip />
       <VisionSection content={content} />
-      <ConfessionReveal />
+      <ConfessionReveal content={content} />
       <FromTheShepherd content={content} />
       <CommunityHighlights content={content} />
       <CTASection content={content} />

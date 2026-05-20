@@ -10,6 +10,9 @@ export function CommunityHighlights({ content }: { content: Record<string, strin
     { n: '04', title: content['highlights.4.title'] || 'Mentorship', desc: content['highlights.4.desc'] || 'One-on-one counseling and growth.' },
   ]
 
+  const sectionTitle = content['highlights.section.title'] || 'Community'
+  const sectionAccent = content['highlights.section.titleAccent'] || 'life.'
+
   return (
     <section className="py-32 px-6" style={{ background: 'rgb(var(--color-bg))' }}>
       <div className="max-w-7xl mx-auto">
@@ -19,12 +22,12 @@ export function CommunityHighlights({ content }: { content: Record<string, strin
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <p className="label-text mb-4">What We Do</p>
+            <p className="label-text mb-4">{content['highlights.section.eyebrow'] || 'What We Do'}</p>
             <h2
               className="font-display"
               style={{ fontSize: 'clamp(2rem, 5vw, 4rem)', color: 'rgb(var(--color-text-primary))' }}
             >
-              Community <span className="italic text-gold-gradient">life.</span>
+              {sectionTitle} <span className="italic text-gold-gradient">{sectionAccent}</span>
             </h2>
           </motion.div>
         </div>

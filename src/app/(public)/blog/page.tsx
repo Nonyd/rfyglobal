@@ -4,27 +4,17 @@ import type { Metadata } from 'next'
 import { PublicPageHeader, PublicPageShell } from '@/components/layout/PublicPageShell'
 import { formatDate } from '@/lib/utils'
 import { db } from '@/lib/db'
-import { DEFAULT_OG_IMAGE } from '@/lib/seo'
+import { getContentMany } from '@/lib/content'
+import { getPageMetadata, pageHeaderFromContent } from '@/lib/cms-metadata'
 
 export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = {
-  title: 'Devotionals — Room For You Blog',
-  description: 'Devotional articles from the Room For You community.',
-  alternates: { canonical: 'https://rfyglobal.org/blog' },
-  openGraph: {
-    title: 'Devotionals — Room For You Blog',
-    description: 'Deep teaching on salvation, identity in Christ, worship, and Christian living.',
-    url: 'https://rfyglobal.org/blog',
-    images: [
-      {
-        url: DEFAULT_OG_IMAGE,
-        width: 1200,
-        height: 630,
-        alt: 'Room For You Devotionals',
-      },
-    ],
-  },
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata(
+    'Devotionals — Room For You Blog',
+    'Devotional articles from the Room For You community.',
+    '/blog',
+  )
 }
 
 const coverThumbnailUrl = (url: string) =>
@@ -33,7 +23,8 @@ const coverThumbnailUrl = (url: string) =>
     : url
 
 export default async function BlogPage() {
-  const posts = await db.post.findMany({
+  const [posts, cms] = await Promise.all([
+    db.post.findMany({
     where: { isPublished: true },
     orderBy: { publishedAt: 'desc' },
     select: {
@@ -44,11 +35,15 @@ export default async function BlogPage() {
       coverImage: true,
       publishedAt: true,
     },
-  })
+  }),
+    getContentMany(['pages.blog.eyebrow', 'pages.blog.title', 'pages.blog.subtitle']),
+  ])
+
+  const header = pageHeaderFromContent(cms, 'blog', { title: 'Devotionals' })
 
   return (
     <PublicPageShell mainClassName="pb-20 md:pb-24">
-      <PublicPageHeader eyebrow="Room For You" title="Devotionals" />
+      <PublicPageHeader {...header} />
 
       <div className="mx-auto max-w-7xl px-6">
         {posts.length === 0 ? (

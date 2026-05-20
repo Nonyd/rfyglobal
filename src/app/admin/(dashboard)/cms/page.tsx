@@ -1,26 +1,30 @@
 import Link from 'next/link'
-import { Settings2, Layout, User, Heart, FileText, Globe } from 'lucide-react'
+import { Settings2, Layout, User, Heart, FileText, Globe, BookOpen, HandHeart } from 'lucide-react'
 
 const CMS_SECTIONS = [
-  { href: '/admin/cms/landing', label: 'Landing Page', desc: 'Hero text, vision, CTA copy', icon: Layout },
+  { href: '/admin/cms/landing', label: 'Landing Page', desc: 'Hero copy, portrait, vision, mission, CTA', icon: Layout },
   { href: '/admin/cms/shepherd', label: 'From the Shepherd', desc: 'Yadah quote, photo, links', icon: User },
   {
     href: '/admin/cms/highlights',
     label: 'Community Highlights',
-    desc: 'Four highlight card titles and descriptions',
+    desc: 'Section heading and four feature cards',
     icon: FileText,
   },
-  { href: '/admin/cms/about', label: 'About Page', desc: 'Vision, mission, Yadah bio and portrait', icon: User },
+  { href: '/admin/cms/confession', label: 'The Confession', desc: 'Homepage excerpt and full confession page', icon: BookOpen },
+  { href: '/admin/cms/about', label: 'About Page', desc: 'Vision, activities, confession, Yadah bio', icon: User },
   {
     href: '/admin/cms/partnership',
     label: 'Partnership Page',
-    desc: 'Vision text, bank account details',
+    desc: 'Hero copy and bank details (fallback)',
     icon: Heart,
   },
+  { href: '/admin/cms/pages', label: 'Page Headers', desc: 'Word, Study, Events, Gallery, Blog, Testimonies', icon: FileText },
+  { href: '/admin/cms/join', label: 'Join Page', desc: 'Membership hero headline lines', icon: Layout },
+  { href: '/admin/cms/prayer', label: 'Prayer Wall', desc: 'Prayer page header and privacy notice', icon: HandHeart },
   { href: '/admin/cms/footer', label: 'Footer', desc: 'Tagline, copyright, social links', icon: Globe },
-  { href: '/admin/cms/contact', label: 'Contact Page', desc: 'Contact heading, links, address', icon: FileText },
+  { href: '/admin/cms/contact', label: 'Contact Page', desc: 'Heading, email, social handles, WhatsApp', icon: FileText },
   { href: '/admin/cms/faq', label: 'FAQs Page', desc: 'FAQ page heading and subheading', icon: FileText },
-  { href: '/admin/cms/seo', label: 'SEO Defaults', desc: 'OG image, meta description', icon: Settings2 },
+  { href: '/admin/cms/seo', label: 'SEO Defaults', desc: 'Site-wide title, description, OG image', icon: Settings2 },
 ]
 
 export default function CMSIndexPage() {

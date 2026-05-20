@@ -1,29 +1,17 @@
 import { db } from '@/lib/db'
 import { PublicPageHeader, PublicPageShell } from '@/components/layout/PublicPageShell'
 import { WordClientPage } from '@/components/word/WordClientPage'
+import { getContentMany } from '@/lib/content'
+import { getPageMetadata, pageHeaderFromContent } from '@/lib/cms-metadata'
 import type { Metadata } from 'next'
 import type { Scripture } from '@prisma/client'
-import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'Daily Word — Scripture from Room For You',
-  description:
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata(
+    'Daily Word — Scripture from Room For You',
     'One scripture every day with audio commentary from Minister Yadah and the Room For You team. Rooted in the Word. Grounded in grace.',
-  alternates: { canonical: 'https://rfyglobal.org/word' },
-  openGraph: {
-    title: 'Daily Word — Scripture from Room For You',
-    description:
-      'One scripture every day with audio commentary from Minister Yadah and the Room For You team. Rooted in the Word. Grounded in grace.',
-    url: 'https://rfyglobal.org/word',
-    images: [
-      {
-        url: DEFAULT_OG_IMAGE,
-        width: 1200,
-        height: 630,
-        alt: 'Room For You — A Christian Community with Minister Yadah',
-      },
-    ],
-  },
+    '/word',
+  )
 }
 
 export const dynamic = 'force-dynamic'
@@ -34,7 +22,7 @@ export default async function WordPage() {
   const dayEnd = new Date(dayStart)
   dayEnd.setDate(dayEnd.getDate() + 1)
 
-  const [todayRes, scriptures] = await Promise.all([
+  const [todayRes, scriptures, cms] = await Promise.all([
     db.scripture.findFirst({
       where: {
         scheduledAt: { gte: dayStart, lt: dayEnd },
@@ -46,7 +34,13 @@ export default async function WordPage() {
       where: { isActive: true, isDraft: false },
       orderBy: [{ scheduledAt: 'desc' }, { createdAt: 'desc' }],
     }),
+    getContentMany(['pages.word.eyebrow', 'pages.word.title', 'pages.word.subtitle']),
   ])
+
+  const header = pageHeaderFromContent(cms, 'word', {
+    title: 'The Word',
+    subtitle: 'One scripture. Every day. With audio to bring it alive.',
+  })
 
   let today: Scripture | null = todayRes
   if (!today) {
@@ -60,11 +54,7 @@ export default async function WordPage() {
 
   return (
     <PublicPageShell mainClassName="pb-20 md:pb-24">
-      <PublicPageHeader
-        eyebrow="Room For You"
-        title="The Word"
-        subtitle="One scripture. Every day. With audio to bring it alive."
-      />
+      <PublicPageHeader {...header} />
 
       <WordClientPage today={today} allScriptures={scriptures} />
     </PublicPageShell>

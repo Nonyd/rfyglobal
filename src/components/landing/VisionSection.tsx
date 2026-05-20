@@ -1,15 +1,18 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { cmsLines } from '@/lib/cms-metadata'
+
+const DEFAULT_ACTIVITIES = [
+  'Monthly community gatherings across cities',
+  'Corporate prayer and intercession',
+  'Structured online Bible study',
+  'One-on-one mentorship and counseling',
+  'Foot evangelism and outreaches',
+]
 
 export function VisionSection({ content }: { content: Record<string, string> }) {
-  const activities = [
-    'Monthly community gatherings across cities',
-    'Corporate prayer and intercession',
-    'Structured online Bible study',
-    'One-on-one mentorship and counseling',
-    'Foot evangelism and outreaches',
-  ]
+  const activities = cmsLines(content['landing.vision.activities'], DEFAULT_ACTIVITIES)
 
   return (
     <section className="py-32 px-6" style={{ background: 'rgb(var(--color-bg))' }}>
@@ -20,7 +23,7 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
           viewport={{ once: true }}
           transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
         >
-          <p className="label-text mb-8">The Vision</p>
+          <p className="label-text mb-8">{content['landing.vision.label'] || 'The Vision'}</p>
           <h2
             className="font-display leading-tight mb-8"
             style={{
@@ -38,7 +41,8 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
             className="font-body leading-relaxed text-lg max-w-md"
             style={{ color: 'rgb(var(--color-text-secondary))' }}
           >
-            {content['landing.vision.text'] || 'Building a community of young men and women who sing songs of salvation with conviction of their identity in Christ.'}
+            {content['landing.vision.text'] ||
+              'Building a community of young men and women who sing songs of salvation with conviction of their identity in Christ.'}
           </p>
         </motion.div>
 
@@ -50,15 +54,15 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
           className="space-y-10"
         >
           <div>
-            <p className="label-text mb-4">The Mission</p>
+            <p className="label-text mb-4">{content['landing.vision.mission.label'] || 'The Mission'}</p>
             <p
               className="font-display text-4xl mb-2"
               style={{ color: 'rgb(var(--color-text-primary))' }}
             >
-              Jesus to Nations
+              {content['landing.vision.mission.heading'] || 'Jesus to Nations'}
             </p>
             <p className="font-display text-lg italic text-gold opacity-70">
-              2 Corinthians 5:17–21
+              {content['landing.vision.mission.scripture'] || '2 Corinthians 5:17–21'}
             </p>
           </div>
 

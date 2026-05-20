@@ -3,47 +3,36 @@ import { FileText, CheckSquare, Download } from 'lucide-react'
 import { PublicPageHeader, PublicPageShell } from '@/components/layout/PublicPageShell'
 import { formatDate } from '@/lib/utils'
 import { db } from '@/lib/db'
-import { DEFAULT_OG_IMAGE } from '@/lib/seo'
+import { getContentMany } from '@/lib/content'
+import { getPageMetadata, pageHeaderFromContent } from '@/lib/cms-metadata'
 
 export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = {
-  title: 'Study Portal — Room For You',
-  description:
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata(
+    'Study Portal — Room For You',
     'Free Bible study materials, tasks, and resources from Room For You. Identity in Christ, the discipline of prayer, and more. Open to everyone.',
-  alternates: { canonical: 'https://rfyglobal.org/study' },
-  openGraph: {
-    title: 'Study Portal — Room For You',
-    description:
-      'Free Bible study materials, tasks, and resources from Room For You. Identity in Christ, the discipline of prayer, and more. Open to everyone.',
-    url: 'https://rfyglobal.org/study',
-    images: [
-      {
-        url: DEFAULT_OG_IMAGE,
-        width: 1200,
-        height: 630,
-        alt: 'Room For You — A Christian Community with Minister Yadah',
-      },
-    ],
-  },
+    '/study',
+  )
 }
 
 export default async function StudyPage() {
-  const series = await db.studySeries.findMany({
+  const [series, cms] = await Promise.all([
+    db.studySeries.findMany({
     orderBy: { order: 'asc' },
     include: {
       materials: { orderBy: { order: 'asc' } },
       tasks: { orderBy: { order: 'asc' } },
     },
-  })
+  }),
+    getContentMany(['pages.study.eyebrow', 'pages.study.title', 'pages.study.subtitle']),
+  ])
+
+  const header = pageHeaderFromContent(cms, 'study')
 
   return (
     <PublicPageShell mainClassName="pb-20 md:pb-24">
-      <PublicPageHeader
-        eyebrow="Room For You"
-        title="Study Portal"
-        subtitle="Materials, resources, and tasks to help you grow in the Word. Open to everyone — no account required."
-      />
+      <PublicPageHeader {...header} />
 
       <div className="mx-auto max-w-5xl space-y-12 px-6">
         {series.length === 0 ? (

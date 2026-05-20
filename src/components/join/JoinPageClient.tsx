@@ -8,13 +8,15 @@ import Link from 'next/link'
 import { FieldType, type JoinFormField } from '@prisma/client'
 import { useEmailCheck } from '@/hooks/useEmailCheck'
 
-const MOVEMENT_LINES = [
-  { text: 'A MOVEMENT', style: 'text-outline' },
-  { text: 'OF YOUNG', style: 'text-snow' },
-  { text: 'BELIEVERS', style: 'text-gold-gradient' },
-  { text: 'ON FIRE', style: 'text-snow' },
-  { text: 'FOR JESUS.', style: 'text-outline-gold' },
-]
+const HERO_LINE_STYLES = ['text-outline', 'text-snow', 'text-gold-gradient', 'text-snow', 'text-outline-gold']
+
+function joinHeroLines(content: Record<string, string>) {
+  const defaults = ['A MOVEMENT', 'OF YOUNG', 'BELIEVERS', 'ON FIRE', 'FOR JESUS.']
+  return [1, 2, 3, 4, 5].map((n, i) => ({
+    text: content[`join.hero.line${n}`] || defaults[i]!,
+    style: HERO_LINE_STYLES[i]!,
+  }))
+}
 
 function dropdownChoices(raw: unknown): string[] {
   if (!raw) return []
@@ -34,9 +36,11 @@ function flattenJoinError(err: unknown): string {
 interface JoinPageClientProps {
   extraFields: JoinFormField[]
   whatsappUrl: string
+  content: Record<string, string>
 }
 
-export function JoinPageClient({ extraFields, whatsappUrl }: JoinPageClientProps) {
+export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageClientProps) {
+  const movementLines = joinHeroLines(content)
   const [form, setForm] = useState({
     name: '',
     phone: '',
@@ -247,7 +251,7 @@ export function JoinPageClient({ extraFields, whatsappUrl }: JoinPageClientProps
             </motion.p>
 
             <div className="space-y-1 mb-12">
-              {MOVEMENT_LINES.map((line, i) => (
+              {movementLines.map((line, i) => (
                 <motion.h1
                   key={i}
                   initial={{ opacity: 0, x: -40 }}

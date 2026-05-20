@@ -5,10 +5,25 @@ import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 
 function revalidatePublicSite() {
-  revalidatePath('/')
-  revalidatePath('/about')
-  revalidatePath('/partner')
-  revalidatePath('/confession')
+  const paths = [
+    '/',
+    '/about',
+    '/partner',
+    '/confession',
+    '/contact',
+    '/faq',
+    '/join',
+    '/prayer',
+    '/word',
+    '/study',
+    '/events',
+    '/gallery',
+    '/blog',
+    '/testimonies',
+  ]
+  for (const path of paths) {
+    revalidatePath(path)
+  }
   revalidatePath('/', 'layout')
 }
 

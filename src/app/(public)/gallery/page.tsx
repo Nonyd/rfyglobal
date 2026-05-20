@@ -2,27 +2,15 @@ import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { PublicPageHeader, PublicPageShell } from '@/components/layout/PublicPageShell'
 import { PublicGalleryClient } from '@/components/gallery/PublicGalleryClient'
-import { DEFAULT_OG_IMAGE } from '@/lib/seo'
+import { getContentMany } from '@/lib/content'
+import { getPageMetadata, pageHeaderFromContent } from '@/lib/cms-metadata'
 
-export const metadata: Metadata = {
-  title: 'Gallery — Moments from Room For You Gatherings',
-  description:
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata(
+    'Gallery — Moments from Room For You Gatherings',
     'Photos from Room For You community gatherings with Minister Yadah. Real people. Real community. Real encounters with God.',
-  alternates: { canonical: 'https://rfyglobal.org/gallery' },
-  openGraph: {
-    title: 'Gallery — Moments from Room For You Gatherings',
-    description:
-      'Photos from Room For You community gatherings with Minister Yadah. Real people. Real community. Real encounters with God.',
-    url: 'https://rfyglobal.org/gallery',
-    images: [
-      {
-        url: DEFAULT_OG_IMAGE,
-        width: 1200,
-        height: 630,
-        alt: 'Room For You — A Christian Community with Minister Yadah',
-      },
-    ],
-  },
+    '/gallery',
+  )
 }
 
 export const dynamic = 'force-dynamic'
@@ -35,7 +23,7 @@ const monthKey = (d: Date) =>
 export default async function GalleryPage() {
   const where = { isActive: true } as const
 
-  const [images, total, filterRows] = await Promise.all([
+  const [images, total, filterRows, cms] = await Promise.all([
     db.galleryImage.findMany({
       where,
       orderBy: [{ takenAt: 'desc' }, { createdAt: 'desc' }],
@@ -54,7 +42,10 @@ export default async function GalleryPage() {
         galleryEvent: { select: { city: true, date: true } },
       },
     }),
+    getContentMany(['pages.gallery.eyebrow', 'pages.gallery.title', 'pages.gallery.subtitle']),
   ])
+
+  const header = pageHeaderFromContent(cms, 'gallery')
 
   const cities = Array.from(
     new Set(
@@ -77,11 +68,7 @@ export default async function GalleryPage() {
 
   return (
     <PublicPageShell mainClassName="pb-20 md:pb-24">
-      <PublicPageHeader
-        eyebrow="Room For You"
-        title="Moments."
-        subtitle="A record of what God has done in our gatherings. Real people. Real community."
-      />
+      <PublicPageHeader {...header} />
       <PublicGalleryClient
         initialImages={images}
         initialTotal={total}

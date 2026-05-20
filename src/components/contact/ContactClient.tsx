@@ -60,26 +60,26 @@ export function ContactClient({ content }: ContactClientProps) {
       icon: <Instagram size={18} />,
       label: 'Instagram',
       href: content['contact.instagram'] || 'https://instagram.com/rfyglobal',
-      handle: '@rfyglobal',
+      handle: content['contact.instagramHandle'] || '@rfyglobal',
     },
     {
       icon: <Youtube size={18} />,
       label: 'YouTube',
       href: content['contact.youtube'] || 'https://youtube.com/@yadah',
-      handle: 'Yadah',
+      handle: content['contact.youtubeHandle'] || 'Yadah',
     },
     {
       icon: <Twitter size={18} />,
       label: 'X (Twitter)',
       href: content['contact.twitter'] || 'https://x.com/rfyglobal',
-      handle: '@rfyglobal',
+      handle: content['contact.twitterHandle'] || '@rfyglobal',
     },
   ]
 
   return (
     <div className="max-w-6xl mx-auto px-6">
       <div className="mb-16">
-        <p className="label-text mb-4">Get In Touch</p>
+        <p className="label-text mb-4">{content['contact.eyebrow'] || 'Get In Touch'}</p>
         <h1 className="font-display text-snow font-bold mb-4" style={{ fontSize: 'clamp(2.5rem, 6vw, 5rem)' }}>
           {content['contact.heading'] || 'We would love\nto hear from you.'}
         </h1>
@@ -192,6 +192,20 @@ export function ContactClient({ content }: ContactClientProps) {
             </div>
           )}
 
+          {content['contact.whatsapp']?.trim() && (
+            <div>
+              <p className="label-text mb-3">WhatsApp</p>
+              <a
+                href={content['contact.whatsapp'].startsWith('http') ? content['contact.whatsapp'] : `https://wa.me/${content['contact.whatsapp'].replace(/\D/g, '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-body text-mist hover:text-gold transition-colors"
+              >
+                Message us on WhatsApp
+              </a>
+            </div>
+          )}
+
           {content['contact.address'] && (
             <div>
               <p className="label-text mb-3">Location</p>
@@ -232,11 +246,17 @@ export function ContactClient({ content }: ContactClientProps) {
 
           <div className="border-l-2 pl-4" style={{ borderColor: 'rgba(201,168,76,0.4)' }}>
             <p className="font-body text-xs leading-relaxed" style={{ color: '#585858' }}>
-              We typically respond within 24-48 hours. For urgent prayer needs, visit our{' '}
-              <a href="/prayer" className="text-gold hover:opacity-70 transition-opacity">
-                Prayer Wall
-              </a>
-              .
+              {content['contact.responseNote'] ? (
+                content['contact.responseNote']
+              ) : (
+                <>
+                  We typically respond within 24-48 hours. For urgent prayer needs, visit our{' '}
+                  <a href="/prayer" className="text-gold hover:opacity-70 transition-opacity">
+                    Prayer Wall
+                  </a>
+                  .
+                </>
+              )}
             </p>
           </div>
         </div>

@@ -4,21 +4,41 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useTheme } from 'next-themes'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { Navbar } from '@/components/layout/Navbar'
 
-const words = [
-  { text: 'THERE IS', delay: 0.2 },
-  { text: 'ROOM', style: 'text-gold-gradient', delay: 0.5 },
-  { text: 'FOR YOU.', delay: 0.8 },
-]
+function heroHeadlineLines(headline1: string, headline2: string) {
+  const h1 = headline1.trim() || 'There Is Room'
+  const h2 = headline2.trim() || 'For You.'
+  const parts = h1.split(/\s+/)
+  if (parts.length >= 2) {
+    return [
+      { text: parts.slice(0, -1).join(' ').toUpperCase(), style: undefined as string | undefined, delay: 0.2 },
+      { text: parts[parts.length - 1]!.toUpperCase(), style: 'text-gold-gradient', delay: 0.5 },
+      { text: h2.toUpperCase(), style: undefined, delay: 0.8 },
+    ]
+  }
+  return [
+    { text: h1.toUpperCase(), style: undefined, delay: 0.2 },
+    { text: h2.toUpperCase(), style: 'text-gold-gradient', delay: 0.5 },
+  ]
+}
 
-export function Hero() {
+export function Hero({ content }: { content: Record<string, string> }) {
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 
   const isDark = !mounted || resolvedTheme === 'dark'
+  const portrait = (content['landing.hero.portrait'] || '/images/yadah-portrait.jpg').trim()
+  const words = useMemo(
+    () =>
+      heroHeadlineLines(
+        content['landing.hero.headline1'] || 'There Is Room',
+        content['landing.hero.headline2'] || 'For You.',
+      ),
+    [content],
+  )
 
   return (
     <section className="relative min-h-screen bg-void overflow-hidden flex flex-col">
@@ -49,11 +69,12 @@ export function Hero() {
           }}
         />
         <Image
-          src="/images/yadah-portrait.jpg"
+          src={portrait}
           alt=""
           fill
           className="object-cover object-top opacity-30"
           priority
+          unoptimized={portrait.endsWith('.svg')}
         />
       </div>
 
@@ -64,7 +85,7 @@ export function Hero() {
           transition={{ duration: 0.8, delay: 0.1 }}
           className="label-text mb-10"
         >
-          Worship · Prayer · Study · Community
+          {content['landing.hero.eyebrow'] || 'Worship · Prayer · Study · Community'}
         </motion.p>
 
         <div className="space-y-2 mb-12">
@@ -79,7 +100,9 @@ export function Hero() {
               }`}
               style={{
                 fontSize: 'clamp(4rem, 11vw, 10rem)',
-                ...(i === 2 ? { color: isDark ? '#F8F8F8' : '#0F0C08' } : {}),
+                ...(i === words.length - 1 && !word.style
+                  ? { color: isDark ? '#F8F8F8' : '#0F0C08' }
+                  : {}),
               }}
             >
               {word.text}
@@ -101,8 +124,8 @@ export function Hero() {
           className="font-body text-mist text-lg leading-relaxed max-w-lg mb-12"
           style={{ color: isDark ? '#A0A0A0' : '#3D3530' }}
         >
-          A community of young men and women singing songs of salvation,
-          studying the Word, and getting others saved.
+          {content['landing.hero.subtext'] ||
+            'A community of young men and women singing songs of salvation, studying the Word, and getting others saved.'}
         </motion.p>
 
         <motion.div
@@ -115,13 +138,13 @@ export function Hero() {
             href="/join"
             className="inline-flex items-center px-8 py-4 bg-gold text-void font-body text-[11px] font-semibold tracking-[0.2em] uppercase hover:bg-gold-bright transition-all duration-300"
           >
-            Join the Community
+            {content['landing.hero.cta.primary'] || 'Join the Community'}
           </Link>
           <Link
             href="/about"
             className="inline-flex items-center px-8 py-4 border border-ash text-mist font-body text-[11px] tracking-[0.2em] uppercase hover:border-gold hover:text-gold transition-all duration-300"
           >
-            Our Story
+            {content['landing.hero.cta.secondary'] || 'Our Story'}
           </Link>
         </motion.div>
       </div>

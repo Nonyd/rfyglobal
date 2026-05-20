@@ -2,28 +2,16 @@ import { PublicPageShell } from '@/components/layout/PublicPageShell'
 import { AboutClient } from '@/components/about/AboutClient'
 import { JsonLd } from '@/components/seo/JsonLd'
 import { getContentMany } from '@/lib/content'
+import { ABOUT_CMS_KEYS } from '@/lib/cms-keys'
+import { getPageMetadata } from '@/lib/cms-metadata'
 import type { Metadata } from 'next'
-import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 
-export const metadata: Metadata = {
-  title: 'About — Room For You with Minister Yadah',
-  description:
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata(
+    'About — Room For You with Minister Yadah',
     'Learn about Room For You — a Christian community movement founded by Minister Yadah and SonsHub Media. Our vision: Jesus to Nations. Our mission: building community through worship, prayer, and the Word.',
-  alternates: { canonical: 'https://rfyglobal.org/about' },
-  openGraph: {
-    title: "About Room For You — Minister Yadah's Community Ministry",
-    description:
-      'Room For You was born out of a conviction that every young person deserves a community where they are known and called into purpose.',
-    url: 'https://rfyglobal.org/about',
-    images: [
-      {
-        url: DEFAULT_OG_IMAGE,
-        width: 1200,
-        height: 630,
-        alt: 'Room For You — A Christian Community with Minister Yadah',
-      },
-    ],
-  },
+    '/about',
+  )
 }
 
 export const dynamic = 'force-dynamic'
@@ -71,19 +59,7 @@ const yadahPersonSchema = {
 }
 
 export default async function AboutPage() {
-  const content = await getContentMany([
-    'about.hero.headline1',
-    'about.hero.headline2',
-    'about.vision.text',
-    'about.mission.heading',
-    'about.mission.scripture',
-    'about.mission.text',
-    'about.yadah.bio',
-    'about.yadah.image',
-    'about.yadah.musicLink',
-    'about.cta.headline',
-    'about.cta.subtext',
-  ])
+  const content = await getContentMany([...ABOUT_CMS_KEYS])
 
   return (
     <PublicPageShell mainClassName="pb-0">

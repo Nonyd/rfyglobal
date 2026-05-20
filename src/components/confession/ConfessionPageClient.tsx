@@ -1,14 +1,15 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useMemo } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
+import { cmsLines } from '@/lib/cms-metadata'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const CONFESSION_LINES = [
+const DEFAULT_LINES = [
   'I am saved by grace through faith.',
   'I am justified and redeemed by the blood of Jesus.',
   'I have received mercy because of the sacrifice of Jesus on the cross.',
@@ -27,23 +28,28 @@ const CONFESSION_LINES = [
   'till his return!',
 ]
 
-export function ConfessionPageClient() {
+export function ConfessionPageClient({ content }: { content: Record<string, string> }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const glowRef = useRef<HTMLDivElement>(null)
   const [showSparkle, setShowSparkle] = useState(false)
 
+  const lines = useMemo(
+    () => cmsLines(content['confession.full.lines'], DEFAULT_LINES),
+    [content],
+  )
+
   useEffect(() => {
     const ctx = gsap.context(() => {
-      const lines = gsap.utils.toArray<HTMLElement>('.confession-line')
+      const lineEls = gsap.utils.toArray<HTMLElement>('.confession-line')
 
-      lines.forEach((line, i) => {
-        const isLast = i === lines.length - 1
+      lineEls.forEach((line, i) => {
+        const isLast = i === lineEls.length - 1
 
         ScrollTrigger.create({
           trigger: line,
           start: 'top 60%',
           onEnter: () => {
-            lines.slice(0, i).forEach((prev) => {
+            lineEls.slice(0, i).forEach((prev) => {
               gsap.to(prev, { opacity: 0.25, duration: 0.4 })
             })
             gsap.to(line, {
@@ -53,7 +59,7 @@ export function ConfessionPageClient() {
               ease: 'power2.out',
             })
 
-            const intensity = (i + 1) / lines.length
+            const intensity = (i + 1) / lineEls.length
             if (glowRef.current) {
               gsap.to(glowRef.current, {
                 opacity: intensity * 0.4,
@@ -87,7 +93,7 @@ export function ConfessionPageClient() {
           onLeaveBack: () => {
             if (isLast) setShowSparkle(false)
             if (i > 0) {
-              gsap.to(lines[i - 1], { opacity: 1, duration: 0.3 })
+              gsap.to(lineEls[i - 1], { opacity: 1, duration: 0.3 })
             }
             gsap.to(line, { opacity: 0.15, duration: 0.3 })
           },
@@ -101,7 +107,7 @@ export function ConfessionPageClient() {
     }, containerRef)
 
     return () => ctx.revert()
-  }, [])
+  }, [lines])
 
   return (
     <div ref={containerRef} className="confession-container relative bg-black">
@@ -132,9 +138,15 @@ export function ConfessionPageClient() {
       ) : null}
 
       <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 text-center">
-        <p className="mb-6 font-body text-[10px] uppercase tracking-[0.4em] text-gold/60">Room For You</p>
-        <h1 className="mb-8 font-display text-5xl leading-none text-gold lg:text-7xl">The Confession</h1>
-        <p className="font-body text-lg text-white/40">Scroll to declare.</p>
+        <p className="mb-6 font-body text-[10px] uppercase tracking-[0.4em] text-gold/60">
+          {content['confession.page.eyebrow'] || 'Room For You'}
+        </p>
+        <h1 className="mb-8 font-display text-5xl leading-none text-gold lg:text-7xl">
+          {content['confession.page.title'] || 'The Confession'}
+        </h1>
+        <p className="font-body text-lg text-white/40">
+          {content['confession.page.intro'] || 'Scroll to declare.'}
+        </p>
         <div className="absolute bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2">
           <div className="h-16 w-px bg-gradient-to-b from-transparent to-gold/40" />
           <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-gold" />
@@ -143,12 +155,12 @@ export function ConfessionPageClient() {
 
       <section className="relative z-10 min-h-screen py-32">
         <div className="mx-auto max-w-3xl space-y-24 px-6">
-          {CONFESSION_LINES.map((line, i) => (
+          {lines.map((line, i) => (
             <div
-              key={i}
+              key={`${i}-${line.slice(0, 12)}`}
               className={cn(
                 'confession-line text-center',
-                i === CONFESSION_LINES.length - 1 && 'confession-last',
+                i === lines.length - 1 && 'confession-last',
               )}
             >
               <p
@@ -168,28 +180,29 @@ export function ConfessionPageClient() {
       <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 text-center">
         <div className="mb-16 h-px w-48 bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
         <p className="mb-4 font-display text-4xl leading-tight text-white lg:text-6xl">
-          Make this your confession.
+          {content['confession.page.cta.headline'] || 'Make this your confession.'}
         </p>
         <p className="mb-12 max-w-md font-body text-white/40">
-          There is a community waiting to grow with you. Step in — there is room for you.
+          {content['confession.page.cta.subtext'] ||
+            'There is a community waiting to grow with you. Step in — there is room for you.'}
         </p>
         <div className="flex flex-col gap-4 sm:flex-row">
           <Link
             href="/join"
             className="animate-pulse-gold bg-gold px-10 py-4 font-body text-sm font-medium uppercase tracking-widest text-black transition-all duration-300 hover:bg-gold-light"
           >
-            Join the Community
+            {content['confession.page.cta.primary'] || 'Join the Community'}
           </Link>
           <Link
             href="/"
             className="border border-white/20 px-10 py-4 font-body text-sm uppercase tracking-widest text-white/60 transition-all duration-300 hover:border-gold/40 hover:text-white"
           >
-            Back to Home
+            {content['confession.page.cta.secondary'] || 'Back to Home'}
           </Link>
         </div>
         <div className="mt-16 h-px w-48 bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
         <p className="mt-8 font-body text-xs tracking-wide text-white/20">
-          rfyglobal.org · Room For You · A SonsHub Media Initiative
+          {content['confession.page.footer'] || 'rfyglobal.org · Room For You · A SonsHub Media Initiative'}
         </p>
       </section>
     </div>

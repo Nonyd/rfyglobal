@@ -1,83 +1,53 @@
 import type { Metadata } from 'next'
 import { JsonLd } from '@/components/seo/JsonLd'
-import { DEFAULT_OG_IMAGE } from '@/lib/seo'
+import { buildDefaultMetadata, getCmsSeoDefaults } from '@/lib/cms-metadata'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import { CookieBanner } from '@/components/shared/CookieBanner'
 import './globals.css'
 
-export const metadata: Metadata = {
-  metadataBase: new URL('https://rfyglobal.org'),
-  title: {
-    default: 'Room For You — A Christian Community with Minister Yadah',
-    template: '%s | Room For You',
-  },
-  description:
-    'Room For You is a global Christian community founded by Minister Yadah. We gather monthly across cities for worship, prayer, and Bible study. Join us — there is room for you here.',
-  keywords: [
-    'Room For You',
-    'Minister Yadah',
-    'Yadah',
-    'Christian community',
-    'gospel community Nigeria',
-    'Christian community Abuja',
-    'gospel events Abuja',
-    'Christian events Nigeria',
-    'SonsHub Media',
-    'gospel ministry',
-    'Room For You with Yadah',
-    'Jesus to Nations',
-    'Christian worship community',
-    'evangelical community Nigeria',
-    'Yadah music ministry',
-  ],
-  authors: [{ name: 'SonsHub Media', url: 'https://rfyglobal.org' }],
-  creator: 'SonsHub Media',
-  publisher: 'SonsHub Media',
-  openGraph: {
-    type: 'website',
-    locale: 'en_US',
-    url: 'https://rfyglobal.org',
-    siteName: 'Room For You',
-    title: 'Room For You — A Christian Community with Minister Yadah',
-    description:
-      'A global community of young men and women singing songs of salvation, studying the Word, praying, and getting others saved. Founded by Minister Yadah.',
-    images: [
-      {
-        url: DEFAULT_OG_IMAGE,
-        width: 1200,
-        height: 630,
-        alt: 'Room For You — A Christian Community with Minister Yadah',
-      },
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getCmsSeoDefaults()
+  return buildDefaultMetadata(seo, {
+    keywords: [
+      'Room For You',
+      'Minister Yadah',
+      'Yadah',
+      'Christian community',
+      'gospel community Nigeria',
+      'Christian community Abuja',
+      'gospel events Abuja',
+      'Christian events Nigeria',
+      'SonsHub Media',
+      'gospel ministry',
+      'Room For You with Yadah',
+      'Jesus to Nations',
+      'Christian worship community',
+      'evangelical community Nigeria',
+      'Yadah music ministry',
     ],
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: 'Room For You — A Christian Community with Minister Yadah',
-    description:
-      'A global Christian community founded by Minister Yadah. Monthly gatherings. Daily Word. Prayer. Join us.',
-    images: [DEFAULT_OG_IMAGE],
-    creator: '@rfyglobal',
-    site: '@rfyglobal',
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+    authors: [{ name: 'SonsHub Media', url: 'https://rfyglobal.org' }],
+    creator: 'SonsHub Media',
+    publisher: 'SonsHub Media',
+    robots: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
     },
-  },
-  manifest: '/site.webmanifest',
-  alternates: {
-    canonical: 'https://rfyglobal.org',
-  },
-  verification: {
-    google: 'GCZiAX-mKgEQGfKwNaSv1AkiZ66lA4KZR6FPOr9RjA4',
-  },
-  category: 'religion',
+    manifest: '/site.webmanifest',
+    alternates: {
+      canonical: 'https://rfyglobal.org',
+    },
+    verification: {
+      google: 'GCZiAX-mKgEQGfKwNaSv1AkiZ66lA4KZR6FPOr9RjA4',
+    },
+    category: 'religion',
+  })
 }
 
 const organizationSchema = {

@@ -4,8 +4,9 @@ import { motion } from 'framer-motion'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
 import { useEffect, useState } from 'react'
+import { cmsLines } from '@/lib/cms-metadata'
 
-const EXCERPT_LINES = [
+const DEFAULT_LINES = [
   'I am saved by grace through faith.',
   'I am justified and redeemed by the blood of Jesus.',
   "I am now a part of God's family.",
@@ -13,11 +14,13 @@ const EXCERPT_LINES = [
   "It's Jesus to nations, and I am a willing vessel.",
 ]
 
-export function ConfessionReveal() {
+export function ConfessionReveal({ content }: { content: Record<string, string> }) {
   const { resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
   const isDark = !mounted || resolvedTheme === 'dark'
+
+  const lines = cmsLines(content['confession.home.lines'], DEFAULT_LINES)
 
   return (
     <section className="py-32 px-6 overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#EDE7DB' }}>
@@ -28,11 +31,11 @@ export function ConfessionReveal() {
           viewport={{ once: true }}
           className="label-text mb-16 text-center"
         >
-          The Confession
+          {content['confession.home.label'] || 'The Confession'}
         </motion.p>
 
         <div className="space-y-6 mb-16">
-          {EXCERPT_LINES.map((line, i) => (
+          {lines.map((line, i) => (
             <motion.p
               key={i}
               initial={{ opacity: 0, x: -24 }}
@@ -62,15 +65,15 @@ export function ConfessionReveal() {
         >
           <div className="gold-line w-24 opacity-30" />
           <p className="font-body text-sm max-w-md" style={{ color: isDark ? '#A0A0A0' : '#5C5248' }}>
-            This is the declaration of every member of Room For You.
-            Make it yours.
+            {content['confession.home.footer'] ||
+              'This is the declaration of every member of Room For You. Make it yours.'}
           </p>
           <Link
             href="/confession"
             className="inline-flex items-center gap-2 font-body text-[11px] tracking-[0.2em] uppercase hover:opacity-70 transition-opacity"
             style={{ color: '#8B5A00' }}
           >
-            Read the full confession →
+            {content['confession.home.link'] || 'Read the full confession →'}
           </Link>
         </motion.div>
       </div>
