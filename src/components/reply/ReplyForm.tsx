@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { onPublicInputBlur, onPublicInputFocus } from '@/lib/public-theme-styles'
 
 export function ReplyForm({
   token,
@@ -44,16 +45,16 @@ export function ReplyForm({
         <div
           className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full"
           style={{
-            background: 'rgba(139,0,0,0.1)',
-            border: '1px solid rgba(139,0,0,0.3)',
+            background: 'var(--color-accent-light)',
+            border: '1px solid var(--color-accent-border)',
           }}
         >
-          <span style={{ fontSize: '20px' }}>✓</span>
+          <span style={{ fontSize: '20px', color: 'var(--color-accent)' }}>✓</span>
         </div>
-        <p className="font-display mb-2 text-xl" style={{ color: '#8B0000' }}>
+        <p className="font-display mb-2 text-xl" style={{ color: 'var(--color-accent)' }}>
           Message sent
         </p>
-        <p className="font-body text-sm" style={{ color: '#A0A0A0' }}>
+        <p className="font-body text-sm" style={{ color: 'var(--color-text-secondary)' }}>
           The Room For You team will get back to you soon.
         </p>
       </div>
@@ -70,16 +71,14 @@ export function ReplyForm({
         rows={6}
         className="w-full resize-none border px-4 py-3 font-body text-sm outline-none"
         style={{
-          background: '#1A1A1A',
-          borderColor: body ? '#8B0000' : 'rgba(255,255,255,0.1)',
-          color: '#F8F8F8',
+          background: 'var(--color-surface)',
+          borderColor: 'var(--color-border)',
+          color: 'var(--color-text-primary)',
           lineHeight: '1.6',
           transition: 'border-color 0.2s',
         }}
-        onFocus={(e) => (e.target.style.borderColor = '#8B0000')}
-        onBlur={(e) =>
-          (e.target.style.borderColor = body ? '#8B0000' : 'rgba(255,255,255,0.1)')
-        }
+        onFocus={onPublicInputFocus}
+        onBlur={onPublicInputBlur}
       />
 
       {error && (
@@ -93,12 +92,12 @@ export function ReplyForm({
         onClick={handleSubmit}
         disabled={sending || !body.trim()}
         className="w-full py-3.5 font-body text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-40"
-        style={{ background: '#8B0000', color: '#0F0F0F' }}
+        style={{ background: 'var(--color-accent)', color: '#FAF7F2' }}
       >
         {sending ? 'Sending…' : 'Send Reply'}
       </button>
 
-      <p className="text-center font-body text-xs" style={{ color: '#585858' }}>
+      <p className="text-center font-body text-xs" style={{ color: 'var(--color-text-muted)' }}>
         Room For You · rfyglobal.org
       </p>
     </div>

@@ -98,7 +98,7 @@ export function TestimonyGrid({ testimonies }: { testimonies: TestimonyData[] })
                   src={t.videoUrl}
                   controls
                   className="w-full"
-                  style={{ maxHeight: '300px', background: '#0F0F0F' }}
+                  style={{ maxHeight: '300px', background: 'var(--color-surface)' }}
                 />
               )}
 

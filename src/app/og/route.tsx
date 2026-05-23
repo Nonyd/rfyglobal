@@ -30,7 +30,7 @@ export async function GET(request: Request) {
             left: 0,
             right: 0,
             height: '4px',
-            background: '#8B0000',
+            background: 'linear-gradient(90deg, #8B0000, #A00000, #8B0000)',
             display: 'flex',
           }}
         />
@@ -123,7 +123,7 @@ export async function GET(request: Request) {
             left: 0,
             right: 0,
             height: '4px',
-            background: '#8B0000',
+            background: 'linear-gradient(90deg, #8B0000, #A00000, #8B0000)',
             display: 'flex',
           }}
         />

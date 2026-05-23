@@ -31,9 +31,9 @@ export function PrayerWallClient() {
 
   const inputStyle = {
     width: '100%',
-    background: 'rgba(255,255,255,0.04)',
-    border: '1px solid rgba(255,255,255,0.12)',
-    color: '#F8F8F8',
+    background: 'var(--color-surface)',
+    border: '1px solid var(--color-border)',
+    color: 'var(--color-text-primary)',
     padding: '14px 16px',
     fontSize: '14px',
     fontFamily: 'General Sans, sans-serif',
@@ -215,7 +215,7 @@ export function PrayerWallClient() {
         type="submit"
         disabled={submitting}
         className="w-full py-4 font-body font-semibold text-xs tracking-widest uppercase transition-all disabled:opacity-40"
-        style={{ background: '#8B0000', color: '#0F0F0F' }}
+        style={{ background: 'var(--color-accent)', color: '#FAF7F2' }}
       >
         {submitting ? 'Submitting…' : 'Submit Prayer Request →'}
       </button>

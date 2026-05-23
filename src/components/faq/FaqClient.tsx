@@ -57,8 +57,8 @@ export function FaqClient({ categories }: { categories: FaqCategoryData[] }) {
             className="px-4 py-2 font-body text-xs tracking-wide transition-all"
             style={{
               background: activeCategory === 'all' ? '#8B0000' : 'transparent',
-              color: activeCategory === 'all' ? '#0F0F0F' : 'rgba(248,248,248,0.5)',
-              border: activeCategory === 'all' ? 'none' : '1px solid rgba(255,255,255,0.12)',
+              color: activeCategory === 'all' ? 'var(--color-text-inverse)' : 'var(--color-text-muted)',
+              border: activeCategory === 'all' ? 'none' : '1px solid var(--color-border)',
             }}
           >
             All Topics
@@ -70,8 +70,8 @@ export function FaqClient({ categories }: { categories: FaqCategoryData[] }) {
               className="px-4 py-2 font-body text-xs tracking-wide transition-all"
               style={{
                 background: activeCategory === cat.id ? '#8B0000' : 'transparent',
-                color: activeCategory === cat.id ? '#0F0F0F' : 'rgba(248,248,248,0.5)',
-                border: activeCategory === cat.id ? 'none' : '1px solid rgba(255,255,255,0.12)',
+                color: activeCategory === cat.id ? 'var(--color-text-inverse)' : 'var(--color-text-muted)',
+                border: activeCategory === cat.id ? 'none' : '1px solid var(--color-border)',
               }}
             >
               {cat.title}
@@ -86,7 +86,7 @@ export function FaqClient({ categories }: { categories: FaqCategoryData[] }) {
             <div className="flex items-center gap-4 mb-6">
               <h2 className="font-display text-crimson text-xl font-semibold">{category.title}</h2>
               <div className="flex-1 h-px" style={{ background: 'rgba(139,0,0,0.2)' }} />
-              <p className="font-body text-xs" style={{ color: '#585858' }}>
+              <p className="font-body text-xs" style={{ color: 'var(--color-text-muted)' }}>
                 {category.faqs.length} {category.faqs.length === 1 ? 'question' : 'questions'}
               </p>
             </div>
@@ -99,17 +99,20 @@ export function FaqClient({ categories }: { categories: FaqCategoryData[] }) {
                     key={faq.id}
                     className="border transition-all duration-200"
                     style={{
-                      borderColor: isOpen ? 'rgba(139,0,0,0.4)' : 'rgba(255,255,255,0.08)',
-                      background: isOpen ? 'rgba(139,0,0,0.03)' : 'transparent',
+                      borderColor: isOpen ? 'var(--color-accent-border)' : 'var(--color-border)',
+                      background: isOpen ? 'var(--color-accent-light)' : 'transparent',
                     }}
                   >
                     <button onClick={() => toggleFaq(faq.id)} className="w-full flex items-center justify-between gap-4 px-6 py-4 text-left">
-                      <p className="font-body font-medium text-sm leading-relaxed" style={{ color: isOpen ? '#F8F8F8' : '#C8C0B4' }}>
+                      <p
+                        className="font-body font-medium text-sm leading-relaxed"
+                        style={{ color: isOpen ? 'var(--color-text-primary)' : 'var(--color-text-secondary)' }}
+                      >
                         {faq.question}
                       </p>
                       <span
                         className="shrink-0 transition-transform duration-300"
-                        style={{ color: '#8B0000', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
+                        style={{ color: 'var(--color-accent)', transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}
                       >
                         <ChevronDown size={16} />
                       </span>
@@ -126,7 +129,7 @@ export function FaqClient({ categories }: { categories: FaqCategoryData[] }) {
                         >
                           <div className="px-6 pb-5 pt-0">
                             <div className="h-px mb-4" style={{ background: 'rgba(139,0,0,0.15)' }} />
-                            <p className="font-body text-sm leading-relaxed" style={{ color: '#A0A0A0' }}>
+                            <p className="font-body text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
                               {faq.answer}
                             </p>
                           </div>
@@ -141,19 +144,19 @@ export function FaqClient({ categories }: { categories: FaqCategoryData[] }) {
         ))}
       </div>
 
-      <div className="mt-16 pt-12 border-t text-center" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+      <div className="mt-16 pt-12 border-t text-center" style={{ borderColor: 'var(--color-border)' }}>
         <p className="font-body text-mist mb-4">Still have questions?</p>
         <Link
           href="/contact"
           className="inline-flex items-center gap-2 px-8 py-3 font-body text-xs font-semibold tracking-widest uppercase border transition-all"
-          style={{ borderColor: 'rgba(139,0,0,0.4)', color: '#8B0000' }}
+          style={{ borderColor: 'var(--color-accent-border)', color: 'var(--color-accent)' }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = '#8B0000'
-            e.currentTarget.style.color = '#0F0F0F'
+            e.currentTarget.style.background = 'var(--color-accent)'
+            e.currentTarget.style.color = 'var(--color-text-inverse)'
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent'
-            e.currentTarget.style.color = '#8B0000'
+            e.currentTarget.style.color = 'var(--color-accent)'
           }}
         >
           Contact Us &rarr;

@@ -40,8 +40,8 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
               className="px-5 py-2 font-body text-sm tracking-wide transition-all duration-200 border"
               style={{
                 background: activeCity === city ? '#8B0000' : 'transparent',
-                color: activeCity === city ? '#0F0F0F' : 'rgb(var(--color-text-secondary))',
-                borderColor: activeCity === city ? 'transparent' : 'rgb(var(--color-border))',
+                color: activeCity === city ? 'var(--color-text-inverse)' : 'var(--color-text-secondary)',
+                borderColor: activeCity === city ? 'transparent' : 'var(--color-border)',
               }}
             >
               {city}
@@ -65,13 +65,13 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
               prefetch={Boolean(event.slug)}
               className="rfy-card group block overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-crimson/40 hover:shadow-elevated cursor-pointer border"
               style={{
-                borderColor: 'rgb(var(--color-border))',
-                background: 'rgb(var(--color-bg))',
+                borderColor: 'var(--color-border)',
+                background: 'var(--color-bg)',
               }}
             >
               <div
                 className="relative overflow-hidden w-full"
-                style={{ aspectRatio: '3/4', background: 'rgb(var(--color-surface))' }}
+                style={{ aspectRatio: '3/4', background: 'var(--color-surface)' }}
               >
                 {event.imageUrl ? (
                   <Image
@@ -116,20 +116,20 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
               <div className="p-4">
                 <p
                   className="label-text opacity-40 mb-1.5"
-                  style={{ color: 'rgb(var(--color-text-muted))' }}
+                  style={{ color: 'var(--color-text-muted)' }}
                 >
                   {event.city}
                 </p>
                 <h3
                   className="font-display text-lg leading-tight group-hover:text-crimson transition-colors mb-2"
-                  style={{ color: 'rgb(var(--color-text-primary))' }}
+                  style={{ color: 'var(--color-text-primary)' }}
                 >
                   {event.title}
                 </h3>
                 {event.time && (
                   <p
                     className="font-body text-xs mb-2"
-                    style={{ color: 'rgb(var(--color-text-secondary))' }}
+                    style={{ color: 'var(--color-text-secondary)' }}
                   >
                     {event.time}
                   </p>
@@ -137,7 +137,7 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
                 {event.description && (
                   <p
                     className="font-body text-xs leading-relaxed line-clamp-2"
-                    style={{ color: 'rgb(var(--color-text-secondary))' }}
+                    style={{ color: 'var(--color-text-secondary)' }}
                   >
                     {event.description}
                   </p>

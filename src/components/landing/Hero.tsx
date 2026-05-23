@@ -3,8 +3,7 @@
 import { motion } from 'framer-motion'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useTheme } from 'next-themes'
-import { useEffect, useState, useMemo } from 'react'
+import { useMemo } from 'react'
 import { Navbar } from '@/components/layout/Navbar'
 
 function heroHeadlineLines(headline1: string, headline2: string) {
@@ -25,11 +24,6 @@ function heroHeadlineLines(headline1: string, headline2: string) {
 }
 
 export function Hero({ content }: { content: Record<string, string> }) {
-  const { resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-
-  const isDark = !mounted || resolvedTheme === 'dark'
   const portrait = (content['landing.hero.portrait'] || '/images/yadah-portrait.jpg').trim()
   const words = useMemo(
     () =>
@@ -41,7 +35,10 @@ export function Hero({ content }: { content: Record<string, string> }) {
   )
 
   return (
-    <section className="relative min-h-screen bg-void overflow-hidden flex flex-col">
+    <section
+      className="relative min-h-screen overflow-hidden flex flex-col"
+      style={{ background: 'var(--color-hero-bg)', color: 'var(--color-hero-text)' }}
+    >
       <Navbar />
 
       <div
@@ -61,9 +58,8 @@ export function Hero({ content }: { content: Record<string, string> }) {
         <div
           className="absolute inset-0 z-10"
           style={{
-            background: isDark
-              ? 'linear-gradient(to right, #0F0F0F 0%, #0F0F0F 35%, rgba(15,15,15,0.7) 60%, rgba(15,15,15,0.2) 100%)'
-              : 'linear-gradient(to right, #F5F0E8 0%, #F5F0E8 35%, rgba(245,240,232,0.7) 60%, rgba(245,240,232,0.2) 100%)',
+            background:
+              'linear-gradient(to right, #1A1A1A 0%, #1A1A1A 35%, rgba(26,26,26,0.7) 60%, rgba(26,26,26,0.2) 100%)',
           }}
         />
         <Image
@@ -82,7 +78,7 @@ export function Hero({ content }: { content: Record<string, string> }) {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.1 }}
           className="label-text mb-10 pl-4"
-          style={{ borderLeft: '2px solid #8B0000' }}
+          style={{ borderLeft: '2px solid var(--color-accent)', color: 'var(--color-hero-text)' }}
         >
           {content['landing.hero.eyebrow'] || 'Worship · Prayer · Study · Community'}
         </motion.p>
@@ -97,11 +93,7 @@ export function Hero({ content }: { content: Record<string, string> }) {
               className="font-display font-bold leading-none"
               style={{
                 fontSize: 'clamp(4rem, 11vw, 10rem)',
-                color: word.muted
-                  ? 'rgba(248,248,248,0.25)'
-                  : isDark
-                    ? '#F8F8F8'
-                    : '#0F0C08',
+                color: word.muted ? 'rgba(250,247,242,0.25)' : 'var(--color-hero-text)',
               }}
             >
               {word.text}
@@ -120,8 +112,8 @@ export function Hero({ content }: { content: Record<string, string> }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.4 }}
-          className="font-body text-mist text-lg leading-relaxed max-w-lg mb-12"
-          style={{ color: isDark ? '#A0A0A0' : '#3D3530' }}
+          className="font-body text-lg leading-relaxed max-w-lg mb-12"
+          style={{ color: 'rgba(250,247,242,0.65)' }}
         >
           {content['landing.hero.subtext'] ||
             'A community of young men and women singing songs of salvation, studying the Word, and getting others saved.'}
@@ -136,14 +128,14 @@ export function Hero({ content }: { content: Record<string, string> }) {
           <Link
             href="/join"
             className="inline-flex items-center px-8 py-4 font-body text-[11px] font-semibold tracking-[0.2em] uppercase text-white transition-all duration-300 hover:opacity-90"
-            style={{ background: '#8B0000' }}
+            style={{ background: 'var(--color-accent)' }}
           >
             {content['landing.hero.cta.primary'] || 'Join the Community'}
           </Link>
           <Link
             href="/about"
-            className="inline-flex items-center px-8 py-4 border font-body text-[11px] tracking-[0.2em] uppercase text-white transition-all duration-300 hover:bg-white/5"
-            style={{ borderColor: 'rgba(255,255,255,0.4)' }}
+            className="inline-flex items-center px-8 py-4 border font-body text-[11px] tracking-[0.2em] uppercase transition-all duration-300 hover:bg-white/5"
+            style={{ borderColor: 'rgba(255,255,255,0.4)', color: 'var(--color-hero-text)' }}
           >
             {content['landing.hero.cta.secondary'] || 'Our Story'}
           </Link>
@@ -158,11 +150,9 @@ export function Hero({ content }: { content: Record<string, string> }) {
       >
         <div
           className="w-px h-16 opacity-40"
-          style={{
-            background: 'linear-gradient(to bottom, transparent, #8B0000)',
-          }}
+          style={{ background: 'linear-gradient(to bottom, transparent, var(--color-accent))' }}
         />
-        <div className="w-1 h-1 rounded-full bg-crimson" />
+        <div className="w-1 h-1 rounded-full" style={{ background: 'var(--color-accent)' }} />
       </motion.div>
     </section>
   )

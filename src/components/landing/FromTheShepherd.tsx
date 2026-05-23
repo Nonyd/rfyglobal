@@ -2,108 +2,53 @@
 
 import { motion } from 'framer-motion'
 import Image from 'next/image'
-import Link from 'next/link'
-import { useTheme } from 'next-themes'
-import { useEffect, useState } from 'react'
 
 export function FromTheShepherd({ content }: { content: Record<string, string> }) {
-  const { resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-  const isDark = !mounted || resolvedTheme === 'dark'
-
-  const portraitUrl =
-    content['shepherd.portrait'] || content['shepherd.image'] || null
+  const portrait = (content['landing.shepherd.portrait'] || '/images/yadah-portrait.jpg').trim()
 
   return (
-    <section className="relative py-24 px-6" style={{ background: isDark ? '#0F0F0F' : '#E8E2D6' }}>
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-16 lg:gap-24 items-center relative z-10">
-        {/* Left — content (3 cols) */}
-        <div className="lg:col-span-3">
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="label-text mb-10"
-          >
-            From the Shepherd
-          </motion.p>
+    <section className="relative py-24 px-6" style={{ background: 'var(--color-bg)' }}>
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+          className="relative aspect-[4/5] max-w-md mx-auto lg:mx-0 w-full overflow-hidden"
+        >
+          <Image
+            src={portrait}
+            alt="Minister Yadah"
+            fill
+            className="object-cover object-top"
+            unoptimized={portrait.endsWith('.svg')}
+          />
+        </motion.div>
 
-          <motion.blockquote
-            initial={{ opacity: 0, y: 32 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-            className="font-display italic mb-10"
+        <motion.div
+          initial={{ opacity: 0, x: 24 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <p className="label-text mb-8">{content['landing.shepherd.label'] || 'From the Shepherd'}</p>
+          <blockquote
+            className="font-display italic leading-relaxed mb-8"
             style={{
-              color: isDark ? '#F8F8F8' : '#0F0C08',
-              fontSize: 'clamp(1.3rem, 3vw, 2.2rem)',
-              lineHeight: '1.5',
-              fontFamily: 'Cormorant Garamond, serif',
+              fontSize: 'clamp(1.5rem, 3vw, 2.5rem)',
+              color: 'var(--color-text-primary)',
             }}
           >
-            &ldquo;{content['shepherd.quote'] || 'There is room for you here.'}&rdquo;
-          </motion.blockquote>
-
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-          >
-            <div className="gold-line-left w-16 mb-6 opacity-60" />
-            <p className="font-display text-2xl text-crimson mb-1">
-              {content['shepherd.name'] || 'Minister Yadah'}
-            </p>
-            <p className="label-text mb-8" style={{ opacity: isDark ? 0.5 : 0.7 }}>
-              {content['shepherd.title'] || 'Founder · Room For You'}
-            </p>
-            <Link
-              href={content['shepherd.link'] || 'https://yadahworld.com'}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-body text-[11px] tracking-[0.2em] uppercase text-crimson hover:opacity-70 transition-opacity"
-            >
-              Visit yadahworld.com →
-            </Link>
-          </motion.div>
-        </div>
-
-        {/* Right — portrait image (2 cols) */}
-        {portraitUrl ? (
-          <motion.div
-            initial={{ opacity: 0, x: 24 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.9, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-2"
-          >
-            <div
-              className="relative w-full overflow-hidden"
-              style={{
-                aspectRatio: '3/4',
-                border: '1px solid rgba(139,0,0,0.15)',
-              }}
-            >
-              <Image
-                src={portraitUrl}
-                alt="Minister Yadah"
-                fill
-                className="object-cover object-top"
-                sizes="(max-width: 1024px) 100vw, 40vw"
-                unoptimized={/\.svg(\?|#|$)/i.test(portraitUrl.split('?')[0])}
-              />
-              <div
-                className="absolute bottom-0 left-0 right-0 h-1/3 pointer-events-none"
-                style={{
-                  background: isDark
-                    ? 'linear-gradient(to top, rgba(15,15,15,0.6), transparent)'
-                    : 'linear-gradient(to top, rgba(232,226,214,0.85), transparent)',
-                }}
-              />
-            </div>
-          </motion.div>
-        ) : null}
+            &ldquo;{content['landing.shepherd.quote'] ||
+              'There is room for you here. Not because you earned it — because He made room.'}&rdquo;
+          </blockquote>
+          <p className="font-body text-sm tracking-[0.2em] uppercase" style={{ color: 'var(--color-accent)' }}>
+            {content['landing.shepherd.name'] || 'Minister Yadah'}
+          </p>
+          <p className="font-body text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>
+            {content['landing.shepherd.title'] || 'Founder, Room For You'}
+          </p>
+        </motion.div>
       </div>
     </section>
   )

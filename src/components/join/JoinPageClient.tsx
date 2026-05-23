@@ -133,9 +133,9 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
-    background: 'rgba(255,255,255,0.04)',
-    border: '1px solid rgba(255,255,255,0.12)',
-    color: '#F8F8F8',
+    background: 'var(--color-surface)',
+    border: '1px solid var(--color-border)',
+    color: 'var(--color-text-primary)',
     padding: '14px 16px',
     fontSize: '14px',
     fontFamily: 'General Sans, sans-serif',
@@ -148,7 +148,7 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
     fontSize: '10px',
     letterSpacing: '0.2em',
     textTransform: 'uppercase',
-    color: '#A0A0A0',
+    color: 'var(--color-text-muted)',
     marginBottom: '8px',
     fontFamily: 'General Sans, sans-serif',
   }
@@ -193,7 +193,7 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
             {field.placeholder || 'Select…'}
           </option>
           {choices.map((opt) => (
-            <option key={opt} value={opt} style={{ background: '#1A1A1A', color: '#F8F8F8' }}>
+            <option key={opt} value={opt} style={{ background: 'var(--color-surface-2)', color: 'var(--color-text-primary)' }}>
               {opt}
             </option>
           ))}
@@ -385,7 +385,7 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
                     onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.12)')}
                   >
                     {COUNTRIES.map((c) => (
-                      <option key={c.code} value={c.name} style={{ background: '#1A1A1A', color: '#F8F8F8' }}>
+                      <option key={c.code} value={c.name} style={{ background: 'var(--color-surface-2)', color: 'var(--color-text-primary)' }}>
                         {c.name}
                       </option>
                     ))}
@@ -412,7 +412,7 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
                         Select your state
                       </option>
                       {NIGERIA_STATES.map((s) => (
-                        <option key={s} value={s} style={{ background: '#1A1A1A', color: '#F8F8F8' }}>
+                        <option key={s} value={s} style={{ background: 'var(--color-surface-2)', color: 'var(--color-text-primary)' }}>
                           {s}
                         </option>
                       ))}
@@ -453,7 +453,7 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
                   type="submit"
                   disabled={submitting || emailExists}
                   className="w-full py-4 font-body font-semibold text-sm tracking-widest uppercase transition-all duration-300 disabled:opacity-50"
-                  style={{ background: '#8B0000', color: '#0F0F0F' }}
+                  style={{ background: 'var(--color-accent)', color: '#FAF7F2' }}
                 >
                   {submitting ? 'Joining…' : 'Join the Community →'}
                 </button>

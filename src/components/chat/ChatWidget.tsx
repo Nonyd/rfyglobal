@@ -228,8 +228,8 @@ export function ChatWidget() {
           zIndex: 9998,
           width: 'min(360px, calc(100vw - 32px))',
           height: '500px',
-          background: '#0F0F0F',
-          border: '1px solid rgba(139,0,0,0.25)',
+          background: 'var(--color-bg)',
+          border: '1px solid var(--color-border)',
           borderRadius: '16px',
           boxShadow: '0 24px 64px rgba(0,0,0,0.5)',
           display: 'flex',
@@ -243,7 +243,7 @@ export function ChatWidget() {
       >
         <div
           className="flex shrink-0 items-center gap-3 px-4 py-3"
-          style={{ background: '#8B0000', borderRadius: '16px 16px 0 0' }}
+          style={{ background: 'var(--color-accent)', borderRadius: '16px 16px 0 0' }}
         >
           <div
             className="flex h-8 w-8 items-center justify-center rounded-full"
@@ -284,7 +284,7 @@ export function ChatWidget() {
             <div>
               <p
                 style={{
-                  color: '#F8F8F8',
+                  color: 'var(--color-text-primary)',
                   fontSize: '15px',
                   fontWeight: 600,
                   marginBottom: '6px',
@@ -293,7 +293,7 @@ export function ChatWidget() {
               >
                 👋 Hi there!
               </p>
-              <p style={{ color: '#A0A0A0', fontSize: '12px', lineHeight: '1.6', fontFamily: 'sans-serif' }}>
+              <p style={{ color: 'var(--color-text-secondary)', fontSize: '12px', lineHeight: '1.6', fontFamily: 'sans-serif' }}>
                 Send us a message and we&apos;ll get back to you as soon as possible.
               </p>
             </div>
@@ -305,10 +305,10 @@ export function ChatWidget() {
               onKeyDown={(e) => e.key === 'Enter' && document.getElementById('chat-email-input')?.focus()}
               style={{
                 padding: '10px 14px',
-                background: '#1A1A1A',
-                border: '1px solid rgba(139,0,0,0.2)',
+                background: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
                 borderRadius: '8px',
-                color: '#F8F8F8',
+                color: 'var(--color-text-primary)',
                 fontSize: '13px',
                 fontFamily: 'sans-serif',
               }}
@@ -323,10 +323,10 @@ export function ChatWidget() {
               onKeyDown={(e) => e.key === 'Enter' && void startChat()}
               style={{
                 padding: '10px 14px',
-                background: '#1A1A1A',
-                border: '1px solid rgba(139,0,0,0.2)',
+                background: 'var(--color-surface)',
+                border: '1px solid var(--color-border)',
                 borderRadius: '8px',
-                color: '#F8F8F8',
+                color: 'var(--color-text-primary)',
                 fontSize: '13px',
                 fontFamily: 'sans-serif',
               }}
@@ -337,8 +337,8 @@ export function ChatWidget() {
               disabled={starting || !name.trim() || !email.trim()}
               style={{
                 padding: '12px',
-                background: '#8B0000',
-                color: '#0F0F0F',
+                background: 'var(--color-accent)',
+                color: '#FAF7F2',
                 borderRadius: '8px',
                 fontWeight: 700,
                 fontSize: '12px',
@@ -352,7 +352,7 @@ export function ChatWidget() {
             >
               {starting ? 'Starting…' : 'Start Chat'}
             </button>
-            <p style={{ color: '#585858', fontSize: '10px', textAlign: 'center', fontFamily: 'sans-serif' }}>
+            <p style={{ color: 'var(--color-text-muted)', fontSize: '10px', textAlign: 'center', fontFamily: 'sans-serif' }}>
               Room For You · rfyglobal.org
             </p>
           </div>
@@ -365,11 +365,11 @@ export function ChatWidget() {
                     style={{
                       maxWidth: '80%',
                       padding: '8px 12px',
-                      background: '#1A1A1A',
-                      border: '1px solid rgba(139,0,0,0.15)',
+                      background: 'var(--color-surface)',
+                      border: '1px solid var(--color-border)',
                       borderRadius: '12px 12px 12px 4px',
                       fontSize: '12px',
-                      color: '#F8F8F8',
+                      color: 'var(--color-text-primary)',
                       lineHeight: '1.5',
                       fontFamily: 'sans-serif',
                     }}
@@ -389,9 +389,9 @@ export function ChatWidget() {
                         style={{
                           maxWidth: '80%',
                           padding: '8px 12px',
-                          background: isAdmin ? '#1A1A1A' : '#8B0000',
-                          color: isAdmin ? '#F8F8F8' : '#0F0F0F',
-                          border: isAdmin ? '1px solid rgba(139,0,0,0.15)' : 'none',
+                          background: isAdmin ? 'var(--color-surface)' : 'var(--color-accent)',
+                          color: isAdmin ? 'var(--color-text-primary)' : '#FAF7F2',
+                          border: isAdmin ? '1px solid var(--color-border)' : 'none',
                           borderRadius: isAdmin ? '12px 12px 12px 4px' : '12px 12px 4px 12px',
                           fontSize: '12px',
                           lineHeight: '1.5',
@@ -407,7 +407,7 @@ export function ChatWidget() {
                       <p
                         style={{
                           fontSize: '10px',
-                          color: '#585858',
+                          color: 'var(--color-text-muted)',
                           textAlign: isAdmin ? 'left' : 'right',
                           marginBottom: '8px',
                           fontFamily: 'sans-serif',
@@ -421,7 +421,7 @@ export function ChatWidget() {
               })}
               <div ref={bottomRef} />
             </div>
-            <div className="flex shrink-0 items-center gap-2 border-t px-3 py-3" style={{ borderColor: 'rgba(139,0,0,0.1)' }}>
+            <div className="flex shrink-0 items-center gap-2 border-t px-3 py-3" style={{ borderColor: 'var(--color-border)' }}>
               <input
                 ref={inputRef}
                 value={body}
@@ -436,10 +436,10 @@ export function ChatWidget() {
                 className="flex-1 outline-none"
                 style={{
                   padding: '8px 12px',
-                  background: '#1A1A1A',
-                  border: '1px solid rgba(139,0,0,0.15)',
+                  background: 'var(--color-surface)',
+                  border: '1px solid var(--color-border)',
                   borderRadius: '20px',
-                  color: '#F8F8F8',
+                  color: 'var(--color-text-primary)',
                   fontSize: '12px',
                   fontFamily: 'sans-serif',
                 }}
@@ -452,7 +452,7 @@ export function ChatWidget() {
                   width: '32px',
                   height: '32px',
                   borderRadius: '50%',
-                  background: '#8B0000',
+                  background: 'var(--color-accent)',
                   border: 'none',
                   display: 'flex',
                   alignItems: 'center',

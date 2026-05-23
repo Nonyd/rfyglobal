@@ -64,7 +64,7 @@ export function CookieBanner() {
                 type="button"
                 onClick={accept}
                 className="flex-1 py-2.5 font-body text-xs font-semibold tracking-widest uppercase transition-all"
-                style={{ background: '#8B0000', color: '#0F0F0F' }}
+                style={{ background: 'var(--color-accent)', color: '#FAF7F2' }}
               >
                 Accept
               </button>
@@ -78,7 +78,7 @@ export function CookieBanner() {
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.borderColor = 'rgba(255,255,255,0.3)'
-                  e.currentTarget.style.color = '#F8F8F8'
+                  e.currentTarget.style.color = 'var(--color-text-primary)'
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'

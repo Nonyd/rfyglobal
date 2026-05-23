@@ -2,8 +2,6 @@
 
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import { useTheme } from 'next-themes'
-import { useEffect, useState } from 'react'
 import { cmsLines } from '@/lib/cms-utils'
 
 const DEFAULT_LINES = [
@@ -15,15 +13,10 @@ const DEFAULT_LINES = [
 ]
 
 export function ConfessionReveal({ content }: { content: Record<string, string> }) {
-  const { resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-  const isDark = !mounted || resolvedTheme === 'dark'
-
   const lines = cmsLines(content['confession.home.lines'], DEFAULT_LINES)
 
   return (
-    <section className="py-24 px-6 overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#EDE7DB' }}>
+    <section className="py-24 px-6 overflow-hidden" style={{ background: 'var(--color-surface)' }}>
       <div className="max-w-4xl mx-auto">
         <motion.p
           initial={{ opacity: 0 }}
@@ -46,9 +39,7 @@ export function ConfessionReveal({ content }: { content: Record<string, string> 
               style={{
                 fontSize: 'clamp(1.4rem, 3.5vw, 2.8rem)',
                 lineHeight: '1.2',
-                color: isDark
-                  ? `rgba(248,248,248,${Math.max(0.4, 0.85 - i * 0.08)})`
-                  : `rgba(15,12,8,${Math.max(0.5, 0.9 - i * 0.06)})`,
+                color: `color-mix(in srgb, var(--color-text-primary) ${Math.round(Math.max(45, 90 - i * 8))}%, transparent)`,
               }}
             >
               {line}
@@ -64,14 +55,14 @@ export function ConfessionReveal({ content }: { content: Record<string, string> 
           className="flex flex-col items-center gap-6 text-center"
         >
           <div className="gold-line w-24 opacity-30" />
-          <p className="font-body text-sm max-w-md" style={{ color: isDark ? '#A0A0A0' : '#5C5248' }}>
+          <p className="font-body text-sm max-w-md" style={{ color: 'var(--color-text-secondary)' }}>
             {content['confession.home.footer'] ||
               'This is the declaration of every member of Room For You. Make it yours.'}
           </p>
           <Link
             href="/confession"
             className="inline-flex items-center gap-2 font-body text-[11px] tracking-[0.2em] uppercase hover:opacity-70 transition-opacity"
-            style={{ color: '#8B0000' }}
+            style={{ color: 'var(--color-accent)' }}
           >
             {content['confession.home.link'] || 'Read the full confession →'}
           </Link>

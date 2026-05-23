@@ -5,7 +5,7 @@ import { X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useTheme } from 'next-themes'
+import { usePublicThemeContext } from '@/components/providers/PublicThemeProvider'
 import { ThemeToggle } from '@/components/shared/ThemeToggle'
 
 const ALL_NAV_LINKS = [
@@ -22,11 +22,8 @@ const ALL_NAV_LINKS = [
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const [mounted, setMounted] = useState(false)
-  const { resolvedTheme } = useTheme()
+  const { isDark } = usePublicThemeContext()
   const pathname = usePathname()
-
-  useEffect(() => setMounted(true), [])
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 60)
@@ -49,17 +46,25 @@ export function Navbar() {
     }
   }, [mobileOpen])
 
-  const isDark = !mounted || resolvedTheme === 'dark'
-  const logoSrc = isDark || scrolled ? '/images/logo-white.png' : '/images/logo-dark.png'
+  const onHero = !scrolled
+  const logoSrc = onHero ? '/images/logo-white.png' : isDark ? '/images/logo-white.png' : '/images/logo-dark.png'
+  const linkColor = (href: string) => {
+    if (pathname === href) return 'var(--color-accent)'
+    if (onHero) return 'rgba(250,247,242,0.65)'
+    return 'var(--color-text-secondary)'
+  }
+
+  const scrolledBg = isDark ? 'rgba(15,15,15,0.95)' : 'rgba(250,247,242,0.95)'
+  const scrolledBorder = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'
 
   return (
     <>
       <nav
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
         style={{
-          background: scrolled ? 'rgba(15,15,15,0.92)' : 'transparent',
-          backdropFilter: scrolled ? 'blur(20px)' : 'none',
-          borderBottom: scrolled ? '1px solid rgba(255,255,255,0.06)' : 'none',
+          background: scrolled ? scrolledBg : 'transparent',
+          backdropFilter: scrolled ? 'blur(12px)' : 'none',
+          borderBottom: scrolled ? `1px solid ${scrolledBorder}` : 'none',
           padding: scrolled ? '12px 0' : '20px 0',
         }}
       >
@@ -69,7 +74,7 @@ export function Navbar() {
               src={logoSrc}
               alt="Room For You"
               style={{
-                height: isDark || scrolled ? '48px' : '60px',
+                height: onHero ? '60px' : '48px',
                 width: 'auto',
                 objectFit: 'contain',
                 display: 'block',
@@ -83,14 +88,7 @@ export function Navbar() {
                 key={link.href}
                 href={link.href}
                 className="font-body text-[11px] font-medium tracking-[0.2em] uppercase transition-colors duration-300"
-                style={{
-                  color:
-                    pathname === link.href
-                      ? '#8B0000'
-                      : isDark || scrolled
-                        ? 'rgba(248,248,248,0.65)'
-                        : '#3D3530',
-                }}
+                style={{ color: linkColor(link.href) }}
               >
                 {link.label}
               </Link>
@@ -102,8 +100,19 @@ export function Navbar() {
 
             <Link
               href="/join"
-              className="hidden sm:inline-flex items-center px-4 py-2 font-body text-[11px] font-medium tracking-[0.2em] uppercase border transition-all duration-300 hover:bg-[#8B0000] hover:text-white hover:border-[#8B0000]"
-              style={{ borderColor: '#8B0000', color: '#8B0000' }}
+              className="hidden sm:inline-flex items-center px-4 py-2 font-body text-[11px] font-medium tracking-[0.2em] uppercase border transition-all duration-300"
+              style={{
+                borderColor: 'var(--color-accent)',
+                color: 'var(--color-accent)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'var(--color-accent)'
+                e.currentTarget.style.color = 'var(--color-text-inverse)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent'
+                e.currentTarget.style.color = 'var(--color-accent)'
+              }}
             >
               Join Us
             </Link>
@@ -114,31 +123,16 @@ export function Navbar() {
               className="lg:hidden group relative inline-flex items-center justify-center min-w-[4.5rem] px-4 py-2.5 font-body text-[10px] font-semibold tracking-[0.28em] uppercase transition-all duration-300"
               style={{
                 color: mobileOpen
-                  ? '#0F0F0F'
-                  : isDark || scrolled
-                    ? '#F8F8F8'
-                    : '#1A1714',
-                background: mobileOpen ? '#8B0000' : 'transparent',
-                border: `1px solid ${mobileOpen ? '#8B0000' : 'rgba(139,0,0,0.55)'}`,
-                boxShadow: mobileOpen
-                  ? '0 4px 24px rgba(139,0,0,0.35)'
-                  : isDark || scrolled
-                    ? '0 2px 12px rgba(0,0,0,0.2)'
-                    : '0 2px 12px rgba(26,23,20,0.06)',
+                  ? 'var(--color-text-inverse)'
+                  : onHero
+                    ? 'var(--color-hero-text)'
+                    : 'var(--color-text-primary)',
+                background: mobileOpen ? 'var(--color-accent)' : 'transparent',
+                border: `1px solid ${mobileOpen ? 'var(--color-accent)' : 'var(--color-accent-border)'}`,
               }}
               aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={mobileOpen}
             >
-              <span
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-                style={{
-                  background:
-                    mobileOpen
-                      ? 'transparent'
-                      : 'linear-gradient(135deg, rgba(139,0,0,0.12) 0%, transparent 60%)',
-                }}
-                aria-hidden
-              />
               <span className="relative z-[1]">{mobileOpen ? 'Close' : 'Menu'}</span>
             </button>
           </div>
@@ -168,16 +162,16 @@ export function Navbar() {
               className="fixed right-0 top-0 bottom-0 z-50 lg:hidden flex flex-col"
               style={{
                 width: 'min(320px, 85vw)',
-                background: '#0F0F0F',
-                borderLeft: '1px solid rgba(255,255,255,0.08)',
+                background: 'var(--color-bg)',
+                borderLeft: '1px solid var(--color-border)',
               }}
             >
               <div
                 className="flex items-center justify-between px-6 py-5 border-b"
-                style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+                style={{ borderColor: 'var(--color-border)' }}
               >
                 <img
-                  src="/images/logo-white.png"
+                  src={isDark ? '/images/logo-white.png' : '/images/logo-dark.png'}
                   alt="Room For You"
                   style={{ height: '40px', width: 'auto', objectFit: 'contain' }}
                 />
@@ -185,7 +179,7 @@ export function Navbar() {
                   type="button"
                   onClick={() => setMobileOpen(false)}
                   className="w-8 h-8 flex items-center justify-center transition-colors"
-                  style={{ color: 'rgba(248,248,248,0.5)' }}
+                  style={{ color: 'var(--color-text-muted)' }}
                   aria-label="Close menu"
                 >
                   <X size={18} />
@@ -205,9 +199,9 @@ export function Navbar() {
                         href={link.href}
                         className="flex items-center px-4 py-3.5 font-body text-sm font-medium tracking-[0.12em] uppercase transition-all duration-200"
                         style={{
-                          color: pathname === link.href ? '#8B0000' : 'rgba(248,248,248,0.65)',
-                          background: pathname === link.href ? 'rgba(139,0,0,0.08)' : 'transparent',
-                          borderLeft: `2px solid ${pathname === link.href ? '#8B0000' : 'transparent'}`,
+                          color: pathname === link.href ? 'var(--color-accent)' : 'var(--color-text-secondary)',
+                          background: pathname === link.href ? 'var(--color-accent-light)' : 'transparent',
+                          borderLeft: `2px solid ${pathname === link.href ? 'var(--color-accent)' : 'transparent'}`,
                         }}
                       >
                         {link.label}
@@ -216,7 +210,7 @@ export function Navbar() {
                   ))}
                 </div>
 
-                <div className="my-6 mx-4 h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
+                <div className="my-6 mx-4 h-px" style={{ background: 'var(--color-border)' }} />
 
                 <div className="space-y-0.5 px-4">
                   {[
@@ -228,7 +222,7 @@ export function Navbar() {
                       key={link.href}
                       href={link.href}
                       className="flex items-center py-2.5 font-body text-xs tracking-[0.15em] uppercase transition-colors"
-                      style={{ color: 'rgba(248,248,248,0.4)' }}
+                      style={{ color: 'var(--color-text-muted)' }}
                     >
                       {link.label}
                     </Link>
@@ -236,11 +230,11 @@ export function Navbar() {
                 </div>
               </nav>
 
-              <div className="px-6 py-6 border-t" style={{ borderColor: 'rgba(255,255,255,0.08)' }}>
+              <div className="px-6 py-6 border-t" style={{ borderColor: 'var(--color-border)' }}>
                 <Link
                   href="/join"
                   className="flex items-center justify-center w-full py-4 font-body text-xs font-semibold tracking-widest uppercase transition-all"
-                  style={{ background: '#8B0000', color: '#F8F8F8' }}
+                  style={{ background: 'var(--color-accent)', color: '#FAF7F2' }}
                 >
                   Join The Community →
                 </Link>

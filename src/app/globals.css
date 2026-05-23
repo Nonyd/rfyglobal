@@ -3,29 +3,60 @@
 @tailwind utilities;
 
 @layer base {
-  :root, .dark {
+  /* ── PUBLIC SITE — LIGHT MODE (default) ── */
+  :root,
+  .public-light {
+    --color-bg: #FAF7F2;
+    --color-surface: #F0EBE3;
+    --color-surface-2: #E8E0D4;
+    --color-border: rgba(0, 0, 0, 0.08);
+    --color-border-strong: rgba(0, 0, 0, 0.15);
+
+    --color-text-primary: #1A1A1A;
+    --color-text-secondary: #4A4A4A;
+    --color-text-muted: #8A8A8A;
+    --color-text-inverse: #FAF7F2;
+
     --color-accent: #8B0000;
     --color-accent-bright: #A00000;
     --color-accent-dim: #6B0000;
-    --color-accent-light: rgba(139, 0, 0, 0.08);
-    --color-accent-border: rgba(139, 0, 0, 0.3);
-    --color-accent-glow: rgba(139, 0, 0, 0.15);
-    --color-bg: 15 15 15;
-    --color-surface: 20 20 20;
-    --color-surface-2: 26 26 26;
-    --color-border: 46 46 46;
-    --color-text-primary: 248 248 248;
-    --color-text-secondary: 160 160 160;
-    --color-text-muted: 88 88 88;
+    --color-accent-light: rgba(139, 0, 0, 0.06);
+    --color-accent-border: rgba(139, 0, 0, 0.25);
+    --color-accent-glow: rgba(139, 0, 0, 0.12);
+
+    --color-hero-bg: #1A1A1A;
+    --color-hero-text: #FAF7F2;
+
+    --color-strip-bg: #8B0000;
+    --color-strip-text: #FAF7F2;
   }
 
-  .light {
-    --color-bg: 245 240 232;
-    --color-surface: 250 247 242;
-    --color-border: 224 217 206;
-    --color-text-primary: 15 15 15;
-    --color-text-secondary: 60 55 50;
-    --color-text-muted: 120 115 108;
+  /* ── PUBLIC SITE — DARK MODE ── */
+  .public-dark,
+  [data-public-theme='dark'] .public-site {
+    --color-bg: #0F0F0F;
+    --color-surface: #141414;
+    --color-surface-2: #1A1A1A;
+    --color-border: rgba(255, 255, 255, 0.08);
+    --color-border-strong: rgba(255, 255, 255, 0.15);
+
+    --color-text-primary: #F8F8F8;
+    --color-text-secondary: #A0A0A0;
+    --color-text-muted: #585858;
+    --color-text-inverse: #0F0F0F;
+
+    --color-accent: #C0392B;
+    --color-accent-bright: #E74C3C;
+    --color-accent-dim: #922B21;
+    --color-accent-light: rgba(192, 57, 43, 0.08);
+    --color-accent-border: rgba(192, 57, 43, 0.3);
+    --color-accent-glow: rgba(192, 57, 43, 0.15);
+
+    --color-hero-bg: #0F0F0F;
+    --color-hero-text: #F8F8F8;
+
+    --color-strip-bg: #C0392B;
+    --color-strip-text: #F8F8F8;
   }
 
   /* ── ADMIN LIGHT MODE (default) ── */
@@ -88,8 +119,8 @@
   }
 
   body {
-    background-color: #0F0F0F;
-    color: #F8F8F8;
+    background-color: var(--color-bg, #FAF7F2);
+    color: var(--color-text-primary, #1A1A1A);
     font-family: 'General Sans', system-ui, sans-serif;
     line-height: 1.7;
     overflow-x: hidden;
@@ -100,17 +131,12 @@
     letter-spacing: -0.02em;
   }
 
-  .light body {
-    background-color: #F5F0E8;
-    color: #0F0F0F;
-  }
-
   ::selection {
     background: rgba(139, 0, 0, 0.25);
   }
 
   ::-webkit-scrollbar { width: 2px; }
-  ::-webkit-scrollbar-track { background: #0F0F0F; }
+  ::-webkit-scrollbar-track { background: var(--color-bg, #FAF7F2); }
   ::-webkit-scrollbar-thumb { background: #8B0000; }
 }
 
@@ -118,7 +144,7 @@
   /* Crimson accent text (flat — no gradient) */
   .text-gold-gradient,
   .text-crimson-gradient {
-    color: #8B0000;
+    color: var(--color-accent);
     background: none;
     -webkit-background-clip: unset;
     -webkit-text-fill-color: unset;
@@ -170,24 +196,24 @@
 
 /* Prose styles for blog */
 .prose-rfy {
-  color: #A0A0A0;
+  color: var(--color-text-secondary);
   line-height: 1.8;
 }
 .prose-rfy h1, .prose-rfy h2, .prose-rfy h3 {
   font-family: 'Cormorant Garamond', serif;
-  color: #F8F8F8;
+  color: var(--color-text-primary);
   font-weight: 600;
 }
 .prose-rfy p { margin-bottom: 1.2rem; }
-.prose-rfy a { color: #8B0000; }
+.prose-rfy a { color: var(--color-accent); }
 .prose-rfy blockquote {
-  border-left: 2px solid #8B0000;
+  border-left: 2px solid var(--color-accent);
   padding-left: 1.5rem;
   font-style: italic;
-  color: #A0A0A0;
+  color: var(--color-text-secondary);
 }
 .prose-rfy img { max-width: 100%; }
-.prose-rfy hr { border-color: #2E2E2E; }
+.prose-rfy hr { border-color: var(--color-border); }
 
 /* Tiptap */
 .tiptap p.is-editor-empty:first-child::before {
@@ -208,42 +234,21 @@ img, video, canvas {
   transition: none;
 }
 
-/* ══════════════════════════════════════════════
-   LIGHT MODE — Public site overrides
-   Fixes components using hardcoded dark colors
-══════════════════════════════════════════════ */
+/* Public light mode — legacy Tailwind utility overrides */
+.public-light .bg-void { background-color: var(--color-bg) !important; }
+.public-light .bg-ink { background-color: var(--color-surface) !important; }
+.public-light .bg-smoke { background-color: var(--color-surface-2) !important; }
 
-.light .bg-void { background-color: #F5F0E8 !important; }
-.light .bg-ink  { background-color: #EDE7DB !important; }
-.light .bg-smoke { background-color: #E5DFD4 !important; }
+.public-light .text-snow { color: var(--color-text-primary) !important; }
+.public-light .text-mist { color: var(--color-text-secondary) !important; }
+.public-light .text-fog { color: var(--color-text-muted) !important; }
 
-.light .text-snow { color: #0F0C08 !important; }
-.light .text-mist { color: #3D3530 !important; }
-.light .text-fog  { color: #7A7066 !important; }
-
-.light .text-outline {
+.public-light .text-outline {
   color: transparent !important;
-  -webkit-text-stroke: 1px rgba(15,12,8,0.35) !important;
+  -webkit-text-stroke: 1px rgba(26, 26, 26, 0.35) !important;
 }
-.light .text-outline-gold {
+
+.public-dark .text-outline {
   color: transparent !important;
-  -webkit-text-stroke: 1px rgba(139,90,0,0.5) !important;
-}
-
-/* Section dividers */
-.light .section-divider {
-  background: linear-gradient(90deg, transparent, #8B5A00, transparent);
-  opacity: 0.3;
-}
-
-/*
-  Site footer: inline style={{ background: '#0F0F0F' }} wins over .light .bg-void.
-  Interactive hover lives in FooterInteractive.tsx (client). Safety / documentation:
-*/
-.light footer,
-.light footer .bg-void,
-.light footer .text-fog,
-.light footer .text-mist,
-.light footer .text-snow {
-  /* Inline styles on footer and client children take precedence over public light utilities */
+  -webkit-text-stroke: 1px rgba(248, 248, 248, 0.4) !important;
 }

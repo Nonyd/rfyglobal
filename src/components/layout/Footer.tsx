@@ -25,8 +25,8 @@ export async function Footer() {
     <footer
       className="border-t pt-20 pb-10 px-6"
       style={{
-        background: '#0F0F0F',
-        borderColor: 'rgba(255,255,255,0.08)',
+        background: '#1A1A1A',
+        borderTop: '1px solid var(--color-accent)',
       }}
     >
       <div className="max-w-7xl mx-auto">

@@ -15,7 +15,7 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
   const activities = cmsLines(content['landing.vision.activities'], DEFAULT_ACTIVITIES)
 
   return (
-    <section className="py-24 px-6" style={{ background: 'rgb(var(--color-bg))' }}>
+    <section className="py-24 px-6" style={{ background: 'var(--color-bg)' }}>
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-32 items-center">
         <motion.div
           initial={{ opacity: 0, x: -32 }}
@@ -28,7 +28,7 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
             className="font-display leading-tight mb-8"
             style={{
               fontSize: 'clamp(2.2rem, 5vw, 4.5rem)',
-              color: 'rgb(var(--color-text-primary))',
+              color: 'var(--color-text-primary)',
             }}
           >
             {content['landing.vision.heading'] || 'Building a community'}
@@ -39,7 +39,7 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
           </h2>
           <p
             className="font-body leading-relaxed text-lg max-w-md"
-            style={{ color: 'rgb(var(--color-text-secondary))' }}
+            style={{ color: 'var(--color-text-secondary)' }}
           >
             {content['landing.vision.text'] ||
               'Building a community of young men and women who sing songs of salvation with conviction of their identity in Christ.'}
@@ -55,10 +55,7 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
         >
           <div>
             <p className="label-text mb-4">{content['landing.vision.mission.label'] || 'The Mission'}</p>
-            <p
-              className="font-display text-4xl mb-2"
-              style={{ color: 'rgb(var(--color-text-primary))' }}
-            >
+            <p className="font-display text-4xl mb-2" style={{ color: 'var(--color-text-primary)' }}>
               {content['landing.vision.mission.heading'] || 'Jesus to Nations'}
             </p>
             <p className="font-display text-lg italic text-crimson opacity-70">
@@ -78,11 +75,8 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
                 transition={{ delay: 0.3 + i * 0.08 }}
                 className="flex items-start gap-4"
               >
-                <div className="w-px h-4 bg-crimson opacity-60 mt-1 shrink-0" />
-                <p
-                  className="font-body text-sm leading-relaxed"
-                  style={{ color: 'rgb(var(--color-text-secondary))' }}
-                >
+                <div className="w-px h-4 mt-1 shrink-0" style={{ background: 'var(--color-accent)' }} />
+                <p className="font-body text-sm leading-relaxed" style={{ color: 'var(--color-text-secondary)' }}>
                   {item}
                 </p>
               </motion.div>

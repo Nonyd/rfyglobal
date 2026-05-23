@@ -3,10 +3,6 @@
 import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useTheme } from 'next-themes'
-import { useEffect, useState } from 'react'
-import { cn } from '@/lib/utils'
-
 const EASE = [0.25, 0.46, 0.45, 0.94] as const
 
 const fadeUp = {
@@ -28,11 +24,6 @@ function aboutActivities(content: Record<string, string>) {
 
 export function AboutClient({ content }: { content: Record<string, string> }) {
   const activities = aboutActivities(content)
-  const { resolvedTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-  useEffect(() => setMounted(true), [])
-  const isDark = !mounted || resolvedTheme === 'dark'
-
   const rawImage = (content['about.yadah.image'] ?? '').trim()
   const fallbackPortrait = '/images/yadah-portrait.svg'
   const portrait = rawImage || fallbackPortrait
@@ -162,7 +153,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
 
       <section
         className="px-6 py-24 text-center"
-        style={{ background: isDark ? '#0F0F0F' : '#EDE7DB' }}
+        style={{ background: 'var(--color-surface)' }}
       >
         <div className="mx-auto max-w-3xl">
           <motion.h2
@@ -188,7 +179,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
             className="mb-12 font-display text-xl leading-[1.9] lg:text-2xl"
             style={{
               fontStyle: 'italic',
-              color: isDark ? 'rgba(248,248,248,0.7)' : '#2C2520',
+              color: 'var(--color-text-secondary)',
             }}
           >
             {content['about.confession.text']}
@@ -203,15 +194,14 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
       </section>
 
       <section
-        className={cn('relative overflow-hidden px-6 py-20', isDark && 'bg-charcoal')}
-        style={!isDark ? { background: '#E8E2D6' } : undefined}
+        className="relative overflow-hidden px-6 py-20"
+        style={{ background: 'var(--color-bg)' }}
       >
         <div
           className="pointer-events-none absolute top-0 right-0 bottom-0 w-1/2"
           style={{
-            background: isDark
-              ? 'radial-gradient(ellipse 80% 60% at 100% 50%, rgba(139,0,0,0.06), transparent)'
-              : 'radial-gradient(ellipse 80% 60% at 100% 50%, rgba(139,90,0,0.05), transparent)',
+            background:
+              'radial-gradient(ellipse 80% 60% at 100% 50%, var(--color-accent-glow), transparent)',
           }}
         />
 
@@ -222,7 +212,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
             </p>
             <h2
               className="font-display mb-1 text-4xl lg:text-5xl"
-              style={{ color: isDark ? '#F5F0E8' : '#0F0C08' }}
+              style={{ color: 'var(--color-text-primary)' }}
             >
               {content['about.shepherd.name'] || 'Minister Yadah'}
             </h2>
@@ -233,7 +223,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
 
             <div
               className="space-y-5 font-body text-base leading-relaxed"
-              style={{ color: isDark ? 'rgba(245,240,232,0.8)' : '#3D3530' }}
+              style={{ color: 'var(--color-text-secondary)' }}
             >
               {bioParagraphs.map((para, idx) => (
                 <p key={idx}>{para}</p>
@@ -254,7 +244,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 font-body text-sm uppercase tracking-widest transition-colors hover:underline"
                 style={{
-                  color: isDark ? 'rgba(245,240,232,0.5)' : '#7A7066',
+                  color: 'var(--color-text-muted)',
                 }}
               >
                 {content['about.shepherd.musicLinkLabel'] || 'Listen to her music →'}

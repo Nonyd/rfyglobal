@@ -28,7 +28,7 @@ export default async function ReplyPage({
   return (
     <div
       className="flex min-h-screen items-center justify-center px-4 py-16"
-      style={{ background: '#0F0F0F' }}
+      style={{ background: 'var(--color-bg)' }}
     >
       <div className="w-full max-w-lg">
         <div className="mb-10 flex justify-center">
@@ -44,14 +44,14 @@ export default async function ReplyPage({
         >
           <p
             className="font-body mb-2 text-[10px] uppercase tracking-widest"
-            style={{ color: '#8B0000' }}
+            style={{ color: 'var(--color-accent)' }}
           >
             Replying to Room For You
           </p>
-          <p className="font-body mb-1 text-sm font-semibold" style={{ color: '#F8F8F8' }}>
+          <p className="font-body mb-1 text-sm font-semibold" style={{ color: 'var(--color-text-primary)' }}>
             {thread.subject}
           </p>
-          <p className="font-body text-xs" style={{ color: '#A0A0A0' }}>
+          <p className="font-body text-xs" style={{ color: 'var(--color-text-secondary)' }}>
             {thread.fromName} · {thread.fromEmail}
           </p>
         </div>
