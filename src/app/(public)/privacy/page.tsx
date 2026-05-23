@@ -34,19 +34,19 @@ export default function PrivacyPolicyPage() {
             </p>
             <ul className="space-y-2 font-body text-mist">
               <li className="flex gap-3">
-                <span className="text-gold shrink-0">—</span> Join the Room For You community (name, email, phone,
+                <span className="text-crimson shrink-0">—</span> Join the Room For You community (name, email, phone,
                 location)
               </li>
               <li className="flex gap-3">
-                <span className="text-gold shrink-0">—</span> Register for an event (name, email, phone, location,
+                <span className="text-crimson shrink-0">—</span> Register for an event (name, email, phone, location,
                 expectations)
               </li>
               <li className="flex gap-3">
-                <span className="text-gold shrink-0">—</span> Make a financial gift or partnership contribution (name,
+                <span className="text-crimson shrink-0">—</span> Make a financial gift or partnership contribution (name,
                 email, payment details processed by third-party gateways)
               </li>
               <li className="flex gap-3">
-                <span className="text-gold shrink-0">—</span> Submit a form on our website
+                <span className="text-crimson shrink-0">—</span> Submit a form on our website
               </li>
             </ul>
             <p className="font-body text-mist leading-relaxed mt-4">
@@ -60,17 +60,17 @@ export default function PrivacyPolicyPage() {
             <p className="font-body text-mist leading-relaxed mb-4">We use your information to:</p>
             <ul className="space-y-2 font-body text-mist">
               <li className="flex gap-3">
-                <span className="text-gold shrink-0">—</span> Send you community updates, daily scripture, and event
+                <span className="text-crimson shrink-0">—</span> Send you community updates, daily scripture, and event
                 reminders (you can unsubscribe at any time)
               </li>
               <li className="flex gap-3">
-                <span className="text-gold shrink-0">—</span> Confirm your event registrations and partnership gifts
+                <span className="text-crimson shrink-0">—</span> Confirm your event registrations and partnership gifts
               </li>
               <li className="flex gap-3">
-                <span className="text-gold shrink-0">—</span> Improve our website and community programs
+                <span className="text-crimson shrink-0">—</span> Improve our website and community programs
               </li>
               <li className="flex gap-3">
-                <span className="text-gold shrink-0">—</span> Comply with legal obligations
+                <span className="text-crimson shrink-0">—</span> Comply with legal obligations
               </li>
             </ul>
             <p className="font-body text-mist leading-relaxed mt-4">
@@ -93,20 +93,20 @@ export default function PrivacyPolicyPage() {
             <p className="font-body text-mist leading-relaxed mb-4">You have the right to:</p>
             <ul className="space-y-2 font-body text-mist">
               <li className="flex gap-3">
-                <span className="text-gold shrink-0">—</span> Access the personal data we hold about you
+                <span className="text-crimson shrink-0">—</span> Access the personal data we hold about you
               </li>
               <li className="flex gap-3">
-                <span className="text-gold shrink-0">—</span> Request correction of inaccurate data
+                <span className="text-crimson shrink-0">—</span> Request correction of inaccurate data
               </li>
               <li className="flex gap-3">
-                <span className="text-gold shrink-0">—</span> Request deletion of your data
+                <span className="text-crimson shrink-0">—</span> Request deletion of your data
               </li>
               <li className="flex gap-3">
-                <span className="text-gold shrink-0">—</span> Unsubscribe from all emails at any time using the
+                <span className="text-crimson shrink-0">—</span> Unsubscribe from all emails at any time using the
                 unsubscribe link in any email
               </li>
               <li className="flex gap-3">
-                <span className="text-gold shrink-0">—</span> Withdraw consent for data processing
+                <span className="text-crimson shrink-0">—</span> Withdraw consent for data processing
               </li>
             </ul>
             <p className="font-body text-mist leading-relaxed mt-4">
@@ -127,7 +127,7 @@ export default function PrivacyPolicyPage() {
             <h2 className="font-display text-snow text-2xl mb-4">7. Cookies</h2>
             <p className="font-body text-mist leading-relaxed">
               We use cookies to maintain your session and remember your preferences. See our{' '}
-              <Link href="/cookies" className="text-gold hover:opacity-70 transition-opacity">
+              <Link href="/cookies" className="text-crimson hover:opacity-70 transition-opacity">
                 Cookie Policy
               </Link>{' '}
               for full details.
@@ -149,7 +149,7 @@ export default function PrivacyPolicyPage() {
               If you have questions about this Privacy Policy, please contact us at{' '}
               <a
                 href="mailto:privacy@rfyglobal.org"
-                className="text-gold hover:opacity-70 transition-opacity"
+                className="text-crimson hover:opacity-70 transition-opacity"
               >
                 privacy@rfyglobal.org
               </a>{' '}

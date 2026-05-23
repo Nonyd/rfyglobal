@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
           style={{
             width: '80px',
             height: '3px',
-            background: '#C9A84C',
+            background: '#8B0000',
             marginBottom: '40px',
           }}
         />
@@ -78,7 +78,7 @@ export async function GET(req: NextRequest) {
           <p
             style={{
               fontSize: '20px',
-              color: '#C9A84C',
+              color: '#8B0000',
               fontWeight: 600,
               letterSpacing: '0.05em',
               fontFamily: 'Inter',
@@ -92,14 +92,14 @@ export async function GET(req: NextRequest) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            borderTop: '1px solid rgba(201,168,76,0.3)',
+            borderTop: '1px solid rgba(139,0,0,0.3)',
             paddingTop: '24px',
           }}
         >
           <p
             style={{
               fontSize: '14px',
-              color: 'rgba(201,168,76,0.6)',
+              color: 'rgba(139,0,0,0.6)',
               letterSpacing: '0.2em',
               fontFamily: 'Inter',
               fontWeight: 600,
@@ -110,7 +110,7 @@ export async function GET(req: NextRequest) {
           <p
             style={{
               fontSize: '12px',
-              color: 'rgba(201,168,76,0.4)',
+              color: 'rgba(139,0,0,0.4)',
               letterSpacing: '0.15em',
               fontFamily: 'Inter',
             }}

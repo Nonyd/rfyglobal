@@ -47,7 +47,7 @@ export function PublicPageHeader({
       )}
     >
       {eyebrow ? (
-        <p className="mb-4 font-body text-[10px] uppercase tracking-[0.35em] text-gold">{eyebrow}</p>
+        <p className="mb-4 font-body text-[10px] uppercase tracking-[0.35em] text-crimson">{eyebrow}</p>
       ) : null}
       <h1 className="font-display text-4xl leading-tight text-text-primary lg:text-6xl">{title}</h1>
       {subtitle ? (

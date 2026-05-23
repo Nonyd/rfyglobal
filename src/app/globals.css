@@ -4,8 +4,15 @@
 
 @layer base {
   :root, .dark {
+    --color-accent: #8B0000;
+    --color-accent-bright: #A00000;
+    --color-accent-dim: #6B0000;
+    --color-accent-light: rgba(139, 0, 0, 0.08);
+    --color-accent-border: rgba(139, 0, 0, 0.3);
+    --color-accent-glow: rgba(139, 0, 0, 0.15);
     --color-bg: 15 15 15;
-    --color-surface: 26 26 26;
+    --color-surface: 20 20 20;
+    --color-surface-2: 26 26 26;
     --color-border: 46 46 46;
     --color-text-primary: 248 248 248;
     --color-text-secondary: 160 160 160;
@@ -84,7 +91,13 @@
     background-color: #0F0F0F;
     color: #F8F8F8;
     font-family: 'General Sans', system-ui, sans-serif;
+    line-height: 1.7;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, .font-display {
+    letter-spacing: -0.02em;
   }
 
   .light body {
@@ -93,21 +106,23 @@
   }
 
   ::selection {
-    background: rgba(201, 168, 76, 0.25);
+    background: rgba(139, 0, 0, 0.25);
   }
 
   ::-webkit-scrollbar { width: 2px; }
   ::-webkit-scrollbar-track { background: #0F0F0F; }
-  ::-webkit-scrollbar-thumb { background: #C9A84C; }
+  ::-webkit-scrollbar-thumb { background: #8B0000; }
 }
 
 @layer utilities {
-  /* Gold gradient text */
-  .text-gold-gradient {
-    background: linear-gradient(135deg, #C9A84C 0%, #E8C96A 60%, #C9A84C 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  /* Crimson accent text (flat — no gradient) */
+  .text-gold-gradient,
+  .text-crimson-gradient {
+    color: #8B0000;
+    background: none;
+    -webkit-background-clip: unset;
+    -webkit-text-fill-color: unset;
+    background-clip: unset;
   }
 
   /* Outlined text */
@@ -121,21 +136,17 @@
     -webkit-text-stroke: 1px rgba(201, 168, 76, 0.6);
   }
 
-  /* Gold divider line */
-  .gold-line {
+  /* Crimson divider lines */
+  .gold-line,
+  .crimson-line {
     height: 1px;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      #C9A84C 30%,
-      #C9A84C 70%,
-      transparent
-    );
+    background: linear-gradient(90deg, transparent, #8B0000, transparent);
   }
 
-  .gold-line-left {
+  .gold-line-left,
+  .crimson-line-left {
     height: 1px;
-    background: linear-gradient(90deg, #C9A84C, transparent);
+    background: linear-gradient(90deg, #8B0000, transparent);
   }
 
   /* Section label style */
@@ -143,9 +154,9 @@
     font-family: 'General Sans', sans-serif;
     font-size: 10px;
     font-weight: 500;
-    letter-spacing: 0.25em;
+    letter-spacing: 0.35em;
     text-transform: uppercase;
-    color: #C9A84C;
+    color: var(--color-text-muted, #585858);
   }
 
   /* Hover lift */
@@ -168,9 +179,9 @@
   font-weight: 600;
 }
 .prose-rfy p { margin-bottom: 1.2rem; }
-.prose-rfy a { color: #C9A84C; }
+.prose-rfy a { color: #8B0000; }
 .prose-rfy blockquote {
-  border-left: 2px solid #C9A84C;
+  border-left: 2px solid #8B0000;
   padding-left: 1.5rem;
   font-style: italic;
   color: #A0A0A0;

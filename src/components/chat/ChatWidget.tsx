@@ -178,7 +178,7 @@ export function ChatWidget() {
           width: '56px',
           height: '56px',
           borderRadius: '50%',
-          background: '#C9A84C',
+          background: '#8B0000',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -229,7 +229,7 @@ export function ChatWidget() {
           width: 'min(360px, calc(100vw - 32px))',
           height: '500px',
           background: '#0F0F0F',
-          border: '1px solid rgba(201,168,76,0.25)',
+          border: '1px solid rgba(139,0,0,0.25)',
           borderRadius: '16px',
           boxShadow: '0 24px 64px rgba(0,0,0,0.5)',
           display: 'flex',
@@ -243,7 +243,7 @@ export function ChatWidget() {
       >
         <div
           className="flex shrink-0 items-center gap-3 px-4 py-3"
-          style={{ background: '#C9A84C', borderRadius: '16px 16px 0 0' }}
+          style={{ background: '#8B0000', borderRadius: '16px 16px 0 0' }}
         >
           <div
             className="flex h-8 w-8 items-center justify-center rounded-full"
@@ -306,7 +306,7 @@ export function ChatWidget() {
               style={{
                 padding: '10px 14px',
                 background: '#1A1A1A',
-                border: '1px solid rgba(201,168,76,0.2)',
+                border: '1px solid rgba(139,0,0,0.2)',
                 borderRadius: '8px',
                 color: '#F8F8F8',
                 fontSize: '13px',
@@ -324,7 +324,7 @@ export function ChatWidget() {
               style={{
                 padding: '10px 14px',
                 background: '#1A1A1A',
-                border: '1px solid rgba(201,168,76,0.2)',
+                border: '1px solid rgba(139,0,0,0.2)',
                 borderRadius: '8px',
                 color: '#F8F8F8',
                 fontSize: '13px',
@@ -337,7 +337,7 @@ export function ChatWidget() {
               disabled={starting || !name.trim() || !email.trim()}
               style={{
                 padding: '12px',
-                background: '#C9A84C',
+                background: '#8B0000',
                 color: '#0F0F0F',
                 borderRadius: '8px',
                 fontWeight: 700,
@@ -366,7 +366,7 @@ export function ChatWidget() {
                       maxWidth: '80%',
                       padding: '8px 12px',
                       background: '#1A1A1A',
-                      border: '1px solid rgba(201,168,76,0.15)',
+                      border: '1px solid rgba(139,0,0,0.15)',
                       borderRadius: '12px 12px 12px 4px',
                       fontSize: '12px',
                       color: '#F8F8F8',
@@ -389,9 +389,9 @@ export function ChatWidget() {
                         style={{
                           maxWidth: '80%',
                           padding: '8px 12px',
-                          background: isAdmin ? '#1A1A1A' : '#C9A84C',
+                          background: isAdmin ? '#1A1A1A' : '#8B0000',
                           color: isAdmin ? '#F8F8F8' : '#0F0F0F',
-                          border: isAdmin ? '1px solid rgba(201,168,76,0.15)' : 'none',
+                          border: isAdmin ? '1px solid rgba(139,0,0,0.15)' : 'none',
                           borderRadius: isAdmin ? '12px 12px 12px 4px' : '12px 12px 4px 12px',
                           fontSize: '12px',
                           lineHeight: '1.5',
@@ -421,7 +421,7 @@ export function ChatWidget() {
               })}
               <div ref={bottomRef} />
             </div>
-            <div className="flex shrink-0 items-center gap-2 border-t px-3 py-3" style={{ borderColor: 'rgba(201,168,76,0.1)' }}>
+            <div className="flex shrink-0 items-center gap-2 border-t px-3 py-3" style={{ borderColor: 'rgba(139,0,0,0.1)' }}>
               <input
                 ref={inputRef}
                 value={body}
@@ -437,7 +437,7 @@ export function ChatWidget() {
                 style={{
                   padding: '8px 12px',
                   background: '#1A1A1A',
-                  border: '1px solid rgba(201,168,76,0.15)',
+                  border: '1px solid rgba(139,0,0,0.15)',
                   borderRadius: '20px',
                   color: '#F8F8F8',
                   fontSize: '12px',
@@ -452,7 +452,7 @@ export function ChatWidget() {
                   width: '32px',
                   height: '32px',
                   borderRadius: '50%',
-                  background: '#C9A84C',
+                  background: '#8B0000',
                   border: 'none',
                   display: 'flex',
                   alignItems: 'center',

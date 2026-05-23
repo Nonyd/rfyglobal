@@ -156,11 +156,11 @@ function buildEventReminderEmail({
     <body style="margin:0;padding:0;background:#0F0F0F;font-family:'General Sans',Arial,sans-serif;">
       <div style="max-width:600px;margin:0 auto;background:#0F0F0F;">
         <div style="padding:40px;">
-          <p style="color:#C9A84C;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;margin:0 0 8px;">
+          <p style="color:#8B0000;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;margin:0 0 8px;">
             Room For You · Event Reminder
           </p>
 
-          <div style="background:#C9A84C;display:inline-block;padding:4px 12px;margin:0 0 24px;">
+          <div style="background:#8B0000;display:inline-block;padding:4px 12px;margin:0 0 24px;">
             <p style="color:#0F0F0F;font-size:11px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;margin:0;">
               ${urgency}
             </p>
@@ -170,7 +170,7 @@ function buildEventReminderEmail({
             ${event.title}
           </h1>
 
-          <div style="height:1px;background:linear-gradient(90deg,#C9A84C,transparent);margin:24px 0;"></div>
+          <div style="height:1px;background:linear-gradient(90deg,#8B0000,transparent);margin:24px 0;"></div>
 
           <table style="width:100%;border-collapse:collapse;margin:0 0 24px;">
             <tr>
@@ -213,7 +213,7 @@ function buildEventReminderEmail({
 
           <div style="text-align:center;margin:32px 0;">
             <a href="https://rfyglobal.org/events"
-              style="display:inline-block;background:#C9A84C;color:#0F0F0F;padding:14px 32px;font-size:13px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;">
+              style="display:inline-block;background:#8B0000;color:#0F0F0F;padding:14px 32px;font-size:13px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;">
               View Event Details →
             </a>
           </div>

@@ -58,7 +58,7 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
       <button
         type="button"
         onClick={toggle}
-        className="flex h-11 w-11 items-center justify-center rounded-full border border-gold text-gold transition-colors hover:bg-gold hover:text-black"
+        className="flex h-11 w-11 items-center justify-center rounded-full border border-crimson text-crimson transition-colors hover:bg-crimson hover:text-black"
         aria-label={playing ? 'Pause audio' : 'Play audio'}
       >
         {playing ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5 pl-0.5" />}
@@ -66,7 +66,7 @@ export function AudioPlayer({ src, className }: AudioPlayerProps) {
       <div className="min-w-[200px] flex-1">
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-white/10">
           <div
-            className="h-full rounded-full bg-gold transition-[width] duration-150 ease-linear"
+            className="h-full rounded-full bg-crimson transition-[width] duration-150 ease-linear"
             style={{ width: `${progress}%` }}
           />
         </div>

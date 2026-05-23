@@ -86,7 +86,7 @@ export function Navbar() {
                 style={{
                   color:
                     pathname === link.href
-                      ? '#C9A84C'
+                      ? '#8B0000'
                       : isDark || scrolled
                         ? 'rgba(248,248,248,0.65)'
                         : '#3D3530',
@@ -102,8 +102,8 @@ export function Navbar() {
 
             <Link
               href="/join"
-              className="hidden sm:inline-flex items-center px-4 py-2 font-body text-[11px] font-medium tracking-[0.2em] uppercase border transition-all duration-300"
-              style={{ borderColor: '#C9A84C', color: '#C9A84C' }}
+              className="hidden sm:inline-flex items-center px-4 py-2 font-body text-[11px] font-medium tracking-[0.2em] uppercase border transition-all duration-300 hover:bg-[#8B0000] hover:text-white hover:border-[#8B0000]"
+              style={{ borderColor: '#8B0000', color: '#8B0000' }}
             >
               Join Us
             </Link>
@@ -118,10 +118,10 @@ export function Navbar() {
                   : isDark || scrolled
                     ? '#F8F8F8'
                     : '#1A1714',
-                background: mobileOpen ? '#C9A84C' : 'transparent',
-                border: `1px solid ${mobileOpen ? '#C9A84C' : 'rgba(201,168,76,0.55)'}`,
+                background: mobileOpen ? '#8B0000' : 'transparent',
+                border: `1px solid ${mobileOpen ? '#8B0000' : 'rgba(139,0,0,0.55)'}`,
                 boxShadow: mobileOpen
-                  ? '0 4px 24px rgba(201,168,76,0.35)'
+                  ? '0 4px 24px rgba(139,0,0,0.35)'
                   : isDark || scrolled
                     ? '0 2px 12px rgba(0,0,0,0.2)'
                     : '0 2px 12px rgba(26,23,20,0.06)',
@@ -135,7 +135,7 @@ export function Navbar() {
                   background:
                     mobileOpen
                       ? 'transparent'
-                      : 'linear-gradient(135deg, rgba(201,168,76,0.12) 0%, transparent 60%)',
+                      : 'linear-gradient(135deg, rgba(139,0,0,0.12) 0%, transparent 60%)',
                 }}
                 aria-hidden
               />
@@ -205,9 +205,9 @@ export function Navbar() {
                         href={link.href}
                         className="flex items-center px-4 py-3.5 font-body text-sm font-medium tracking-[0.12em] uppercase transition-all duration-200"
                         style={{
-                          color: pathname === link.href ? '#C9A84C' : 'rgba(248,248,248,0.65)',
-                          background: pathname === link.href ? 'rgba(201,168,76,0.08)' : 'transparent',
-                          borderLeft: `2px solid ${pathname === link.href ? '#C9A84C' : 'transparent'}`,
+                          color: pathname === link.href ? '#8B0000' : 'rgba(248,248,248,0.65)',
+                          background: pathname === link.href ? 'rgba(139,0,0,0.08)' : 'transparent',
+                          borderLeft: `2px solid ${pathname === link.href ? '#8B0000' : 'transparent'}`,
                         }}
                       >
                         {link.label}
@@ -240,7 +240,7 @@ export function Navbar() {
                 <Link
                   href="/join"
                   className="flex items-center justify-center w-full py-4 font-body text-xs font-semibold tracking-widest uppercase transition-all"
-                  style={{ background: '#C9A84C', color: '#0F0F0F' }}
+                  style={{ background: '#8B0000', color: '#F8F8F8' }}
                 >
                   Join The Community →
                 </Link>

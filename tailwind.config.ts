@@ -30,6 +30,12 @@ const config: Config = {
           dim: '#8A6F2E',
           glow: 'rgba(201,168,76,0.12)',
         },
+        crimson: {
+          DEFAULT: '#8B0000',
+          bright: '#A00000',
+          dim: '#6B0000',
+          glow: 'rgba(139,0,0,0.12)',
+        },
         paper: '#F5F0E8',
         parchment: '#EDE7DB',
         cream: {

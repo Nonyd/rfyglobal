@@ -38,17 +38,17 @@ export function Toggle({
         aria-checked={checked}
         aria-label={ariaLabel}
         onClick={() => onChange(!checked)}
-        className="relative shrink-0 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(201,168,76,0.45)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0F0F0F]"
+        className="relative shrink-0 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(139,0,0,0.45)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0F0F0F]"
         style={{
           width: `${width}px`,
           height: `${height}px`,
           borderRadius: `${height / 2}px`,
           background: checked
-            ? 'linear-gradient(135deg, #C9A84C, #E8C96A)'
+            ? 'linear-gradient(135deg, #8B0000, #A00000)'
             : 'rgba(255,255,255,0.1)',
-          border: checked ? '1px solid rgba(201,168,76,0.5)' : '1px solid rgba(255,255,255,0.15)',
+          border: checked ? '1px solid rgba(139,0,0,0.5)' : '1px solid rgba(255,255,255,0.15)',
           boxShadow: checked
-            ? '0 0 12px rgba(201,168,76,0.25)'
+            ? '0 0 12px rgba(139,0,0,0.25)'
             : 'inset 0 1px 3px rgba(0,0,0,0.3)',
         }}
       >
@@ -104,13 +104,13 @@ export function AdminToggle({
         aria-checked={checked}
         aria-label={ariaLabel}
         onClick={() => onChange(!checked)}
-        className="relative shrink-0 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(201,168,76,0.35)] focus-visible:ring-offset-2"
+        className="relative shrink-0 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(139,0,0,0.35)] focus-visible:ring-offset-2"
         style={{
           width: `${width}px`,
           height: `${height}px`,
           borderRadius: `${height / 2}px`,
           background: checked
-            ? 'linear-gradient(135deg, var(--a-gold), #E8C96A)'
+            ? 'linear-gradient(135deg, var(--a-gold), #A00000)'
             : 'var(--a-border)',
           border: `1px solid ${checked ? 'var(--a-gold-border)' : 'var(--a-border-strong, var(--a-border))'}`,
           boxShadow: checked ? '0 0 8px var(--a-gold-light)' : 'none',

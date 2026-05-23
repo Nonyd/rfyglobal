@@ -72,8 +72,8 @@ export function GalleryClientPage({ images, cities, months }: GalleryClientPageP
                   className={cn(
                     'border px-4 py-2 font-body text-xs tracking-wide transition-all',
                     activeCity === c
-                      ? 'border-gold bg-gold text-charcoal shadow-soft'
-                      : 'border-theme text-text-secondary hover:border-gold/40 hover:text-text-primary',
+                      ? 'border-crimson bg-crimson text-charcoal shadow-soft'
+                      : 'border-theme text-text-secondary hover:border-crimson/40 hover:text-text-primary',
                   )}
                 >
                   {c}
@@ -95,8 +95,8 @@ export function GalleryClientPage({ images, cities, months }: GalleryClientPageP
                   className={cn(
                     'border px-4 py-2 font-body text-xs tracking-wide transition-all',
                     activeMonth === month
-                      ? 'border-gold/50 bg-gold/15 text-gold'
-                      : 'border-theme text-text-secondary hover:border-gold/40 hover:text-text-primary',
+                      ? 'border-crimson/50 bg-crimson/15 text-crimson'
+                      : 'border-theme text-text-secondary hover:border-crimson/40 hover:text-text-primary',
                   )}
                 >
                   {month === 'All' ? 'All Time' : formatMonth(month)}
@@ -152,7 +152,7 @@ export function GalleryClientPage({ images, cities, months }: GalleryClientPageP
                 ) : null}
                 <div className="mt-1 flex items-center gap-3">
                   {img.city ? (
-                    <span className="flex items-center gap-1 font-body text-xs text-gold/70">
+                    <span className="flex items-center gap-1 font-body text-xs text-crimson/70">
                       <MapPin size={10} /> {img.city}
                     </span>
                   ) : null}
@@ -194,7 +194,7 @@ export function GalleryClientPage({ images, cities, months }: GalleryClientPageP
                   e.stopPropagation()
                   prevImage()
                 }}
-                className="absolute left-4 z-10 border border-white/20 p-3 text-white/60 transition-all hover:border-gold hover:text-gold lg:left-8"
+                className="absolute left-4 z-10 border border-white/20 p-3 text-white/60 transition-all hover:border-crimson hover:text-crimson lg:left-8"
               >
                 <ChevronLeft size={24} />
               </button>
@@ -229,7 +229,7 @@ export function GalleryClientPage({ images, cities, months }: GalleryClientPageP
                   ) : null}
                   <div className="mt-1 flex items-center gap-3">
                     {currentImage.city ? (
-                      <span className="flex items-center gap-1 font-body text-xs text-gold/70">
+                      <span className="flex items-center gap-1 font-body text-xs text-crimson/70">
                         <MapPin size={10} /> {currentImage.city}
                       </span>
                     ) : null}
@@ -250,7 +250,7 @@ export function GalleryClientPage({ images, cities, months }: GalleryClientPageP
                   e.stopPropagation()
                   nextImage()
                 }}
-                className="absolute right-4 z-10 border border-white/20 p-3 text-white/60 transition-all hover:border-gold hover:text-gold lg:right-8"
+                className="absolute right-4 z-10 border border-white/20 p-3 text-white/60 transition-all hover:border-crimson hover:text-crimson lg:right-8"
               >
                 <ChevronRight size={24} />
               </button>

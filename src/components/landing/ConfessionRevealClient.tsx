@@ -92,13 +92,13 @@ export function ConfessionRevealClient() {
         className="pointer-events-none absolute inset-0 opacity-0"
         style={{
           background:
-            'radial-gradient(circle at 50% 42%, rgba(201,168,76,0.45) 0%, rgba(201,168,76,0.12) 35%, transparent 62%)',
+            'radial-gradient(circle at 50% 42%, rgba(139,0,0,0.12) 0%, transparent 55%)',
         }}
       />
       <div className="section-number absolute left-8 top-8 opacity-20">02</div>
 
       <div className="relative z-10 mx-auto max-w-2xl text-center">
-        <p className="mb-10 font-body text-[10px] uppercase tracking-[0.35em] text-gold">The confession</p>
+        <p className="mb-10 font-body text-[10px] uppercase tracking-[0.35em] text-crimson">The confession</p>
         <div className="space-y-4">
           {LINES.map((line, i) => (
             <p
@@ -108,8 +108,8 @@ export function ConfessionRevealClient() {
               }}
               className={`font-display leading-snug md:text-xl ${
                 i === LINES.length - 1
-                  ? 'text-gradient-gold text-3xl'
-                  : 'text-lg border-l-2 border-gold pl-3 text-text-primary'
+                  ? 'text-crimson-gradient text-3xl'
+                  : 'text-lg border-l-2 border-crimson pl-3 text-text-primary'
               }`}
               style={{ opacity: i < LINES.length - 1 ? undefined : 1 }}
             >
@@ -119,7 +119,7 @@ export function ConfessionRevealClient() {
         </div>
         <Link
           href="/confession"
-          className="mt-14 inline-block border border-gold bg-gold px-8 py-3 font-body text-sm font-medium uppercase tracking-widest text-charcoal transition-colors hover:bg-gold-light"
+          className="mt-14 inline-block border border-crimson bg-crimson px-8 py-3 font-body text-sm font-medium uppercase tracking-widest text-white transition-colors hover:bg-crimson-bright"
         >
           Make This Your Confession
         </Link>

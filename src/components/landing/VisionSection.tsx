@@ -15,7 +15,7 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
   const activities = cmsLines(content['landing.vision.activities'], DEFAULT_ACTIVITIES)
 
   return (
-    <section className="py-32 px-6" style={{ background: 'rgb(var(--color-bg))' }}>
+    <section className="py-24 px-6" style={{ background: 'rgb(var(--color-bg))' }}>
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-32 items-center">
         <motion.div
           initial={{ opacity: 0, x: -32 }}
@@ -33,7 +33,7 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
           >
             {content['landing.vision.heading'] || 'Building a community'}
             <br />
-            <span className="text-gold-gradient italic">
+            <span className="text-crimson-gradient italic">
               {content['landing.vision.subheading'] || 'Jesus to Nations'}
             </span>
           </h2>
@@ -61,7 +61,7 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
             >
               {content['landing.vision.mission.heading'] || 'Jesus to Nations'}
             </p>
-            <p className="font-display text-lg italic text-gold opacity-70">
+            <p className="font-display text-lg italic text-crimson opacity-70">
               {content['landing.vision.mission.scripture'] || '2 Corinthians 5:17–21'}
             </p>
           </div>
@@ -78,7 +78,7 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
                 transition={{ delay: 0.3 + i * 0.08 }}
                 className="flex items-start gap-4"
               >
-                <div className="w-px h-4 bg-gold opacity-60 mt-1 shrink-0" />
+                <div className="w-px h-4 bg-crimson opacity-60 mt-1 shrink-0" />
                 <p
                   className="font-body text-sm leading-relaxed"
                   style={{ color: 'rgb(var(--color-text-secondary))' }}

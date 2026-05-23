@@ -110,7 +110,7 @@ export function getBaseDesign(content: {
                     border: {
                       borderTopWidth: '3px',
                       borderTopStyle: 'solid',
-                      borderTopColor: '#C9A84C',
+                      borderTopColor: '#8B0000',
                     },
                     containerPadding: '0px',
                   },
@@ -157,9 +157,9 @@ export function getBaseDesign(content: {
                           },
                           buttonColors: {
                             color: '#0F0F0F',
-                            backgroundColor: '#C9A84C',
+                            backgroundColor: '#8B0000',
                             hoverColor: '#0F0F0F',
-                            hoverBackgroundColor: '#E8C96A',
+                            hoverBackgroundColor: '#A00000',
                           },
                           size: { autoWidth: false, width: '200px' },
                           textAlign: 'left',
@@ -199,7 +199,7 @@ export function getBaseDesign(content: {
                     border: {
                       borderTopWidth: '1px',
                       borderTopStyle: 'solid',
-                      borderTopColor: '#C9A84C',
+                      borderTopColor: '#8B0000',
                     },
                     containerPadding: '0px',
                   },

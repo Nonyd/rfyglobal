@@ -47,9 +47,9 @@ export default async function PrayerWallPage() {
 
           <div
             className="flex items-start gap-3 p-4 mb-10 border"
-            style={{ borderColor: 'rgba(201,168,76,0.3)', background: 'rgba(201,168,76,0.05)' }}
+            style={{ borderColor: 'rgba(139,0,0,0.3)', background: 'rgba(139,0,0,0.05)' }}
           >
-            <span className="text-gold text-lg shrink-0">🔒</span>
+            <span className="text-crimson text-lg shrink-0">🔒</span>
             <p className="font-body text-sm leading-relaxed" style={{ color: '#A0A0A0' }}>
               {content['prayer.privacy'] ||
                 'Your prayer request is completely private — it is seen only by Minister Yadah and the Room For You prayer team. It will never be publicly displayed.'}

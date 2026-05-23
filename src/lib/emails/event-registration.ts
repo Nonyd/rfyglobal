@@ -66,7 +66,7 @@ function buildDefaultEventRegistrationHtml({
       <div style="max-width:600px;margin:0 auto;background:#0F0F0F;">
 
         <div style="padding:40px;">
-          <p style="color:#C9A84C;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;margin:0 0 8px;">
+          <p style="color:#8B0000;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;margin:0 0 8px;">
             Room For You · Event Registration
           </p>
 
@@ -77,10 +77,10 @@ function buildDefaultEventRegistrationHtml({
             We'll see you there.
           </p>
 
-          <div style="height:1px;background:linear-gradient(90deg,#C9A84C,transparent);margin:0 0 32px;"></div>
+          <div style="height:1px;background:linear-gradient(90deg,#8B0000,transparent);margin:0 0 32px;"></div>
 
           <!-- Event details -->
-          <h2 style="color:#C9A84C;font-size:16px;font-weight:600;margin:0 0 20px;letter-spacing:0.05em;">
+          <h2 style="color:#8B0000;font-size:16px;font-weight:600;margin:0 0 20px;letter-spacing:0.05em;">
             ${event.title}
           </h2>
 
@@ -125,7 +125,7 @@ function buildDefaultEventRegistrationHtml({
             </tr>
           </table>
 
-          <div style="height:1px;background:linear-gradient(90deg,transparent,#C9A84C,transparent);margin:0 0 32px;"></div>
+          <div style="height:1px;background:linear-gradient(90deg,transparent,#8B0000,transparent);margin:0 0 32px;"></div>
 
           <p style="color:#A0A0A0;font-size:14px;line-height:1.8;margin:0 0 24px;">
             We are looking forward to seeing you. Come ready to worship, pray,
@@ -135,7 +135,7 @@ function buildDefaultEventRegistrationHtml({
 
           <div style="text-align:center;margin:32px 0;">
             <a href="https://rfyglobal.org/events"
-              style="display:inline-block;background:#C9A84C;color:#0F0F0F;padding:14px 32px;font-size:12px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;">
+              style="display:inline-block;background:#8B0000;color:#0F0F0F;padding:14px 32px;font-size:12px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;text-decoration:none;">
               View All Events →
             </a>
           </div>

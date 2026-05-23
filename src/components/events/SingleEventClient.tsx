@@ -34,7 +34,7 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
             className="pointer-events-auto flex items-center gap-2 font-body text-xs uppercase tracking-widest transition-colors"
             style={{ color: 'rgba(248,248,248,0.5)' }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = '#C9A84C'
+              e.currentTarget.style.color = '#8B0000'
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.color = 'rgba(248,248,248,0.5)'
@@ -60,7 +60,7 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
               style={{
                 aspectRatio: '3/4',
                 background: '#0A0A0A',
-                border: '1px solid rgba(201,168,76,0.15)',
+                border: '1px solid rgba(139,0,0,0.15)',
               }}
             >
               {event.imageUrl ? (
@@ -79,7 +79,7 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
                     style={{
                       fontSize: '8rem',
                       color: 'transparent',
-                      WebkitTextStroke: '1px rgba(201,168,76,0.2)',
+                      WebkitTextStroke: '1px rgba(139,0,0,0.2)',
                     }}
                   >
                     RFY
@@ -92,10 +92,10 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
                 style={{
                   background: 'rgba(15,15,15,0.9)',
                   backdropFilter: 'blur(8px)',
-                  border: '1px solid rgba(201,168,76,0.4)',
+                  border: '1px solid rgba(139,0,0,0.4)',
                 }}
               >
-                <p className="font-display text-2xl font-bold leading-none text-gold">{dayNum}</p>
+                <p className="font-display text-2xl font-bold leading-none text-crimson">{dayNum}</p>
                 <p className="label-text mt-0.5 opacity-70">{monthShort}</p>
               </div>
             </div>
@@ -109,7 +109,7 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
             className="min-w-0 flex-1"
           >
             <div className="mb-4 flex items-center gap-2">
-              <MapPin size={12} className="text-gold" />
+              <MapPin size={12} className="text-crimson" />
               <p className="label-text">{event.city}</p>
               {isPast && (
                 <span
@@ -137,9 +137,9 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
               <div className="flex items-start gap-4">
                 <div
                   className="flex h-8 w-8 shrink-0 items-center justify-center border"
-                  style={{ borderColor: 'rgba(201,168,76,0.25)' }}
+                  style={{ borderColor: 'rgba(139,0,0,0.25)' }}
                 >
-                  <Calendar size={13} className="text-gold" />
+                  <Calendar size={13} className="text-crimson" />
                 </div>
                 <div>
                   <p className="label-text mb-0.5 opacity-40">Date</p>
@@ -151,9 +151,9 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
                 <div className="flex items-start gap-4">
                   <div
                     className="flex h-8 w-8 shrink-0 items-center justify-center border"
-                    style={{ borderColor: 'rgba(201,168,76,0.25)' }}
+                    style={{ borderColor: 'rgba(139,0,0,0.25)' }}
                   >
-                    <Clock size={13} className="text-gold" />
+                    <Clock size={13} className="text-crimson" />
                   </div>
                   <div>
                     <p className="label-text mb-0.5 opacity-40">Time</p>
@@ -165,9 +165,9 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
               <div className="flex items-start gap-4">
                 <div
                   className="flex h-8 w-8 shrink-0 items-center justify-center border"
-                  style={{ borderColor: 'rgba(201,168,76,0.25)' }}
+                  style={{ borderColor: 'rgba(139,0,0,0.25)' }}
                 >
-                  <MapPin size={13} className="text-gold" />
+                  <MapPin size={13} className="text-crimson" />
                 </div>
                 <div>
                   <p className="label-text mb-0.5 opacity-40">Venue</p>
@@ -187,7 +187,7 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
                   type="button"
                   onClick={() => setRegistrationOpen(true)}
                   className="inline-flex items-center px-7 py-3.5 font-body text-xs font-semibold uppercase tracking-widest transition-all duration-300"
-                  style={{ background: '#C9A84C', color: '#0F0F0F' }}
+                  style={{ background: '#8B0000', color: '#0F0F0F' }}
                 >
                   Register to Attend →
                 </button>
@@ -199,8 +199,8 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
                     color: 'rgba(248,248,248,0.6)',
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(201,168,76,0.4)'
-                    e.currentTarget.style.color = '#C9A84C'
+                    e.currentTarget.style.borderColor = 'rgba(139,0,0,0.4)'
+                    e.currentTarget.style.color = '#8B0000'
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'
@@ -225,7 +225,7 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
               </div>
               <Link
                 href="/events"
-                className="flex items-center gap-2 font-body text-xs uppercase tracking-widest text-gold transition-opacity hover:opacity-70"
+                className="flex items-center gap-2 font-body text-xs uppercase tracking-widest text-crimson transition-opacity hover:opacity-70"
               >
                 All Events <ArrowRight size={14} />
               </Link>
@@ -245,7 +245,7 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
                     className="hover-lift group block border transition-all duration-300"
                     style={{ borderColor: 'rgba(255,255,255,0.08)' }}
                     onMouseEnter={(el) => {
-                      el.currentTarget.style.borderColor = 'rgba(201,168,76,0.3)'
+                      el.currentTarget.style.borderColor = 'rgba(139,0,0,0.3)'
                     }}
                     onMouseLeave={(el) => {
                       el.currentTarget.style.borderColor = 'rgba(255,255,255,0.08)'
@@ -269,7 +269,7 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
                             className="font-display text-4xl font-bold"
                             style={{
                               color: 'transparent',
-                              WebkitTextStroke: '1px rgba(201,168,76,0.2)',
+                              WebkitTextStroke: '1px rgba(139,0,0,0.2)',
                             }}
                           >
                             RFY
@@ -281,10 +281,10 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
                         style={{
                           background: 'rgba(15,15,15,0.9)',
                           backdropFilter: 'blur(4px)',
-                          border: '1px solid rgba(201,168,76,0.3)',
+                          border: '1px solid rgba(139,0,0,0.3)',
                         }}
                       >
-                        <p className="font-display text-lg font-bold leading-none text-gold">
+                        <p className="font-display text-lg font-bold leading-none text-crimson">
                           {format(new Date(e.date), 'dd')}
                         </p>
                         <p className="label-text text-[9px] opacity-60">
@@ -295,7 +295,7 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
 
                     <div className="p-4">
                       <p className="label-text mb-1.5 opacity-40">{e.city}</p>
-                      <h3 className="font-display text-base leading-tight text-snow transition-colors group-hover:text-gold">
+                      <h3 className="font-display text-base leading-tight text-snow transition-colors group-hover:text-crimson">
                         {e.title}
                       </h3>
                       {e.time && <p className="mt-1.5 font-body text-xs text-mist">{e.time}</p>}

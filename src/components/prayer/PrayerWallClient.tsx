@@ -96,15 +96,15 @@ export function PrayerWallClient() {
       >
         <div
           className="w-16 h-16 rounded-full border-2 flex items-center justify-center mx-auto mb-6"
-          style={{ borderColor: '#C9A84C' }}
+          style={{ borderColor: '#8B0000' }}
         >
-          <span className="text-gold text-2xl">🙏</span>
+          <span className="text-crimson text-2xl">🙏</span>
         </div>
         <div className="gold-line max-w-[60px] mx-auto mb-6 opacity-30" />
         <h2 className="font-display text-snow text-3xl font-bold mb-3">Received.</h2>
         <p className="font-body text-mist leading-relaxed max-w-md mx-auto">
           Your prayer request has been received. Minister Yadah and the prayer team will be lifting you up in prayer.
-          <span className="text-gold"> Jesus cares about what concerns you.</span>
+          <span className="text-crimson"> Jesus cares about what concerns you.</span>
         </p>
       </motion.div>
     )
@@ -124,7 +124,7 @@ export function PrayerWallClient() {
           placeholder="your@email.com"
           required
           style={inputStyle}
-          onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+          onFocus={(e) => (e.target.style.borderColor = '#8B0000')}
           onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.12)')}
         />
         <p className="font-body text-xs mt-1" style={{ color: '#585858' }}>
@@ -148,7 +148,7 @@ export function PrayerWallClient() {
               </p>
               <p className="font-body text-xs mt-1" style={{ color: 'rgba(252,165,165,0.7)' }}>
                 Please{' '}
-                <Link href="/join" className="underline" style={{ color: '#C9A84C' }}>
+                <Link href="/join" className="underline" style={{ color: '#8B0000' }}>
                   join the community
                 </Link>{' '}
                 first — it only takes a minute.
@@ -172,7 +172,7 @@ export function PrayerWallClient() {
             onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
             placeholder="Your full name"
             style={inputStyle}
-            onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+            onFocus={(e) => (e.target.style.borderColor = '#8B0000')}
             onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.12)')}
           />
         </motion.div>
@@ -186,7 +186,7 @@ export function PrayerWallClient() {
           placeholder="e.g. Healing, Provision, Guidance..."
           required
           style={inputStyle}
-          onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+          onFocus={(e) => (e.target.style.borderColor = '#8B0000')}
           onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.12)')}
         />
       </div>
@@ -200,7 +200,7 @@ export function PrayerWallClient() {
           required
           rows={6}
           style={{ ...inputStyle, resize: 'none' }}
-          onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+          onFocus={(e) => (e.target.style.borderColor = '#8B0000')}
           onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.12)')}
         />
         <p
@@ -215,7 +215,7 @@ export function PrayerWallClient() {
         type="submit"
         disabled={submitting}
         className="w-full py-4 font-body font-semibold text-xs tracking-widest uppercase transition-all disabled:opacity-40"
-        style={{ background: '#C9A84C', color: '#0F0F0F' }}
+        style={{ background: '#8B0000', color: '#0F0F0F' }}
       >
         {submitting ? 'Submitting…' : 'Submit Prayer Request →'}
       </button>

@@ -36,7 +36,7 @@ export async function notifyPartnerGivingConfirmationIfNeeded(reference: string)
     <html>
     <body style="margin:0;padding:0;background:#0F0F0F;font-family:'General Sans',Arial,sans-serif;">
       <div style="max-width:600px;margin:0 auto;background:#0F0F0F;padding:40px;">
-        <p style="color:#C9A84C;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;margin:0 0 8px;">
+        <p style="color:#8B0000;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;margin:0 0 8px;">
           Room For You · Partnership
         </p>
         <h1 style="color:#F8F8F8;font-size:24px;font-weight:600;margin:0 0 16px;">
@@ -46,7 +46,7 @@ export async function notifyPartnerGivingConfirmationIfNeeded(reference: string)
           Your gift of <strong style="color:#F8F8F8;">${record.currency} ${amountStr}</strong> has been received.
           You are sowing into the Kingdom — we are grateful to partner with you.
         </p>
-        <div style="height:1px;background:linear-gradient(90deg,transparent,#C9A84C,transparent);margin:24px 0;"></div>
+        <div style="height:1px;background:linear-gradient(90deg,transparent,#8B0000,transparent);margin:24px 0;"></div>
         <p style="color:#585858;font-size:11px;text-align:center;margin:0;">
           Room For You · rfyglobal.org
         </p>

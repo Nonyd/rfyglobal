@@ -13,14 +13,14 @@ function heroHeadlineLines(headline1: string, headline2: string) {
   const parts = h1.split(/\s+/)
   if (parts.length >= 2) {
     return [
-      { text: parts.slice(0, -1).join(' ').toUpperCase(), style: undefined as string | undefined, delay: 0.2 },
-      { text: parts[parts.length - 1]!.toUpperCase(), style: 'text-gold-gradient', delay: 0.5 },
-      { text: h2.toUpperCase(), style: undefined, delay: 0.8 },
+      { text: parts.slice(0, -1).join(' ').toUpperCase(), muted: true, delay: 0.2 },
+      { text: parts[parts.length - 1]!.toUpperCase(), muted: false, delay: 0.5 },
+      { text: h2.toUpperCase(), muted: false, delay: 0.8 },
     ]
   }
   return [
-    { text: h1.toUpperCase(), style: undefined, delay: 0.2 },
-    { text: h2.toUpperCase(), style: 'text-gold-gradient', delay: 0.5 },
+    { text: h1.toUpperCase(), muted: false, delay: 0.2 },
+    { text: h2.toUpperCase(), muted: false, delay: 0.5 },
   ]
 }
 
@@ -45,14 +45,12 @@ export function Hero({ content }: { content: Record<string, string> }) {
       <Navbar />
 
       <div
-        className="absolute pointer-events-none animate-breathe"
+        className="absolute pointer-events-none"
         style={{
           width: '600px',
           height: '600px',
           borderRadius: '50%',
-          background: isDark
-            ? 'radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%)'
-            : 'radial-gradient(circle, rgba(139,90,0,0.05) 0%, transparent 70%)',
+          background: 'radial-gradient(circle at 70% 50%, rgba(139,0,0,0.06) 0%, transparent 60%)',
           top: '50%',
           right: '10%',
           transform: 'translateY(-50%)',
@@ -83,7 +81,8 @@ export function Hero({ content }: { content: Record<string, string> }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.8, delay: 0.1 }}
-          className="label-text mb-10"
+          className="label-text mb-10 pl-4"
+          style={{ borderLeft: '2px solid #8B0000' }}
         >
           {content['landing.hero.eyebrow'] || 'Worship · Prayer · Study · Community'}
         </motion.p>
@@ -95,14 +94,14 @@ export function Hero({ content }: { content: Record<string, string> }) {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: word.delay, ease: [0.16, 1, 0.3, 1] }}
-              className={`font-display font-bold leading-none ${
-                i === 0 ? (isDark ? 'text-outline' : 'text-outline-gold') : word.style ?? ''
-              }`}
+              className="font-display font-bold leading-none"
               style={{
                 fontSize: 'clamp(4rem, 11vw, 10rem)',
-                ...(i === words.length - 1 && !word.style
-                  ? { color: isDark ? '#F8F8F8' : '#0F0C08' }
-                  : {}),
+                color: word.muted
+                  ? 'rgba(248,248,248,0.25)'
+                  : isDark
+                    ? '#F8F8F8'
+                    : '#0F0C08',
               }}
             >
               {word.text}
@@ -136,13 +135,15 @@ export function Hero({ content }: { content: Record<string, string> }) {
         >
           <Link
             href="/join"
-            className="inline-flex items-center px-8 py-4 bg-gold text-void font-body text-[11px] font-semibold tracking-[0.2em] uppercase hover:bg-gold-bright transition-all duration-300"
+            className="inline-flex items-center px-8 py-4 font-body text-[11px] font-semibold tracking-[0.2em] uppercase text-white transition-all duration-300 hover:opacity-90"
+            style={{ background: '#8B0000' }}
           >
             {content['landing.hero.cta.primary'] || 'Join the Community'}
           </Link>
           <Link
             href="/about"
-            className="inline-flex items-center px-8 py-4 border border-ash text-mist font-body text-[11px] tracking-[0.2em] uppercase hover:border-gold hover:text-gold transition-all duration-300"
+            className="inline-flex items-center px-8 py-4 border font-body text-[11px] tracking-[0.2em] uppercase text-white transition-all duration-300 hover:bg-white/5"
+            style={{ borderColor: 'rgba(255,255,255,0.4)' }}
           >
             {content['landing.hero.cta.secondary'] || 'Our Story'}
           </Link>
@@ -158,12 +159,10 @@ export function Hero({ content }: { content: Record<string, string> }) {
         <div
           className="w-px h-16 opacity-40"
           style={{
-            background: isDark
-              ? 'linear-gradient(to bottom, transparent, #C9A84C)'
-              : 'linear-gradient(to bottom, transparent, #8B5A00)',
+            background: 'linear-gradient(to bottom, transparent, #8B0000)',
           }}
         />
-        <div className="w-1 h-1 rounded-full bg-gold animate-pulse" />
+        <div className="w-1 h-1 rounded-full bg-crimson" />
       </motion.div>
     </section>
   )

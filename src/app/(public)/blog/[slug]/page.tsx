@@ -85,14 +85,14 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
       <article className="mx-auto max-w-3xl px-6 pt-20 md:pt-24">
         <Link
           href="/blog"
-          className="mb-10 inline-flex items-center gap-2 font-body text-sm text-gold/70 transition-colors hover:text-gold"
+          className="mb-10 inline-flex items-center gap-2 font-body text-sm text-crimson/70 transition-colors hover:text-crimson"
         >
           ← Back to Devotionals
         </Link>
 
         <header className="mb-10">
           {post.publishedAt && (
-            <p className="mb-4 font-body text-[10px] uppercase tracking-[0.35em] text-gold/80">
+            <p className="mb-4 font-body text-[10px] uppercase tracking-[0.35em] text-crimson/80">
               {formatDate(post.publishedAt)}
             </p>
           )}
@@ -100,7 +100,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
           {post.excerpt && (
             <p className="font-body text-lg leading-relaxed text-text-secondary">{post.excerpt}</p>
           )}
-          <div className="mt-8 h-px bg-gradient-to-r from-gold/50 to-transparent" />
+          <div className="mt-8 h-px bg-gradient-to-r from-crimson/50 to-transparent" />
         </header>
 
         {post.coverImage && (
@@ -116,9 +116,9 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
 
         <div className="prose-rfy prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: post.content }} />
 
-        <div className="mt-16 border-t border-gold/20 pt-8 text-center">
+        <div className="mt-16 border-t border-crimson/20 pt-8 text-center">
           <p className="font-body text-sm text-text-muted">Room For You · rfyglobal.org</p>
-          <Link href="/blog" className="mt-4 inline-block font-body text-sm text-gold hover:underline">
+          <Link href="/blog" className="mt-4 inline-block font-body text-sm text-crimson hover:underline">
             Read more devotionals →
           </Link>
         </div>

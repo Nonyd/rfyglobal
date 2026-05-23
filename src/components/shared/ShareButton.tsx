@@ -69,7 +69,7 @@ export function ShareButton({ scriptureId, reference, compact }: ShareButtonProp
         type="button"
         onClick={() => setOpen(!open)}
         className={cn(
-          'flex items-center gap-2 border border-white/20 text-white/50 font-body transition-all hover:border-gold/40 hover:text-gold',
+          'flex items-center gap-2 border border-white/20 text-white/50 font-body transition-all hover:border-crimson/40 hover:text-crimson',
           compact ? 'p-2' : 'px-5 py-2.5 text-sm tracking-widest uppercase',
         )}
       >
@@ -82,7 +82,7 @@ export function ShareButton({ scriptureId, reference, compact }: ShareButtonProp
           <div className="fixed inset-0 z-10" aria-hidden onClick={() => setOpen(false)} />
           <div
             className="absolute bottom-full right-0 z-20 mb-2 w-48 border py-1"
-            style={{ background: '#111', borderColor: 'rgba(201,168,76,0.3)' }}
+            style={{ background: '#111', borderColor: 'rgba(139,0,0,0.3)' }}
           >
             {shareOptions.map((opt) => (
               <button
@@ -92,9 +92,9 @@ export function ShareButton({ scriptureId, reference, compact }: ShareButtonProp
                   await Promise.resolve(opt.action())
                   setOpen(false)
                 }}
-                className="flex w-full items-center gap-3 px-4 py-2.5 text-left font-body text-sm text-white/70 transition-colors hover:bg-gold/10 hover:text-white"
+                className="flex w-full items-center gap-3 px-4 py-2.5 text-left font-body text-sm text-white/70 transition-colors hover:bg-crimson/10 hover:text-white"
               >
-                <opt.icon size={14} className="text-gold/60" />
+                <opt.icon size={14} className="text-crimson/60" />
                 {opt.label}
               </button>
             ))}

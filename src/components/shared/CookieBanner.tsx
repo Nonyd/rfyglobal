@@ -39,7 +39,7 @@ export function CookieBanner() {
             className="p-5 flex flex-col gap-4"
             style={{
               background: '#1A1A1A',
-              border: '1px solid rgba(201,168,76,0.2)',
+              border: '1px solid rgba(139,0,0,0.2)',
               boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
             }}
           >
@@ -48,11 +48,11 @@ export function CookieBanner() {
               <p className="font-body text-mist text-xs leading-relaxed">
                 We use cookies to remember your preferences and improve your experience. By using this site,
                 you agree to our{' '}
-                <Link href="/cookies" className="text-gold hover:opacity-70 transition-opacity underline">
+                <Link href="/cookies" className="text-crimson hover:opacity-70 transition-opacity underline">
                   Cookie Policy
                 </Link>{' '}
                 and{' '}
-                <Link href="/privacy" className="text-gold hover:opacity-70 transition-opacity underline">
+                <Link href="/privacy" className="text-crimson hover:opacity-70 transition-opacity underline">
                   Privacy Policy
                 </Link>
                 .
@@ -64,7 +64,7 @@ export function CookieBanner() {
                 type="button"
                 onClick={accept}
                 className="flex-1 py-2.5 font-body text-xs font-semibold tracking-widest uppercase transition-all"
-                style={{ background: '#C9A84C', color: '#0F0F0F' }}
+                style={{ background: '#8B0000', color: '#0F0F0F' }}
               >
                 Accept
               </button>

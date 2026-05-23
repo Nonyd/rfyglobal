@@ -60,7 +60,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
           whileInView="show"
           viewport={{ once: true }}
           variants={fadeUp}
-          className="mb-6 font-body text-[10px] uppercase tracking-[0.4em] text-gold"
+          className="mb-6 font-body text-[10px] uppercase tracking-[0.4em] text-crimson"
         >
           {content['about.hero.eyebrow'] || 'Our Story'}
         </motion.p>
@@ -79,16 +79,16 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
           style={{ fontSize: 'clamp(3rem, 8vw, 7rem)' }}
         >
           <span className="block text-text-primary">{content['about.hero.headline1']}</span>
-          <span className="text-gradient-gold block italic">{content['about.hero.headline2']}</span>
+          <span className="text-crimson-gradient block italic">{content['about.hero.headline2']}</span>
         </motion.h1>
-        <div className="mx-auto h-px max-w-sm bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
+        <div className="mx-auto h-px max-w-sm bg-gradient-to-r from-transparent via-crimson/40 to-transparent" />
       </section>
 
       <section className="mx-auto max-w-6xl px-6 py-20">
         <div className="relative grid grid-cols-1 gap-0 lg:grid-cols-2">
           <div
             className="absolute left-1/2 top-0 hidden bottom-0 w-px lg:block"
-            style={{ background: 'rgba(201,168,76,0.2)' }}
+            style={{ background: 'rgba(139,0,0,0.2)' }}
           />
 
           <motion.div
@@ -98,7 +98,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
             variants={fadeUp}
             className="pb-12 lg:pb-0 lg:pr-16"
           >
-            <p className="mb-6 font-body text-[10px] uppercase tracking-[0.4em] text-gold">The Vision</p>
+            <p className="mb-6 font-body text-[10px] uppercase tracking-[0.4em] text-crimson">The Vision</p>
             <p className="font-body text-lg leading-relaxed text-text-secondary">{content['about.vision.text']}</p>
           </motion.div>
 
@@ -115,11 +115,11 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
             }}
             className="lg:pl-16"
           >
-            <p className="mb-6 font-body text-[10px] uppercase tracking-[0.4em] text-gold">The Mission</p>
+            <p className="mb-6 font-body text-[10px] uppercase tracking-[0.4em] text-crimson">The Mission</p>
             <p className="font-display text-4xl leading-none text-text-primary lg:text-5xl">
               {content['about.mission.heading']}
             </p>
-            <p className="font-display text-lg italic text-gold/70">{content['about.mission.scripture']}</p>
+            <p className="font-display text-lg italic text-crimson/70">{content['about.mission.scripture']}</p>
             <p className="mt-4 max-w-sm font-body text-sm leading-relaxed text-text-secondary">
               {content['about.mission.text']}
             </p>
@@ -151,7 +151,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
                 }}
                 className="rfy-card p-6"
               >
-                <p className="mb-4 font-display text-3xl text-gold/30">{item.number}</p>
+                <p className="mb-4 font-display text-3xl text-crimson/30">{item.number}</p>
                 <h3 className="mb-2 font-display text-lg text-text-primary">{item.title}</h3>
                 <p className="font-body text-sm leading-relaxed text-text-secondary">{item.desc}</p>
               </motion.div>
@@ -170,7 +170,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
             whileInView="show"
             viewport={{ once: true }}
             variants={fadeUp}
-            className="mb-12 font-display text-4xl italic text-gold lg:text-5xl"
+            className="mb-12 font-display text-4xl italic text-crimson lg:text-5xl"
           >
             {content['about.confession.heading'] || 'We Declare'}
           </motion.h2>
@@ -195,7 +195,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
           </motion.p>
           <Link
             href="/confession"
-            className="inline-flex items-center gap-2 font-body text-sm uppercase tracking-widest text-gold hover:underline"
+            className="inline-flex items-center gap-2 font-body text-sm uppercase tracking-widest text-crimson hover:underline"
           >
             {content['about.confession.link'] || 'Read the full confession →'}
           </Link>
@@ -210,14 +210,14 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
           className="pointer-events-none absolute top-0 right-0 bottom-0 w-1/2"
           style={{
             background: isDark
-              ? 'radial-gradient(ellipse 80% 60% at 100% 50%, rgba(201,168,76,0.06), transparent)'
+              ? 'radial-gradient(ellipse 80% 60% at 100% 50%, rgba(139,0,0,0.06), transparent)'
               : 'radial-gradient(ellipse 80% 60% at 100% 50%, rgba(139,90,0,0.05), transparent)',
           }}
         />
 
         <div className="relative z-10 mx-auto grid max-w-6xl grid-cols-1 items-center gap-16 lg:grid-cols-2">
           <motion.div initial="hidden" whileInView="show" viewport={{ once: true }} variants={fadeUp}>
-            <p className="font-display mb-2 text-2xl italic text-gold">
+            <p className="font-display mb-2 text-2xl italic text-crimson">
               {content['about.shepherd.heading'] || 'The Shepherd'}
             </p>
             <h2
@@ -226,10 +226,10 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
             >
               {content['about.shepherd.name'] || 'Minister Yadah'}
             </h2>
-            <p className="mb-1 font-body text-[10px] uppercase tracking-[0.35em] text-gold/60">
+            <p className="mb-1 font-body text-[10px] uppercase tracking-[0.35em] text-crimson/60">
               {content['about.shepherd.role'] || 'Founder · Room For You'}
             </p>
-            <div className="mb-8 h-px w-24 bg-gold/50" />
+            <div className="mb-8 h-px w-24 bg-crimson/50" />
 
             <div
               className="space-y-5 font-body text-base leading-relaxed"
@@ -244,7 +244,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
                 href="https://yadahworld.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 font-body text-sm uppercase tracking-widest text-gold hover:underline"
+                className="inline-flex items-center gap-2 font-body text-sm uppercase tracking-widest text-crimson hover:underline"
               >
                 {content['about.shepherd.websiteLink'] || 'Visit yadahworld.com →'}
               </Link>
@@ -269,7 +269,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
             transition={{ duration: 0.8 }}
             className="relative"
           >
-            <div className="absolute -inset-2 border border-gold/10" />
+            <div className="absolute -inset-2 border border-crimson/10" />
             <Image
               src={portraitUrl}
               alt="Minister Yadah — Founder of Room For You"
@@ -279,30 +279,30 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
               priority
               unoptimized={portraitUnoptimized}
             />
-            <div className="absolute bottom-0 left-0 right-0 z-20 h-1 bg-gradient-to-r from-gold/60 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 z-20 h-1 bg-gradient-to-r from-crimson/60 to-transparent" />
           </motion.div>
         </div>
       </section>
 
       <section className="surface px-6 py-24 text-center">
-        <div className="mx-auto mb-16 h-px max-w-xs bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
+        <div className="mx-auto mb-16 h-px max-w-xs bg-gradient-to-r from-transparent via-crimson/30 to-transparent" />
         <motion.p
           initial="hidden"
           whileInView="show"
           viewport={{ once: true }}
           variants={fadeUp}
-          className="font-display mb-4 text-4xl leading-none italic text-gold lg:text-6xl"
+          className="font-display mb-4 text-4xl leading-none italic text-crimson lg:text-6xl"
         >
           {content['about.cta.headline']}
         </motion.p>
         <p className="mb-10 font-body text-text-secondary">{content['about.cta.subtext']}</p>
         <Link
           href="/join"
-          className="inline-block bg-gold px-10 py-4 font-body text-sm font-medium uppercase tracking-widest text-black transition-all duration-300 hover:bg-gold-light"
+          className="inline-block bg-crimson px-10 py-4 font-body text-sm font-medium uppercase tracking-widest text-black transition-all duration-300 hover:bg-crimson-light"
         >
           {content['about.cta.button'] || 'Join the Community'}
         </Link>
-        <div className="mx-auto mt-16 h-px max-w-xs bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
+        <div className="mx-auto mt-16 h-px max-w-xs bg-gradient-to-r from-transparent via-crimson/30 to-transparent" />
       </section>
     </div>
   )

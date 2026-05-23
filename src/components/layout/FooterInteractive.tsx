@@ -13,7 +13,7 @@ const FOOTER_NAV_LINKS = [
 ] as const
 
 const MUTED = '#585858'
-const GOLD = '#C9A84C'
+const CRIMSON = '#8B0000'
 
 function InstagramGlyph({ className }: { className?: string }) {
   return (
@@ -65,7 +65,7 @@ export function FooterNavLinks() {
           className="font-body text-[11px] tracking-[0.15em] uppercase transition-colors duration-300"
           style={{ color: MUTED }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = GOLD
+            e.currentTarget.style.color = CRIMSON
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.color = MUTED
@@ -95,14 +95,14 @@ export function FooterSocialLinks({ items }: { items: FooterSocialItem[] }) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label={`Room For You on ${label}`}
-            className="flex h-11 w-11 items-center justify-center rounded-full border shadow-sm transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(201,168,76,0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0F0F0F]"
+            className="flex h-11 w-11 items-center justify-center rounded-full border shadow-sm transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(139,0,0,0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0F0F0F]"
             style={{
               borderColor: 'rgba(255,255,255,0.12)',
               backgroundColor: 'rgba(255,255,255,0.03)',
               color: MUTED,
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.color = GOLD
+              e.currentTarget.style.color = CRIMSON
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.color = MUTED
@@ -122,7 +122,7 @@ export function FooterCommunityLinks() {
       <a
         href="/prayer"
         style={{ color: '#A0A0A0', fontSize: '12px', fontFamily: 'General Sans, sans-serif' }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = '#C9A84C')}
+        onMouseEnter={(e) => (e.currentTarget.style.color = '#8B0000')}
         onMouseLeave={(e) => (e.currentTarget.style.color = '#A0A0A0')}
       >
         Prayer Wall
@@ -130,7 +130,7 @@ export function FooterCommunityLinks() {
       <a
         href="/testimonies"
         style={{ color: '#A0A0A0', fontSize: '12px', fontFamily: 'General Sans, sans-serif' }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = '#C9A84C')}
+        onMouseEnter={(e) => (e.currentTarget.style.color = '#8B0000')}
         onMouseLeave={(e) => (e.currentTarget.style.color = '#A0A0A0')}
       >
         Testimonies
@@ -138,7 +138,7 @@ export function FooterCommunityLinks() {
       <a
         href="/contact"
         style={{ color: '#A0A0A0', fontSize: '12px', fontFamily: 'General Sans, sans-serif' }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = '#C9A84C')}
+        onMouseEnter={(e) => (e.currentTarget.style.color = '#8B0000')}
         onMouseLeave={(e) => (e.currentTarget.style.color = '#A0A0A0')}
       >
         Contact
@@ -146,7 +146,7 @@ export function FooterCommunityLinks() {
       <a
         href="/faq"
         style={{ color: '#A0A0A0', fontSize: '12px', fontFamily: 'General Sans, sans-serif' }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = '#C9A84C')}
+        onMouseEnter={(e) => (e.currentTarget.style.color = '#8B0000')}
         onMouseLeave={(e) => (e.currentTarget.style.color = '#A0A0A0')}
       >
         FAQs
@@ -172,7 +172,7 @@ export function FooterLegalLinks() {
           className="font-body transition-colors duration-300"
           style={{ color: MUTED, fontSize: '11px' }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.color = GOLD
+            e.currentTarget.style.color = CRIMSON
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.color = MUTED

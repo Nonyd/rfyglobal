@@ -14,7 +14,7 @@ import { RedirectCountdownBanner } from '@/components/shared/RedirectCountdownBa
 type PublicForm = Omit<Form, 'notifyEmail'> & { fields: FormField[] }
 
 const inputClass =
-  'w-full border border-theme bg-surface px-4 py-3 text-sm font-body text-text-primary transition-colors placeholder:text-text-muted/60 focus:border-gold focus:outline-none'
+  'w-full border border-theme bg-surface px-4 py-3 text-sm font-body text-text-primary transition-colors placeholder:text-text-muted/60 focus:border-crimson focus:outline-none'
 
 const labelClass = 'mb-2 block text-xs font-body uppercase tracking-widest text-text-muted'
 
@@ -80,7 +80,7 @@ function FormBuilderEmailField({
           <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
             <div
               className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
-              style={{ borderColor: 'rgba(201,168,76,0.4)' }}
+              style={{ borderColor: 'rgba(139,0,0,0.4)' }}
             />
           </div>
         ) : null}
@@ -172,7 +172,7 @@ export function PublicFormRenderer({ form }: { form: PublicForm }) {
       <div className="text-center px-6 py-12">
         <div
           className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full"
-          style={{ background: 'rgba(201,168,76,0.1)', border: '1px solid rgba(201,168,76,0.3)' }}
+          style={{ background: 'rgba(139,0,0,0.1)', border: '1px solid rgba(139,0,0,0.3)' }}
         >
           <span style={{ fontSize: '24px' }}>✓</span>
         </div>
@@ -188,7 +188,7 @@ export function PublicFormRenderer({ form }: { form: PublicForm }) {
         ) : (
           <Link
             href="/"
-            className="inline-block font-body text-sm tracking-wide text-gold transition-colors hover:text-gold-light"
+            className="inline-block font-body text-sm tracking-wide text-crimson transition-colors hover:text-crimson-light"
           >
             Back to Home
           </Link>
@@ -331,7 +331,7 @@ export function PublicFormRenderer({ form }: { form: PublicForm }) {
                     type="file"
                     className={cn(
                       inputClass,
-                      'py-2 file:mr-4 file:bg-gold/20 file:text-gold file:border-0 file:px-3 file:py-1'
+                      'py-2 file:mr-4 file:bg-crimson/20 file:text-crimson file:border-0 file:px-3 file:py-1'
                     )}
                     onChange={(e) => fctrl.onChange(e.target.files?.[0]?.name ?? '')}
                   />
@@ -402,7 +402,7 @@ export function PublicFormRenderer({ form }: { form: PublicForm }) {
         <button
           type="submit"
           disabled={submitting || emailSubmitBlocked}
-          className="w-full sm:w-auto px-10 py-3.5 bg-gold text-black text-sm font-body font-medium tracking-wide hover:bg-gold-light transition-colors disabled:opacity-50"
+          className="w-full sm:w-auto px-10 py-3.5 bg-crimson text-black text-sm font-body font-medium tracking-wide hover:bg-crimson-light transition-colors disabled:opacity-50"
         >
           {submitting ? 'Submitting…' : 'Submit'}
         </button>

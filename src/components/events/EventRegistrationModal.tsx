@@ -99,14 +99,14 @@ function EventPrimaryEmailField({
             borderColor: emailExists ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.12)',
           }}
           onFocus={(ev) => {
-            if (!emailExists) ev.target.style.borderColor = '#C9A84C'
+            if (!emailExists) ev.target.style.borderColor = '#8B0000'
           }}
         />
         {checkingEmail && (
           <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
             <div
               className="h-4 w-4 animate-spin rounded-full border-2"
-              style={{ borderColor: 'rgba(201,168,76,0.3)', borderTopColor: '#C9A84C' }}
+              style={{ borderColor: 'rgba(139,0,0,0.3)', borderTopColor: '#8B0000' }}
             />
           </div>
         )}
@@ -364,7 +364,7 @@ export function EventRegistrationModal({
           required={field.required}
           rows={3}
           style={{ ...inputStyle, resize: 'none' }}
-          onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+          onFocus={(ev) => (ev.target.style.borderColor = '#8B0000')}
           onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
         />
       )
@@ -397,7 +397,7 @@ export function EventRegistrationModal({
           placeholder={field.placeholder ?? ''}
           required={field.required}
           style={inputStyle}
-          onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+          onFocus={(ev) => (ev.target.style.borderColor = '#8B0000')}
           onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
         />
       )
@@ -411,7 +411,7 @@ export function EventRegistrationModal({
           onChange={(e) => onChange(e.target.value)}
           required={field.required}
           style={inputStyle}
-          onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+          onFocus={(ev) => (ev.target.style.borderColor = '#8B0000')}
           onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
         />
       )
@@ -429,7 +429,7 @@ export function EventRegistrationModal({
                 checked={value === opt}
                 onChange={() => onChange(opt)}
                 required={field.required}
-                className="accent-[#C9A84C]"
+                className="accent-[#8B0000]"
               />
               {opt}
             </label>
@@ -447,7 +447,7 @@ export function EventRegistrationModal({
           required={field.required}
           rows={field.type === 'FILE_UPLOAD' ? 2 : 3}
           style={{ ...inputStyle, resize: 'none' }}
-          onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+          onFocus={(ev) => (ev.target.style.borderColor = '#8B0000')}
           onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
         />
       )
@@ -463,7 +463,7 @@ export function EventRegistrationModal({
         placeholder={field.placeholder ?? ''}
         required={field.required}
         style={inputStyle}
-        onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+        onFocus={(ev) => (ev.target.style.borderColor = '#8B0000')}
         onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
       />
     )
@@ -496,7 +496,7 @@ export function EventRegistrationModal({
           >
             <div
               className="max-h-[90vh] w-full max-w-lg overflow-y-auto"
-              style={{ background: '#0F0F0F', border: '1px solid rgba(201,168,76,0.2)' }}
+              style={{ background: '#0F0F0F', border: '1px solid rgba(139,0,0,0.2)' }}
             >
               {!submitted ? (
                 <div className="p-8">
@@ -567,7 +567,7 @@ export function EventRegistrationModal({
                             {bothCurrencies ? (
                               <>
                                 Pay{' '}
-                                <strong style={{ color: '#C9A84C' }}>
+                                <strong style={{ color: '#8B0000' }}>
                                   {paymentCurrency === 'NGN'
                                     ? `₦${feeNgn.toLocaleString()}`
                                     : `$${feeUsd.toLocaleString()}`}
@@ -577,7 +577,7 @@ export function EventRegistrationModal({
                             ) : (
                               <>
                                 Pay{' '}
-                                <strong style={{ color: '#C9A84C' }}>
+                                <strong style={{ color: '#8B0000' }}>
                                   {feeNgn > 0 ? `₦${feeNgn.toLocaleString()}` : `$${feeUsd.toLocaleString()}`}
                                 </strong>{' '}
                                 to complete registration (secured by Paystack).
@@ -593,9 +593,9 @@ export function EventRegistrationModal({
                                   onClick={() => setPaymentCurrency(c)}
                                   className="flex-1 py-2.5 font-body text-xs font-semibold uppercase tracking-widest transition-all"
                                   style={{
-                                    background: paymentCurrency === c ? '#C9A84C' : 'transparent',
+                                    background: paymentCurrency === c ? '#8B0000' : 'transparent',
                                     color: paymentCurrency === c ? '#0F0F0F' : '#A0A0A0',
-                                    border: `1px solid ${paymentCurrency === c ? '#C9A84C' : 'rgba(255,255,255,0.12)'}`,
+                                    border: `1px solid ${paymentCurrency === c ? '#8B0000' : 'rgba(255,255,255,0.12)'}`,
                                   }}
                                 >
                                   {c === 'NGN' ? '₦ Naira' : '$ Dollar'}
@@ -610,7 +610,7 @@ export function EventRegistrationModal({
                         type="submit"
                         disabled={submitting || primaryEmailDuplicate || usdOnlyBlocked}
                         className="mt-2 w-full py-4 font-body text-xs font-semibold uppercase tracking-widest transition-all duration-300 disabled:opacity-50"
-                        style={{ background: '#C9A84C', color: '#0F0F0F' }}
+                        style={{ background: '#8B0000', color: '#0F0F0F' }}
                       >
                         {submitting
                           ? requiresPayment
@@ -631,16 +631,16 @@ export function EventRegistrationModal({
                 <div className="p-8 text-center">
                   <div
                     className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border-2"
-                    style={{ borderColor: '#C9A84C' }}
+                    style={{ borderColor: '#8B0000' }}
                   >
-                    <CheckCircle size={28} className="text-gold" />
+                    <CheckCircle size={28} className="text-crimson" />
                   </div>
 
                   <div className="gold-line mx-auto mb-6 max-w-[60px] opacity-40" />
 
                   <h2 className="font-display mb-3 text-3xl font-bold text-snow">{"You're in!"}</h2>
                   <p className="mb-2 font-body text-sm leading-relaxed text-mist">You are registered for</p>
-                  <p className="font-display mb-6 text-lg text-gold">{eventTitle}</p>
+                  <p className="font-display mb-6 text-lg text-crimson">{eventTitle}</p>
                   <p className="mb-8 font-body text-sm leading-relaxed text-mist">
                     {successMessage ??
                       `Check your email for confirmation and event details. We'll see you there. 🙌`}
@@ -656,7 +656,7 @@ export function EventRegistrationModal({
                       type="button"
                       onClick={handleClose}
                       className="border px-8 py-3 font-body text-xs uppercase tracking-widest transition-all"
-                      style={{ borderColor: 'rgba(201,168,76,0.4)', color: '#C9A84C' }}
+                      style={{ borderColor: 'rgba(139,0,0,0.4)', color: '#8B0000' }}
                     >
                       Close
                     </button>

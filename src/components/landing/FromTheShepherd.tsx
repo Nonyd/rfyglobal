@@ -16,7 +16,7 @@ export function FromTheShepherd({ content }: { content: Record<string, string> }
     content['shepherd.portrait'] || content['shepherd.image'] || null
 
   return (
-    <section className="relative py-32 px-6" style={{ background: isDark ? '#0F0F0F' : '#E8E2D6' }}>
+    <section className="relative py-24 px-6" style={{ background: isDark ? '#0F0F0F' : '#E8E2D6' }}>
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-16 lg:gap-24 items-center relative z-10">
         {/* Left — content (3 cols) */}
         <div className="lg:col-span-3">
@@ -52,7 +52,7 @@ export function FromTheShepherd({ content }: { content: Record<string, string> }
             transition={{ duration: 0.7, delay: 0.3 }}
           >
             <div className="gold-line-left w-16 mb-6 opacity-60" />
-            <p className="font-display text-2xl text-gold mb-1">
+            <p className="font-display text-2xl text-crimson mb-1">
               {content['shepherd.name'] || 'Minister Yadah'}
             </p>
             <p className="label-text mb-8" style={{ opacity: isDark ? 0.5 : 0.7 }}>
@@ -62,7 +62,7 @@ export function FromTheShepherd({ content }: { content: Record<string, string> }
               href={content['shepherd.link'] || 'https://yadahworld.com'}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-body text-[11px] tracking-[0.2em] uppercase text-gold hover:opacity-70 transition-opacity"
+              className="font-body text-[11px] tracking-[0.2em] uppercase text-crimson hover:opacity-70 transition-opacity"
             >
               Visit yadahworld.com →
             </Link>
@@ -82,7 +82,7 @@ export function FromTheShepherd({ content }: { content: Record<string, string> }
               className="relative w-full overflow-hidden"
               style={{
                 aspectRatio: '3/4',
-                border: '1px solid rgba(201,168,76,0.15)',
+                border: '1px solid rgba(139,0,0,0.15)',
               }}
             >
               <Image

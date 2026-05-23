@@ -8,7 +8,7 @@ export default function PaymentVerifyPage() {
       <Suspense
         fallback={
           <div className="w-full max-w-lg py-24 text-center">
-            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-2 border-gold border-t-transparent" />
+            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-2 border-crimson border-t-transparent" />
             <p className="mt-6 font-body text-text-secondary">Loading…</p>
           </div>
         }

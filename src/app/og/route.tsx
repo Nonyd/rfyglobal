@@ -30,7 +30,7 @@ export async function GET(request: Request) {
             left: 0,
             right: 0,
             height: '4px',
-            background: 'linear-gradient(90deg, #C9A84C, #E8C96A, #C9A84C)',
+            background: '#8B0000',
             display: 'flex',
           }}
         />
@@ -38,13 +38,13 @@ export async function GET(request: Request) {
           style={{
             position: 'absolute',
             inset: 0,
-            background: 'radial-gradient(circle at 80% 50%, rgba(201,168,76,0.08) 0%, transparent 60%)',
+            background: 'radial-gradient(circle at 80% 50%, rgba(139,0,0,0.06) 0%, transparent 60%)',
             display: 'flex',
           }}
         />
         <p
           style={{
-            color: '#C9A84C',
+            color: '#8B0000',
             fontSize: '14px',
             letterSpacing: '0.3em',
             textTransform: 'uppercase',
@@ -93,7 +93,7 @@ export async function GET(request: Request) {
         >
           <p
             style={{
-              color: '#C9A84C',
+              color: '#8B0000',
               fontSize: '13px',
               letterSpacing: '0.2em',
               textTransform: 'uppercase',
@@ -106,7 +106,7 @@ export async function GET(request: Request) {
           </p>
           <p
             style={{
-              color: 'rgba(201,168,76,0.5)',
+              color: 'rgba(139,0,0,0.5)',
               fontSize: '11px',
               margin: 0,
               fontFamily: 'Arial, sans-serif',
@@ -123,7 +123,7 @@ export async function GET(request: Request) {
             left: 0,
             right: 0,
             height: '4px',
-            background: 'linear-gradient(90deg, #C9A84C, #E8C96A, #C9A84C)',
+            background: '#8B0000',
             display: 'flex',
           }}
         />

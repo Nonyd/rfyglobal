@@ -23,7 +23,7 @@ export function ConfessionReveal({ content }: { content: Record<string, string> 
   const lines = cmsLines(content['confession.home.lines'], DEFAULT_LINES)
 
   return (
-    <section className="py-32 px-6 overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#EDE7DB' }}>
+    <section className="py-24 px-6 overflow-hidden" style={{ background: isDark ? '#1A1A1A' : '#EDE7DB' }}>
       <div className="max-w-4xl mx-auto">
         <motion.p
           initial={{ opacity: 0 }}
@@ -71,7 +71,7 @@ export function ConfessionReveal({ content }: { content: Record<string, string> 
           <Link
             href="/confession"
             className="inline-flex items-center gap-2 font-body text-[11px] tracking-[0.2em] uppercase hover:opacity-70 transition-opacity"
-            style={{ color: '#8B5A00' }}
+            style={{ color: '#8B0000' }}
           >
             {content['confession.home.link'] || 'Read the full confession →'}
           </Link>

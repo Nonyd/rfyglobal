@@ -50,7 +50,7 @@ export function ShareCard({ open, onClose, reference, text, className }: ShareCa
             initial={{ scale: 0.96, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.96, opacity: 0 }}
-            className="relative w-full max-w-3xl border border-gold-subtle bg-black-soft p-6"
+            className="relative w-full max-w-3xl border border-crimson-subtle bg-black-soft p-6"
           >
             <button
               type="button"
@@ -60,7 +60,7 @@ export function ShareCard({ open, onClose, reference, text, className }: ShareCa
             >
               <X className="h-5 w-5" />
             </button>
-            <h2 className="font-display text-xl text-gold mb-4">Share this scripture</h2>
+            <h2 className="font-display text-xl text-crimson mb-4">Share this scripture</h2>
             <div className="overflow-hidden rounded border border-white/10">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={previewUrl} alt="" className="h-auto w-full bg-black" />
@@ -69,14 +69,14 @@ export function ShareCard({ open, onClose, reference, text, className }: ShareCa
               <button
                 type="button"
                 onClick={copyLink}
-                className="border border-gold px-4 py-2 font-body text-xs uppercase tracking-widest text-gold hover:bg-gold hover:text-black transition-colors"
+                className="border border-crimson px-4 py-2 font-body text-xs uppercase tracking-widest text-crimson hover:bg-crimson hover:text-black transition-colors"
               >
                 Copy page link
               </button>
               <a
                 href={previewUrl}
                 download={`${reference.replace(/\s+/g, '-')}.png`}
-                className="inline-flex border border-white/20 px-4 py-2 font-body text-xs uppercase tracking-widest text-white/80 hover:border-gold hover:text-gold transition-colors"
+                className="inline-flex border border-white/20 px-4 py-2 font-body text-xs uppercase tracking-widest text-white/80 hover:border-crimson hover:text-crimson transition-colors"
               >
                 Open image
               </a>

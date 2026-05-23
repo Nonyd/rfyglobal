@@ -38,13 +38,13 @@ export default async function ReplyPage({
         <div
           className="mb-6 border px-5 py-4"
           style={{
-            borderColor: 'rgba(201,168,76,0.2)',
-            background: 'rgba(201,168,76,0.04)',
+            borderColor: 'rgba(139,0,0,0.2)',
+            background: 'rgba(139,0,0,0.04)',
           }}
         >
           <p
             className="font-body mb-2 text-[10px] uppercase tracking-widest"
-            style={{ color: '#C9A84C' }}
+            style={{ color: '#8B0000' }}
           >
             Replying to Room For You
           </p>

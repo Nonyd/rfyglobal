@@ -63,7 +63,7 @@ export function EventPaymentVerifyContent() {
       {status === 'loading' && (
         <div className="space-y-6">
           <div
-            className="mx-auto h-12 w-12 animate-spin rounded-full border-2 border-gold border-t-transparent"
+            className="mx-auto h-12 w-12 animate-spin rounded-full border-2 border-crimson border-t-transparent"
             aria-hidden
           />
           <p className="font-body text-sm text-mist">Confirming your registration payment…</p>
@@ -88,7 +88,7 @@ export function EventPaymentVerifyContent() {
               type="button"
               onClick={() => router.push(eventUrl)}
               className="mt-4 inline-block px-8 py-3 font-body text-xs font-semibold uppercase tracking-widest transition-all"
-              style={{ background: '#C9A84C', color: '#0F0F0F' }}
+              style={{ background: '#8B0000', color: '#0F0F0F' }}
             >
               Back to event
             </button>
@@ -104,8 +104,8 @@ export function EventPaymentVerifyContent() {
           </p>
           <Link
             href={eventUrl}
-            className="inline-block px-8 py-3 font-body text-xs uppercase tracking-widest text-gold transition-opacity hover:opacity-80"
-            style={{ border: '1px solid rgba(201,168,76,0.4)' }}
+            className="inline-block px-8 py-3 font-body text-xs uppercase tracking-widest text-crimson transition-opacity hover:opacity-80"
+            style={{ border: '1px solid rgba(139,0,0,0.4)' }}
           >
             Back to event
           </Link>

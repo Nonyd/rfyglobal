@@ -97,12 +97,12 @@ export function ScriptureShareButton({
               : 'flex items-center gap-2 border px-6 py-3 font-body text-xs uppercase tracking-widest transition-all'
           }
           style={{
-            borderColor: 'rgba(201,168,76,0.4)',
-            color: '#C9A84C',
+            borderColor: 'rgba(139,0,0,0.4)',
+            color: '#8B0000',
             background: 'transparent',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = 'rgba(201,168,76,0.08)'
+            e.currentTarget.style.background = 'rgba(139,0,0,0.08)'
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.background = 'transparent'
@@ -133,7 +133,7 @@ export function ScriptureShareButton({
                 className="absolute bottom-full left-1/2 z-50 mb-2 w-52 -translate-x-1/2 overflow-hidden"
                 style={{
                   background: '#1A1A1A',
-                  border: '1px solid rgba(201,168,76,0.2)',
+                  border: '1px solid rgba(139,0,0,0.2)',
                   boxShadow: '0 8px 32px rgba(0,0,0,0.6)',
                 }}
               >
@@ -150,7 +150,7 @@ export function ScriptureShareButton({
                     label: 'Download Card',
                     sublabel: 'Save as image (1080x1080)',
                     action: () => void downloadCard(),
-                    color: '#C9A84C',
+                    color: '#8B0000',
                   },
                   {
                     icon: <Link2 size={14} />,

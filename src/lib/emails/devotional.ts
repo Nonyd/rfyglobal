@@ -133,27 +133,27 @@ function buildDevotionalEmail({
     <body style="margin:0;padding:0;background:#0F0F0F;font-family:'General Sans',Arial,sans-serif;">
       <div style="max-width:600px;margin:0 auto;background:#0F0F0F;">
         <div style="padding:40px;">
-          <p style="color:#C9A84C;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;margin:0 0 8px;">
+          <p style="color:#8B0000;font-size:10px;letter-spacing:0.3em;text-transform:uppercase;margin:0 0 8px;">
             Room For You · Daily Word
           </p>
           <p style="color:#585858;font-size:12px;margin:0 0 32px;">${dateStr}</p>
 
-          <div style="height:1px;background:linear-gradient(90deg,#C9A84C,transparent);margin:0 0 32px;"></div>
+          <div style="height:1px;background:linear-gradient(90deg,#8B0000,transparent);margin:0 0 32px;"></div>
 
           <p style="color:#585858;font-size:12px;letter-spacing:0.15em;text-transform:uppercase;margin:0 0 12px;">
             ${scripture.translation}
           </p>
-          <h1 style="color:#C9A84C;font-size:28px;font-weight:600;margin:0 0 20px;">
+          <h1 style="color:#8B0000;font-size:28px;font-weight:600;margin:0 0 20px;">
             ${scripture.reference}
           </h1>
-          <blockquote style="color:#F8F8F8;font-size:20px;font-style:italic;line-height:1.7;margin:0 0 32px;padding:0 0 0 20px;border-left:3px solid #C9A84C;">
+          <blockquote style="color:#F8F8F8;font-size:20px;font-style:italic;line-height:1.7;margin:0 0 32px;padding:0 0 0 20px;border-left:3px solid #8B0000;">
             "${scripture.text}"
           </blockquote>
 
-          <div style="height:1px;background:linear-gradient(90deg,transparent,#C9A84C,transparent);margin:0 0 32px;"></div>
+          <div style="height:1px;background:linear-gradient(90deg,transparent,#8B0000,transparent);margin:0 0 32px;"></div>
 
           <p style="color:#585858;font-size:12px;text-align:center;margin:0;">
-            <a href="https://rfyglobal.org/word" style="color:#C9A84C;text-decoration:none;">
+            <a href="https://rfyglobal.org/word" style="color:#8B0000;text-decoration:none;">
               Read more on rfyglobal.org →
             </a>
           </p>

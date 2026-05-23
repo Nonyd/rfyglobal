@@ -5,8 +5,8 @@ export default function Loading() {
         <div
           className="w-8 h-8 border-2 animate-spin"
           style={{
-            borderColor: 'rgba(201,168,76,0.2)',
-            borderTopColor: '#C9A84C',
+            borderColor: 'rgba(139,0,0,0.2)',
+            borderTopColor: '#8B0000',
             borderRadius: '50%',
           }}
         />

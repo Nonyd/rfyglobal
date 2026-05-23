@@ -56,7 +56,7 @@ export default async function BlogPage() {
               <Link
                 key={post.id}
                 href={`/blog/${post.slug}`}
-                className="rfy-card group block overflow-hidden transition-all duration-300 hover:border-gold/40 hover:shadow-elevated"
+                className="rfy-card group block overflow-hidden transition-all duration-300 hover:border-crimson/40 hover:shadow-elevated"
               >
                 {post.coverImage && (
                   <div className="overflow-hidden">
@@ -71,14 +71,14 @@ export default async function BlogPage() {
                   </div>
                 )}
                 <div className="p-6">
-                  <h2 className="mb-2 font-display text-xl text-text-primary transition-colors group-hover:text-gold">
+                  <h2 className="mb-2 font-display text-xl text-text-primary transition-colors group-hover:text-crimson">
                     {post.title}
                   </h2>
                   {post.excerpt && (
                     <p className="mb-4 line-clamp-2 font-body text-sm text-text-secondary">{post.excerpt}</p>
                   )}
                   {post.publishedAt && (
-                    <p className="font-body text-xs tracking-wide text-gold/70">{formatDate(post.publishedAt)}</p>
+                    <p className="font-body text-xs tracking-wide text-crimson/70">{formatDate(post.publishedAt)}</p>
                   )}
                 </div>
               </Link>

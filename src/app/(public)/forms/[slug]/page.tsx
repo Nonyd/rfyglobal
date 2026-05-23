@@ -31,12 +31,12 @@ export default async function PublicFormPage({ params }: { params: { slug: strin
     <PublicPageShell mainClassName="pb-16 pt-6 md:pb-20">
       <div className="mx-auto max-w-2xl px-6 pt-20 md:pt-24">
         <div className="mb-10 text-center">
-          <p className="mb-4 font-body text-[10px] uppercase tracking-[0.35em] text-gold">Room For You</p>
+          <p className="mb-4 font-body text-[10px] uppercase tracking-[0.35em] text-crimson">Room For You</p>
           <h1 className="mb-4 font-display text-3xl text-text-primary lg:text-4xl">{publicForm.title}</h1>
           {publicForm.description ? (
             <p className="font-body leading-relaxed text-text-secondary">{publicForm.description}</p>
           ) : null}
-          <div className="mt-8 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
+          <div className="mt-8 h-px bg-gradient-to-r from-transparent via-crimson/40 to-transparent" />
         </div>
 
         <PublicFormRenderer form={publicForm} />

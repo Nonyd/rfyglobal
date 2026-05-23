@@ -78,11 +78,11 @@ export function ConfessionPageClient({ content }: { content: Record<string, stri
                 })
               }
               gsap.to('.confession-container', {
-                backgroundColor: 'rgba(201,168,76,0.05)',
+                backgroundColor: 'rgba(139,0,0,0.05)',
                 duration: 1,
               })
               gsap.to(line, {
-                textShadow: '0 0 40px rgba(201,168,76,0.8)',
+                textShadow: '0 0 40px rgba(139,0,0,0.8)',
                 repeat: 2,
                 yoyo: true,
                 duration: 0.6,
@@ -116,7 +116,7 @@ export function ConfessionPageClient({ content }: { content: Record<string, stri
         className="pointer-events-none fixed inset-0 z-0"
         style={{
           background:
-            'radial-gradient(ellipse 60% 60% at 50% 50%, rgba(201,168,76,0.15), transparent)',
+            'radial-gradient(ellipse 60% 60% at 50% 50%, rgba(139,0,0,0.15), transparent)',
           opacity: 0,
           transformOrigin: '50% 50%',
         }}
@@ -126,11 +126,11 @@ export function ConfessionPageClient({ content }: { content: Record<string, stri
         <div
           className="pointer-events-none fixed inset-0 z-[5] animate-pulse-gold opacity-40"
           style={{
-            backgroundImage: `radial-gradient(circle at 20% 30%, rgba(201,168,76,0.4) 0, transparent 2px),
-              radial-gradient(circle at 80% 20%, rgba(201,168,76,0.35) 0, transparent 2px),
-              radial-gradient(circle at 50% 70%, rgba(201,168,76,0.3) 0, transparent 2px),
-              radial-gradient(circle at 10% 80%, rgba(201,168,76,0.25) 0, transparent 2px),
-              radial-gradient(circle at 90% 60%, rgba(201,168,76,0.3) 0, transparent 2px)`,
+            backgroundImage: `radial-gradient(circle at 20% 30%, rgba(139,0,0,0.4) 0, transparent 2px),
+              radial-gradient(circle at 80% 20%, rgba(139,0,0,0.35) 0, transparent 2px),
+              radial-gradient(circle at 50% 70%, rgba(139,0,0,0.3) 0, transparent 2px),
+              radial-gradient(circle at 10% 80%, rgba(139,0,0,0.25) 0, transparent 2px),
+              radial-gradient(circle at 90% 60%, rgba(139,0,0,0.3) 0, transparent 2px)`,
             backgroundSize: '100% 100%',
           }}
           aria-hidden
@@ -138,18 +138,18 @@ export function ConfessionPageClient({ content }: { content: Record<string, stri
       ) : null}
 
       <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 text-center">
-        <p className="mb-6 font-body text-[10px] uppercase tracking-[0.4em] text-gold/60">
+        <p className="mb-6 font-body text-[10px] uppercase tracking-[0.4em] text-crimson/60">
           {content['confession.page.eyebrow'] || 'Room For You'}
         </p>
-        <h1 className="mb-8 font-display text-5xl leading-none text-gold lg:text-7xl">
+        <h1 className="mb-8 font-display text-5xl leading-none text-crimson lg:text-7xl">
           {content['confession.page.title'] || 'The Confession'}
         </h1>
         <p className="font-body text-lg text-white/40">
           {content['confession.page.intro'] || 'Scroll to declare.'}
         </p>
         <div className="absolute bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2">
-          <div className="h-16 w-px bg-gradient-to-b from-transparent to-gold/40" />
-          <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-gold" />
+          <div className="h-16 w-px bg-gradient-to-b from-transparent to-crimson/40" />
+          <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-crimson" />
         </div>
       </section>
 
@@ -178,7 +178,7 @@ export function ConfessionPageClient({ content }: { content: Record<string, stri
       </section>
 
       <section className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 text-center">
-        <div className="mb-16 h-px w-48 bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
+        <div className="mb-16 h-px w-48 bg-gradient-to-r from-transparent via-crimson/40 to-transparent" />
         <p className="mb-4 font-display text-4xl leading-tight text-white lg:text-6xl">
           {content['confession.page.cta.headline'] || 'Make this your confession.'}
         </p>
@@ -189,18 +189,18 @@ export function ConfessionPageClient({ content }: { content: Record<string, stri
         <div className="flex flex-col gap-4 sm:flex-row">
           <Link
             href="/join"
-            className="animate-pulse-gold bg-gold px-10 py-4 font-body text-sm font-medium uppercase tracking-widest text-black transition-all duration-300 hover:bg-gold-light"
+            className="animate-pulse-gold bg-crimson px-10 py-4 font-body text-sm font-medium uppercase tracking-widest text-black transition-all duration-300 hover:bg-crimson-light"
           >
             {content['confession.page.cta.primary'] || 'Join the Community'}
           </Link>
           <Link
             href="/"
-            className="border border-white/20 px-10 py-4 font-body text-sm uppercase tracking-widest text-white/60 transition-all duration-300 hover:border-gold/40 hover:text-white"
+            className="border border-white/20 px-10 py-4 font-body text-sm uppercase tracking-widest text-white/60 transition-all duration-300 hover:border-crimson/40 hover:text-white"
           >
             {content['confession.page.cta.secondary'] || 'Back to Home'}
           </Link>
         </div>
-        <div className="mt-16 h-px w-48 bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
+        <div className="mt-16 h-px w-48 bg-gradient-to-r from-transparent via-crimson/40 to-transparent" />
         <p className="mt-8 font-body text-xs tracking-wide text-white/20">
           {content['confession.page.footer'] || 'rfyglobal.org · Room For You · A SonsHub Media Initiative'}
         </p>

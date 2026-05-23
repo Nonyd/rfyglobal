@@ -25,8 +25,8 @@ export function WordClientPage({ today, allScriptures }: WordClientPageProps) {
             className={cn(
               'rfy-focus border px-6 py-2 font-body text-sm uppercase tracking-[0.2em] transition-all',
               view === v
-                ? 'border-gold bg-gold text-charcoal shadow-soft'
-                : 'border-theme text-text-muted hover:border-gold/40 hover:text-text-primary',
+                ? 'border-crimson bg-crimson text-charcoal shadow-soft'
+                : 'border-theme text-text-muted hover:border-crimson/40 hover:text-text-primary',
             )}
           >
             {v === 'today' ? "Today's Word" : 'Archive'}
@@ -39,19 +39,19 @@ export function WordClientPage({ today, allScriptures }: WordClientPageProps) {
           {today ? (
             <div className="space-y-8">
               <div className="text-center">
-                <span className="font-body text-[10px] uppercase tracking-[0.35em] text-gold/80">
+                <span className="font-body text-[10px] uppercase tracking-[0.35em] text-crimson/80">
                   {today.translation}
                 </span>
-                <h2 className="mt-2 font-display text-3xl text-gold lg:text-4xl">{today.reference}</h2>
+                <h2 className="mt-2 font-display text-3xl text-crimson lg:text-4xl">{today.reference}</h2>
               </div>
 
-              <div className="h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
+              <div className="h-px bg-gradient-to-r from-transparent via-crimson/30 to-transparent" />
 
               <blockquote className="text-center font-display text-xl italic leading-relaxed text-text-primary lg:text-2xl">
                 &ldquo;{today.text}&rdquo;
               </blockquote>
 
-              <div className="h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
+              <div className="h-px bg-gradient-to-r from-transparent via-crimson/30 to-transparent" />
 
               {today.audioUrl ? (
                 <div className="space-y-3">
@@ -90,17 +90,17 @@ export function WordClientPage({ today, allScriptures }: WordClientPageProps) {
             allScriptures.map((s) => (
               <div
                 key={s.id}
-                className="rfy-card p-6 transition-colors hover:border-gold/35"
+                className="rfy-card p-6 transition-colors hover:border-crimson/35"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div className="flex-1">
                     <div className="mb-2 flex flex-wrap items-center gap-3">
-                      <span className="font-display text-lg text-gold">{s.reference}</span>
+                      <span className="font-display text-lg text-crimson">{s.reference}</span>
                       <span className="font-body text-[10px] uppercase tracking-widest text-text-muted">
                         {s.translation}
                       </span>
                       {s.scheduledAt ? (
-                        <span className="font-body text-[10px] text-gold/50">{formatDate(s.scheduledAt)}</span>
+                        <span className="font-body text-[10px] text-crimson/50">{formatDate(s.scheduledAt)}</span>
                       ) : null}
                     </div>
                     <p className="line-clamp-2 font-body text-sm italic leading-relaxed text-text-secondary">

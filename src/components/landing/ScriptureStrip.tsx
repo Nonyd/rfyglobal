@@ -28,10 +28,10 @@ export function ScriptureStrip() {
       )
   }, [])
 
-  if (!scripture) return <div className="h-64" style={{ background: 'rgb(var(--color-surface))' }} />
+  if (!scripture) return <div className="h-64" style={{ background: '#8B0000' }} />
 
   return (
-    <section className="py-24 px-6" style={{ background: 'rgb(var(--color-surface))' }}>
+    <section className="py-24 px-6" style={{ background: '#8B0000' }}>
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -41,12 +41,12 @@ export function ScriptureStrip() {
       >
         <p
           className="label-text mb-6 opacity-60"
-          style={{ color: 'rgb(var(--color-text-muted))' }}
+          style={{ color: 'rgba(248,248,248,0.5)' }}
         >
           {scripture.translation}
         </p>
 
-        <p className="font-display text-gold text-2xl lg:text-3xl mb-6">
+        <p className="font-display text-2xl lg:text-3xl mb-6" style={{ color: '#F8F8F8' }}>
           {scripture.reference}
         </p>
 
@@ -54,7 +54,7 @@ export function ScriptureStrip() {
 
         <blockquote
           className="font-display text-xl lg:text-2xl italic leading-relaxed mb-10"
-          style={{ color: 'rgb(var(--color-text-primary))' }}
+          style={{ color: '#F8F8F8' }}
         >
           &ldquo;{scripture.text}&rdquo;
         </blockquote>

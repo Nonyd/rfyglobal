@@ -44,13 +44,13 @@ export function ReplyForm({
         <div
           className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full"
           style={{
-            background: 'rgba(201,168,76,0.1)',
-            border: '1px solid rgba(201,168,76,0.3)',
+            background: 'rgba(139,0,0,0.1)',
+            border: '1px solid rgba(139,0,0,0.3)',
           }}
         >
           <span style={{ fontSize: '20px' }}>✓</span>
         </div>
-        <p className="font-display mb-2 text-xl" style={{ color: '#C9A84C' }}>
+        <p className="font-display mb-2 text-xl" style={{ color: '#8B0000' }}>
           Message sent
         </p>
         <p className="font-body text-sm" style={{ color: '#A0A0A0' }}>
@@ -71,14 +71,14 @@ export function ReplyForm({
         className="w-full resize-none border px-4 py-3 font-body text-sm outline-none"
         style={{
           background: '#1A1A1A',
-          borderColor: body ? '#C9A84C' : 'rgba(255,255,255,0.1)',
+          borderColor: body ? '#8B0000' : 'rgba(255,255,255,0.1)',
           color: '#F8F8F8',
           lineHeight: '1.6',
           transition: 'border-color 0.2s',
         }}
-        onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+        onFocus={(e) => (e.target.style.borderColor = '#8B0000')}
         onBlur={(e) =>
-          (e.target.style.borderColor = body ? '#C9A84C' : 'rgba(255,255,255,0.1)')
+          (e.target.style.borderColor = body ? '#8B0000' : 'rgba(255,255,255,0.1)')
         }
       />
 
@@ -93,7 +93,7 @@ export function ReplyForm({
         onClick={handleSubmit}
         disabled={sending || !body.trim()}
         className="w-full py-3.5 font-body text-xs font-bold uppercase tracking-widest transition-all disabled:opacity-40"
-        style={{ background: '#C9A84C', color: '#0F0F0F' }}
+        style={{ background: '#8B0000', color: '#0F0F0F' }}
       >
         {sending ? 'Sending…' : 'Send Reply'}
       </button>

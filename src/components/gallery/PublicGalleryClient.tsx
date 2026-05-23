@@ -244,7 +244,7 @@ export function PublicGalleryClient({
                 onClick={() => void downloadAllSelected()}
                 disabled={downloading}
                 className="flex items-center gap-2 px-4 py-2.5 font-body text-xs font-semibold uppercase tracking-widest text-void transition-all disabled:opacity-50"
-                style={{ background: '#C9A84C' }}
+                style={{ background: '#8B0000' }}
               >
                 <Archive size={12} />
                 Download {selectedIds.size} Photo{selectedIds.size > 1 ? 's' : ''}
@@ -258,8 +258,8 @@ export function PublicGalleryClient({
               }}
               className="flex items-center gap-2 border px-4 py-2.5 font-body text-xs uppercase tracking-widest transition-all"
               style={{
-                borderColor: selectMode ? 'rgba(201,168,76,0.5)' : 'rgba(255,255,255,0.15)',
-                color: selectMode ? '#C9A84C' : 'rgba(248,248,248,0.6)',
+                borderColor: selectMode ? 'rgba(139,0,0,0.5)' : 'rgba(255,255,255,0.15)',
+                color: selectMode ? '#8B0000' : 'rgba(248,248,248,0.6)',
               }}
             >
               <CheckSquare size={12} />
@@ -367,8 +367,8 @@ export function PublicGalleryClient({
                     <div
                       className="absolute left-3 top-3 z-20 flex h-6 w-6 items-center justify-center border-2 transition-all"
                       style={{
-                        background: isSelected ? '#C9A84C' : 'rgba(0,0,0,0.6)',
-                        borderColor: isSelected ? '#C9A84C' : 'rgba(255,255,255,0.5)',
+                        background: isSelected ? '#8B0000' : 'rgba(0,0,0,0.6)',
+                        borderColor: isSelected ? '#8B0000' : 'rgba(255,255,255,0.5)',
                       }}
                     >
                       {isSelected && (
@@ -405,7 +405,7 @@ export function PublicGalleryClient({
                         className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center transition-all"
                         style={{ background: 'rgba(0,0,0,0.7)', color: 'white' }}
                         onMouseEnter={(e) =>
-                          (e.currentTarget.style.background = '#C9A84C')
+                          (e.currentTarget.style.background = '#8B0000')
                         }
                         onMouseLeave={(e) =>
                           (e.currentTarget.style.background = 'rgba(0,0,0,0.7)')
@@ -449,7 +449,7 @@ export function PublicGalleryClient({
             >
               <div
                 className="h-full transition-all duration-500"
-                style={{ width: `${progressPercent}%`, background: '#C9A84C' }}
+                style={{ width: `${progressPercent}%`, background: '#8B0000' }}
               />
             </div>
 
@@ -459,18 +459,18 @@ export function PublicGalleryClient({
               disabled={loadingMore || filtering}
               className="mt-4 flex items-center gap-3 border px-10 py-4 font-body text-xs font-semibold uppercase tracking-[0.25em] transition-all duration-300 disabled:opacity-50"
               style={{
-                borderColor: 'rgba(201,168,76,0.4)',
-                color: '#C9A84C',
+                borderColor: 'rgba(139,0,0,0.4)',
+                color: '#8B0000',
                 background: 'transparent',
               }}
               onMouseEnter={(e) => {
                 if (loadingMore || filtering) return
-                e.currentTarget.style.background = '#C9A84C'
+                e.currentTarget.style.background = '#8B0000'
                 e.currentTarget.style.color = '#0F0F0F'
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = 'transparent'
-                e.currentTarget.style.color = '#C9A84C'
+                e.currentTarget.style.color = '#8B0000'
               }}
             >
               {loadingMore ? (
@@ -478,8 +478,8 @@ export function PublicGalleryClient({
                   <span
                     className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
                     style={{
-                      borderColor: 'rgba(201,168,76,0.4)',
-                      borderTopColor: '#C9A84C',
+                      borderColor: 'rgba(139,0,0,0.4)',
+                      borderTopColor: '#8B0000',
                     }}
                   />
                   Loading…
@@ -523,7 +523,7 @@ export function PublicGalleryClient({
               onClick={closeLightbox}
               className="absolute right-6 top-6 z-10 flex h-10 w-10 items-center justify-center transition-colors"
               style={{ background: 'rgba(255,255,255,0.1)', color: 'white' }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = '#C9A84C')}
+              onMouseEnter={(e) => (e.currentTarget.style.background = '#8B0000')}
               onMouseLeave={(e) =>
                 (e.currentTarget.style.background = 'rgba(255,255,255,0.1)')
               }
@@ -539,7 +539,7 @@ export function PublicGalleryClient({
                 downloadImage(currentImage.url)
               }}
               className="absolute right-20 top-6 z-10 flex items-center gap-2 px-4 py-2.5 font-body text-xs uppercase tracking-widest transition-all"
-              style={{ background: '#C9A84C', color: '#0F0F0F' }}
+              style={{ background: '#8B0000', color: '#0F0F0F' }}
             >
               <Download size={13} />
               Download
@@ -650,7 +650,7 @@ function FilterPill({
       disabled={disabled}
       className="px-3 py-1 font-body text-xs tracking-wide transition-all disabled:opacity-40"
       style={{
-        background: active ? '#C9A84C' : 'transparent',
+        background: active ? '#8B0000' : 'transparent',
         color: active ? '#0F0F0F' : 'rgba(248,248,248,0.6)',
         border: active ? 'none' : '1px solid rgba(255,255,255,0.12)',
       }}

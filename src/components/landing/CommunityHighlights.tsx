@@ -14,7 +14,7 @@ export function CommunityHighlights({ content }: { content: Record<string, strin
   const sectionAccent = content['highlights.section.titleAccent'] || 'life.'
 
   return (
-    <section className="py-32 px-6" style={{ background: 'rgb(var(--color-bg))' }}>
+    <section className="py-24 px-6" style={{ background: 'rgb(var(--color-bg))' }}>
       <div className="max-w-7xl mx-auto">
         <div className="flex items-end justify-between mb-20">
           <motion.div
@@ -27,7 +27,7 @@ export function CommunityHighlights({ content }: { content: Record<string, strin
               className="font-display"
               style={{ fontSize: 'clamp(2rem, 5vw, 4rem)', color: 'rgb(var(--color-text-primary))' }}
             >
-              {sectionTitle} <span className="italic text-gold-gradient">{sectionAccent}</span>
+              {sectionTitle} <span className="italic text-crimson-gradient">{sectionAccent}</span>
             </h2>
           </motion.div>
         </div>
@@ -43,17 +43,17 @@ export function CommunityHighlights({ content }: { content: Record<string, strin
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.1 }}
-              className="p-10 hover-lift group cursor-default"
+              className="p-10 hover-lift group cursor-default border border-transparent transition-colors duration-300 group-hover:border-crimson"
               style={{ background: 'rgb(var(--color-bg))' }}
             >
               <p
-                className="font-display text-6xl group-hover:text-gold/20 transition-colors duration-500 mb-8 font-bold"
+                className="font-display text-6xl group-hover:text-crimson/20 transition-colors duration-500 mb-8 font-bold"
                 style={{ color: 'rgb(var(--color-border))' }}
               >
                 {h.n}
               </p>
               <h3
-                className="font-display text-2xl mb-3 group-hover:text-gold transition-colors duration-300"
+                className="font-display text-2xl mb-3 group-hover:text-crimson transition-colors duration-300"
                 style={{ color: 'rgb(var(--color-text-primary))' }}
               >
                 {h.title}

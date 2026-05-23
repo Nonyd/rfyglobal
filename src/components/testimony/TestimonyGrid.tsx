@@ -67,16 +67,16 @@ export function TestimonyGrid({ testimonies }: { testimonies: TestimonyData[] })
               transition={{ duration: 0.5, delay: Math.min(i * 0.05, 0.3) }}
               className="break-inside-avoid border overflow-hidden"
               style={{
-                borderColor: t.isFeatured ? 'rgba(201,168,76,0.4)' : 'rgba(255,255,255,0.08)',
-                background: t.isFeatured ? 'rgba(201,168,76,0.03)' : 'rgba(255,255,255,0.02)',
+                borderColor: t.isFeatured ? 'rgba(139,0,0,0.4)' : 'rgba(255,255,255,0.08)',
+                background: t.isFeatured ? 'rgba(139,0,0,0.03)' : 'rgba(255,255,255,0.02)',
               }}
             >
               {t.isFeatured && (
                 <div
                   className="flex items-center gap-1.5 px-4 py-2 border-b"
-                  style={{ borderColor: 'rgba(201,168,76,0.2)', background: 'rgba(201,168,76,0.08)' }}
+                  style={{ borderColor: 'rgba(139,0,0,0.2)', background: 'rgba(139,0,0,0.08)' }}
                 >
-                  <Star size={11} className="text-gold fill-gold" />
+                  <Star size={11} className="text-crimson fill-gold" />
                   <p className="label-text text-[10px]">Featured Testimony</p>
                 </div>
               )}

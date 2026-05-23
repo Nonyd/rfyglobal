@@ -93,8 +93,8 @@ export function ContactClient({ content }: ContactClientProps) {
         <div className="lg:col-span-3">
           {submitted ? (
             <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="py-16 text-center">
-              <div className="w-16 h-16 rounded-full border-2 flex items-center justify-center mx-auto mb-6" style={{ borderColor: '#C9A84C' }}>
-                <Send size={20} className="text-gold" />
+              <div className="w-16 h-16 rounded-full border-2 flex items-center justify-center mx-auto mb-6" style={{ borderColor: '#8B0000' }}>
+                <Send size={20} className="text-crimson" />
               </div>
               <div className="gold-line max-w-[60px] mx-auto mb-6 opacity-30" />
               <h2 className="font-display text-snow text-3xl font-bold mb-3">Message sent.</h2>
@@ -111,7 +111,7 @@ export function ContactClient({ content }: ContactClientProps) {
                     placeholder="Your full name"
                     required
                     style={inputStyle}
-                    onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                    onFocus={(e) => (e.target.style.borderColor = '#8B0000')}
                     onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.12)')}
                   />
                 </div>
@@ -124,7 +124,7 @@ export function ContactClient({ content }: ContactClientProps) {
                     placeholder="your@email.com"
                     required
                     style={inputStyle}
-                    onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                    onFocus={(e) => (e.target.style.borderColor = '#8B0000')}
                     onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.12)')}
                   />
                 </div>
@@ -138,7 +138,7 @@ export function ContactClient({ content }: ContactClientProps) {
                   placeholder="What is this about?"
                   required
                   style={inputStyle}
-                  onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                  onFocus={(e) => (e.target.style.borderColor = '#8B0000')}
                   onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.12)')}
                 />
               </div>
@@ -152,7 +152,7 @@ export function ContactClient({ content }: ContactClientProps) {
                   required
                   rows={7}
                   style={{ ...inputStyle, resize: 'none' }}
-                  onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                  onFocus={(e) => (e.target.style.borderColor = '#8B0000')}
                   onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.12)')}
                 />
                 <p className="font-body text-xs mt-1 text-right" style={{ color: form.message.length > 2700 ? '#F87171' : '#585858' }}>
@@ -164,7 +164,7 @@ export function ContactClient({ content }: ContactClientProps) {
                 type="submit"
                 disabled={submitting}
                 className="w-full py-4 font-body font-semibold text-xs tracking-widest uppercase transition-all disabled:opacity-40 flex items-center justify-center gap-2"
-                style={{ background: '#C9A84C', color: '#0F0F0F' }}
+                style={{ background: '#8B0000', color: '#0F0F0F' }}
               >
                 {submitting ? (
                   <>
@@ -186,7 +186,7 @@ export function ContactClient({ content }: ContactClientProps) {
           {content['contact.email'] && (
             <div>
               <p className="label-text mb-3">Email</p>
-              <a href={`mailto:${content['contact.email']}`} className="font-body text-mist hover:text-gold transition-colors">
+              <a href={`mailto:${content['contact.email']}`} className="font-body text-mist hover:text-crimson transition-colors">
                 {content['contact.email']}
               </a>
             </div>
@@ -199,7 +199,7 @@ export function ContactClient({ content }: ContactClientProps) {
                 href={content['contact.whatsapp'].startsWith('http') ? content['contact.whatsapp'] : `https://wa.me/${content['contact.whatsapp'].replace(/\D/g, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="font-body text-mist hover:text-gold transition-colors"
+                className="font-body text-mist hover:text-crimson transition-colors"
               >
                 Message us on WhatsApp
               </a>
@@ -210,7 +210,7 @@ export function ContactClient({ content }: ContactClientProps) {
             <div>
               <p className="label-text mb-3">Location</p>
               <div className="flex items-start gap-2">
-                <MapPin size={14} className="text-gold shrink-0 mt-0.5" />
+                <MapPin size={14} className="text-crimson shrink-0 mt-0.5" />
                 <p className="font-body text-mist text-sm leading-relaxed">{content['contact.address']}</p>
               </div>
             </div>
@@ -225,8 +225,8 @@ export function ContactClient({ content }: ContactClientProps) {
                     className="w-9 h-9 flex items-center justify-center border transition-all"
                     style={{ borderColor: 'rgba(255,255,255,0.1)', color: '#585858' }}
                     onMouseEnter={(e) => {
-                      e.currentTarget.style.borderColor = '#C9A84C'
-                      e.currentTarget.style.color = '#C9A84C'
+                      e.currentTarget.style.borderColor = '#8B0000'
+                      e.currentTarget.style.color = '#8B0000'
                     }}
                     onMouseLeave={(e) => {
                       e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
@@ -237,21 +237,21 @@ export function ContactClient({ content }: ContactClientProps) {
                   </div>
                   <div>
                     <p className="font-body text-xs text-fog">{link.label}</p>
-                    <p className="font-body text-sm text-mist group-hover:text-gold transition-colors">{link.handle}</p>
+                    <p className="font-body text-sm text-mist group-hover:text-crimson transition-colors">{link.handle}</p>
                   </div>
                 </a>
               ))}
             </div>
           </div>
 
-          <div className="border-l-2 pl-4" style={{ borderColor: 'rgba(201,168,76,0.4)' }}>
+          <div className="border-l-2 pl-4" style={{ borderColor: 'rgba(139,0,0,0.4)' }}>
             <p className="font-body text-xs leading-relaxed" style={{ color: '#585858' }}>
               {content['contact.responseNote'] ? (
                 content['contact.responseNote']
               ) : (
                 <>
                   We typically respond within 24-48 hours. For urgent prayer needs, visit our{' '}
-                  <a href="/prayer" className="text-gold hover:opacity-70 transition-opacity">
+                  <a href="/prayer" className="text-crimson hover:opacity-70 transition-opacity">
                     Prayer Wall
                   </a>
                   .

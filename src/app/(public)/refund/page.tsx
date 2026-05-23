@@ -32,14 +32,14 @@ export default function RefundPolicyPage() {
             </p>
             <ul className="space-y-2 font-body text-mist">
               <li className="flex gap-3">
-                <span className="text-gold shrink-0">—</span> A duplicate payment was made in error
+                <span className="text-crimson shrink-0">—</span> A duplicate payment was made in error
               </li>
               <li className="flex gap-3">
-                <span className="text-gold shrink-0">—</span> An unauthorized transaction occurred on your payment
+                <span className="text-crimson shrink-0">—</span> An unauthorized transaction occurred on your payment
                 method
               </li>
               <li className="flex gap-3">
-                <span className="text-gold shrink-0">—</span> A technical error resulted in an incorrect amount being
+                <span className="text-crimson shrink-0">—</span> A technical error resulted in an incorrect amount being
                 charged
               </li>
             </ul>
@@ -49,7 +49,7 @@ export default function RefundPolicyPage() {
             <h2 className="font-display text-snow text-2xl mb-4">How to Request a Refund</h2>
             <p className="font-body text-mist leading-relaxed">
               To request a refund, please contact us within 14 days of the transaction at{' '}
-              <a href="mailto:partner@rfyglobal.org" className="text-gold hover:opacity-70 transition-opacity">
+              <a href="mailto:partner@rfyglobal.org" className="text-crimson hover:opacity-70 transition-opacity">
                 partner@rfyglobal.org
               </a>{' '}
               with your full name, email address, transaction reference, amount, and reason for the refund request. We
@@ -77,7 +77,7 @@ export default function RefundPolicyPage() {
             <h2 className="font-display text-snow text-2xl mb-4">Contact</h2>
             <p className="font-body text-mist leading-relaxed">
               For all refund enquiries, please contact{' '}
-              <a href="mailto:partner@rfyglobal.org" className="text-gold hover:opacity-70 transition-opacity">
+              <a href="mailto:partner@rfyglobal.org" className="text-crimson hover:opacity-70 transition-opacity">
                 partner@rfyglobal.org
               </a>
               .

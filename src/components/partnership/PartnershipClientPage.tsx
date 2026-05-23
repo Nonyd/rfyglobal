@@ -202,17 +202,17 @@ export function PartnershipClientPage({
         </div>
       ) : null}
       <section className="mx-auto max-w-4xl px-6 py-20 text-center">
-        <p className="mb-6 font-body text-[10px] uppercase tracking-[0.35em] text-gold">Partner With Us</p>
+        <p className="mb-6 font-body text-[10px] uppercase tracking-[0.35em] text-crimson">Partner With Us</p>
         <h1 className="mb-6 font-display text-5xl leading-none text-text-primary lg:text-7xl">
           {content['partnership.hero.headline']}
         </h1>
         <p className="mx-auto mb-10 max-w-2xl font-body text-lg leading-relaxed text-text-secondary">
           {content['partnership.hero.subtext']}
         </p>
-        <p className="font-display text-xl italic text-gold max-w-xl mx-auto whitespace-pre-line">
+        <p className="font-display text-xl italic text-crimson max-w-xl mx-auto whitespace-pre-line">
           {content['partnership.hero.scripture']}
         </p>
-        <div className="h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent mt-12" />
+        <div className="h-px bg-gradient-to-r from-transparent via-crimson/40 to-transparent mt-12" />
       </section>
 
       <section className="max-w-2xl mx-auto px-6 pb-20">
@@ -240,16 +240,16 @@ export function PartnershipClientPage({
             <div className="flex items-center justify-between py-3">
               <span className="font-body text-sm text-text-muted">Account Number</span>
               <div className="flex items-center gap-2">
-                <span className="text-gold font-mono text-sm">
+                <span className="text-crimson font-mono text-sm">
                   {bankDetails?.accountNumber ?? content['partnership.bank.accountNumber']}
                 </span>
                 <button
                   type="button"
                   onClick={copyAccountNumber}
-                  className="p-1.5 text-text-muted transition-colors hover:text-gold"
+                  className="p-1.5 text-text-muted transition-colors hover:text-crimson"
                   aria-label="Copy account number"
                 >
-                  {copied ? <Check size={14} className="text-gold" /> : <Copy size={14} />}
+                  {copied ? <Check size={14} className="text-crimson" /> : <Copy size={14} />}
                 </button>
               </div>
             </div>
@@ -258,7 +258,7 @@ export function PartnershipClientPage({
             After your transfer, please send your name and amount to{' '}
             <a
               href={`mailto:${bankDetails?.contactEmail ?? content['partnership.bank.contactEmail']}`}
-              className="text-gold hover:underline"
+              className="text-crimson hover:underline"
             >
               {bankDetails?.contactEmail ?? content['partnership.bank.contactEmail']}
             </a>{' '}
@@ -268,7 +268,7 @@ export function PartnershipClientPage({
       </section>
 
       <section className="max-w-5xl mx-auto px-6 pb-20">
-        <div className="h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent mb-16" />
+        <div className="h-px bg-gradient-to-r from-transparent via-crimson/30 to-transparent mb-16" />
         <h2 className="mb-12 text-center font-display text-3xl text-text-primary">Give Now</h2>
 
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
@@ -287,8 +287,8 @@ export function PartnershipClientPage({
                     className={cn(
                       'flex-1 py-3 text-sm font-body tracking-wide border transition-all',
                       currency === 'NGN'
-                        ? 'border-gold bg-gold text-charcoal'
-                        : 'border-theme text-text-secondary hover:border-gold/40 hover:text-text-primary'
+                        ? 'border-crimson bg-crimson text-charcoal'
+                        : 'border-theme text-text-secondary hover:border-crimson/40 hover:text-text-primary'
                     )}
                   >
                     ₦ Naira
@@ -304,8 +304,8 @@ export function PartnershipClientPage({
                       className={cn(
                         'flex-1 py-3 text-sm font-body tracking-wide border transition-all',
                         currency === 'USD'
-                          ? 'border-gold bg-gold text-charcoal'
-                          : 'border-theme text-text-secondary hover:border-gold/40 hover:text-text-primary'
+                          ? 'border-crimson bg-crimson text-charcoal'
+                          : 'border-theme text-text-secondary hover:border-crimson/40 hover:text-text-primary'
                       )}
                     >
                       $ Dollar
@@ -329,8 +329,8 @@ export function PartnershipClientPage({
                     className={cn(
                       'flex-1 py-3 text-sm font-body tracking-wide border transition-all',
                       frequency === f
-                        ? 'border-gold bg-gold text-charcoal'
-                        : 'border-theme text-text-secondary hover:border-gold/40 hover:text-text-primary'
+                        ? 'border-crimson bg-crimson text-charcoal'
+                        : 'border-theme text-text-secondary hover:border-crimson/40 hover:text-text-primary'
                     )}
                   >
                     {f === 'ONE_TIME' ? 'One-Time' : f === 'MONTHLY' ? 'Monthly' : 'Annual'}
@@ -353,8 +353,8 @@ export function PartnershipClientPage({
                     className={cn(
                       'py-3 text-sm font-body border transition-all',
                       amount === a && !customAmount
-                        ? 'border-gold bg-gold text-charcoal'
-                        : 'border-theme text-text-secondary hover:border-gold/40 hover:text-text-primary'
+                        ? 'border-crimson bg-crimson text-charcoal'
+                        : 'border-theme text-text-secondary hover:border-crimson/40 hover:text-text-primary'
                     )}
                   >
                     {currency === 'NGN' ? '₦' : '$'}
@@ -366,8 +366,8 @@ export function PartnershipClientPage({
 
             <div>
               <p className="mb-3 font-body text-xs uppercase tracking-widest text-text-muted">Or Enter Amount</p>
-              <div className="flex items-center border border-theme transition-colors focus-within:border-gold">
-                <span className="border-r border-theme px-4 py-3 font-body text-gold">
+              <div className="flex items-center border border-theme transition-colors focus-within:border-crimson">
+                <span className="border-r border-theme px-4 py-3 font-body text-crimson">
                   {currency === 'NGN' ? '₦' : '$'}
                 </span>
                 <input
@@ -399,7 +399,7 @@ export function PartnershipClientPage({
                 value={donorName}
                 onChange={(e) => setDonorName(e.target.value)}
                 placeholder="Your full name"
-                className="w-full border border-theme bg-surface px-4 py-3 font-body text-text-primary transition-colors placeholder:text-text-muted/70 focus:border-gold focus:outline-none"
+                className="w-full border border-theme bg-surface px-4 py-3 font-body text-text-primary transition-colors placeholder:text-text-muted/70 focus:border-crimson focus:outline-none"
               />
             </div>
 
@@ -412,7 +412,7 @@ export function PartnershipClientPage({
                 value={donorEmail}
                 onChange={(e) => setDonorEmail(e.target.value)}
                 placeholder="your@email.com"
-                className="w-full border border-theme bg-surface px-4 py-3 font-body text-text-primary transition-colors placeholder:text-text-muted/70 focus:border-gold focus:outline-none"
+                className="w-full border border-theme bg-surface px-4 py-3 font-body text-text-primary transition-colors placeholder:text-text-muted/70 focus:border-crimson focus:outline-none"
               />
             </div>
 
@@ -434,17 +434,17 @@ export function PartnershipClientPage({
                       className={cn(
                         'w-full flex items-center justify-between p-4 border transition-all text-left',
                         gateway === gw.id && !disabled
-                          ? 'border-gold bg-gold/5'
+                          ? 'border-crimson bg-crimson/5'
                           : disabled
                             ? 'cursor-not-allowed border-border/40 opacity-40'
-                            : 'border-theme hover:border-gold/35'
+                            : 'border-theme hover:border-crimson/35'
                       )}
                     >
                       <div>
                         <p
                           className={cn(
                             'font-body text-sm font-medium',
-                            gateway === gw.id && !disabled ? 'text-gold' : 'text-text-primary'
+                            gateway === gw.id && !disabled ? 'text-crimson' : 'text-text-primary'
                           )}
                         >
                           {gw.name}
@@ -452,7 +452,7 @@ export function PartnershipClientPage({
                         <p className="mt-0.5 font-body text-xs text-text-muted">{gw.description}</p>
                       </div>
                       {gw.supportsRecurring && (
-                        <span className="text-[10px] px-2 py-0.5 bg-gold/10 text-gold/70 font-body tracking-wide">
+                        <span className="text-[10px] px-2 py-0.5 bg-crimson/10 text-crimson/70 font-body tracking-wide">
                           Recurring ✓
                         </span>
                       )}
@@ -466,7 +466,7 @@ export function PartnershipClientPage({
               type="button"
               onClick={() => void handleGive()}
               disabled={loading}
-              className="animate-pulse-gold w-full bg-gold py-4 font-body text-base font-medium uppercase tracking-widest text-charcoal transition-all duration-300 hover:bg-gold-light disabled:opacity-50"
+              className="animate-pulse-gold w-full bg-crimson py-4 font-body text-base font-medium uppercase tracking-widest text-charcoal transition-all duration-300 hover:bg-crimson-light disabled:opacity-50"
             >
               {loading
                 ? 'Processing…'
@@ -481,7 +481,7 @@ export function PartnershipClientPage({
       </section>
 
       <section className="max-w-5xl mx-auto px-6 pb-24">
-        <div className="h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent mb-16" />
+        <div className="h-px bg-gradient-to-r from-transparent via-crimson/30 to-transparent mb-16" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {(
             [
@@ -504,13 +504,13 @@ export function PartnershipClientPage({
           ).map(({ Icon, title, desc }) => (
             <div
               key={title}
-              className="rfy-card p-6 transition-colors hover:border-gold/35"
+              className="rfy-card p-6 transition-colors hover:border-crimson/35"
             >
               <div
-                className="mb-4 flex h-11 w-11 items-center justify-center rounded-full border border-gold/30 bg-gold/[0.06]"
+                className="mb-4 flex h-11 w-11 items-center justify-center rounded-full border border-crimson/30 bg-crimson/[0.06]"
                 aria-hidden
               >
-                <Icon className="h-5 w-5 text-gold" strokeWidth={1.35} />
+                <Icon className="h-5 w-5 text-crimson" strokeWidth={1.35} />
               </div>
               <h3 className="mb-2 font-display text-lg text-text-primary">{title}</h3>
               <p className="font-body text-sm leading-relaxed text-text-secondary">{desc}</p>

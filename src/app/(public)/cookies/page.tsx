@@ -27,8 +27,8 @@ export default function CookiePolicyPage() {
           <section>
             <h2 className="font-display text-snow text-2xl mb-4">Cookies We Use</h2>
             <div className="space-y-6">
-              <div className="border-l-2 pl-4" style={{ borderColor: 'rgba(201,168,76,0.4)' }}>
-                <p className="font-display text-gold text-lg mb-2">Strictly Necessary Cookies</p>
+              <div className="border-l-2 pl-4" style={{ borderColor: 'rgba(139,0,0,0.4)' }}>
+                <p className="font-display text-crimson text-lg mb-2">Strictly Necessary Cookies</p>
                 <p className="font-body text-mist text-sm leading-relaxed">
                   These cookies are essential for the website to function. They include session cookies that keep you
                   logged in to the admin dashboard and security tokens that protect against cross-site request forgery.
@@ -67,7 +67,7 @@ export default function CookiePolicyPage() {
             <h2 className="font-display text-snow text-2xl mb-4">Contact</h2>
             <p className="font-body text-mist leading-relaxed">
               Questions about our cookie use? Contact us at{' '}
-              <a href="mailto:privacy@rfyglobal.org" className="text-gold hover:opacity-70 transition-opacity">
+              <a href="mailto:privacy@rfyglobal.org" className="text-crimson hover:opacity-70 transition-opacity">
                 privacy@rfyglobal.org
               </a>
               .

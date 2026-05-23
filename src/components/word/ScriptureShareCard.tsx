@@ -58,7 +58,7 @@ export const ScriptureShareCard = forwardRef<HTMLDivElement, ScriptureShareCardP
             left: 0,
             right: 0,
             height: '6px',
-            background: 'linear-gradient(90deg, #C9A84C, #E8C96A, #C9A84C)',
+            background: 'linear-gradient(90deg, #8B0000, #A00000, #8B0000)',
           }}
         />
 
@@ -123,7 +123,7 @@ export const ScriptureShareCard = forwardRef<HTMLDivElement, ScriptureShareCardP
             style={{
               fontFamily: 'Arial, sans-serif',
               fontSize: '12px',
-              color: '#C9A84C',
+              color: '#8B0000',
               letterSpacing: '0.3em',
               textTransform: 'uppercase',
               margin: '0 0 24px 0',
@@ -150,7 +150,7 @@ export const ScriptureShareCard = forwardRef<HTMLDivElement, ScriptureShareCardP
             style={{
               width: '60px',
               height: '2px',
-              background: '#C9A84C',
+              background: '#8B0000',
               margin: '0 0 40px 0',
             }}
           />
@@ -184,7 +184,7 @@ export const ScriptureShareCard = forwardRef<HTMLDivElement, ScriptureShareCardP
             style={{
               fontFamily: 'Arial, sans-serif',
               fontSize: '12px',
-              color: '#C9A84C',
+              color: '#8B0000',
               letterSpacing: '0.3em',
               textTransform: 'uppercase',
               margin: 0,
@@ -201,7 +201,7 @@ export const ScriptureShareCard = forwardRef<HTMLDivElement, ScriptureShareCardP
             left: 0,
             right: 0,
             height: '6px',
-            background: 'linear-gradient(90deg, #C9A84C, #E8C96A, #C9A84C)',
+            background: 'linear-gradient(90deg, #8B0000, #A00000, #8B0000)',
           }}
         />
       </div>

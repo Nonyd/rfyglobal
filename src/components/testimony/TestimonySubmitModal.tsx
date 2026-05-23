@@ -162,7 +162,7 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
           >
             <div
               className="max-h-[90vh] w-full max-w-lg overflow-y-auto"
-              style={{ background: '#0F0F0F', border: '1px solid rgba(201,168,76,0.2)' }}
+              style={{ background: '#0F0F0F', border: '1px solid rgba(139,0,0,0.2)' }}
             >
               {!submitted ? (
                 <div className="p-8">
@@ -200,7 +200,7 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
                         }}
                         placeholder="your@email.com"
                         style={inputStyle}
-                        onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+                        onFocus={(ev) => (ev.target.style.borderColor = '#8B0000')}
                         onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
                       />
                       <p className="mt-1 font-body text-xs" style={{ color: '#585858' }}>
@@ -224,7 +224,7 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
                             </p>
                             <p className="mt-1 font-body text-xs" style={{ color: 'rgba(252,165,165,0.7)' }}>
                               Please{' '}
-                              <Link href="/join" className="underline" style={{ color: '#C9A84C' }}>
+                              <Link href="/join" className="underline" style={{ color: '#8B0000' }}>
                                 join the community
                               </Link>{' '}
                               first — it only takes a minute.
@@ -248,7 +248,7 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
                           onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
                           placeholder="Optional — defaults to your member name"
                           style={inputStyle}
-                          onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+                          onFocus={(ev) => (ev.target.style.borderColor = '#8B0000')}
                           onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
                         />
                       </div>
@@ -263,7 +263,7 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
                         onChange={(e) => setForm((p) => ({ ...p, phone: e.target.value }))}
                         placeholder="+234..."
                         style={inputStyle}
-                        onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+                        onFocus={(ev) => (ev.target.style.borderColor = '#8B0000')}
                         onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
                       />
                     </div>
@@ -276,7 +276,7 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
                         onChange={(e) => setForm((p) => ({ ...p, location: e.target.value }))}
                         placeholder="e.g. Abuja, Nigeria"
                         style={inputStyle}
-                        onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+                        onFocus={(ev) => (ev.target.style.borderColor = '#8B0000')}
                         onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
                       />
                     </div>
@@ -289,7 +289,7 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
                         onChange={(e) => setForm((p) => ({ ...p, title: e.target.value }))}
                         placeholder="A short headline"
                         style={inputStyle}
-                        onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+                        onFocus={(ev) => (ev.target.style.borderColor = '#8B0000')}
                         onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
                       />
                     </div>
@@ -302,7 +302,7 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
                         rows={5}
                         placeholder="Tell your story (optional if you add photos or video)"
                         style={{ ...inputStyle, resize: 'none' }}
-                        onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+                        onFocus={(ev) => (ev.target.style.borderColor = '#8B0000')}
                         onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
                       />
                     </div>
@@ -344,7 +344,7 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
                         onChange={(e) => setForm((p) => ({ ...p, videoUrl: e.target.value }))}
                         placeholder="YouTube, Vimeo, or direct link"
                         style={inputStyle}
-                        onFocus={(ev) => (ev.target.style.borderColor = '#C9A84C')}
+                        onFocus={(ev) => (ev.target.style.borderColor = '#8B0000')}
                         onBlur={(ev) => (ev.target.style.borderColor = 'rgba(255,255,255,0.12)')}
                       />
                     </div>
@@ -353,7 +353,7 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
                       type="submit"
                       disabled={submitting || notMember}
                       className="mt-2 w-full py-4 font-body text-xs font-semibold uppercase tracking-widest transition-all duration-300 disabled:opacity-50"
-                      style={{ background: '#C9A84C', color: '#0F0F0F' }}
+                      style={{ background: '#8B0000', color: '#0F0F0F' }}
                     >
                       {submitting ? 'Submitting…' : 'Submit for review →'}
                     </button>
@@ -363,9 +363,9 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
                 <div className="p-8 text-center">
                   <div
                     className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border-2"
-                    style={{ borderColor: '#C9A84C' }}
+                    style={{ borderColor: '#8B0000' }}
                   >
-                    <CheckCircle size={28} className="text-gold" />
+                    <CheckCircle size={28} className="text-crimson" />
                   </div>
                   <div className="gold-line mx-auto mb-6 max-w-[60px] opacity-40" />
                   <h2 className="font-display mb-3 text-3xl font-bold text-snow">Thank you</h2>
@@ -376,7 +376,7 @@ export function TestimonySubmitModal({ isOpen, onClose }: TestimonySubmitModalPr
                     type="button"
                     onClick={handleClose}
                     className="border px-8 py-3 font-body text-xs uppercase tracking-widest transition-all"
-                    style={{ borderColor: 'rgba(201,168,76,0.4)', color: '#C9A84C' }}
+                    style={{ borderColor: 'rgba(139,0,0,0.4)', color: '#8B0000' }}
                   >
                     Close
                   </button>

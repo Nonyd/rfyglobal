@@ -8,7 +8,7 @@ import Link from 'next/link'
 import { FieldType, type JoinFormField } from '@prisma/client'
 import { useEmailCheck } from '@/hooks/useEmailCheck'
 
-const HERO_LINE_STYLES = ['text-outline', 'text-snow', 'text-gold-gradient', 'text-snow', 'text-outline-gold']
+const HERO_LINE_STYLES = ['text-outline', 'text-snow', 'text-crimson-gradient', 'text-snow', 'text-outline-gold']
 
 function joinHeroLines(content: Record<string, string>) {
   const defaults = ['A MOVEMENT', 'OF YOUNG', 'BELIEVERS', 'ON FIRE', 'FOR JESUS.']
@@ -158,7 +158,7 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
     const set = (next: string) => setExtraValues((p) => ({ ...p, [field.id]: next }))
     const commonFocus = {
       onFocus: (e: React.FocusEvent<HTMLElement>) => {
-        ;(e.target as HTMLInputElement).style.borderColor = '#C9A84C'
+        ;(e.target as HTMLInputElement).style.borderColor = '#8B0000'
       },
       onBlur: (e: React.FocusEvent<HTMLElement>) => {
         ;(e.target as HTMLInputElement).style.borderColor = 'rgba(255,255,255,0.12)'
@@ -228,12 +228,12 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
       <div className="flex flex-col lg:flex-row min-h-screen pt-24 lg:pt-36">
         <div className="relative lg:w-1/2 flex flex-col justify-center px-8 lg:px-16 xl:px-24 py-20 lg:py-0 overflow-hidden">
           <div
-            className="absolute pointer-events-none animate-breathe"
+            className="absolute pointer-events-none"
             style={{
               width: '500px',
               height: '500px',
               borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(201,168,76,0.06) 0%, transparent 70%)',
+              background: 'radial-gradient(circle, rgba(139,0,0,0.06) 0%, transparent 70%)',
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
@@ -278,7 +278,7 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
               <p className="font-body text-mist text-base leading-relaxed max-w-sm">
                 Join a community of young men and women singing songs of salvation, studying the Word, praying, and
                 getting others saved.
-                <span className="text-gold"> Jesus to Nations.</span>
+                <span className="text-crimson"> Jesus to Nations.</span>
               </p>
             </motion.div>
           </div>
@@ -308,7 +308,7 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
                     placeholder="Your full name"
                     required
                     style={inputStyle}
-                    onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                    onFocus={(e) => (e.target.style.borderColor = '#8B0000')}
                     onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.12)')}
                   />
                 </div>
@@ -322,7 +322,7 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
                     placeholder="+234..."
                     required
                     style={inputStyle}
-                    onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                    onFocus={(e) => (e.target.style.borderColor = '#8B0000')}
                     onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.12)')}
                   />
                 </div>
@@ -347,14 +347,14 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
                         borderColor: emailExists ? 'rgba(239,68,68,0.6)' : 'rgba(255,255,255,0.12)',
                       }}
                       onFocus={(e) => {
-                        if (!emailExists) e.target.style.borderColor = '#C9A84C'
+                        if (!emailExists) e.target.style.borderColor = '#8B0000'
                       }}
                     />
                     {checkingEmail && (
                       <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                         <div
                           className="w-4 h-4 border-2 border-t-transparent rounded-full animate-spin"
-                          style={{ borderColor: 'rgba(201,168,76,0.4)', borderTopColor: 'transparent' }}
+                          style={{ borderColor: 'rgba(139,0,0,0.4)', borderTopColor: 'transparent' }}
                         />
                       </div>
                     )}
@@ -381,7 +381,7 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
                     onChange={(e) => setForm((p) => ({ ...p, country: e.target.value, state: '', city: '' }))}
                     required
                     style={{ ...inputStyle, cursor: 'pointer' }}
-                    onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                    onFocus={(e) => (e.target.style.borderColor = '#8B0000')}
                     onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.12)')}
                   >
                     {COUNTRIES.map((c) => (
@@ -405,7 +405,7 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
                       onChange={(e) => setForm((p) => ({ ...p, state: e.target.value }))}
                       required
                       style={{ ...inputStyle, cursor: 'pointer' }}
-                      onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                      onFocus={(e) => (e.target.style.borderColor = '#8B0000')}
                       onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.12)')}
                     >
                       <option value="" style={{ background: '#1A1A1A' }}>
@@ -433,7 +433,7 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
                       placeholder="Your city"
                       required
                       style={inputStyle}
-                      onFocus={(e) => (e.target.style.borderColor = '#C9A84C')}
+                      onFocus={(e) => (e.target.style.borderColor = '#8B0000')}
                       onBlur={(e) => (e.target.style.borderColor = 'rgba(255,255,255,0.12)')}
                     />
                   </motion.div>
@@ -453,7 +453,7 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
                   type="submit"
                   disabled={submitting || emailExists}
                   className="w-full py-4 font-body font-semibold text-sm tracking-widest uppercase transition-all duration-300 disabled:opacity-50"
-                  style={{ background: '#C9A84C', color: '#0F0F0F' }}
+                  style={{ background: '#8B0000', color: '#0F0F0F' }}
                 >
                   {submitting ? 'Joining…' : 'Join the Community →'}
                 </button>
@@ -471,9 +471,9 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
             >
               <div
                 className="w-20 h-20 rounded-full border-2 flex items-center justify-center mx-auto mb-8"
-                style={{ borderColor: '#C9A84C' }}
+                style={{ borderColor: '#8B0000' }}
               >
-                <span className="text-gold text-3xl">✓</span>
+                <span className="text-crimson text-3xl">✓</span>
               </div>
 
               <div className="gold-line max-w-[60px] mx-auto mb-8 opacity-40" />
@@ -481,17 +481,17 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
               <h2 className="font-display text-4xl text-snow mb-4">You&apos;re in.</h2>
               <p className="font-body text-mist leading-relaxed mb-6">
                 Welcome to Room For You. Check your email for your confirmation.
-                <span className="text-gold"> There is room for you here.</span>
+                <span className="text-crimson"> There is room for you here.</span>
               </p>
 
               {whatsappUrl ? (
                 <div className="mb-8">
                   <div
                     className="inline-flex flex-col items-center gap-3 px-8 py-5 border"
-                    style={{ borderColor: 'rgba(201,168,76,0.3)', background: 'rgba(201,168,76,0.05)' }}
+                    style={{ borderColor: 'rgba(139,0,0,0.3)', background: 'rgba(139,0,0,0.05)' }}
                   >
                     <p className="font-body text-mist text-sm">Joining our WhatsApp community in</p>
-                    <p className="font-display text-gold text-5xl font-bold">{countdown}</p>
+                    <p className="font-display text-crimson text-5xl font-bold">{countdown}</p>
                     <p className="font-body text-mist text-xs opacity-60">seconds</p>
                   </div>
                   <p className="font-body text-xs mt-4" style={{ color: '#585858' }}>
@@ -500,7 +500,7 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
                       href={whatsappUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gold hover:opacity-70 transition-opacity underline"
+                      className="text-crimson hover:opacity-70 transition-opacity underline"
                     >
                       Click here to join →
                     </a>

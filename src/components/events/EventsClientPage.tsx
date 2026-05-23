@@ -39,7 +39,7 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
               onClick={() => setActiveCity(city)}
               className="px-5 py-2 font-body text-sm tracking-wide transition-all duration-200 border"
               style={{
-                background: activeCity === city ? '#C9A84C' : 'transparent',
+                background: activeCity === city ? '#8B0000' : 'transparent',
                 color: activeCity === city ? '#0F0F0F' : 'rgb(var(--color-text-secondary))',
                 borderColor: activeCity === city ? 'transparent' : 'rgb(var(--color-border))',
               }}
@@ -63,7 +63,7 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
               key={event.id}
               href={event.slug ? `/events/${event.slug}` : '#'}
               prefetch={Boolean(event.slug)}
-              className="rfy-card group block overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-gold/40 hover:shadow-elevated cursor-pointer border"
+              className="rfy-card group block overflow-hidden transition-all duration-300 hover:-translate-y-0.5 hover:border-crimson/40 hover:shadow-elevated cursor-pointer border"
               style={{
                 borderColor: 'rgb(var(--color-border))',
                 background: 'rgb(var(--color-bg))',
@@ -89,7 +89,7 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
                       style={{
                         fontSize: '5rem',
                         color: 'transparent',
-                        WebkitTextStroke: '1px rgba(201,168,76,0.15)',
+                        WebkitTextStroke: '1px rgba(139,0,0,0.15)',
                       }}
                     >
                       RFY
@@ -101,10 +101,10 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
                   style={{
                     background: 'rgba(15,15,15,0.92)',
                     backdropFilter: 'blur(4px)',
-                    border: '1px solid rgba(201,168,76,0.35)',
+                    border: '1px solid rgba(139,0,0,0.35)',
                   }}
                 >
-                  <p className="font-display text-xl text-gold font-bold leading-none">
+                  <p className="font-display text-xl text-crimson font-bold leading-none">
                     {format(new Date(event.date), 'dd')}
                   </p>
                   <p className="label-text opacity-60 text-[9px] mt-0.5">
@@ -121,7 +121,7 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
                   {event.city}
                 </p>
                 <h3
-                  className="font-display text-lg leading-tight group-hover:text-gold transition-colors mb-2"
+                  className="font-display text-lg leading-tight group-hover:text-crimson transition-colors mb-2"
                   style={{ color: 'rgb(var(--color-text-primary))' }}
                 >
                   {event.title}
