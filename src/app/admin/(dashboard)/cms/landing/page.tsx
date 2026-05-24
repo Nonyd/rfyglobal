@@ -41,6 +41,12 @@ const FIELDS: CMSField[] = [
   { key: 'landing.cta.subtext', label: 'Bottom CTA Subtext', type: 'text' },
   { key: 'landing.cta.button', label: 'Bottom CTA Primary Button', type: 'text' },
   { key: 'landing.cta.buttonSecondary', label: 'Bottom CTA Secondary Button', type: 'text', placeholder: 'Our Story' },
+  {
+    key: 'stats.enabled',
+    label: 'Show Stats Section on Homepage',
+    type: 'toggle',
+    hint: 'When off, the streams / followers / years / gatherings counters are hidden on the homepage.',
+  },
   { key: 'stats.stat1.number', label: 'Stat 1 Number', type: 'text', placeholder: '100' },
   { key: 'stats.stat1.suffix', label: 'Stat 1 Suffix', type: 'text', placeholder: 'M+' },
   { key: 'stats.stat1.label', label: 'Stat 1 Label', type: 'text', placeholder: 'Streams' },

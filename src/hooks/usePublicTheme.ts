@@ -8,23 +8,23 @@ const STORAGE_KEY = 'rfy-public-theme'
 const ROOT_ID = 'public-site-root'
 
 function applyTheme(theme: PublicTheme) {
+  document.documentElement.setAttribute('data-public-theme', theme)
   const el = document.getElementById(ROOT_ID)
   if (el) {
     el.classList.remove('public-light', 'public-dark')
     el.classList.add(theme === 'dark' ? 'public-dark' : 'public-light')
   }
-  document.documentElement.setAttribute('data-public-theme', theme)
 }
 
 export function usePublicTheme() {
-  const [theme, setThemeState] = useState<PublicTheme>('dark')
+  const [theme, setThemeState] = useState<PublicTheme>('light')
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     const attr = document.documentElement.getAttribute('data-public-theme')
     const saved = localStorage.getItem(STORAGE_KEY) as PublicTheme | null
     const initial: PublicTheme =
-      saved === 'light' || attr === 'light' ? 'light' : 'dark'
+      saved === 'dark' || attr === 'dark' ? 'dark' : 'light'
     setThemeState(initial)
     applyTheme(initial)
     setMounted(true)

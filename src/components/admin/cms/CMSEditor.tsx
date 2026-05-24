@@ -11,7 +11,7 @@ import { RotateCcw } from 'lucide-react'
 export interface CMSField {
   key: string
   label: string
-  type: 'text' | 'textarea' | 'image' | 'url'
+  type: 'text' | 'textarea' | 'image' | 'url' | 'toggle'
   placeholder?: string
   hint?: string
   /** Cloudinary folder for image uploads (default: cms) */
@@ -195,6 +195,29 @@ export function CMSEditor({ title, description, fields, initialValues, defaults 
                     onUploadError={(err) => toast.error(err.message)}
                   />
                 </div>
+              ) : field.type === 'toggle' ? (
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={values[field.key] !== 'false'}
+                  onClick={() =>
+                    setValues((prev) => ({
+                      ...prev,
+                      [field.key]: prev[field.key] === 'false' ? 'true' : 'false',
+                    }))
+                  }
+                  className="relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors"
+                  style={{
+                    background: values[field.key] !== 'false' ? 'var(--a-gold)' : 'var(--a-border)',
+                  }}
+                >
+                  <span
+                    className="inline-block h-5 w-5 rounded-full bg-white shadow transition-transform"
+                    style={{
+                      transform: values[field.key] !== 'false' ? 'translateX(22px)' : 'translateX(4px)',
+                    }}
+                  />
+                </button>
               ) : field.type === 'textarea' ? (
                 <textarea
                   value={values[field.key] ?? ''}

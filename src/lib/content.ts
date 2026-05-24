@@ -28,6 +28,7 @@ const DEFAULTS: Record<string, string> = {
   'landing.cta.button': 'Join the Community',
   'landing.cta.buttonSecondary': 'Our Story',
 
+  'stats.enabled': 'true',
   'stats.stat1.number': '100',
   'stats.stat1.suffix': 'M+',
   'stats.stat1.label': 'Streams',

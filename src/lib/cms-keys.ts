@@ -20,6 +20,7 @@ export const HOME_CMS_KEYS = [
   'landing.cta.label',
   'landing.cta.button',
   'landing.cta.buttonSecondary',
+  'stats.enabled',
   'stats.stat1.number',
   'stats.stat1.suffix',
   'stats.stat1.label',

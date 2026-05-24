@@ -13,14 +13,14 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         strategy="beforeInteractive"
         dangerouslySetInnerHTML={{
           __html: `
-            (function(){var t=localStorage.getItem('rfy-public-theme')||'dark';document.documentElement.setAttribute('data-public-theme',t);})();
+            (function(){var t=localStorage.getItem('rfy-public-theme')||'light';document.documentElement.setAttribute('data-public-theme',t);})();
           `,
         }}
       />
       <PublicThemeProvider>
         <div
           id="public-site-root"
-          className="public-site public-dark"
+          className="public-site public-light"
           style={{
             background: 'var(--color-bg)',
             color: 'var(--color-text-primary)',

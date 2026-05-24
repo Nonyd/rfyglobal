@@ -4,7 +4,14 @@ import { Moon, Sun } from 'lucide-react'
 import { usePublicThemeContext } from '@/components/providers/PublicThemeProvider'
 import { cn } from '@/lib/utils'
 
-export function ThemeToggle({ className }: { className?: string }) {
+export function ThemeToggle({
+  className,
+  overDark = false,
+}: {
+  className?: string
+  /** Use when the toggle sits on a dark background (e.g. homepage hero). */
+  overDark?: boolean
+}) {
   const { isDark, toggleTheme, mounted } = usePublicThemeContext()
 
   if (!mounted) return <div className="h-9 w-9" />
@@ -18,8 +25,8 @@ export function ThemeToggle({ className }: { className?: string }) {
         className,
       )}
       style={{
-        borderColor: 'var(--color-border)',
-        color: 'var(--color-text-secondary)',
+        borderColor: overDark ? 'rgba(255,255,255,0.35)' : 'var(--color-border)',
+        color: overDark ? 'rgba(255,255,255,0.75)' : 'var(--color-text-secondary)',
       }}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >

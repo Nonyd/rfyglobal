@@ -29,7 +29,7 @@ export default async function HomePage() {
     <main>
       <Hero content={content} />
       <ScriptureStrip />
-      <StatsSection content={content} />
+      {content['stats.enabled'] !== 'false' ? <StatsSection content={content} /> : null}
       <VisionSection content={content} />
       <ConfessionReveal content={content} />
       <FromTheShepherd content={content} />

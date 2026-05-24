@@ -46,11 +46,12 @@ export function Navbar() {
     }
   }, [mobileOpen])
 
-  const onHero = !scrolled
-  const logoSrc = onHero ? '/images/logo-white.png' : isDark ? '/images/logo-white.png' : '/images/logo-dark.png'
+  const onHomeHero = pathname === '/' && !scrolled
+  const useLightNav = !onHomeHero && !isDark
+  const logoSrc = onHomeHero || isDark ? '/images/logo-white.png' : '/images/logo-dark.png'
   const linkColor = (href: string) => {
     if (pathname === href) return 'var(--color-accent)'
-    if (onHero) return 'rgba(250,247,242,0.65)'
+    if (onHomeHero) return 'rgba(255,255,255,0.65)'
     return 'var(--color-text-secondary)'
   }
 
@@ -74,7 +75,7 @@ export function Navbar() {
               src={logoSrc}
               alt="Room For You"
               style={{
-                height: onHero ? '60px' : '48px',
+                height: onHomeHero ? '60px' : '48px',
                 width: 'auto',
                 objectFit: 'contain',
                 display: 'block',
@@ -96,7 +97,7 @@ export function Navbar() {
           </div>
 
           <div className="flex items-center gap-2 sm:gap-3">
-            <ThemeToggle />
+            <ThemeToggle overDark={onHomeHero} />
 
             <Link
               href="/join"
@@ -116,11 +117,11 @@ export function Navbar() {
               style={{
                 color: mobileOpen
                   ? 'var(--color-text-inverse)'
-                  : onHero
+                  : onHomeHero
                     ? 'var(--color-hero-text)'
                     : 'var(--color-text-primary)',
                 background: mobileOpen ? 'var(--color-accent)' : 'transparent',
-                border: `1px solid ${mobileOpen ? 'var(--color-accent)' : 'var(--color-accent-border)'}`,
+                border: `1px solid ${mobileOpen ? 'var(--color-accent)' : useLightNav ? 'var(--color-border)' : 'var(--color-accent-border)'}`,
               }}
               aria-label={mobileOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={mobileOpen}
