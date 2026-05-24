@@ -7,7 +7,7 @@ export function FromTheShepherd({ content }: { content: Record<string, string> }
   const portrait = (content['landing.shepherd.portrait'] || '/images/yadah-portrait.jpg').trim()
 
   return (
-    <section className="relative py-24 px-6" style={{ background: 'var(--color-bg)' }}>
+    <section className="reveal py-24 px-6" style={{ background: 'var(--color-bg)' }}>
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}

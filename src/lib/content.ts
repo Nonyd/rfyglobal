@@ -24,7 +24,22 @@ const DEFAULTS: Record<string, string> = {
     'We exist to raise a family of believers who walk in newness of life — ambassadors reconciling others to God.',
   'landing.cta.headline': 'The door is open.',
   'landing.cta.subtext': 'Step in. There is room for you.',
+  'landing.cta.label': 'Join Us',
   'landing.cta.button': 'Join the Community',
+  'landing.cta.buttonSecondary': 'Our Story',
+
+  'stats.stat1.number': '100',
+  'stats.stat1.suffix': 'M+',
+  'stats.stat1.label': 'Streams',
+  'stats.stat2.number': '600',
+  'stats.stat2.suffix': 'K+',
+  'stats.stat2.label': 'Followers',
+  'stats.stat3.number': '5',
+  'stats.stat3.suffix': '+',
+  'stats.stat3.label': 'Years',
+  'stats.stat4.number': '24',
+  'stats.stat4.suffix': '+',
+  'stats.stat4.label': 'Gatherings',
 
   'shepherd.quote':
     'Room For You was born out of a deep conviction — that every young person deserves a community where they are seen, known, and called into purpose. This is not just a ministry. It is a family. And there is room for you here.',

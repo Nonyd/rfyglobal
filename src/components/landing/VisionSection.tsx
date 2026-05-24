@@ -15,7 +15,7 @@ export function VisionSection({ content }: { content: Record<string, string> }) 
   const activities = cmsLines(content['landing.vision.activities'], DEFAULT_ACTIVITIES)
 
   return (
-    <section className="py-24 px-6" style={{ background: 'var(--color-bg)' }}>
+    <section className="reveal py-24 px-6" style={{ background: 'var(--color-bg)' }}>
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 lg:gap-32 items-center">
         <motion.div
           initial={{ opacity: 0, x: -32 }}

@@ -1,32 +1,37 @@
 'use client'
 
 import Link from 'next/link'
+import type { ReactNode } from 'react'
 
-const FOOTER_NAV_LINKS = [
-  { label: 'Word', href: '/word' },
-  { label: 'Study', href: '/study' },
-  { label: 'Events', href: '/events' },
-  { label: 'Gallery', href: '/gallery' },
-  { label: 'Blog', href: '/blog' },
-  { label: 'Partner', href: '/partner' },
-  { label: 'About', href: '/about' },
-] as const
+const LINK_MUTED = 'rgba(255,255,255,0.55)'
 
-const MUTED = '#585858'
-const CRIMSON = '#8B0000'
+function FooterColumnHeading({ children }: { children: ReactNode }) {
+  return (
+    <h3
+      className="font-display uppercase mb-6"
+      style={{ fontSize: '0.85rem', letterSpacing: '0.15em', color: '#FFFFFF' }}
+    >
+      {children}
+    </h3>
+  )
+}
+
+function FooterLink({ href, children }: { href: string; children: ReactNode }) {
+  return (
+    <Link
+      href={href}
+      className="font-body block mb-3 transition-colors duration-300 hover:text-white"
+      style={{ fontSize: '0.875rem', color: LINK_MUTED }}
+    >
+      {children}
+    </Link>
+  )
+}
 
 function InstagramGlyph({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
-      <rect
-        x="2.75"
-        y="2.75"
-        width="18.5"
-        height="18.5"
-        rx="5"
-        stroke="currentColor"
-        strokeWidth="1.35"
-      />
+      <rect x="2.75" y="2.75" width="18.5" height="18.5" rx="5" stroke="currentColor" strokeWidth="1.35" />
       <circle cx="12" cy="12" r="3.35" stroke="currentColor" strokeWidth="1.35" />
       <circle cx="17.25" cy="6.75" r="0.95" fill="currentColor" />
     </svg>
@@ -55,132 +60,116 @@ const SOCIAL_ICONS = {
   X: XGlyph,
 } as const
 
-export function FooterNavLinks() {
-  return (
-    <nav className="flex flex-wrap gap-x-8 gap-y-3">
-      {FOOTER_NAV_LINKS.map((link) => (
-        <Link
-          key={link.href}
-          href={link.href}
-          className="font-body text-[11px] tracking-[0.15em] uppercase transition-colors duration-300"
-          style={{ color: MUTED }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = CRIMSON
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = MUTED
-          }}
-        >
-          {link.label}
-        </Link>
-      ))}
-    </nav>
-  )
-}
-
 export type FooterSocialItem = {
   href: string
   label: keyof typeof SOCIAL_ICONS
 }
 
-export function FooterSocialLinks({ items }: { items: FooterSocialItem[] }) {
+export function FooterBrandColumn({
+  tagline,
+  socialItems,
+}: {
+  tagline: string
+  socialItems: FooterSocialItem[]
+}) {
   return (
-    <div className="flex items-center gap-3 sm:gap-4">
-      {items.map(({ href, label }) => {
-        const Icon = SOCIAL_ICONS[label]
-        return (
-          <a
-            key={label}
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`Room For You on ${label}`}
-            className="flex h-11 w-11 items-center justify-center rounded-full border shadow-sm transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(139,0,0,0.5)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0F0F0F]"
-            style={{
-              borderColor: 'rgba(255,255,255,0.12)',
-              backgroundColor: 'rgba(255,255,255,0.03)',
-              color: MUTED,
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = CRIMSON
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = MUTED
-            }}
-          >
-            <Icon className="h-[18px] w-[18px] shrink-0" />
-          </a>
-        )
-      })}
+    <div>
+      <p
+        className="font-display font-bold uppercase mb-4"
+        style={{ fontSize: '1.25rem', color: '#FFFFFF', letterSpacing: '0.05em' }}
+      >
+        Room For You
+      </p>
+      <p className="font-body mb-6 leading-relaxed" style={{ fontSize: '0.875rem', color: LINK_MUTED }}>
+        {tagline}
+      </p>
+      <div className="flex items-center gap-3">
+        {socialItems.map(({ href, label }) => {
+          const Icon = SOCIAL_ICONS[label]
+          return (
+            <a
+              key={label}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`Room For You on ${label}`}
+              className="flex h-9 w-9 items-center justify-center rounded-full border transition-colors duration-300 hover:text-white"
+              style={{
+                borderColor: 'rgba(255,255,255,0.12)',
+                color: LINK_MUTED,
+              }}
+            >
+              <Icon className="h-4 w-4 shrink-0" />
+            </a>
+          )
+        })}
+      </div>
     </div>
   )
 }
 
-export function FooterCommunityLinks() {
+export function FooterCommunityColumn() {
   return (
-    <div className="flex items-center justify-center gap-6 mb-1">
-      <a
-        href="/prayer"
-        style={{ color: '#A0A0A0', fontSize: '12px', fontFamily: 'General Sans, sans-serif' }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = '#8B0000')}
-        onMouseLeave={(e) => (e.currentTarget.style.color = '#A0A0A0')}
-      >
-        Prayer Wall
-      </a>
-      <a
-        href="/testimonies"
-        style={{ color: '#A0A0A0', fontSize: '12px', fontFamily: 'General Sans, sans-serif' }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = '#8B0000')}
-        onMouseLeave={(e) => (e.currentTarget.style.color = '#A0A0A0')}
-      >
-        Testimonies
-      </a>
-      <a
-        href="/contact"
-        style={{ color: '#A0A0A0', fontSize: '12px', fontFamily: 'General Sans, sans-serif' }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = '#8B0000')}
-        onMouseLeave={(e) => (e.currentTarget.style.color = '#A0A0A0')}
-      >
-        Contact
-      </a>
-      <a
-        href="/faq"
-        style={{ color: '#A0A0A0', fontSize: '12px', fontFamily: 'General Sans, sans-serif' }}
-        onMouseEnter={(e) => (e.currentTarget.style.color = '#8B0000')}
-        onMouseLeave={(e) => (e.currentTarget.style.color = '#A0A0A0')}
-      >
-        FAQs
-      </a>
+    <div>
+      <FooterColumnHeading>Community</FooterColumnHeading>
+      <FooterLink href="/prayer">Prayer Wall</FooterLink>
+      <FooterLink href="/testimonies">Testimonies</FooterLink>
+      <FooterLink href="/events">Events</FooterLink>
+      <FooterLink href="/join">Join Us</FooterLink>
     </div>
   )
 }
 
-const LEGAL_LINKS = [
-  { href: '/privacy', label: 'Privacy Policy' },
-  { href: '/cookies', label: 'Cookie Policy' },
-  { href: '/refund', label: 'Refund Policy' },
-  { href: '/confession', label: 'The Confession →' },
-] as const
-
-export function FooterLegalLinks() {
+export function FooterResourcesColumn() {
   return (
-    <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
-      {LEGAL_LINKS.map((link) => (
-        <Link
-          key={link.href}
-          href={link.href}
-          className="font-body transition-colors duration-300"
-          style={{ color: MUTED, fontSize: '11px' }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = CRIMSON
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = MUTED
-          }}
-        >
-          {link.label}
+    <div>
+      <FooterColumnHeading>Resources</FooterColumnHeading>
+      <FooterLink href="/word">Word</FooterLink>
+      <FooterLink href="/study">Study</FooterLink>
+      <FooterLink href="/blog">Blog</FooterLink>
+      <FooterLink href="/gallery">Gallery</FooterLink>
+    </div>
+  )
+}
+
+export function FooterOrganisationColumn() {
+  return (
+    <div>
+      <FooterColumnHeading>Organisation</FooterColumnHeading>
+      <FooterLink href="/about">About</FooterLink>
+      <FooterLink href="/partner">Partner</FooterLink>
+      <FooterLink href="/contact">Contact</FooterLink>
+      <FooterLink href="/faq">FAQs</FooterLink>
+    </div>
+  )
+}
+
+export function FooterBottomBar({ copyright }: { copyright: string }) {
+  return (
+    <div
+      className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t"
+      style={{ borderColor: 'rgba(255,255,255,0.08)' }}
+    >
+      <p className="font-body" style={{ color: LINK_MUTED, fontSize: '0.75rem' }}>
+        {copyright}
+      </p>
+      <div className="flex flex-wrap items-center gap-6">
+        <Link href="/privacy" className="font-body transition-colors hover:text-white" style={{ fontSize: '0.75rem', color: LINK_MUTED }}>
+          Privacy
         </Link>
-      ))}
+        <Link href="/cookies" className="font-body transition-colors hover:text-white" style={{ fontSize: '0.75rem', color: LINK_MUTED }}>
+          Cookies
+        </Link>
+        <Link href="/refund" className="font-body transition-colors hover:text-white" style={{ fontSize: '0.75rem', color: LINK_MUTED }}>
+          Refund
+        </Link>
+      </div>
     </div>
   )
 }
+
+// Legacy exports for any remaining imports
+export const FooterNavLinks = FooterResourcesColumn
+export const FooterCommunityLinks = FooterCommunityColumn
+export const FooterSocialLinks = () => null
+export const FooterLegalLinks = () => null

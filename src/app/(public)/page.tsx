@@ -1,5 +1,6 @@
 import { Hero } from '@/components/landing/Hero'
 import { ScriptureStrip } from '@/components/landing/ScriptureStrip'
+import { StatsSection } from '@/components/landing/StatsSection'
 import { VisionSection } from '@/components/landing/VisionSection'
 import { ConfessionReveal } from '@/components/landing/ConfessionReveal'
 import { FromTheShepherd } from '@/components/landing/FromTheShepherd'
@@ -28,6 +29,7 @@ export default async function HomePage() {
     <main>
       <Hero content={content} />
       <ScriptureStrip />
+      <StatsSection content={content} />
       <VisionSection content={content} />
       <ConfessionReveal content={content} />
       <FromTheShepherd content={content} />

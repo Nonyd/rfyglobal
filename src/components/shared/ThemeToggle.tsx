@@ -27,14 +27,14 @@ export function ThemeToggle({ className }: { className?: string }) {
         size={16}
         className={cn(
           'absolute transition-all duration-300',
-          isDark ? 'rotate-90 scale-50 opacity-0' : 'rotate-0 scale-100 opacity-100',
+          isDark ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-50 opacity-0',
         )}
       />
       <Moon
         size={16}
         className={cn(
           'absolute transition-all duration-300',
-          isDark ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-50 opacity-0',
+          isDark ? 'rotate-90 scale-50 opacity-0' : 'rotate-0 scale-100 opacity-100',
         )}
       />
     </button>

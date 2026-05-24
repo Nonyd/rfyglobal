@@ -1,6 +1,8 @@
 import Script from 'next/script'
 import { Toaster } from 'react-hot-toast'
 import { ChatWidget } from '@/components/chat/ChatWidget'
+import { PublicCursor } from '@/components/layout/PublicCursor'
+import { ScrollRevealInit } from '@/components/layout/ScrollRevealInit'
 import { PublicThemeProvider } from '@/components/providers/PublicThemeProvider'
 
 export default function PublicLayout({ children }: { children: React.ReactNode }) {
@@ -11,18 +13,14 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
         strategy="beforeInteractive"
         dangerouslySetInnerHTML={{
           __html: `
-            (function() {
-              var saved = localStorage.getItem('rfy-public-theme');
-              var theme = saved === 'dark' ? 'dark' : 'light';
-              document.documentElement.setAttribute('data-public-theme', theme);
-            })();
+            (function(){var t=localStorage.getItem('rfy-public-theme')||'dark';document.documentElement.setAttribute('data-public-theme',t);})();
           `,
         }}
       />
       <PublicThemeProvider>
         <div
           id="public-site-root"
-          className="public-site public-light"
+          className="public-site public-dark"
           style={{
             background: 'var(--color-bg)',
             color: 'var(--color-text-primary)',
@@ -30,6 +28,8 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
           }}
         >
           {children}
+          <PublicCursor />
+          <ScrollRevealInit />
           <ChatWidget />
           <Toaster
             position="bottom-center"

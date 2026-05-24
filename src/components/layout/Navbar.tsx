@@ -54,8 +54,8 @@ export function Navbar() {
     return 'var(--color-text-secondary)'
   }
 
-  const scrolledBg = isDark ? 'rgba(15,15,15,0.95)' : 'rgba(250,247,242,0.95)'
-  const scrolledBorder = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'
+  const scrolledBg = isDark ? 'rgba(0,0,0,0.85)' : 'rgba(250,245,238,0.9)'
+  const scrolledBorder = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'
 
   return (
     <>
@@ -63,7 +63,7 @@ export function Navbar() {
         className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
         style={{
           background: scrolled ? scrolledBg : 'transparent',
-          backdropFilter: scrolled ? 'blur(12px)' : 'none',
+          backdropFilter: scrolled ? 'blur(18px)' : 'none',
           borderBottom: scrolled ? `1px solid ${scrolledBorder}` : 'none',
           padding: scrolled ? '12px 0' : '20px 0',
         }}
@@ -87,7 +87,7 @@ export function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="font-body text-[11px] font-medium tracking-[0.2em] uppercase transition-colors duration-300"
+                className="font-body text-[11px] font-medium tracking-[0.12em] uppercase transition-colors duration-300"
                 style={{ color: linkColor(link.href) }}
               >
                 {link.label}
@@ -100,18 +100,10 @@ export function Navbar() {
 
             <Link
               href="/join"
-              className="hidden sm:inline-flex items-center px-4 py-2 font-body text-[11px] font-medium tracking-[0.2em] uppercase border transition-all duration-300"
+              className="hidden sm:inline-flex items-center px-5 py-2 font-display text-[11px] font-semibold tracking-[0.12em] uppercase transition-all duration-300 hover:opacity-90"
               style={{
-                borderColor: 'var(--color-accent)',
-                color: 'var(--color-accent)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = 'var(--color-accent)'
-                e.currentTarget.style.color = 'var(--color-text-inverse)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = 'transparent'
-                e.currentTarget.style.color = 'var(--color-accent)'
+                background: 'var(--color-accent)',
+                color: '#FFFFFF',
               }}
             >
               Join Us

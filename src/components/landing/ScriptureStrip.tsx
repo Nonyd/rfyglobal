@@ -1,74 +1,66 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { AudioPlayer } from '@/components/shared/AudioPlayer'
-import { ShareButton } from '@/components/shared/ShareButton'
-import { motion } from 'framer-motion'
 
 export function ScriptureStrip() {
-  const [scripture, setScripture] = useState<{
-    id: string
-    reference: string
-    text: string
-    translation: string
-    audioUrl?: string
-  } | null>(null)
+  const [scriptureText, setScriptureText] = useState('')
 
   useEffect(() => {
     fetch('/api/scripture/today')
       .then((r) => r.json())
-      .then(setScripture)
+      .then((data) => {
+        const text = data?.reference && data?.text
+          ? `${data.reference} — "${data.text}"`
+          : '2 Corinthians 5:17 — "Therefore, if anyone is in Christ, the new creation has come."'
+        setScriptureText(text)
+      })
       .catch(() =>
-        setScripture({
-          id: 'fallback',
-          reference: '2 Corinthians 5:17',
-          text: 'Therefore, if anyone is in Christ, the new creation has come: The old has gone, the new is here!',
-          translation: 'NIV',
-        })
+        setScriptureText(
+          '2 Corinthians 5:17 — "Therefore, if anyone is in Christ, the new creation has come."',
+        ),
       )
   }, [])
 
-  if (!scripture) return <div className="h-64" style={{ background: 'var(--color-strip-bg)' }} />
+  if (!scriptureText) {
+    return <div style={{ background: 'var(--color-strip-bg)', padding: '0.9rem 0', height: '48px' }} />
+  }
 
   return (
-    <section className="py-24 px-6" style={{ background: 'var(--color-strip-bg)' }}>
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-        className="max-w-3xl mx-auto text-center"
+    <div
+      style={{
+        background: 'var(--color-strip-bg)',
+        padding: '0.9rem 0',
+        overflow: 'hidden',
+        borderTop: '1px solid rgba(255,255,255,0.1)',
+        borderBottom: '1px solid rgba(255,255,255,0.1)',
+      }}
+    >
+      <div
+        style={{
+          display: 'flex',
+          whiteSpace: 'nowrap',
+          animation: 'marquee 28s linear infinite',
+        }}
       >
-        <p
-          className="label-text mb-6 opacity-60"
-          style={{ color: 'color-mix(in srgb, var(--color-strip-text) 50%, transparent)' }}
-        >
-          {scripture.translation}
-        </p>
-
-        <p className="font-display text-2xl lg:text-3xl mb-6" style={{ color: 'var(--color-strip-text)' }}>
-          {scripture.reference}
-        </p>
-
-        <div className="gold-line max-w-[120px] mx-auto mb-8 opacity-40" />
-
-        <blockquote
-          className="font-display text-xl lg:text-2xl italic leading-relaxed mb-10"
-          style={{ color: 'var(--color-strip-text)' }}
-        >
-          &ldquo;{scripture.text}&rdquo;
-        </blockquote>
-
-        <div className="flex flex-col items-center gap-4">
-          {scripture.audioUrl && (
-            <AudioPlayer src={scripture.audioUrl} className="w-full max-w-sm" />
-          )}
-          <ShareButton
-            scriptureId={scripture.id}
-            reference={scripture.reference}
-          />
-        </div>
-      </motion.div>
-    </section>
+        {[0, 1].map((i) => (
+          <div key={i} style={{ display: 'flex', flexShrink: 0 }}>
+            <span
+              style={{
+                fontFamily: 'var(--font-antonio)',
+                fontSize: '0.9rem',
+                fontWeight: 500,
+                letterSpacing: '0.15em',
+                textTransform: 'uppercase',
+                color: 'var(--color-strip-text)',
+                padding: '0 2.5rem',
+              }}
+            >
+              {scriptureText}
+            </span>
+            <span style={{ color: 'rgba(255,255,255,0.4)', padding: '0 1rem' }}>✦</span>
+          </div>
+        ))}
+      </div>
+    </div>
   )
 }

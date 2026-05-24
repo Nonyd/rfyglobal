@@ -17,14 +17,14 @@ function applyTheme(theme: PublicTheme) {
 }
 
 export function usePublicTheme() {
-  const [theme, setThemeState] = useState<PublicTheme>('light')
+  const [theme, setThemeState] = useState<PublicTheme>('dark')
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     const attr = document.documentElement.getAttribute('data-public-theme')
     const saved = localStorage.getItem(STORAGE_KEY) as PublicTheme | null
     const initial: PublicTheme =
-      saved === 'dark' || attr === 'dark' ? 'dark' : 'light'
+      saved === 'light' || attr === 'light' ? 'light' : 'dark'
     setThemeState(initial)
     applyTheme(initial)
     setMounted(true)
