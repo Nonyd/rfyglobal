@@ -4,7 +4,11 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 
 export function FromTheShepherd({ content }: { content: Record<string, string> }) {
-  const portrait = (content['landing.shepherd.portrait'] || '/images/yadah-portrait.jpg').trim()
+  const portrait = (
+    content['shepherd.portrait'] ||
+    content['shepherd.image'] ||
+    '/images/yadah-portrait.svg'
+  ).trim()
 
   return (
     <section className="reveal py-24 px-6" style={{ background: 'var(--color-bg)' }}>
@@ -22,6 +26,7 @@ export function FromTheShepherd({ content }: { content: Record<string, string> }
             fill
             className="object-cover object-top"
             unoptimized={portrait.endsWith('.svg')}
+            sizes="(max-width: 1024px) 400px, 480px"
           />
         </motion.div>
 
@@ -31,7 +36,7 @@ export function FromTheShepherd({ content }: { content: Record<string, string> }
           viewport={{ once: true }}
           transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
         >
-          <p className="label-text mb-8">{content['landing.shepherd.label'] || 'From the Shepherd'}</p>
+          <p className="label-text mb-8">From the Shepherd</p>
           <blockquote
             className="font-display italic leading-relaxed mb-8"
             style={{
@@ -39,14 +44,14 @@ export function FromTheShepherd({ content }: { content: Record<string, string> }
               color: 'var(--color-text-primary)',
             }}
           >
-            &ldquo;{content['landing.shepherd.quote'] ||
+            &ldquo;{content['shepherd.quote'] ||
               'There is room for you here. Not because you earned it — because He made room.'}&rdquo;
           </blockquote>
           <p className="font-body text-sm tracking-[0.2em] uppercase" style={{ color: 'var(--color-accent)' }}>
-            {content['landing.shepherd.name'] || 'Minister Yadah'}
+            {content['shepherd.name'] || 'Minister Yadah'}
           </p>
           <p className="font-body text-xs mt-2" style={{ color: 'var(--color-text-muted)' }}>
-            {content['landing.shepherd.title'] || 'Founder, Room For You'}
+            {content['shepherd.title'] || 'Founder, Room For You'}
           </p>
         </motion.div>
       </div>

@@ -48,6 +48,7 @@ export function Navbar() {
 
   const onHomeHero = pathname === '/' && !scrolled
   const useLightNav = !onHomeHero && !isDark
+  const logoLarge = !scrolled && (onHomeHero || (!isDark && pathname !== '/'))
   const logoSrc = onHomeHero || isDark ? '/images/logo-white.png' : '/images/logo-dark.png'
   const linkColor = (href: string) => {
     if (pathname === href) return 'var(--color-accent)'
@@ -75,7 +76,7 @@ export function Navbar() {
               src={logoSrc}
               alt="Room For You"
               style={{
-                height: onHomeHero ? '60px' : '48px',
+                height: logoLarge ? '60px' : '48px',
                 width: 'auto',
                 objectFit: 'contain',
                 display: 'block',
