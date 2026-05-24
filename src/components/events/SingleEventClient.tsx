@@ -8,6 +8,7 @@ import { MapPin, Clock, Calendar, ArrowLeft, ArrowRight } from 'lucide-react'
 import { format } from 'date-fns'
 import type { Event, EventFormField } from '@prisma/client'
 import { EventRegistrationModal } from '@/components/events/EventRegistrationModal'
+import { isEventLive, isEventPast, isEventStillActive } from '@/lib/event-utils'
 
 interface SingleEventClientProps {
   event: Event
@@ -22,7 +23,9 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
   const dateFormatted = format(new Date(event.date), 'EEEE, MMMM do yyyy')
   const monthShort = format(new Date(event.date), 'MMM').toUpperCase()
   const dayNum = format(new Date(event.date), 'dd')
-  const isPast = new Date(event.date) < new Date()
+  const isPast = isEventPast(event.date)
+  const isLive = isEventLive(event.date)
+  const canRegister = isEventStillActive(event.date)
 
   return (
     <main className="min-h-screen bg-void">
@@ -111,6 +114,15 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
             <div className="mb-4 flex items-center gap-2">
               <MapPin size={12} className="text-crimson" />
               <p className="label-text">{event.city}</p>
+              {isLive && (
+                <span
+                  className="ml-2 inline-flex items-center gap-1.5 px-2 py-0.5 font-body text-[10px] font-bold uppercase tracking-widest"
+                  style={{ background: '#8B0000', color: '#FAF7F2' }}
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+                  Live Now
+                </span>
+              )}
               {isPast && (
                 <span
                   className="ml-2 border px-2 py-0.5 font-body text-[10px] tracking-widest"
@@ -181,7 +193,7 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
               <p className="mb-10 font-body text-sm leading-relaxed text-mist">{event.description}</p>
             )}
 
-            {!isPast && (
+            {canRegister && (
               <div className="flex flex-wrap gap-3">
                 <button
                   type="button"

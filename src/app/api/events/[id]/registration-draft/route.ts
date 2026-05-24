@@ -3,6 +3,7 @@ import { db } from '@/lib/db'
 import { strictRatelimit } from '@/lib/ratelimit'
 import { z } from 'zod'
 import { extractMappedEventFields } from '@/lib/event-registration-map'
+import { isEventStillActive } from '@/lib/event-utils'
 
 export const runtime = 'nodejs'
 
@@ -38,8 +39,8 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     return NextResponse.json({ error: 'This event does not require payment.' }, { status: 400 })
   }
 
-  if (new Date(event.date) < new Date()) {
-    return NextResponse.json({ error: 'This event has already passed' }, { status: 400 })
+  if (!isEventStillActive(event.date)) {
+    return NextResponse.json({ error: 'Registration for this event has closed.' }, { status: 400 })
   }
 
   const body = await req.json()

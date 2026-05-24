@@ -4,6 +4,7 @@ import { EventsClientPage } from '@/components/events/EventsClientPage'
 import { db } from '@/lib/db'
 import { getContentMany } from '@/lib/content'
 import { getPageMetadata, pageHeaderFromContent } from '@/lib/cms-metadata'
+import { getEventActiveCutoff } from '@/lib/event-utils'
 
 export const dynamic = 'force-dynamic'
 
@@ -18,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function EventsPage() {
   const [events, cms] = await Promise.all([
     db.event.findMany({
-    where: { isActive: true, date: { gte: new Date() } },
+    where: { isActive: true, date: { gte: getEventActiveCutoff() } },
     orderBy: { date: 'asc' },
   }),
     getContentMany(['pages.events.eyebrow', 'pages.events.title', 'pages.events.subtitle']),

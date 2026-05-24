@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { format } from 'date-fns'
+import { isEventLive } from '@/lib/event-utils'
 
 export interface PublicEvent {
   id: string
@@ -114,12 +115,23 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
               </div>
 
               <div className="p-4">
-                <p
-                  className="label-text opacity-40 mb-1.5"
-                  style={{ color: 'var(--color-text-muted)' }}
-                >
-                  {event.city}
-                </p>
+                <div className="mb-1.5 flex flex-wrap items-center gap-2">
+                  <p
+                    className="label-text opacity-40"
+                    style={{ color: 'var(--color-text-muted)' }}
+                  >
+                    {event.city}
+                  </p>
+                  {isEventLive(event.date) && (
+                    <span
+                      className="inline-flex items-center gap-1.5 px-2 py-1 font-body text-[10px] font-bold uppercase tracking-widest"
+                      style={{ background: 'var(--color-accent)', color: '#FAF7F2' }}
+                    >
+                      <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+                      Live Now
+                    </span>
+                  )}
+                </div>
                 <h3
                   className="font-display text-lg leading-tight group-hover:text-crimson transition-colors mb-2"
                   style={{ color: 'var(--color-text-primary)' }}

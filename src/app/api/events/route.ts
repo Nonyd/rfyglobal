@@ -4,6 +4,7 @@ import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { logActivity } from '@/lib/activity'
 import { slugFromTitleCity } from '@/lib/event-slug'
+import { getEventActiveCutoff } from '@/lib/event-utils'
 import { CreateEventSchema } from '@/lib/validations/event'
 
 export const runtime = 'nodejs'
@@ -16,7 +17,7 @@ export async function GET(req: NextRequest) {
   const where: Prisma.EventWhereInput = {}
   if (!session) {
     where.isActive = true
-    where.date = { gte: new Date() }
+    where.date = { gte: getEventActiveCutoff() }
   }
   if (city) {
     where.city = { contains: city, mode: 'insensitive' }

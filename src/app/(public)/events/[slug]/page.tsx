@@ -8,6 +8,7 @@ import { SingleEventClient } from '@/components/events/SingleEventClient'
 import { JsonLd } from '@/components/seo/JsonLd'
 import type { Metadata } from 'next'
 import { DEFAULT_OG_IMAGE } from '@/lib/seo'
+import { getEventActiveCutoff } from '@/lib/event-utils'
 
 export async function generateMetadata({
   params,
@@ -74,7 +75,7 @@ export default async function SingleEventPage({
     db.event.findMany({
       where: {
         isActive: true,
-        date: { gte: new Date() },
+        date: { gte: getEventActiveCutoff() },
         id: { not: event.id },
       },
       orderBy: { date: 'asc' },

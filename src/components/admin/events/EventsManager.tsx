@@ -20,6 +20,7 @@ import {
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { formatDate } from '@/lib/utils'
+import { getEventStatus } from '@/lib/event-utils'
 import { cn } from '@/lib/utils'
 import { UploadZone } from '@/components/shared/UploadZone'
 import { AdminToggle } from '@/components/shared/Toggle'
@@ -416,7 +417,11 @@ export function EventsManager() {
     )
   }
 
-  const now = new Date()
+  const statusConfig = {
+    upcoming: { label: 'Upcoming', color: 'var(--a-gold)' },
+    live: { label: 'Live Now', color: '#22C55E' },
+    past: { label: 'Past', color: 'var(--a-text-muted)' },
+  } as const
 
   return (
     <div className="relative">
@@ -436,13 +441,14 @@ export function EventsManager() {
 
       <div className="space-y-3">
         {events.map((e) => {
-          const past = new Date(e.date) < now
+          const status = getEventStatus(e.date)
+          const { label, color } = statusConfig[status]
           return (
             <div
               key={e.id}
               className={cn(
                 'group relative flex flex-wrap items-start justify-between gap-4 border p-5 pl-12 transition-opacity',
-                past ? 'opacity-50' : 'opacity-100'
+                status === 'past' ? 'opacity-50' : 'opacity-100'
               )}
               style={{ borderColor: 'var(--a-gold-border)', background: 'var(--a-surface)' }}
             >
@@ -478,11 +484,18 @@ export function EventsManager() {
                   >
                     {e.isActive ? 'Active' : 'Inactive'}
                   </span>
-                  {past && (
-                    <span className="font-body text-[10px] uppercase tracking-widest" style={{ color: 'var(--a-text-muted)' }}>
-                      Past
-                    </span>
-                  )}
+                  <span
+                    className="inline-flex items-center gap-1.5 px-2 py-0.5 font-body text-[10px] uppercase tracking-widest"
+                    style={{ color }}
+                  >
+                    {status === 'live' && (
+                      <span
+                        className="h-1.5 w-1.5 rounded-full animate-pulse"
+                        style={{ background: color }}
+                      />
+                    )}
+                    {label}
+                  </span>
                 </div>
                 <p className="mt-1 font-body text-sm" style={{ color: 'var(--a-text-secondary)' }}>
                   {e.city} · {e.venue}
