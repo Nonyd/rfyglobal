@@ -72,7 +72,7 @@ export function GalleryClientPage({ images, cities, months }: GalleryClientPageP
                   className={cn(
                     'border px-4 py-2 font-body text-xs tracking-wide transition-all',
                     activeCity === c
-                      ? 'border-crimson bg-crimson text-charcoal shadow-soft'
+                      ? 'border-crimson bg-crimson text-white shadow-soft'
                       : 'border-theme text-text-secondary hover:border-crimson/40 hover:text-text-primary',
                   )}
                 >

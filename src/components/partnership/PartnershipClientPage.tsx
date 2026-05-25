@@ -287,7 +287,7 @@ export function PartnershipClientPage({
                     className={cn(
                       'flex-1 py-3 text-sm font-body tracking-wide border transition-all',
                       currency === 'NGN'
-                        ? 'border-crimson bg-crimson text-charcoal'
+                        ? 'border-crimson bg-crimson text-white'
                         : 'border-theme text-text-secondary hover:border-crimson/40 hover:text-text-primary'
                     )}
                   >
@@ -304,7 +304,7 @@ export function PartnershipClientPage({
                       className={cn(
                         'flex-1 py-3 text-sm font-body tracking-wide border transition-all',
                         currency === 'USD'
-                          ? 'border-crimson bg-crimson text-charcoal'
+                          ? 'border-crimson bg-crimson text-white'
                           : 'border-theme text-text-secondary hover:border-crimson/40 hover:text-text-primary'
                       )}
                     >
@@ -329,7 +329,7 @@ export function PartnershipClientPage({
                     className={cn(
                       'flex-1 py-3 text-sm font-body tracking-wide border transition-all',
                       frequency === f
-                        ? 'border-crimson bg-crimson text-charcoal'
+                        ? 'border-crimson bg-crimson text-white'
                         : 'border-theme text-text-secondary hover:border-crimson/40 hover:text-text-primary'
                     )}
                   >
@@ -353,7 +353,7 @@ export function PartnershipClientPage({
                     className={cn(
                       'py-3 text-sm font-body border transition-all',
                       amount === a && !customAmount
-                        ? 'border-crimson bg-crimson text-charcoal'
+                        ? 'border-crimson bg-crimson text-white'
                         : 'border-theme text-text-secondary hover:border-crimson/40 hover:text-text-primary'
                     )}
                   >
@@ -466,7 +466,7 @@ export function PartnershipClientPage({
               type="button"
               onClick={() => void handleGive()}
               disabled={loading}
-              className="animate-pulse-gold w-full bg-crimson py-4 font-body text-base font-medium uppercase tracking-widest text-charcoal transition-all duration-300 hover:bg-crimson-light disabled:opacity-50"
+              className="btn-crimson-solid animate-pulse-gold w-full bg-crimson py-4 font-body text-base font-medium uppercase tracking-widest transition-all duration-300 hover:bg-crimson-light disabled:opacity-50"
             >
               {loading
                 ? 'Processing…'

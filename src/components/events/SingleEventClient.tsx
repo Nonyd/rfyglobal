@@ -198,8 +198,8 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
                 <button
                   type="button"
                   onClick={() => setRegistrationOpen(true)}
-                  className="inline-flex items-center px-7 py-3.5 font-body text-xs font-semibold uppercase tracking-widest transition-all duration-300"
-                  style={{ background: '#8B0000', color: '#0F0F0F' }}
+                  className="btn-crimson-solid inline-flex items-center px-7 py-3.5 font-body text-xs font-semibold uppercase tracking-widest transition-all duration-300"
+                  style={{ background: '#8B0000' }}
                 >
                   Register to Attend →
                 </button>

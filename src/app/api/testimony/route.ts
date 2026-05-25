@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { strictRatelimit } from '@/lib/ratelimit'
+import { findCommunityMemberByEmail } from '@/lib/community-member'
 import { sendTestimonyConfirmationEmail } from '@/lib/emails/testimony-confirmation'
 import { Prisma } from '@prisma/client'
 import { createNotification } from '@/lib/notify'
@@ -77,16 +78,26 @@ export async function POST(req: NextRequest) {
 
   await createNotification('testimony', 'New testimony submitted')
 
+  let isNewVisitor = false
+  try {
+    const member = await findCommunityMemberByEmail(email)
+    isNewVisitor = !member
+  } catch (err) {
+    console.error('[testimony member lookup]', err)
+    isNewVisitor = false
+  }
+
   try {
     await sendTestimonyConfirmationEmail({
       email: email.trim(),
       name: isAnonymous ? null : name?.trim() || null,
+      isNewVisitor,
     })
   } catch (err) {
     console.error('[testimony confirmation email]', err)
   }
 
-  return NextResponse.json({ success: true, id: testimony.id }, { status: 201 })
+  return NextResponse.json({ success: true, id: testimony.id, isNewVisitor }, { status: 201 })
 }
 
 export async function GET(req: NextRequest) {

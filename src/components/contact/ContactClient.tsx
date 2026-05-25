@@ -1,9 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { motion } from 'framer-motion'
 import { Instagram, Youtube, Twitter, MapPin, Send } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { FormSuccessPanel } from '@/components/shared/FormSuccessPanel'
 
 interface ContactClientProps {
   content: Record<string, string>
@@ -92,14 +92,12 @@ export function ContactClient({ content }: ContactClientProps) {
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-16">
         <div className="lg:col-span-3">
           {submitted ? (
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} className="py-16 text-center">
-              <div className="w-16 h-16 rounded-full border-2 flex items-center justify-center mx-auto mb-6" style={{ borderColor: '#8B0000' }}>
-                <Send size={20} className="text-crimson" />
-              </div>
-              <div className="gold-line max-w-[60px] mx-auto mb-6 opacity-30" />
-              <h2 className="font-display text-snow text-3xl font-bold mb-3">Message sent.</h2>
-              <p className="font-body text-mist">We received your message and will get back to you soon.</p>
-            </motion.div>
+            <FormSuccessPanel
+              theme="light"
+              className="py-8"
+              title="Message sent."
+              message="We received your message and will get back to you soon."
+            />
           ) : (
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -163,8 +161,8 @@ export function ContactClient({ content }: ContactClientProps) {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-4 font-body font-semibold text-xs tracking-widest uppercase transition-all disabled:opacity-40 flex items-center justify-center gap-2"
-                style={{ background: 'var(--color-accent)', color: '#FAF7F2' }}
+                className="btn-crimson-solid flex w-full items-center justify-center gap-2 py-4 font-body text-xs font-semibold uppercase tracking-widest transition-all disabled:opacity-40"
+                style={{ background: 'var(--color-accent)' }}
               >
                 {submitting ? (
                   <>

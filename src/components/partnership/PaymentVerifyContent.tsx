@@ -104,7 +104,7 @@ export function PaymentVerifyContent() {
           <div className="h-px bg-gradient-to-r from-transparent via-crimson/40 to-transparent" />
           <Link
             href="/"
-            className="inline-block px-8 py-3 border border-crimson text-crimson font-body text-sm tracking-widest uppercase hover:bg-crimson hover:text-black transition-all duration-300"
+            className="inline-block px-8 py-3 border border-crimson text-crimson font-body text-sm tracking-widest uppercase hover:bg-crimson hover:text-white transition-all duration-300"
           >
             Back to Home
           </Link>
@@ -122,7 +122,7 @@ export function PaymentVerifyContent() {
           </p>
           <Link
             href="/partner"
-            className="inline-block px-8 py-3 bg-crimson text-black font-body text-sm tracking-widest uppercase hover:bg-crimson-light transition-all duration-300"
+            className="btn-crimson-solid inline-block px-8 py-3 bg-crimson font-body text-sm tracking-widest uppercase hover:bg-crimson-light transition-all duration-300"
           >
             Try Again
           </Link>

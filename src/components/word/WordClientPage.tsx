@@ -25,7 +25,7 @@ export function WordClientPage({ today, allScriptures }: WordClientPageProps) {
             className={cn(
               'rfy-focus border px-6 py-2 font-body text-sm uppercase tracking-[0.2em] transition-all',
               view === v
-                ? 'border-crimson bg-crimson text-charcoal shadow-soft'
+                ? 'border-crimson bg-crimson text-white shadow-soft'
                 : 'border-theme text-text-muted hover:border-crimson/40 hover:text-text-primary',
             )}
           >

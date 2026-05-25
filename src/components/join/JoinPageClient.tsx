@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
+import { FormSuccessPanel } from '@/components/shared/FormSuccessPanel'
 import { COUNTRIES, NIGERIA_STATES } from '@/lib/geo-data'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
@@ -464,62 +465,62 @@ export function JoinPageClient({ extraFields, whatsappUrl, content }: JoinPageCl
               </form>
             </motion.div>
           ) : (
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="max-w-md w-full mx-auto text-center"
-            >
-              <div
-                className="w-20 h-20 rounded-full border-2 flex items-center justify-center mx-auto mb-8"
-                style={{ borderColor: '#8B0000' }}
+            <div className="dark-surface max-w-md w-full mx-auto">
+              <FormSuccessPanel
+                theme="dark"
+                title="You're in."
+                message={
+                  <>
+                    Welcome to Room For You. Check your email for your confirmation.{' '}
+                    <span style={{ color: 'var(--color-accent, #8B0000)', fontWeight: 500 }}>
+                      There is room for you here.
+                    </span>
+                  </>
+                }
               >
-                <span className="text-crimson text-3xl">✓</span>
-              </div>
-
-              <div className="gold-line max-w-[60px] mx-auto mb-8 opacity-40" />
-
-              <h2 className="font-display text-4xl text-snow mb-4">You&apos;re in.</h2>
-              <p className="font-body text-mist leading-relaxed mb-6">
-                Welcome to Room For You. Check your email for your confirmation.
-                <span className="text-crimson"> There is room for you here.</span>
-              </p>
-
-              {whatsappUrl ? (
-                <div className="mb-8">
-                  <div
-                    className="inline-flex flex-col items-center gap-3 px-8 py-5 border"
-                    style={{ borderColor: 'rgba(139,0,0,0.3)', background: 'rgba(139,0,0,0.05)' }}
-                  >
-                    <p className="font-body text-mist text-sm">Joining our WhatsApp community in</p>
-                    <p className="font-display text-crimson text-5xl font-bold">{countdown}</p>
-                    <p className="font-body text-mist text-xs opacity-60">seconds</p>
-                  </div>
-                  <p className="font-body text-xs mt-4" style={{ color: '#585858' }}>
-                    Not redirected?{' '}
-                    <a
-                      href={whatsappUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-crimson hover:opacity-70 transition-opacity underline"
+                {whatsappUrl ? (
+                  <div>
+                    <div
+                      className="inline-flex flex-col items-center gap-3 px-8 py-5 border"
+                      style={{ borderColor: 'rgba(139,0,0,0.3)', background: 'rgba(139,0,0,0.08)' }}
                     >
-                      Click here to join →
-                    </a>
+                      <p className="font-body text-sm" style={{ color: 'rgba(255,255,255,0.75)' }}>
+                        Joining our WhatsApp community in
+                      </p>
+                      <p className="font-display text-5xl font-bold" style={{ color: '#ffffff' }}>
+                        {countdown}
+                      </p>
+                      <p className="font-body text-xs" style={{ color: 'rgba(255,255,255,0.5)' }}>
+                        seconds
+                      </p>
+                    </div>
+                    <p className="font-body text-xs mt-4" style={{ color: 'rgba(255,255,255,0.45)' }}>
+                      Not redirected?{' '}
+                      <a
+                        href={whatsappUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="underline transition-opacity hover:opacity-80"
+                        style={{ color: 'var(--color-accent, #8B0000)' }}
+                      >
+                        Click here to join →
+                      </a>
+                    </p>
+                  </div>
+                ) : (
+                  <p className="font-body text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
+                    Your confirmation email is on its way.
                   </p>
-                </div>
-              ) : (
-                <div className="mb-8">
-                  <p className="font-body text-mist text-sm">Your confirmation email is on its way.</p>
-                </div>
-              )}
-
-              <Link
-                href="/"
-                className="font-body text-sm tracking-widest uppercase"
-                style={{ color: 'rgba(248,248,248,0.4)' }}
-              >
-                ← Back to Home
-              </Link>
-            </motion.div>
+                )}
+                <Link
+                  href="/"
+                  className="mt-6 inline-block font-body text-sm tracking-widest uppercase transition-opacity hover:opacity-80"
+                  style={{ color: 'rgba(255,255,255,0.5)' }}
+                >
+                  ← Back to Home
+                </Link>
+              </FormSuccessPanel>
+            </div>
           )}
         </div>
       </div>

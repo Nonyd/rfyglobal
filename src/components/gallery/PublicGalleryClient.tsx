@@ -243,7 +243,7 @@ export function PublicGalleryClient({
                 type="button"
                 onClick={() => void downloadAllSelected()}
                 disabled={downloading}
-                className="flex items-center gap-2 px-4 py-2.5 font-body text-xs font-semibold uppercase tracking-widest text-void transition-all disabled:opacity-50"
+                className="btn-crimson-solid flex items-center gap-2 px-4 py-2.5 font-body text-xs font-semibold uppercase tracking-widest transition-all disabled:opacity-50"
                 style={{ background: '#8B0000' }}
               >
                 <Archive size={12} />
@@ -466,7 +466,7 @@ export function PublicGalleryClient({
               onMouseEnter={(e) => {
                 if (loadingMore || filtering) return
                 e.currentTarget.style.background = '#8B0000'
-                e.currentTarget.style.color = '#0F0F0F'
+                e.currentTarget.style.color = '#FFFFFF'
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.background = 'transparent'
@@ -538,8 +538,8 @@ export function PublicGalleryClient({
                 e.stopPropagation()
                 downloadImage(currentImage.url)
               }}
-              className="absolute right-20 top-6 z-10 flex items-center gap-2 px-4 py-2.5 font-body text-xs uppercase tracking-widest transition-all"
-              style={{ background: '#8B0000', color: '#0F0F0F' }}
+              className="btn-crimson-solid absolute right-20 top-6 z-10 flex items-center gap-2 px-4 py-2.5 font-body text-xs uppercase tracking-widest transition-all"
+              style={{ background: '#8B0000' }}
             >
               <Download size={13} />
               Download
@@ -651,7 +651,7 @@ function FilterPill({
       className="px-3 py-1 font-body text-xs tracking-wide transition-all disabled:opacity-40"
       style={{
         background: active ? '#8B0000' : 'transparent',
-        color: active ? '#0F0F0F' : 'rgba(248,248,248,0.6)',
+        color: active ? '#FFFFFF' : 'rgba(248,248,248,0.6)',
         border: active ? 'none' : '1px solid rgba(255,255,255,0.12)',
       }}
     >

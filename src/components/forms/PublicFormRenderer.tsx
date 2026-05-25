@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils'
 import { useEmailCheck } from '@/hooks/useEmailCheck'
 import { useRedirectCountdown } from '@/hooks/useRedirectCountdown'
 import { RedirectCountdownBanner } from '@/components/shared/RedirectCountdownBanner'
+import { FormSuccessPanel } from '@/components/shared/FormSuccessPanel'
 
 type PublicForm = Omit<Form, 'notifyEmail'> & { fields: FormField[] }
 
@@ -169,17 +170,11 @@ export function PublicFormRenderer({ form }: { form: PublicForm }) {
 
   if (done) {
     return (
-      <div className="text-center px-6 py-12">
-        <div
-          className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-full"
-          style={{ background: 'rgba(139,0,0,0.1)', border: '1px solid rgba(139,0,0,0.3)' }}
-        >
-          <span style={{ fontSize: '24px' }}>✓</span>
-        </div>
-        <h3 className="font-display mb-3 text-2xl text-text-primary">Thank you!</h3>
-        <p className="font-body mb-4 text-sm leading-relaxed text-text-secondary">
-          {successMessage ?? 'Your submission has been received.'}
-        </p>
+      <FormSuccessPanel
+        theme="light"
+        title="Thank you!"
+        message={successMessage ?? 'Your submission has been received.'}
+      >
         {isRedirecting && redirectCountdown !== null && pendingRedirectUrl ? (
           <RedirectCountdownBanner
             redirectCountdown={redirectCountdown}
@@ -190,10 +185,10 @@ export function PublicFormRenderer({ form }: { form: PublicForm }) {
             href="/"
             className="inline-block font-body text-sm tracking-wide text-crimson transition-colors hover:text-crimson-light"
           >
-            Back to Home
+            Back to Home →
           </Link>
         )}
-      </div>
+      </FormSuccessPanel>
     )
   }
 
@@ -402,7 +397,7 @@ export function PublicFormRenderer({ form }: { form: PublicForm }) {
         <button
           type="submit"
           disabled={submitting || emailSubmitBlocked}
-          className="w-full sm:w-auto px-10 py-3.5 bg-crimson text-black text-sm font-body font-medium tracking-wide hover:bg-crimson-light transition-colors disabled:opacity-50"
+          className="btn-crimson-solid w-full sm:w-auto px-10 py-3.5 bg-crimson text-sm font-body font-medium tracking-wide hover:bg-crimson-light transition-colors disabled:opacity-50"
         >
           {submitting ? 'Submitting…' : 'Submit'}
         </button>

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
 import Link from 'next/link'
 import { Toggle } from '@/components/shared/Toggle'
+import { FormSuccessPanel } from '@/components/shared/FormSuccessPanel'
 
 function messageFromApiError(error: unknown): string {
   if (typeof error === 'string') return error
@@ -89,24 +90,20 @@ export function PrayerWallClient() {
 
   if (submitted) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center py-12"
-      >
-        <div
-          className="w-16 h-16 rounded-full border-2 flex items-center justify-center mx-auto mb-6"
-          style={{ borderColor: '#8B0000' }}
-        >
-          <span className="text-crimson text-2xl">🙏</span>
-        </div>
-        <div className="gold-line max-w-[60px] mx-auto mb-6 opacity-30" />
-        <h2 className="font-display text-snow text-3xl font-bold mb-3">Received.</h2>
-        <p className="font-body text-mist leading-relaxed max-w-md mx-auto">
-          Your prayer request has been received. Minister Yadah and the prayer team will be lifting you up in prayer.
-          <span className="text-crimson"> Jesus cares about what concerns you.</span>
-        </p>
-      </motion.div>
+      <FormSuccessPanel
+        theme="light"
+        className="py-8"
+        title="Received."
+        message={
+          <>
+            Your prayer request has been received. Minister Yadah and the prayer team will be lifting you up in
+            prayer.{' '}
+            <span style={{ color: 'var(--color-accent, #8B0000)', fontWeight: 500 }}>
+              Jesus cares about what concerns you.
+            </span>
+          </>
+        }
+      />
     )
   }
 
@@ -214,8 +211,8 @@ export function PrayerWallClient() {
       <button
         type="submit"
         disabled={submitting}
-        className="w-full py-4 font-body font-semibold text-xs tracking-widest uppercase transition-all disabled:opacity-40"
-        style={{ background: 'var(--color-accent)', color: '#FAF7F2' }}
+        className="btn-crimson-solid w-full py-4 font-body font-semibold text-xs tracking-widest uppercase transition-all disabled:opacity-40"
+        style={{ background: 'var(--color-accent)' }}
       >
         {submitting ? 'Submitting…' : 'Submit Prayer Request →'}
       </button>

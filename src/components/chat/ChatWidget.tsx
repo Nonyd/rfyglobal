@@ -191,9 +191,9 @@ export function ChatWidget() {
         aria-label="Chat with Room For You"
       >
         {open ? (
-          <X size={20} style={{ color: '#0F0F0F' }} />
+          <X size={20} style={{ color: '#FFFFFF' }} />
         ) : (
-          <MessageCircle size={20} style={{ color: '#0F0F0F' }} />
+          <MessageCircle size={20} style={{ color: '#FFFFFF' }} />
         )}
         {!open && unread > 0 && (
           <span
@@ -249,7 +249,7 @@ export function ChatWidget() {
             className="flex h-8 w-8 items-center justify-center rounded-full"
             style={{ background: 'rgba(0,0,0,0.15)' }}
           >
-            <MessageCircle size={15} style={{ color: '#0F0F0F' }} />
+            <MessageCircle size={15} style={{ color: '#FFFFFF' }} />
           </div>
           <div className="min-w-0 flex-1">
             <p
@@ -463,9 +463,9 @@ export function ChatWidget() {
                 }}
               >
                 {sending ? (
-                  <Loader2 size={13} className="animate-spin" style={{ color: '#0F0F0F' }} />
+                  <Loader2 size={13} className="animate-spin" style={{ color: '#FFFFFF' }} />
                 ) : (
-                  <Send size={13} style={{ color: '#0F0F0F' }} />
+                  <Send size={13} style={{ color: '#FFFFFF' }} />
                 )}
               </button>
             </div>

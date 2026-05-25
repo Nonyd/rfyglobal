@@ -288,7 +288,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
         <p className="mb-10 font-body text-text-secondary">{content['about.cta.subtext']}</p>
         <Link
           href="/join"
-          className="inline-block bg-crimson px-10 py-4 font-body text-sm font-medium uppercase tracking-widest text-black transition-all duration-300 hover:bg-crimson-light"
+          className="btn-crimson-solid inline-block bg-crimson px-10 py-4 font-body text-sm font-medium uppercase tracking-widest transition-all duration-300 hover:bg-crimson-light"
         >
           {content['about.cta.button'] || 'Join the Community'}
         </Link>

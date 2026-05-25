@@ -189,7 +189,7 @@ export function ConfessionPageClient({ content }: { content: Record<string, stri
         <div className="flex flex-col gap-4 sm:flex-row">
           <Link
             href="/join"
-            className="animate-pulse-gold bg-crimson px-10 py-4 font-body text-sm font-medium uppercase tracking-widest text-black transition-all duration-300 hover:bg-crimson-light"
+            className="btn-crimson-solid animate-pulse-gold bg-crimson px-10 py-4 font-body text-sm font-medium uppercase tracking-widest transition-all duration-300 hover:bg-crimson-light"
           >
             {content['confession.page.cta.primary'] || 'Join the Community'}
           </Link>

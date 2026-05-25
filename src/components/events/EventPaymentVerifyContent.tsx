@@ -87,8 +87,8 @@ export function EventPaymentVerifyContent() {
             <button
               type="button"
               onClick={() => router.push(eventUrl)}
-              className="mt-4 inline-block px-8 py-3 font-body text-xs font-semibold uppercase tracking-widest transition-all"
-              style={{ background: '#8B0000', color: '#0F0F0F' }}
+              className="btn-crimson-solid mt-4 inline-block px-8 py-3 font-body text-xs font-semibold uppercase tracking-widest transition-all"
+              style={{ background: '#8B0000' }}
             >
               Back to event
             </button>

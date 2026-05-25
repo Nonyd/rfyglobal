@@ -41,7 +41,7 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
               className="px-5 py-2 font-body text-sm tracking-wide transition-all duration-200 border"
               style={{
                 background: activeCity === city ? '#8B0000' : 'transparent',
-                color: activeCity === city ? 'var(--color-text-inverse)' : 'var(--color-text-secondary)',
+                color: activeCity === city ? '#FFFFFF' : 'var(--color-text-secondary)',
                 borderColor: activeCity === city ? 'transparent' : 'var(--color-border)',
               }}
             >

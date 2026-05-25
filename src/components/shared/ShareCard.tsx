@@ -69,7 +69,7 @@ export function ShareCard({ open, onClose, reference, text, className }: ShareCa
               <button
                 type="button"
                 onClick={copyLink}
-                className="border border-crimson px-4 py-2 font-body text-xs uppercase tracking-widest text-crimson hover:bg-crimson hover:text-black transition-colors"
+                className="border border-crimson px-4 py-2 font-body text-xs uppercase tracking-widest text-crimson hover:bg-crimson hover:text-white transition-colors"
               >
                 Copy page link
               </button>

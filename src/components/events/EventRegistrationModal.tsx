@@ -2,7 +2,8 @@
 
 import { useState, useMemo, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, CheckCircle } from 'lucide-react'
+import { X } from 'lucide-react'
+import { FormSuccessPanel } from '@/components/shared/FormSuccessPanel'
 import toast from 'react-hot-toast'
 import type { EventFormField } from '@prisma/client'
 import { useEmailCheck } from '@/hooks/useEmailCheck'
@@ -495,7 +496,7 @@ export function EventRegistrationModal({
             onClick={(ev) => ev.stopPropagation()}
           >
             <div
-              className="max-h-[90vh] w-full max-w-lg overflow-y-auto"
+              className="dark-surface max-h-[90vh] w-full max-w-lg overflow-y-auto"
               style={{ background: '#0F0F0F', border: '1px solid rgba(139,0,0,0.2)' }}
             >
               {!submitted ? (
@@ -594,7 +595,7 @@ export function EventRegistrationModal({
                                   className="flex-1 py-2.5 font-body text-xs font-semibold uppercase tracking-widest transition-all"
                                   style={{
                                     background: paymentCurrency === c ? '#8B0000' : 'transparent',
-                                    color: paymentCurrency === c ? '#0F0F0F' : '#A0A0A0',
+                                    color: paymentCurrency === c ? '#FFFFFF' : '#A0A0A0',
                                     border: `1px solid ${paymentCurrency === c ? '#8B0000' : 'rgba(255,255,255,0.12)'}`,
                                   }}
                                 >
@@ -609,8 +610,8 @@ export function EventRegistrationModal({
                       <button
                         type="submit"
                         disabled={submitting || primaryEmailDuplicate || usdOnlyBlocked}
-                        className="mt-2 w-full py-4 font-body text-xs font-semibold uppercase tracking-widest transition-all duration-300 disabled:opacity-50"
-                        style={{ background: '#8B0000', color: '#0F0F0F' }}
+                        className="btn-crimson-solid mt-2 w-full py-4 font-body text-xs font-semibold uppercase tracking-widest transition-all duration-300 disabled:opacity-50"
+                        style={{ background: '#8B0000' }}
                       >
                         {submitting
                           ? requiresPayment
@@ -628,40 +629,36 @@ export function EventRegistrationModal({
                   )}
                 </div>
               ) : (
-                <div className="p-8 text-center">
-                  <div
-                    className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border-2"
-                    style={{ borderColor: '#8B0000' }}
-                  >
-                    <CheckCircle size={28} className="text-crimson" />
-                  </div>
-
-                  <div className="gold-line mx-auto mb-6 max-w-[60px] opacity-40" />
-
-                  <h2 className="font-display mb-3 text-3xl font-bold text-snow">{"You're in!"}</h2>
-                  <p className="mb-2 font-body text-sm leading-relaxed text-mist">You are registered for</p>
-                  <p className="font-display mb-6 text-lg text-crimson">{eventTitle}</p>
-                  <p className="mb-8 font-body text-sm leading-relaxed text-mist">
-                    {successMessage ??
-                      `Check your email for confirmation and event details. We'll see you there. 🙌`}
-                  </p>
-
+                <FormSuccessPanel
+                  title="You're in!"
+                  message={
+                    <>
+                      <p className="mb-2">You are registered for</p>
+                      <p
+                        className="font-display text-lg font-semibold"
+                        style={{ color: 'var(--color-accent, #8B0000)' }}
+                      >
+                        {eventTitle}
+                      </p>
+                      <p className="mt-4">
+                        {successMessage ??
+                          "Check your email for confirmation and event details. We'll see you there."}
+                      </p>
+                    </>
+                  }
+                  onClose={
+                    isRedirecting && redirectCountdown !== null && pendingRedirectUrl
+                      ? undefined
+                      : handleClose
+                  }
+                >
                   {isRedirecting && redirectCountdown !== null && pendingRedirectUrl ? (
                     <RedirectCountdownBanner
                       redirectCountdown={redirectCountdown}
                       pendingRedirectUrl={pendingRedirectUrl}
                     />
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={handleClose}
-                      className="border px-8 py-3 font-body text-xs uppercase tracking-widest transition-all"
-                      style={{ borderColor: 'rgba(139,0,0,0.4)', color: '#8B0000' }}
-                    >
-                      Close
-                    </button>
-                  )}
-                </div>
+                  ) : null}
+                </FormSuccessPanel>
               )}
             </div>
           </motion.div>

@@ -26,8 +26,9 @@ export const TESTIMONY_JOIN_CTA_BLOCK = `
 </div>
 `
 
-function buildDefaultTestimonyConfirmationHtml(firstName: string) {
+function buildDefaultTestimonyConfirmationHtml(firstName: string, isNewVisitor: boolean) {
   const safeName = escapeHtml(firstName)
+  const joinBlock = isNewVisitor ? TESTIMONY_JOIN_CTA_BLOCK : ''
   return `
     <!DOCTYPE html>
     <html>
@@ -43,7 +44,7 @@ function buildDefaultTestimonyConfirmationHtml(firstName: string) {
           Your testimony has been received. Our team will review it before it appears on the public page.
           We are grateful you took the time to share what God has done.
         </p>
-        ${TESTIMONY_JOIN_CTA_BLOCK}
+        ${joinBlock}
         <p style="color:#585858;font-size:11px;text-align:center;margin:0;">
           Room For You · rfyglobal.org
         </p>
@@ -56,21 +57,23 @@ function buildDefaultTestimonyConfirmationHtml(firstName: string) {
 export async function sendTestimonyConfirmationEmail({
   email,
   name,
+  isNewVisitor,
 }: {
   email: string
   name?: string | null
+  isNewVisitor: boolean
 }) {
   const firstName = (name?.trim() || email.split('@')[0] || 'Friend').split(' ')[0]
   const safeName = escapeHtml(firstName)
 
   const vars = {
     first_name: safeName,
-    join_cta_block: TESTIMONY_JOIN_CTA_BLOCK,
+    join_cta_block: isNewVisitor ? TESTIMONY_JOIN_CTA_BLOCK : '',
   }
 
   const html =
     (await getTemplateHtml('testimony_confirmation', vars)) ??
-    buildDefaultTestimonyConfirmationHtml(firstName)
+    buildDefaultTestimonyConfirmationHtml(firstName, isNewVisitor)
 
   const subject =
     (await getTemplateSubject('testimony_confirmation', vars)) ??

@@ -57,7 +57,7 @@ export function FaqClient({ categories }: { categories: FaqCategoryData[] }) {
             className="px-4 py-2 font-body text-xs tracking-wide transition-all"
             style={{
               background: activeCategory === 'all' ? '#8B0000' : 'transparent',
-              color: activeCategory === 'all' ? 'var(--color-text-inverse)' : 'var(--color-text-muted)',
+              color: activeCategory === 'all' ? '#FFFFFF' : 'var(--color-text-muted)',
               border: activeCategory === 'all' ? 'none' : '1px solid var(--color-border)',
             }}
           >
@@ -70,7 +70,7 @@ export function FaqClient({ categories }: { categories: FaqCategoryData[] }) {
               className="px-4 py-2 font-body text-xs tracking-wide transition-all"
               style={{
                 background: activeCategory === cat.id ? '#8B0000' : 'transparent',
-                color: activeCategory === cat.id ? 'var(--color-text-inverse)' : 'var(--color-text-muted)',
+                color: activeCategory === cat.id ? '#FFFFFF' : 'var(--color-text-muted)',
                 border: activeCategory === cat.id ? 'none' : '1px solid var(--color-border)',
               }}
             >
