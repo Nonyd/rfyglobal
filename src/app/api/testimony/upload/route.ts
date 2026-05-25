@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { strictRatelimit } from '@/lib/ratelimit'
-import { findCommunityMemberByEmail } from '@/lib/community-member'
 import { cloudinary, UPLOAD_FOLDERS } from '@/lib/cloudinary'
 import { z } from 'zod'
 
@@ -23,11 +22,6 @@ export async function POST(req: NextRequest) {
   const parsed = BodySchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
-  }
-
-  const member = await findCommunityMemberByEmail(parsed.data.email)
-  if (!member) {
-    return NextResponse.json({ error: 'Not a community member', notMember: true }, { status: 403 })
   }
 
   try {

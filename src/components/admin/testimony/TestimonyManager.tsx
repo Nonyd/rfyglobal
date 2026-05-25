@@ -291,17 +291,23 @@ export function TestimonyManager() {
                 {selected.email} · {selected.status}
                 {selected.isFeatured ? ' · Featured' : ''}
               </p>
-              {(selected.phone || selected.location) && (
+              {(selected.phone || selected.location || selected.edition) && (
                 <p className="mt-2 font-body text-xs leading-relaxed" style={{ color: 'var(--a-text-secondary)' }}>
                   {selected.phone ? (
                     <>
                       <span style={{ color: 'var(--a-text-muted)' }}>Phone:</span> {selected.phone}
                     </>
                   ) : null}
-                  {selected.phone && selected.location ? ' · ' : null}
+                  {selected.phone && (selected.location || selected.edition) ? ' · ' : null}
                   {selected.location ? (
                     <>
                       <span style={{ color: 'var(--a-text-muted)' }}>Location:</span> {selected.location}
+                    </>
+                  ) : null}
+                  {selected.location && selected.edition ? ' · ' : null}
+                  {selected.edition ? (
+                    <>
+                      <span style={{ color: 'var(--a-text-muted)' }}>Edition:</span> {selected.edition}
                     </>
                   ) : null}
                 </p>

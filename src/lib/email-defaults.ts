@@ -35,6 +35,11 @@ export const EMAIL_TEMPLATE_DEFAULTS = {
     subject: 'We received your message — Room For You',
     description: 'Sent when someone submits the contact form',
   },
+  testimony_confirmation: {
+    name: 'Testimony Confirmation',
+    subject: 'We received your testimony — Room For You',
+    description: 'Sent when someone submits a testimony for review',
+  },
   unsubscribe: {
     name: 'Unsubscribe Confirmation',
     subject: 'You have been unsubscribed',

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { strictRatelimit } from '@/lib/ratelimit'
-import { findCommunityMemberByEmail } from '@/lib/community-member'
+import { sendTestimonyConfirmationEmail } from '@/lib/emails/testimony-confirmation'
 import { Prisma } from '@prisma/client'
 import { createNotification } from '@/lib/notify'
 import { z } from 'zod'
@@ -13,9 +13,15 @@ const VideoUrlSchema = z.preprocess(
   z.string().url().optional(),
 )
 
+const EditionSchema = z.preprocess(
+  (v) => (v === '' || v === null || v === undefined ? undefined : v),
+  z.string().max(200).optional(),
+)
+
 const TestimonySchema = z.object({
   email: z.string().email(),
   name: z.string().optional(),
+  edition: EditionSchema,
   phone: z.string().min(7).max(20),
   location: z.string().min(1).max(200),
   isAnonymous: z.boolean().default(false),
@@ -39,27 +45,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
-  const { email, name, phone, location, isAnonymous, title, body: testimonyBody, imageUrls, videoUrl } =
-    parsed.data
-
-  const member = await findCommunityMemberByEmail(email)
-
-  if (!member) {
-    return NextResponse.json(
-      {
-        error: 'You need to be a member of the Room For You community to share a testimony.',
-        notMember: true,
-      },
-      { status: 403 },
-    )
-  }
+  const {
+    email,
+    name,
+    edition,
+    phone,
+    location,
+    isAnonymous,
+    title,
+    body: testimonyBody,
+    imageUrls,
+    videoUrl,
+  } = parsed.data
 
   const testimony = await db.testimony.create({
     data: {
-      email: member.email,
+      email: email.trim(),
       phone,
       location,
-      name: isAnonymous ? null : (name || member.name),
+      edition: edition?.trim() || null,
+      name: isAnonymous ? null : (name?.trim() || null),
       isAnonymous,
       title,
       body: testimonyBody || null,
@@ -71,6 +76,15 @@ export async function POST(req: NextRequest) {
   })
 
   await createNotification('testimony', 'New testimony submitted')
+
+  try {
+    await sendTestimonyConfirmationEmail({
+      email: email.trim(),
+      name: isAnonymous ? null : name?.trim() || null,
+    })
+  } catch (err) {
+    console.error('[testimony confirmation email]', err)
+  }
 
   return NextResponse.json({ success: true, id: testimony.id }, { status: 201 })
 }

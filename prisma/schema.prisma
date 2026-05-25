@@ -406,6 +406,7 @@ model Testimony {
   id          String          @id @default(cuid())
   email       String
   name        String?
+  edition     String?
   phone       String?
   location    String?
   isAnonymous Boolean         @default(false)
