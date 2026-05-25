@@ -59,6 +59,21 @@ const FIELDS: CMSField[] = [
   { key: 'stats.stat4.number', label: 'Stat 4 Number', type: 'text', placeholder: '24' },
   { key: 'stats.stat4.suffix', label: 'Stat 4 Suffix', type: 'text', placeholder: '+' },
   { key: 'stats.stat4.label', label: 'Stat 4 Label', type: 'text', placeholder: 'Gatherings' },
+  { key: 'landing.gallery.eyebrow', label: 'Gallery Slide Eyebrow', type: 'text', placeholder: 'Moments' },
+  { key: 'landing.gallery.title', label: 'Gallery Slide Title', type: 'text', placeholder: 'Life in' },
+  {
+    key: 'landing.gallery.titleAccent',
+    label: 'Gallery Slide Title Accent (gold)',
+    type: 'text',
+    placeholder: 'community.',
+  },
+  {
+    key: 'landing.gallery.subtext',
+    label: 'Gallery Slide Description',
+    type: 'textarea',
+    hint: 'Shown beside the slideshow on the homepage. Pick images under Admin → Gallery.',
+  },
+  { key: 'landing.gallery.cta', label: 'Gallery Slide Button Text', type: 'text', placeholder: 'View full gallery' },
 ]
 
 export default async function CMSLandingPage() {

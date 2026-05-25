@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { logActivity } from '@/lib/activity'
+import { MAX_HOME_GALLERY_SLIDES } from '@/lib/gallery-constants'
+import { countHomeGallerySlides } from '@/lib/gallery-home'
 
 export const runtime = 'nodejs'
 
@@ -14,6 +16,8 @@ type PatchBody = {
   thumbnailUrl?: string | null
   order?: number
   isActive?: boolean
+  showOnHome?: boolean
+  homeOrder?: number
 }
 
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
@@ -28,11 +32,34 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   if ('order' in body) data.order = body.order
   if ('isActive' in body) data.isActive = body.isActive
   if ('thumbnailUrl' in body) data.thumbnailUrl = body.thumbnailUrl
+  if ('homeOrder' in body) data.homeOrder = body.homeOrder
   if ('galleryEventId' in body) {
     data.galleryEventId = body.galleryEventId && body.galleryEventId.length > 0 ? body.galleryEventId : null
   }
   if ('takenAt' in body) {
     data.takenAt = body.takenAt ? new Date(body.takenAt) : null
+  }
+
+  if (body.showOnHome === true) {
+    const existing = await db.galleryImage.findUnique({
+      where: { id: params.id },
+      select: { showOnHome: true },
+    })
+    if (!existing?.showOnHome) {
+      const homeCount = await countHomeGallerySlides()
+      if (homeCount >= MAX_HOME_GALLERY_SLIDES) {
+        return NextResponse.json(
+          { error: `You can show at most ${MAX_HOME_GALLERY_SLIDES} images on the homepage slideshow.` },
+          { status: 400 },
+        )
+      }
+      if (!('homeOrder' in body)) {
+        data.homeOrder = homeCount
+      }
+    }
+    data.showOnHome = true
+  } else if (body.showOnHome === false) {
+    data.showOnHome = false
   }
 
   const image = await db.galleryImage.update({

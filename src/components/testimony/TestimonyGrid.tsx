@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import Image from 'next/image'
 import { Star } from 'lucide-react'
 import { format } from 'date-fns'
+import { TestimonyCardBody } from '@/components/testimony/TestimonyCardBody'
 
 export interface TestimonyData {
   id: string
@@ -122,9 +123,7 @@ export function TestimonyGrid({ testimonies }: { testimonies: TestimonyData[] })
 
               <div className="p-5">
                 <h3 className="font-display text-snow text-lg font-semibold mb-2 leading-tight">{t.title}</h3>
-                {t.body && (
-                  <p className="font-body text-mist text-sm leading-relaxed mb-4 line-clamp-4">{t.body}</p>
-                )}
+                {t.body ? <TestimonyCardBody body={t.body} /> : null}
                 <div className="flex items-center justify-between">
                   <p className="font-body text-xs" style={{ color: '#585858' }}>
                     — {displayName}

@@ -54,6 +54,11 @@ export const HOME_CMS_KEYS = [
   'confession.home.lines',
   'confession.home.footer',
   'confession.home.link',
+  'landing.gallery.eyebrow',
+  'landing.gallery.title',
+  'landing.gallery.titleAccent',
+  'landing.gallery.subtext',
+  'landing.gallery.cta',
 ] as const
 
 export const ABOUT_CMS_KEYS = [

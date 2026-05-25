@@ -20,6 +20,7 @@ export async function GET(req: NextRequest) {
   const city = searchParams.get('city')
   const month = searchParams.get('month') // format: "YYYY-MM"
   const includeHidden = searchParams.get('includeHidden') === 'true'
+  const showOnHome = searchParams.get('showOnHome') === 'true'
   const eventId = searchParams.get('eventId')
   const page = safeInt(searchParams.get('page'), 1, 1, 100_000)
   const limit = safeInt(searchParams.get('limit'), DEFAULT_LIMIT, 1, MAX_LIMIT)
@@ -33,6 +34,10 @@ export async function GET(req: NextRequest) {
 
   if (eventId) {
     where.galleryEventId = eventId
+  }
+
+  if (showOnHome) {
+    where.showOnHome = true
   }
 
   if (city && city !== 'all') {
@@ -75,7 +80,9 @@ export async function GET(req: NextRequest) {
   const [images, total] = await Promise.all([
     db.galleryImage.findMany({
       where,
-      orderBy: [{ takenAt: 'desc' }, { order: 'asc' }, { createdAt: 'desc' }],
+      orderBy: showOnHome
+        ? [{ homeOrder: 'asc' }, { createdAt: 'desc' }]
+        : [{ takenAt: 'desc' }, { order: 'asc' }, { createdAt: 'desc' }],
       skip,
       take: limit,
       include: {

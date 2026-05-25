@@ -1,0 +1,1 @@
+export const MAX_HOME_GALLERY_SLIDES = 12

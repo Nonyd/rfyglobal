@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { broadcastSSE, createNotification } from '@/lib/notify'
-import { sendEmail } from '@/lib/brevo'
-import { EMAIL_SENDERS } from '@/lib/email-senders'
+import { sendLiveChatMessageAlert } from '@/lib/live-chat-admin-email'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -85,26 +84,14 @@ export async function POST(
       timestamp: Date.now(),
     })
 
-    const count = await db.liveChatMessage.count({
-      where: { sessionId: session.id, fromAdmin: false },
-    })
-    if (count === 1) {
-      await sendEmail({
-        to: 'hello@rfyglobal.org',
-        subject: `Live chat message from ${session.name}`,
-        html: `
-          <div style="font-family:Arial,sans-serif;max-width:600px;background:#0F0F0F;color:#F8F8F8;padding:32px;border-top:3px solid #C9A84C;">
-            <p style="color:#C9A84C;font-size:11px;letter-spacing:0.2em;text-transform:uppercase;margin:0 0 16px;">Live Chat Message</p>
-            <p style="font-size:15px;font-weight:bold;margin:0 0 4px;">${session.name} · ${session.email}</p>
-            <div style="background:#1A1A1A;border-left:3px solid #C9A84C;padding:16px;margin:16px 0 24px;">
-              <p style="margin:0;color:#F8F8F8;font-size:14px;line-height:1.6;">${body.trim()}</p>
-            </div>
-            <a href="https://rfyglobal.org/admin/live-chat" style="display:inline-block;background:#C9A84C;color:#0F0F0F;padding:12px 24px;text-decoration:none;font-size:11px;font-weight:bold;letter-spacing:0.2em;text-transform:uppercase;">Reply in Dashboard →</a>
-          </div>
-        `,
-        fromName: EMAIL_SENDERS.hello.name,
-        fromEmail: EMAIL_SENDERS.hello.email,
+    try {
+      await sendLiveChatMessageAlert({
+        name: session.name,
+        email: session.email,
+        body: trimmed,
       })
+    } catch (err) {
+      console.error('[chat] admin email alert failed:', err)
     }
 
     return NextResponse.json({ success: true })

@@ -68,6 +68,13 @@ const DEFAULTS: Record<string, string> = {
   'confession.home.footer':
     'This is the declaration of every member of Room For You. Make it yours.',
   'confession.home.link': 'Read the full confession →',
+
+  'landing.gallery.eyebrow': 'Moments',
+  'landing.gallery.title': 'Life in',
+  'landing.gallery.titleAccent': 'community.',
+  'landing.gallery.subtext':
+    'Gatherings, worship, and fellowship captured from cities around the world.',
+  'landing.gallery.cta': 'View full gallery',
   'confession.full.lines':
     'I am saved by grace through faith.\nI am justified and redeemed by the blood of Jesus.\nI have received mercy because of the sacrifice of Jesus on the cross.\nGod\'s love has been shed abroad in my heart\nand I am sealed with the Holy Spirit.\nI am now a part of God\'s family!\nI am committed to learning the value of this family\nand I grow in both wisdom and stature.\nI am committed to study and prayers!\nI am saved and I get others saved.\nI am reconciled and I reconcile others.\nOn account of me, many come to the knowledge of the Son.\nIt\'s Jesus to nations —\nand I am a willing vessel!\nI live my life in honor of the one who died for me,\ntill his return!',
   'confession.page.eyebrow': 'Room For You',

@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { EmailType, Prisma } from '@prisma/client'
 import { db } from '@/lib/db'
 import { strictRatelimit } from '@/lib/ratelimit'
+import { isAutomationEnabled } from '@/lib/automations'
+import { buildWelcomeEmail } from '@/lib/automation-runners/welcome'
 import { sendConfirmationEmail } from '@/lib/emails/confirmation'
+import { sendEmail } from '@/lib/brevo'
+import { EMAIL_SENDERS } from '@/lib/email-senders'
 import { createNotification } from '@/lib/notify'
 import { z } from 'zod'
 
@@ -86,6 +90,21 @@ export async function POST(req: NextRequest) {
         status: 'failed',
       },
     })
+  }
+
+  if (await isAutomationEnabled('welcome')) {
+    const firstName = member.name?.split(' ')[0] ?? 'Friend'
+    try {
+      await sendEmail({
+        to: member.email,
+        subject: `Welcome to Room For You, ${firstName}! 🙏`,
+        html: buildWelcomeEmail(firstName),
+        fromName: EMAIL_SENDERS.hello.name,
+        fromEmail: EMAIL_SENDERS.hello.email,
+      })
+    } catch (err) {
+      console.error('[automation:welcome]', err)
+    }
   }
 
   return NextResponse.json(
