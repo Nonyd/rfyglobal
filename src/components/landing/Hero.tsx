@@ -45,7 +45,6 @@ const SUBTEXT_DEFAULT =
 
 export function Hero({ content }: { content: Record<string, string> }) {
   const containerRef = useRef<HTMLElement>(null)
-  const textRef = useRef<HTMLDivElement>(null)
 
   const eyebrow = content['landing.hero.eyebrow'] || 'Worship · Prayer · Study · Community'
   const subtext = content['landing.hero.subtext'] || SUBTEXT_DEFAULT
@@ -65,25 +64,35 @@ export function Hero({ content }: { content: Record<string, string> }) {
   )
 
   useEffect(() => {
-    if (!textRef.current) return
+    const root = containerRef.current
+    if (!root) return
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    if (reducedMotion) return
+
+    const selector =
+      '[data-hero-eyebrow], [data-hero-line1], [data-hero-line2], [data-hero-line3], [data-hero-sub], [data-hero-ctas]'
 
     const ctx = gsap.context(() => {
+      gsap.set(root.querySelectorAll(selector), { opacity: 1 })
+
       const tl = gsap.timeline({ delay: 0.3 })
 
-      tl.from('[data-hero-eyebrow]', {
-        y: 20,
-        opacity: 0,
-        duration: 0.7,
-        ease: 'power3.out',
-      })
-        .from('[data-hero-line1]', { y: 40, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.4')
-        .from('[data-hero-line2]', { y: 40, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
-        .from('[data-hero-line3]', { y: 40, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
-        .from('[data-hero-sub]', { y: 20, opacity: 0, duration: 0.7, ease: 'power3.out' }, '-=0.4')
-        .from('[data-hero-ctas]', { y: 20, opacity: 0, duration: 0.7, ease: 'power3.out' }, '-=0.4')
-    }, containerRef)
+      tl.from('[data-hero-eyebrow]', { y: 20, duration: 0.7, ease: 'power3.out' })
+        .from('[data-hero-line1]', { y: 40, duration: 0.8, ease: 'power3.out' }, '-=0.4')
+        .from('[data-hero-line2]', { y: 40, duration: 0.8, ease: 'power3.out' }, '-=0.6')
+        .from('[data-hero-line3]', { y: 40, duration: 0.8, ease: 'power3.out' }, '-=0.6')
+        .from('[data-hero-sub]', { y: 20, duration: 0.7, ease: 'power3.out' }, '-=0.4')
+        .from('[data-hero-ctas]', { y: 20, duration: 0.7, ease: 'power3.out' }, '-=0.4')
+    }, root)
 
-    return () => ctx.revert()
+    return () => {
+      ctx.revert()
+      root.querySelectorAll<HTMLElement>(selector).forEach((el) => {
+        el.style.removeProperty('opacity')
+        el.style.removeProperty('transform')
+      })
+    }
   }, [])
 
   const overlayDark = Number.isFinite(overlayOpacity) ? overlayOpacity : 0.55
@@ -146,7 +155,6 @@ export function Hero({ content }: { content: Record<string, string> }) {
       </div>
 
       <div
-        ref={textRef}
         className="relative z-[5] flex flex-1 items-center"
         style={{ padding: 'clamp(7rem, 12vw, 8rem) clamp(1.5rem, 5vw, 5rem) 6rem' }}
       >
