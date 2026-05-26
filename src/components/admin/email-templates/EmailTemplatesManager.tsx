@@ -27,10 +27,77 @@ export function EmailTemplatesManager() {
   const [newSubject, setNewSubject] = useState('')
   const [newDescription, setNewDescription] = useState('')
   const editorRef = useRef<UnlayerEditor | null>(null)
+  const [showPreview, setShowPreview] = useState(false)
+  const [previewHtml, setPreviewHtml] = useState('')
+  const [previewTemplateName, setPreviewTemplateName] = useState('')
+  const [previewSubject, setPreviewSubject] = useState('')
+  const [showTestInput, setShowTestInput] = useState(false)
+  const [testEmail, setTestEmail] = useState('')
+  const [sendingTest, setSendingTest] = useState(false)
 
   useEffect(() => {
     loadTemplates()
   }, [])
+
+  const adminBtnSecondary: CSSProperties = {
+    background: 'var(--a-surface)',
+    border: '1px solid var(--a-border)',
+    color: 'var(--a-text)',
+    fontFamily: 'var(--font-body)',
+    fontSize: '0.75rem',
+    fontWeight: 600,
+    padding: '0.5rem 1rem',
+    cursor: 'pointer',
+  }
+
+  const adminInputStyle: CSSProperties = {
+    background: 'var(--a-bg)',
+    border: '1px solid var(--a-border)',
+    color: 'var(--a-text)',
+    fontFamily: 'var(--font-body)',
+    fontSize: '0.85rem',
+    padding: '0.5rem 0.75rem',
+    flex: 1,
+    maxWidth: '280px',
+    outline: 'none',
+  }
+
+  const openPreview = (args: { html: string; templateName: string; subject: string }) => {
+    setPreviewHtml(args.html)
+    setPreviewTemplateName(args.templateName)
+    setPreviewSubject(args.subject)
+    setShowTestInput(false)
+    setTestEmail('')
+    setShowPreview(true)
+  }
+
+  const handleSendTest = async () => {
+    const email = testEmail.trim()
+    if (!email) {
+      toast.error('Enter an email address')
+      return
+    }
+    setSendingTest(true)
+    try {
+      const res = await adminFetch('/api/admin/email-templates/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ to: email, subject: previewSubject, html: previewHtml }),
+      })
+      const data = (await res.json()) as { error?: string }
+      if (!res.ok) {
+        toast.error(data.error ?? 'Failed to send test email')
+        return
+      }
+      toast.success(`Test email sent to ${email}`)
+      setShowTestInput(false)
+      setTestEmail('')
+    } catch {
+      toast.error('Failed to send test email')
+    } finally {
+      setSendingTest(false)
+    }
+  }
 
   const loadTemplates = async () => {
     const res = await adminFetch('/api/admin/email-templates')
@@ -165,17 +232,124 @@ export function EmailTemplatesManager() {
 
   if (mode === 'edit' && selectedKey) {
     return (
-      <EditTemplate
-        defaultConfig={selectedDefault}
-        displayName={selectedListItem?.name ?? selectedDefault?.name ?? selectedKey}
-        savedTemplate={templates[selectedKey]}
-        subject={subject}
-        onSubjectChange={setSubject}
-        editorRef={editorRef}
-        onSave={saveTemplate}
-        onCancel={() => setMode('list')}
-        saving={saving}
-      />
+      <>
+        <EditTemplate
+          defaultConfig={selectedDefault}
+          displayName={selectedListItem?.name ?? selectedDefault?.name ?? selectedKey}
+          savedTemplate={templates[selectedKey]}
+          subject={subject}
+          onSubjectChange={setSubject}
+          editorRef={editorRef}
+          onSave={saveTemplate}
+          onCancel={() => setMode('list')}
+          saving={saving}
+          onPreview={(args) => openPreview(args)}
+        />
+
+        {showPreview && (
+          <div
+            style={{
+              position: 'fixed',
+              inset: 0,
+              zIndex: 9999,
+              background: 'color-mix(in srgb, var(--a-text) 85%, transparent)',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <div
+              style={{
+                padding: '1rem 1.5rem',
+                borderBottom: '1px solid var(--a-border)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                background: 'var(--a-bg)',
+              }}
+            >
+              <div>
+                <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--a-text-muted)', margin: 0 }}>
+                  Email Preview — this is how recipients will see this email
+                </p>
+                <p
+                  style={{
+                    fontFamily: 'var(--font-body)',
+                    fontSize: '0.85rem',
+                    fontWeight: 600,
+                    color: 'var(--a-text)',
+                    margin: '2px 0 0',
+                  }}
+                >
+                  {previewTemplateName}
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+                <button type="button" onClick={() => setShowTestInput(true)} style={adminBtnSecondary}>
+                  Send Test Email
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPreview(false)
+                    setShowTestInput(false)
+                  }}
+                  style={adminBtnSecondary}
+                >
+                  ✕ Close Preview
+                </button>
+              </div>
+            </div>
+
+            {showTestInput && (
+              <div
+                style={{
+                  padding: '0.75rem 1.5rem',
+                  background: 'var(--a-surface)',
+                  borderBottom: '1px solid var(--a-border)',
+                  display: 'flex',
+                  gap: '0.75rem',
+                  alignItems: 'center',
+                }}
+              >
+                <input
+                  type="email"
+                  placeholder="your@email.com"
+                  value={testEmail}
+                  onChange={(e) => setTestEmail(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') void handleSendTest()
+                  }}
+                  style={adminInputStyle}
+                />
+                <button
+                  type="button"
+                  onClick={() => void handleSendTest()}
+                  disabled={sendingTest}
+                  style={{
+                    ...adminBtnSecondary,
+                    background: 'var(--a-gold)',
+                    borderColor: 'var(--a-gold)',
+                    color: 'var(--a-text-inverse)',
+                    opacity: sendingTest ? 0.6 : 1,
+                  }}
+                >
+                  {sendingTest ? 'Sending...' : 'Send'}
+                </button>
+                <button type="button" onClick={() => setShowTestInput(false)} style={adminBtnSecondary}>
+                  Cancel
+                </button>
+              </div>
+            )}
+
+            <iframe
+              srcDoc={previewHtml}
+              style={{ flex: 1, border: 'none', background: 'var(--a-surface)' }}
+              title="Email preview"
+              sandbox="allow-same-origin"
+            />
+          </div>
+        )}
+      </>
     )
   }
 
@@ -202,7 +376,7 @@ export function EmailTemplatesManager() {
           type="button"
           onClick={() => setCreateOpen(true)}
           className="flex shrink-0 items-center gap-2 px-4 py-2.5 font-body text-xs font-semibold uppercase tracking-widest"
-          style={{ background: 'var(--a-gold)', color: '#0F0F0F' }}
+          style={{ background: 'var(--a-gold)', color: 'var(--a-text-inverse)' }}
         >
           <Plus size={13} />
           New Template
@@ -301,7 +475,7 @@ export function EmailTemplatesManager() {
                 disabled={creating}
                 onClick={() => void handleCreateTemplate()}
                 className="flex w-full items-center justify-center gap-2 py-3 font-body text-xs font-semibold uppercase tracking-widest disabled:opacity-40"
-                style={{ background: 'var(--a-gold)', color: '#0F0F0F' }}
+                style={{ background: 'var(--a-gold)', color: 'var(--a-text-inverse)' }}
               >
                 {creating ? <Loader2 size={14} className="animate-spin" /> : <Plus size={13} />}
                 Create Template
@@ -375,16 +549,140 @@ export function EmailTemplatesManager() {
                 className="flex w-full items-center justify-center gap-2 py-2.5 font-body text-xs font-medium transition-all"
                 style={{
                   background: 'var(--a-gold)',
-                  color: '#0F0F0F',
+                  color: 'var(--a-text-inverse)',
                 }}
               >
                 <Pencil size={12} />
                 {item.hasSavedDesign ? 'Edit Template' : 'Design Template'}
               </button>
+
+              <button
+                type="button"
+                onClick={() =>
+                  openPreview({
+                    html: item.html,
+                    templateName: item.name,
+                    subject: item.subject,
+                  })
+                }
+                className="flex w-full items-center justify-center gap-2 py-2.5 font-body text-xs font-medium transition-all"
+                style={{
+                  background: 'var(--a-surface)',
+                  border: '1px solid var(--a-border)',
+                  color: 'var(--a-text)',
+                }}
+              >
+                <Eye size={12} />
+                Preview
+              </button>
             </div>
           )
         })}
       </div>
+
+      {showPreview && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            background: 'color-mix(in srgb, var(--a-text) 85%, transparent)',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
+          <div
+            style={{
+              padding: '1rem 1.5rem',
+              borderBottom: '1px solid var(--a-border)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              background: 'var(--a-bg)',
+            }}
+          >
+            <div>
+              <p style={{ fontFamily: 'var(--font-body)', fontSize: '0.75rem', color: 'var(--a-text-muted)', margin: 0 }}>
+                Email Preview — this is how recipients will see this email
+              </p>
+              <p
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
+                  color: 'var(--a-text)',
+                  margin: '2px 0 0',
+                }}
+              >
+                {previewTemplateName}
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+              <button type="button" onClick={() => setShowTestInput(true)} style={adminBtnSecondary}>
+                Send Test Email
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowPreview(false)
+                  setShowTestInput(false)
+                }}
+                style={adminBtnSecondary}
+              >
+                ✕ Close Preview
+              </button>
+            </div>
+          </div>
+
+          {showTestInput && (
+            <div
+              style={{
+                padding: '0.75rem 1.5rem',
+                background: 'var(--a-surface)',
+                borderBottom: '1px solid var(--a-border)',
+                display: 'flex',
+                gap: '0.75rem',
+                alignItems: 'center',
+              }}
+            >
+              <input
+                type="email"
+                placeholder="your@email.com"
+                value={testEmail}
+                onChange={(e) => setTestEmail(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') void handleSendTest()
+                }}
+                style={adminInputStyle}
+              />
+              <button
+                type="button"
+                onClick={() => void handleSendTest()}
+                disabled={sendingTest}
+                style={{
+                  ...adminBtnSecondary,
+                  background: 'var(--a-gold)',
+                  borderColor: 'var(--a-gold)',
+                  color: 'var(--a-text-inverse)',
+                  opacity: sendingTest ? 0.6 : 1,
+                }}
+              >
+                {sendingTest ? 'Sending...' : 'Send'}
+              </button>
+              <button type="button" onClick={() => setShowTestInput(false)} style={adminBtnSecondary}>
+                Cancel
+              </button>
+            </div>
+          )}
+
+          <iframe
+            srcDoc={previewHtml}
+            style={{ flex: 1, border: 'none', background: 'var(--a-surface)' }}
+            title="Email preview"
+            sandbox="allow-same-origin"
+          />
+        </div>
+      )}
     </>
   )
 }
@@ -399,6 +697,7 @@ function EditTemplate({
   onSave,
   onCancel,
   saving,
+  onPreview,
 }: {
   defaultConfig: (typeof EMAIL_TEMPLATE_DEFAULTS)[keyof typeof EMAIL_TEMPLATE_DEFAULTS] | null
   displayName: string
@@ -409,14 +708,10 @@ function EditTemplate({
   onSave: () => void
   onCancel: () => void
   saving: boolean
+  onPreview: (args: { html: string; templateName: string; subject: string }) => void
 }) {
   const [editorLoaded, setEditorLoaded] = useState(false)
   const [EmailEditor, setEmailEditor] = useState<React.ComponentType<EmailEditorProps> | null>(null)
-  const [showPreview, setShowPreview] = useState(false)
-  const [previewHtml, setPreviewHtml] = useState('')
-  const [showTestInput, setShowTestInput] = useState(false)
-  const [testEmail, setTestEmail] = useState('')
-  const [sendingTest, setSendingTest] = useState(false)
 
   useEffect(() => {
     import('react-email-editor').then((mod) => {
@@ -476,57 +771,6 @@ function EditTemplate({
     })
   }
 
-  const adminBtnSecondary: CSSProperties = {
-    background: 'var(--a-surface)',
-    border: '1px solid var(--a-border)',
-    color: 'var(--a-text)',
-    fontFamily: 'var(--font-body)',
-    fontSize: '0.75rem',
-    fontWeight: 600,
-    padding: '0.5rem 1rem',
-    cursor: 'pointer',
-  }
-
-  const adminInputStyle: CSSProperties = {
-    background: 'var(--a-bg)',
-    border: '1px solid var(--a-border)',
-    color: 'var(--a-text)',
-    fontFamily: 'var(--font-body)',
-    fontSize: '0.85rem',
-    padding: '0.5rem 0.75rem',
-    flex: 1,
-    maxWidth: '280px',
-    outline: 'none',
-  }
-
-  const handleSendTest = async () => {
-    const email = testEmail.trim()
-    if (!email) {
-      toast.error('Enter an email address')
-      return
-    }
-    setSendingTest(true)
-    try {
-      const res = await adminFetch('/api/admin/email-templates/test', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ to: email, subject, html: previewHtml }),
-      })
-      const data = (await res.json()) as { error?: string }
-      if (!res.ok) {
-        toast.error(data.error ?? 'Failed to send test email')
-        return
-      }
-      toast.success(`Test email sent to ${email}`)
-      setShowTestInput(false)
-      setTestEmail('')
-    } catch {
-      toast.error('Failed to send test email')
-    } finally {
-      setSendingTest(false)
-    }
-  }
-
   return (
     <div className="flex h-[calc(100vh-120px)] flex-col">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
@@ -578,14 +822,16 @@ function EditTemplate({
               const unlayer = editorRef.current
               if (!unlayer) return
               unlayer.exportHtml((data: { html: string }) => {
-                setPreviewHtml(data.html)
-                setShowTestInput(false)
-                setShowPreview(true)
+                onPreview({ html: data.html, templateName: displayName, subject })
               })
             }}
             disabled={!editorLoaded}
             className="flex items-center gap-2 px-4 py-2.5 font-body text-sm font-semibold transition-all disabled:opacity-40"
-            style={adminBtnSecondary}
+            style={{
+              background: 'var(--a-surface)',
+              border: '1px solid var(--a-border)',
+              color: 'var(--a-text)',
+            }}
           >
             <Eye size={14} /> Preview
           </button>
@@ -594,7 +840,7 @@ function EditTemplate({
             onClick={onSave}
             disabled={saving || !editorLoaded}
             className="flex items-center gap-2 px-5 py-2.5 font-body text-sm font-semibold transition-all disabled:opacity-40"
-            style={{ background: 'var(--a-gold)', color: '#0F0F0F' }}
+            style={{ background: 'var(--a-gold)', color: 'var(--a-text-inverse)' }}
           >
             {saving ? (
               <>
@@ -641,125 +887,6 @@ function EditTemplate({
           />
         )}
       </div>
-
-      {showPreview && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 9999,
-            background: 'color-mix(in srgb, var(--a-bg) 85%, transparent)',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <div
-            style={{
-              padding: '1rem 1.5rem',
-              borderBottom: '1px solid var(--a-border)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              background: 'var(--a-bg)',
-            }}
-          >
-            <div>
-              <p
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '0.75rem',
-                  color: 'var(--a-text-muted)',
-                  margin: 0,
-                }}
-              >
-                Email Preview — this is how recipients will see this email
-              </p>
-              <p
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
-                  color: 'var(--a-text)',
-                  margin: '2px 0 0',
-                }}
-              >
-                {displayName}
-              </p>
-            </div>
-            <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-              <button
-                type="button"
-                onClick={() => setShowTestInput(true)}
-                style={adminBtnSecondary}
-              >
-                Send Test Email
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowPreview(false)
-                  setShowTestInput(false)
-                }}
-                style={adminBtnSecondary}
-              >
-                ✕ Close Preview
-              </button>
-            </div>
-          </div>
-
-          {showTestInput && (
-            <div
-              style={{
-                padding: '0.75rem 1.5rem',
-                background: 'var(--a-surface)',
-                borderBottom: '1px solid var(--a-border)',
-                display: 'flex',
-                gap: '0.75rem',
-                alignItems: 'center',
-              }}
-            >
-              <input
-                type="email"
-                placeholder="your@email.com"
-                value={testEmail}
-                onChange={(e) => setTestEmail(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') void handleSendTest()
-                }}
-                style={adminInputStyle}
-              />
-              <button
-                type="button"
-                onClick={() => void handleSendTest()}
-                disabled={sendingTest}
-                style={{
-                  ...adminBtnSecondary,
-                  background: 'var(--a-gold)',
-                  borderColor: 'var(--a-gold)',
-                  color: '#0F0F0F',
-                  opacity: sendingTest ? 0.6 : 1,
-                }}
-              >
-                {sendingTest ? 'Sending...' : 'Send'}
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowTestInput(false)}
-                style={adminBtnSecondary}
-              >
-                Cancel
-              </button>
-            </div>
-          )}
-
-          <iframe
-            srcDoc={previewHtml}
-            style={{ flex: 1, border: 'none', background: 'var(--a-surface)' }}
-            title="Email preview"
-            sandbox="allow-same-origin"
-          />
-        </div>
-      )}
     </div>
   )
 }
