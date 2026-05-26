@@ -99,113 +99,177 @@ async function main() {
   let totalUpdated = 0
 
   console.log('Updating GalleryImage...')
-  const galleryImages = await prisma.galleryImage.findMany()
-  for (const item of galleryImages) {
-    const updates = {}
-    if (hasCloudinaryUrl(item.url)) updates.url = replaceUrl(item.url, urlMap, publicIdMap)
-    if (hasCloudinaryUrl(item.thumbnailUrl))
-      updates.thumbnailUrl = replaceUrl(item.thumbnailUrl, urlMap, publicIdMap)
-    if (Object.keys(updates).length > 0) {
-      await prisma.galleryImage.update({ where: { id: item.id }, data: updates })
-      totalUpdated++
+  try {
+    const galleryImages = await prisma.galleryImage.findMany()
+    for (const item of galleryImages) {
+      const updates = {}
+      if (hasCloudinaryUrl(item.url)) updates.url = replaceUrl(item.url, urlMap, publicIdMap)
+      if (hasCloudinaryUrl(item.thumbnailUrl))
+        updates.thumbnailUrl = replaceUrl(item.thumbnailUrl, urlMap, publicIdMap)
+      if (Object.keys(updates).length > 0) {
+        await prisma.galleryImage.update({ where: { id: item.id }, data: updates })
+        totalUpdated++
+      }
+    }
+  } catch (e) {
+    if (e.code === 'P2021') {
+      console.log('  SKIP — table does not exist')
+    } else {
+      throw e
     }
   }
 
   console.log('Updating HomeCarouselSlide...')
-  const carouselSlides = await prisma.homeCarouselSlide.findMany()
-  for (const slide of carouselSlides) {
-    if (hasCloudinaryUrl(slide.url)) {
-      await prisma.homeCarouselSlide.update({
-        where: { id: slide.id },
-        data: { url: replaceUrl(slide.url, urlMap, publicIdMap) },
-      })
-      totalUpdated++
+  try {
+    const carouselSlides = await prisma.homeCarouselSlide.findMany()
+    for (const slide of carouselSlides) {
+      if (hasCloudinaryUrl(slide.url)) {
+        await prisma.homeCarouselSlide.update({
+          where: { id: slide.id },
+          data: { url: replaceUrl(slide.url, urlMap, publicIdMap) },
+        })
+        totalUpdated++
+      }
+    }
+  } catch (e) {
+    if (e.code === 'P2021') {
+      console.log('  SKIP — table does not exist')
+    } else {
+      throw e
     }
   }
 
   console.log('Updating Post...')
-  const posts = await prisma.post.findMany()
-  for (const post of posts) {
-    const updates = {}
-    if (hasCloudinaryUrl(post.coverImage))
-      updates.coverImage = replaceUrl(post.coverImage, urlMap, publicIdMap)
-    if (hasCloudinaryUrl(post.content))
-      updates.content = replaceUrl(post.content, urlMap, publicIdMap)
-    if (Object.keys(updates).length > 0) {
-      await prisma.post.update({ where: { id: post.id }, data: updates })
-      totalUpdated++
+  try {
+    const posts = await prisma.post.findMany()
+    for (const post of posts) {
+      const updates = {}
+      if (hasCloudinaryUrl(post.coverImage))
+        updates.coverImage = replaceUrl(post.coverImage, urlMap, publicIdMap)
+      if (hasCloudinaryUrl(post.content))
+        updates.content = replaceUrl(post.content, urlMap, publicIdMap)
+      if (Object.keys(updates).length > 0) {
+        await prisma.post.update({ where: { id: post.id }, data: updates })
+        totalUpdated++
+      }
+    }
+  } catch (e) {
+    if (e.code === 'P2021') {
+      console.log('  SKIP — table does not exist')
+    } else {
+      throw e
     }
   }
 
   console.log('Updating Event...')
-  const events = await prisma.event.findMany()
-  for (const event of events) {
-    if (hasCloudinaryUrl(event.imageUrl)) {
-      await prisma.event.update({
-        where: { id: event.id },
-        data: { imageUrl: replaceUrl(event.imageUrl, urlMap, publicIdMap) },
-      })
-      totalUpdated++
+  try {
+    const events = await prisma.event.findMany()
+    for (const event of events) {
+      if (hasCloudinaryUrl(event.imageUrl)) {
+        await prisma.event.update({
+          where: { id: event.id },
+          data: { imageUrl: replaceUrl(event.imageUrl, urlMap, publicIdMap) },
+        })
+        totalUpdated++
+      }
+    }
+  } catch (e) {
+    if (e.code === 'P2021') {
+      console.log('  SKIP — table does not exist')
+    } else {
+      throw e
     }
   }
 
   console.log('Updating StudyMaterial...')
-  const studyMaterials = await prisma.studyMaterial.findMany()
-  for (const material of studyMaterials) {
-    if (hasCloudinaryUrl(material.fileUrl)) {
-      await prisma.studyMaterial.update({
-        where: { id: material.id },
-        data: { fileUrl: replaceUrl(material.fileUrl, urlMap, publicIdMap) },
-      })
-      totalUpdated++
+  try {
+    const studyMaterials = await prisma.studyMaterial.findMany()
+    for (const material of studyMaterials) {
+      if (hasCloudinaryUrl(material.fileUrl)) {
+        await prisma.studyMaterial.update({
+          where: { id: material.id },
+          data: { fileUrl: replaceUrl(material.fileUrl, urlMap, publicIdMap) },
+        })
+        totalUpdated++
+      }
+    }
+  } catch (e) {
+    if (e.code === 'P2021') {
+      console.log('  SKIP — table does not exist')
+    } else {
+      throw e
     }
   }
 
   console.log('Updating SiteContent...')
-  const siteContent = await prisma.siteContent.findMany()
-  for (const item of siteContent) {
-    if (hasCloudinaryUrl(item.value)) {
-      await prisma.siteContent.update({
-        where: { id: item.id },
-        data: { value: replaceUrl(item.value, urlMap, publicIdMap) },
-      })
-      totalUpdated++
+  try {
+    const siteContent = await prisma.siteContent.findMany()
+    for (const item of siteContent) {
+      if (hasCloudinaryUrl(item.value)) {
+        await prisma.siteContent.update({
+          where: { id: item.id },
+          data: { value: replaceUrl(item.value, urlMap, publicIdMap) },
+        })
+        totalUpdated++
+      }
+    }
+  } catch (e) {
+    if (e.code === 'P2021') {
+      console.log('  SKIP — table does not exist')
+    } else {
+      throw e
     }
   }
 
   console.log('Updating Testimony...')
-  const testimonies = await prisma.testimony.findMany()
-  for (const testimony of testimonies) {
-    const nextUrls = replaceJsonUrls(testimony.imageUrls, urlMap, publicIdMap)
-    const nextVideo = hasCloudinaryUrl(testimony.videoUrl)
-      ? replaceUrl(testimony.videoUrl, urlMap, publicIdMap)
-      : testimony.videoUrl
+  try {
+    const testimonies = await prisma.testimony.findMany()
+    for (const testimony of testimonies) {
+      const nextUrls = replaceJsonUrls(testimony.imageUrls, urlMap, publicIdMap)
+      const nextVideo = hasCloudinaryUrl(testimony.videoUrl)
+        ? replaceUrl(testimony.videoUrl, urlMap, publicIdMap)
+        : testimony.videoUrl
 
-    const imageChanged =
-      JSON.stringify(nextUrls) !== JSON.stringify(testimony.imageUrls ?? null)
-    const videoChanged = nextVideo !== testimony.videoUrl
+      const imageChanged =
+        JSON.stringify(nextUrls) !== JSON.stringify(testimony.imageUrls ?? null)
+      const videoChanged = nextVideo !== testimony.videoUrl
 
-    if (imageChanged || videoChanged) {
-      await prisma.testimony.update({
-        where: { id: testimony.id },
-        data: {
-          ...(imageChanged ? { imageUrls: nextUrls } : {}),
-          ...(videoChanged ? { videoUrl: nextVideo } : {}),
-        },
-      })
-      totalUpdated++
+      if (imageChanged || videoChanged) {
+        await prisma.testimony.update({
+          where: { id: testimony.id },
+          data: {
+            ...(imageChanged ? { imageUrls: nextUrls } : {}),
+            ...(videoChanged ? { videoUrl: nextVideo } : {}),
+          },
+        })
+        totalUpdated++
+      }
+    }
+  } catch (e) {
+    if (e.code === 'P2021') {
+      console.log('  SKIP — table does not exist')
+    } else {
+      throw e
     }
   }
 
   console.log('Updating Scripture...')
-  const scriptures = await prisma.scripture.findMany()
-  for (const scripture of scriptures) {
-    if (hasCloudinaryUrl(scripture.audioUrl)) {
-      await prisma.scripture.update({
-        where: { id: scripture.id },
-        data: { audioUrl: replaceUrl(scripture.audioUrl, urlMap, publicIdMap) },
-      })
-      totalUpdated++
+  try {
+    const scriptures = await prisma.scripture.findMany()
+    for (const scripture of scriptures) {
+      if (hasCloudinaryUrl(scripture.audioUrl)) {
+        await prisma.scripture.update({
+          where: { id: scripture.id },
+          data: { audioUrl: replaceUrl(scripture.audioUrl, urlMap, publicIdMap) },
+        })
+        totalUpdated++
+      }
+    }
+  } catch (e) {
+    if (e.code === 'P2021') {
+      console.log('  SKIP — table does not exist')
+    } else {
+      throw e
     }
   }
 
