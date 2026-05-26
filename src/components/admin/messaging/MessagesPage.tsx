@@ -2,7 +2,12 @@
 
 import { adminFetch } from '@/lib/admin-fetch'
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Search, Mail, Send, X, Trash2 } from 'lucide-react'
+import { Search, Mail, Send, X, Trash2, Megaphone, ChevronDown, ChevronUp } from 'lucide-react'
+import {
+  BroadcastComposePanel,
+  BroadcastHistory,
+  type BroadcastRow,
+} from '@/components/admin/messaging/BroadcastComposePanel'
 import { useAdminSSE } from '@/hooks/useAdminSSE'
 import { LiveIndicator } from '@/components/admin/shared/LiveIndicator'
 import { useBulkSelect } from '@/hooks/useBulkSelect'
@@ -73,6 +78,10 @@ export function MessagesPage() {
   const [loadingThread, setLoadingThread] = useState(false)
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState<'open' | 'archived' | 'all'>('open')
+  const [composeOpen, setComposeOpen] = useState(false)
+  const [broadcasts, setBroadcasts] = useState<BroadcastRow[]>([])
+  const [broadcastsLoading, setBroadcastsLoading] = useState(false)
+  const [broadcastsExpanded, setBroadcastsExpanded] = useState(false)
   const bottomRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
@@ -99,9 +108,22 @@ export function MessagesPage() {
     }
   }, [filter])
 
+  const loadBroadcasts = useCallback(async () => {
+    setBroadcastsLoading(true)
+    try {
+      const res = await adminFetch('/api/admin/broadcast')
+      if (res.ok) setBroadcasts(await res.json())
+    } catch {
+      /* ignore */
+    } finally {
+      setBroadcastsLoading(false)
+    }
+  }, [])
+
   useEffect(() => {
     loadThreads()
-  }, [loadThreads])
+    loadBroadcasts()
+  }, [loadThreads, loadBroadcasts])
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -200,26 +222,40 @@ export function MessagesPage() {
   const groups = activeThread ? groupByDate(activeThread.messages) : []
 
   return (
-    <div
-      className="flex overflow-hidden border"
-      style={{
-        borderColor: 'var(--a-border)',
-        height: 'calc(100vh - 80px)',
-        background: 'var(--a-bg)',
-      }}
-    >
+    <div className="flex flex-col" style={{ height: 'calc(100vh - 80px)' }}>
+      <div
+        className="flex shrink-0 items-center justify-between gap-3 border px-4 py-3"
+        style={{ borderColor: 'var(--a-border)', background: 'var(--a-surface)' }}
+      >
+        <div className="flex items-center gap-2">
+          <span className="font-display text-sm font-semibold" style={{ color: 'var(--a-text)' }}>
+            Inbox
+          </span>
+          <LiveIndicator />
+        </div>
+        <button
+          type="button"
+          onClick={() => setComposeOpen(true)}
+          className="flex items-center gap-2 px-4 py-2 font-body text-[10px] font-semibold uppercase tracking-widest transition-all"
+          style={{ background: 'var(--a-gold)', color: '#0F0F0F' }}
+        >
+          <Megaphone size={12} />
+          New Message
+        </button>
+      </div>
+
+      <div
+        className="flex min-h-0 flex-1 overflow-hidden border border-t-0"
+        style={{
+          borderColor: 'var(--a-border)',
+          background: 'var(--a-bg)',
+        }}
+      >
       <div
         className="flex w-72 shrink-0 flex-col border-r xl:w-80"
         style={{ borderColor: 'var(--a-border)', background: 'var(--a-surface)' }}
       >
         <div className="border-b px-4 pb-3 pt-4" style={{ borderColor: 'var(--a-border)' }}>
-          <div className="mb-3 flex items-center gap-2">
-            <span className="flex-1 font-display text-base font-semibold" style={{ color: 'var(--a-text)' }}>
-              Messages
-            </span>
-            <LiveIndicator />
-          </div>
-
           <div className="relative mb-3">
             <Search
               size={12}
@@ -534,6 +570,31 @@ export function MessagesPage() {
             variant: 'danger',
           },
         ]}
+      />
+      </div>
+
+      <div
+        className="shrink-0 border border-t-0"
+        style={{ borderColor: 'var(--a-border)', background: 'var(--a-surface)' }}
+      >
+        <button
+          type="button"
+          onClick={() => setBroadcastsExpanded((v) => !v)}
+          className="flex w-full items-center justify-between px-4 py-3 font-body text-xs font-semibold uppercase tracking-widest"
+          style={{ color: 'var(--a-text)' }}
+        >
+          <span>Sent Broadcasts ({broadcasts.length})</span>
+          {broadcastsExpanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+        </button>
+        {broadcastsExpanded && (
+          <BroadcastHistory broadcasts={broadcasts} loading={broadcastsLoading} />
+        )}
+      </div>
+
+      <BroadcastComposePanel
+        open={composeOpen}
+        onClose={() => setComposeOpen(false)}
+        onSent={() => void loadBroadcasts()}
       />
     </div>
   )

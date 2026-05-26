@@ -23,7 +23,16 @@ interface AutomationManagerProps {
   recentLogs: LogRow[]
 }
 
-const AUTOMATIONS = [
+type AutomationCard = {
+  key: string
+  title: string
+  description: string
+  icon: string
+  badge: string
+  hasDateConfig?: boolean
+}
+
+const AUTOMATIONS: AutomationCard[] = [
   {
     key: 'birthday',
     title: 'Birthday Wishes',
@@ -61,7 +70,30 @@ const AUTOMATIONS = [
     icon: '✍️',
     badge: 'Daily Cron',
   },
-] as const
+  {
+    key: 'christmas',
+    title: 'Christmas Greetings',
+    description: 'Sends Christmas greetings to all community members on December 25th every year.',
+    icon: '🎄',
+    badge: 'Dec 25',
+  },
+  {
+    key: 'new_year',
+    title: 'New Year Greetings',
+    description: 'Sends New Year greetings to all community members on January 1st every year.',
+    icon: '🎉',
+    badge: 'Jan 1',
+  },
+  {
+    key: 'easter',
+    title: 'Easter Greetings',
+    description:
+      'Sends Easter greetings to all community members. Set the Easter date each year below.',
+    icon: '✝️',
+    badge: 'Annual',
+    hasDateConfig: true,
+  },
+]
 
 function emailTypeLabel(t: string | unknown): string {
   const s = typeof t === 'string' ? t : String(t)
@@ -89,6 +121,9 @@ export function AutomationManager({ settings: initial, recentLogs }: AutomationM
   const [runningEvents, setRunningEvents] = useState(false)
 
   const [automationSettings, setAutomationSettings] = useState<Record<string, boolean>>({})
+  const [automationRows, setAutomationRows] = useState<AutomationSettingRow[]>([])
+  const [easterDate, setEasterDate] = useState('')
+  const [savingEasterDate, setSavingEasterDate] = useState(false)
   const [loadingAutomations, setLoadingAutomations] = useState(true)
   const [togglingKey, setTogglingKey] = useState<string | null>(null)
 
@@ -97,11 +132,17 @@ export function AutomationManager({ settings: initial, recentLogs }: AutomationM
       const res = await adminFetch('/api/admin/automations')
       if (!res.ok) throw new Error('Failed')
       const rows = (await res.json()) as AutomationSettingRow[]
+      setAutomationRows(rows)
       const map: Record<string, boolean> = {}
       for (const row of rows) {
         map[row.key] = row.enabled
       }
       setAutomationSettings(map)
+      const easter = rows.find((s) => s.key === 'easter')
+      if (easter?.config) {
+        const config = easter.config as { easterDate?: string }
+        setEasterDate(config.easterDate ?? '')
+      }
     } catch {
       toast.error('Could not load automation toggles')
     } finally {
@@ -113,6 +154,34 @@ export function AutomationManager({ settings: initial, recentLogs }: AutomationM
     loadAutomations()
   }, [loadAutomations])
 
+  const saveEasterDate = async (date: string) => {
+    setEasterDate(date)
+    setSavingEasterDate(true)
+    try {
+      const current = automationRows.find((s) => s.key === 'easter')
+      const res = await adminFetch('/api/admin/automations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          key: 'easter',
+          enabled: current?.enabled ?? automationSettings.easter ?? false,
+          config: { easterDate: date },
+        }),
+      })
+      if (!res.ok) throw new Error('Failed')
+      const updated = (await res.json()) as AutomationSettingRow
+      setAutomationRows((prev) => {
+        const rest = prev.filter((r) => r.key !== 'easter')
+        return [...rest, updated]
+      })
+      toast.success('Easter date saved')
+    } catch {
+      toast.error('Failed to save Easter date')
+    } finally {
+      setSavingEasterDate(false)
+    }
+  }
+
   const toggleAutomation = async (key: string, enabled: boolean) => {
     setTogglingKey(key)
     setAutomationSettings((prev) => ({ ...prev, [key]: enabled }))
@@ -123,6 +192,11 @@ export function AutomationManager({ settings: initial, recentLogs }: AutomationM
         body: JSON.stringify({ key, enabled }),
       })
       if (!res.ok) throw new Error('Failed')
+      const row = (await res.json()) as AutomationSettingRow
+      setAutomationRows((prev) => {
+        const rest = prev.filter((r) => r.key !== key)
+        return [...rest, row]
+      })
       const label = AUTOMATIONS.find((a) => a.key === key)?.title ?? key
       toast.success(`${label} ${enabled ? 'enabled' : 'disabled'}`)
     } catch {
@@ -210,36 +284,69 @@ export function AutomationManager({ settings: initial, recentLogs }: AutomationM
             {AUTOMATIONS.map((auto) => (
               <div
                 key={auto.key}
-                className="p-5 border rounded-sm flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4"
+                className="p-5 border rounded-sm flex flex-col gap-4"
                 style={{ borderColor: 'var(--a-border)', background: 'var(--a-surface)' }}
               >
-                <div className="flex gap-4 min-w-0">
-                  <span className="text-2xl shrink-0" aria-hidden>
-                    {auto.icon}
-                  </span>
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <h3 className="font-display text-lg font-semibold" style={{ color: 'var(--a-text)' }}>
-                        {auto.title}
-                      </h3>
-                      <span
-                        className="text-[10px] uppercase tracking-wider px-2 py-0.5 font-body"
-                        style={{ background: 'var(--a-gold-light)', color: 'var(--a-gold)' }}
-                      >
-                        {auto.badge}
-                      </span>
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                  <div className="flex gap-4 min-w-0">
+                    <span className="text-2xl shrink-0" aria-hidden>
+                      {auto.icon}
+                    </span>
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
+                        <h3 className="font-display text-lg font-semibold" style={{ color: 'var(--a-text)' }}>
+                          {auto.title}
+                        </h3>
+                        <span
+                          className="text-[10px] uppercase tracking-wider px-2 py-0.5 font-body"
+                          style={{ background: 'var(--a-gold-light)', color: 'var(--a-gold)' }}
+                        >
+                          {auto.badge}
+                        </span>
+                      </div>
+                      <p className="font-body text-sm" style={{ color: 'var(--a-text-muted)' }}>
+                        {auto.description}
+                      </p>
                     </div>
-                    <p className="font-body text-sm" style={{ color: 'var(--a-text-muted)' }}>
-                      {auto.description}
+                  </div>
+                  <AdminToggle
+                    checked={automationSettings[auto.key] ?? false}
+                    onChange={(v) => toggleAutomation(auto.key, v)}
+                    label={automationSettings[auto.key] ? 'On' : 'Off'}
+                    disabled={togglingKey === auto.key}
+                  />
+                </div>
+                {auto.hasDateConfig && automationSettings[auto.key] && (
+                  <div className="pt-4 border-t" style={{ borderColor: 'var(--a-border)' }}>
+                    <label
+                      className="font-body text-sm font-medium block mb-2"
+                      style={{ color: 'var(--a-text)' }}
+                    >
+                      Easter Date {new Date().getFullYear()}
+                    </label>
+                    <input
+                      type="date"
+                      value={easterDate}
+                      disabled={savingEasterDate}
+                      onChange={(e) => saveEasterDate(e.target.value)}
+                      className="px-3 py-2 font-body text-sm border outline-none"
+                      style={{
+                        background: 'var(--a-bg)',
+                        borderColor: 'var(--a-border)',
+                        color: 'var(--a-text)',
+                      }}
+                      onFocus={(e) => {
+                        e.target.style.borderColor = 'var(--a-gold)'
+                      }}
+                      onBlur={(e) => {
+                        e.target.style.borderColor = 'var(--a-border)'
+                      }}
+                    />
+                    <p className="font-body text-xs mt-1.5" style={{ color: 'var(--a-text-muted)' }}>
+                      Update this date each year before Easter Sunday.
                     </p>
                   </div>
-                </div>
-                <AdminToggle
-                  checked={automationSettings[auto.key] ?? false}
-                  onChange={(v) => toggleAutomation(auto.key, v)}
-                  label={automationSettings[auto.key] ? 'On' : 'Off'}
-                  disabled={togglingKey === auto.key}
-                />
+                )}
               </div>
             ))}
           </div>

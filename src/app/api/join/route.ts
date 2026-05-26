@@ -5,7 +5,7 @@ import { strictRatelimit } from '@/lib/ratelimit'
 import { isAutomationEnabled } from '@/lib/automations'
 import { buildWelcomeEmail } from '@/lib/automation-runners/welcome'
 import { sendConfirmationEmail } from '@/lib/emails/confirmation'
-import { sendEmail } from '@/lib/brevo'
+import { getTemplateHtml, getTemplateSubject, sendEmail } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
 import { createNotification } from '@/lib/notify'
 import { z } from 'zod'
@@ -94,11 +94,16 @@ export async function POST(req: NextRequest) {
 
   if (await isAutomationEnabled('welcome')) {
     const firstName = member.name?.split(' ')[0] ?? 'Friend'
+    const vars = { first_name: firstName }
     try {
+      const html = (await getTemplateHtml('welcome', vars)) ?? buildWelcomeEmail(firstName)
+      const subject =
+        (await getTemplateSubject('welcome', vars)) ??
+        `Welcome to Room For You, ${firstName}! 🙏`
       await sendEmail({
         to: member.email,
-        subject: `Welcome to Room For You, ${firstName}! 🙏`,
-        html: buildWelcomeEmail(firstName),
+        subject,
+        html,
         fromName: EMAIL_SENDERS.hello.name,
         fromEmail: EMAIL_SENDERS.hello.email,
       })

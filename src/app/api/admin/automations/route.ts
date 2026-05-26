@@ -11,6 +11,9 @@ const AUTOMATION_KEYS = [
   'event_reminder',
   'daily_scripture',
   'daily_study',
+  'christmas',
+  'new_year',
+  'easter',
 ] as const
 
 async function upsertDefaults() {
@@ -43,7 +46,7 @@ export async function POST(req: NextRequest) {
 
   const { key, enabled, config } = await req.json()
 
-  if (!AUTOMATION_KEYS.includes(key)) {
+  if (!(AUTOMATION_KEYS as readonly string[]).includes(key)) {
     return NextResponse.json({ error: 'Invalid automation key' }, { status: 400 })
   }
 

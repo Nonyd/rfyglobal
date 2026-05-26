@@ -1,6 +1,6 @@
 import type { Event, EventRegistration } from '@prisma/client'
 import { db } from '@/lib/db'
-import { sendEmail } from '@/lib/brevo'
+import { getTemplateHtml, getTemplateSubject, sendEmail } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
 
 type EventWithRegistrations = Event & { registrations: EventRegistration[] }
@@ -75,11 +75,29 @@ export async function runEventReminderAutomation(): Promise<string> {
             hour: '2-digit',
             minute: '2-digit',
           })
+        const location = [event.venue, event.city].filter(Boolean).join(', ')
+        const eventUrl = event.slug
+          ? `https://rfyglobal.org/events/${event.slug}`
+          : 'https://rfyglobal.org/events'
+        const vars = {
+          first_name: firstName,
+          event_title: event.title,
+          event_date: formattedDate,
+          event_time: formattedTime,
+          event_location: location,
+          event_url: eventUrl,
+        }
+        const html =
+          (await getTemplateHtml('event_reminder', vars)) ??
+          buildEventReminderEmail(firstName, event, formattedDate, formattedTime)
+        const subject =
+          (await getTemplateSubject('event_reminder', vars)) ??
+          `Reminder: ${event.title} is tomorrow! 🙏`
 
         await sendEmail({
           to: registration.email,
-          subject: `Reminder: ${event.title} is tomorrow! 🙏`,
-          html: buildEventReminderEmail(firstName, event, formattedDate, formattedTime),
+          subject,
+          html,
           fromName: EMAIL_SENDERS.events.name,
           fromEmail: EMAIL_SENDERS.events.email,
         })

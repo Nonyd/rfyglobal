@@ -14,6 +14,11 @@ import { runBirthdayAutomation } from '@/lib/automation-runners/birthday'
 import { runDailyScriptureAutomation } from '@/lib/automation-runners/daily-scripture'
 import { runDailyStudyAutomation } from '@/lib/automation-runners/daily-study'
 import { runEventReminderAutomation } from '@/lib/automation-runners/event-reminder'
+import {
+  runChristmasAutomation,
+  runNewYearAutomation,
+  runEasterAutomation,
+} from '@/lib/automation-runners/special-dates'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -46,6 +51,18 @@ export async function GET(req: NextRequest) {
 
   if (await isAutomationEnabled('daily_study')) {
     results.daily_study = await runDailyStudyAutomation()
+  }
+
+  if (await isAutomationEnabled('christmas')) {
+    results.christmas = await runChristmasAutomation()
+  }
+
+  if (await isAutomationEnabled('new_year')) {
+    results.new_year = await runNewYearAutomation()
+  }
+
+  if (await isAutomationEnabled('easter')) {
+    results.easter = await runEasterAutomation()
   }
 
   return NextResponse.json({

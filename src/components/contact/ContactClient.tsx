@@ -46,10 +46,13 @@ export function ContactClient({ content }: ContactClientProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
       })
-      if (!res.ok) throw new Error('Failed to send message')
+      const data = (await res.json().catch(() => ({}))) as { error?: string }
+      if (!res.ok) {
+        throw new Error(data.error ?? 'Failed to send message')
+      }
       setSubmitted(true)
-    } catch {
-      toast.error('Failed to send message. Please try again.')
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Failed to send message. Please try again.')
     } finally {
       setSubmitting(false)
     }

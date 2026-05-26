@@ -474,6 +474,21 @@ model Message {
   createdAt DateTime      @default(now())
 }
 
+model BroadcastMessage {
+  id             String    @id @default(cuid())
+  subject        String
+  body           String    @db.Text
+  replyTo        String?
+  group          String
+  groupFilter    String?
+  templateKey    String?
+  recipientCount Int       @default(0)
+  status         String    @default("draft")
+  sentAt         DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
 // ── LIVE CHAT (floating widget / admin inbox) ─────────────────
 
 model LiveChatSession {

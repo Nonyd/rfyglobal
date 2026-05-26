@@ -1,6 +1,6 @@
 import type { StudyMaterial } from '@prisma/client'
 import { db } from '@/lib/db'
-import { sendEmail } from '@/lib/brevo'
+import { getTemplateHtml, getTemplateSubject, sendEmail } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
 
 function buildDailyStudyEmail(firstName: string, study: StudyMaterial): string {
@@ -45,11 +45,20 @@ export async function runDailyStudyAutomation(): Promise<string> {
     for (const member of members) {
       if (!member.email) continue
       const firstName = member.name?.split(' ')[0] ?? 'Friend'
+      const vars = {
+        first_name: firstName,
+        study_title: study.title,
+        study_excerpt: '',
+      }
+      const html =
+        (await getTemplateHtml('daily_study', vars)) ?? buildDailyStudyEmail(firstName, study)
+      const subject =
+        (await getTemplateSubject('daily_study', vars)) ?? `Today's Study — ${study.title}`
 
       await sendEmail({
         to: member.email,
-        subject: `Today's Study — ${study.title}`,
-        html: buildDailyStudyEmail(firstName, study),
+        subject,
+        html,
         fromName: EMAIL_SENDERS.word.name,
         fromEmail: EMAIL_SENDERS.word.email,
       })

@@ -1,19 +1,60 @@
+import {
+  buildBirthdayEmail,
+  buildChristmasEmail,
+  buildEasterEmail,
+  buildNewYearEmail,
+} from '@/lib/automation-email-html'
+
 // Default template configurations
 export const EMAIL_TEMPLATE_DEFAULTS = {
   welcome: {
     name: 'Welcome Email',
-    subject: 'Welcome to Room For You 🏠',
-    description: 'Sent when someone joins the community',
+    subject: 'Welcome to Room For You, {{first_name}}! 🙏',
+    description: 'Sent when someone joins the community (welcome automation)',
+  },
+  birthday: {
+    name: 'Birthday Wishes',
+    subject: 'Happy Birthday, {{first_name}}! 🎂',
+    description: "Sent automatically on a member's birthday",
+    defaultHtml: buildBirthdayEmail('{{first_name}}'),
   },
   devotional: {
-    name: 'Daily Word',
+    name: 'Daily Word (legacy cron)',
     subject: "Today's Word — {{reference}}",
-    description: 'Sent every morning with the daily scripture',
+    description: 'Legacy daily devotional cron — use Daily Scripture for new automations',
+  },
+  daily_scripture: {
+    name: 'Daily Scripture',
+    subject: "Today's Word — {{scripture_reference}}",
+    description: 'Daily scripture email sent to all subscribed community members',
+  },
+  daily_study: {
+    name: 'Daily Study',
+    subject: "Today's Study — {{study_title}}",
+    description: 'Daily study material email sent to all subscribed community members',
   },
   event_reminder: {
     name: 'Event Reminder',
-    subject: 'Reminder: {{event_title}} is coming up',
-    description: 'Sent 1 week and 24 hours before an event',
+    subject: 'Reminder: {{event_title}} is tomorrow! 🙏',
+    description: 'Sent 24 hours before an event to registered attendees',
+  },
+  christmas: {
+    name: 'Christmas Greetings',
+    subject: 'Merry Christmas, {{first_name}}! 🎄',
+    description: 'Christmas greeting sent to all community members on December 25th',
+    defaultHtml: buildChristmasEmail('{{first_name}}'),
+  },
+  new_year: {
+    name: 'New Year Greetings',
+    subject: 'Happy New Year, {{first_name}}! 🎉',
+    description: 'New Year greeting sent to all community members on January 1st',
+    defaultHtml: buildNewYearEmail('{{first_name}}'),
+  },
+  easter: {
+    name: 'Easter Greetings',
+    subject: 'Happy Easter, {{first_name}}! ✝️',
+    description: 'Easter greeting sent to all community members on the admin-set Easter date',
+    defaultHtml: buildEasterEmail('{{first_name}}'),
   },
   event_registration: {
     name: 'Event Registration',

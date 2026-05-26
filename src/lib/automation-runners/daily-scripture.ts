@@ -1,6 +1,6 @@
 import type { Scripture } from '@prisma/client'
 import { db } from '@/lib/db'
-import { sendEmail } from '@/lib/brevo'
+import { getTemplateHtml, getTemplateSubject, sendEmail } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
 
 function buildDailyScriptureEmail(firstName: string, scripture: Scripture): string {
@@ -49,11 +49,23 @@ export async function runDailyScriptureAutomation(): Promise<string> {
     for (const member of members) {
       if (!member.email) continue
       const firstName = member.name?.split(' ')[0] ?? 'Friend'
+      const vars = {
+        first_name: firstName,
+        scripture_verse: scripture.text,
+        scripture_reference: scripture.reference,
+        scripture_reflection: '',
+      }
+      const html =
+        (await getTemplateHtml('daily_scripture', vars)) ??
+        buildDailyScriptureEmail(firstName, scripture)
+      const subject =
+        (await getTemplateSubject('daily_scripture', vars)) ??
+        `Today's Word — ${scripture.reference}`
 
       await sendEmail({
         to: member.email,
-        subject: `Today's Word — ${scripture.reference}`,
-        html: buildDailyScriptureEmail(firstName, scripture),
+        subject,
+        html,
         fromName: EMAIL_SENDERS.word.name,
         fromEmail: EMAIL_SENDERS.word.email,
       })
