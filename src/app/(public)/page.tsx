@@ -5,12 +5,12 @@ import { VisionSection } from '@/components/landing/VisionSection'
 import { ConfessionReveal } from '@/components/landing/ConfessionReveal'
 import { FromTheShepherd } from '@/components/landing/FromTheShepherd'
 import { CommunityHighlights } from '@/components/landing/CommunityHighlights'
-import { HomeCarousel } from '@/components/landing/HomeCarousel'
+import { GalleryStrip } from '@/components/landing/GalleryStrip'
 import { CTASection } from '@/components/landing/CTASection'
 import { Footer } from '@/components/layout/Footer'
 import { getContentMany } from '@/lib/content'
 import { HOME_CMS_KEYS } from '@/lib/cms-keys'
-import { getActiveHomeCarouselSlides } from '@/lib/home-carousel'
+import { db } from '@/lib/db'
 import { getPageMetadata } from '@/lib/cms-metadata'
 import type { Metadata } from 'next'
 
@@ -25,9 +25,16 @@ export async function generateMetadata(): Promise<Metadata> {
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
-  const [content, carouselSlides] = await Promise.all([
+  const [content, galleryImages] = await Promise.all([
     getContentMany([...HOME_CMS_KEYS]),
-    getActiveHomeCarouselSlides(),
+    db.galleryImage
+      .findMany({
+        where: { isActive: true },
+        orderBy: { order: 'asc' },
+        take: 14,
+        select: { id: true, url: true, caption: true },
+      })
+      .catch(() => []),
   ])
 
   return (
@@ -39,7 +46,14 @@ export default async function HomePage() {
       <ConfessionReveal content={content} />
       <FromTheShepherd content={content} />
       <CommunityHighlights content={content} />
-      <HomeCarousel slides={carouselSlides} content={content} />
+      <GalleryStrip
+        images={galleryImages}
+        eyebrow={content['landing.gallery.eyebrow'] || 'Gallery'}
+        titleBefore={content['landing.gallery.title'] || 'Moments from'}
+        titleItalic={content['landing.gallery.titleAccent'] || 'our gatherings'}
+        ctaHref="/gallery"
+        ctaLabel={content['landing.gallery.cta'] || 'View all photos'}
+      />
       <CTASection content={content} />
       <Footer />
     </main>

@@ -82,6 +82,7 @@ const nextConfig = {
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: 'res.cloudinary.com' },
     ],
     /** Allow CMS uploads that are SVGs on Cloudinary; without this, next/image rejects many remote SVGs. */
     dangerouslyAllowSVG: true,
