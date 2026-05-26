@@ -224,11 +224,7 @@ export function PublicGalleryClient({
   return (
     <div className="bg-void">
       <div className="mx-auto max-w-7xl px-6 pb-6 pt-4">
-        <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-          <p className="font-body text-xs font-medium uppercase tracking-[0.25em] text-text-secondary">
-            {images.length} of {total} photo{total === 1 ? '' : 's'}
-          </p>
-
+        <div className="flex flex-col items-start justify-end gap-4 sm:flex-row sm:items-center">
           <div className="flex flex-wrap items-center gap-3">
             {selectMode && selectedIds.size > 0 && (
               <button
@@ -429,10 +425,6 @@ export function PublicGalleryClient({
 
         {hasMore && images.length > 0 && (
           <div className="mt-16 flex flex-col items-center gap-3 pb-8">
-            <p className="font-body text-xs font-medium uppercase tracking-[0.25em] text-text-secondary">
-              {images.length} of {total} photos
-            </p>
-
             <div className="h-px w-48 bg-theme">
               <div
                 className="h-full transition-all duration-500"
