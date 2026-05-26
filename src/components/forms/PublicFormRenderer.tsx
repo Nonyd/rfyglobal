@@ -19,6 +19,21 @@ const inputClass =
 
 const labelClass = 'mb-2 block text-xs font-body uppercase tracking-widest text-text-muted'
 
+const BIRTHDAY_MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+] as const
+
 function FormBuilderEmailField({
   formSlug,
   field,
@@ -303,6 +318,70 @@ export function PublicFormRenderer({ form }: { form: PublicForm }) {
                 ))}
               </div>
               {err ? <p className="text-red-brand text-xs mt-1">{err}</p> : null}
+            </div>
+          )
+        }
+
+        if (field.type === 'BIRTHDAY_MONTH') {
+          return (
+            <div key={field.id}>
+              <label htmlFor={field.id} className={labelClass}>
+                {field.label}
+                <span className="ml-2 normal-case tracking-normal text-text-muted">(optional)</span>
+              </label>
+              <select
+                id={field.id}
+                className={cn(inputClass, 'cursor-pointer')}
+                {...register(field.id)}
+              >
+                <option value="">Select month…</option>
+                {BIRTHDAY_MONTHS.map((month, i) => (
+                  <option key={i + 1} value={String(i + 1)}>
+                    {month}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-1 font-body text-xs text-text-muted">
+                Share your birthday month so we can celebrate you! 🎂
+              </p>
+            </div>
+          )
+        }
+
+        if (field.type === 'BIRTHDAY_DAY') {
+          return (
+            <div key={field.id}>
+              <label htmlFor={field.id} className={labelClass}>
+                {field.label}
+                <span className="ml-2 normal-case tracking-normal text-text-muted">(optional)</span>
+              </label>
+              <Controller
+                control={control}
+                name={field.id}
+                render={({ field: fctrl }) => (
+                  <input
+                    id={field.id}
+                    type="number"
+                    min={1}
+                    max={31}
+                    placeholder="e.g. 15"
+                    className={inputClass}
+                    value={fctrl.value === '' || fctrl.value === undefined ? '' : String(fctrl.value)}
+                    onChange={(e) => {
+                      const raw = e.target.value
+                      if (!raw) {
+                        fctrl.onChange('')
+                        return
+                      }
+                      const val = parseInt(raw, 10)
+                      if (!Number.isNaN(val) && val >= 1 && val <= 31) {
+                        fctrl.onChange(raw)
+                      }
+                    }}
+                    onBlur={fctrl.onBlur}
+                  />
+                )}
+              />
             </div>
           )
         }

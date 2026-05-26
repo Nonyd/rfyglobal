@@ -98,6 +98,8 @@ enum FieldType {
   DATE
   FILE_UPLOAD
   LOCATION
+  BIRTHDAY_MONTH
+  BIRTHDAY_DAY
 }
 
 model FormSubmission {

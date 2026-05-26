@@ -16,6 +16,36 @@ type FormWithEntries = {
 
 const columnHelper = createColumnHelper<Record<string, string>>()
 
+const BIRTHDAY_MONTH_NAMES = [
+  '',
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+]
+
+function formatEntryValue(type: FormField['type'], value: string): string {
+  if (!value) return ''
+  switch (type) {
+    case 'BIRTHDAY_MONTH': {
+      const idx = parseInt(value, 10)
+      return BIRTHDAY_MONTH_NAMES[idx] ?? value
+    }
+    case 'BIRTHDAY_DAY':
+      return `Day ${value}`
+    default:
+      return value
+  }
+}
+
 function formatSubmittedAt(iso: Date | string): string {
   const d = new Date(iso)
   return d.toLocaleString('en-GB', {
@@ -33,7 +63,8 @@ export function FormEntriesTable({ form }: { form: FormWithEntries }) {
       const map = Object.fromEntries(sub.values.map((v) => [v.fieldLabel, v.value]))
       const row: Record<string, string> = { __submittedAt: formatSubmittedAt(sub.createdAt) }
       for (const f of form.fields) {
-        row[f.label] = map[f.label] ?? ''
+        const raw = map[f.label] ?? ''
+        row[f.label] = formatEntryValue(f.type, raw)
       }
       return row
     })

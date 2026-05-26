@@ -12,6 +12,8 @@ export const FIELD_TYPE_VALUES = [
   'DATE',
   'FILE_UPLOAD',
   'LOCATION',
+  'BIRTHDAY_MONTH',
+  'BIRTHDAY_DAY',
 ] as const
 
 export type AppFieldType = (typeof FIELD_TYPE_VALUES)[number]
@@ -28,7 +30,11 @@ export const FIELD_TYPE_LABELS: Record<AppFieldType, string> = {
   DATE: 'Date',
   FILE_UPLOAD: 'File Upload',
   LOCATION: 'Location',
+  BIRTHDAY_MONTH: 'Birthday Month',
+  BIRTHDAY_DAY: 'Birthday Day',
 }
+
+export const BIRTHDAY_FIELD_TYPES: AppFieldType[] = ['BIRTHDAY_MONTH', 'BIRTHDAY_DAY']
 
 export const HAS_OPTIONS: AppFieldType[] = ['DROPDOWN', 'RADIO', 'CHECKBOXES']
 
@@ -38,6 +44,8 @@ export const NO_PLACEHOLDER: AppFieldType[] = [
   'LOCATION',
   'CHECKBOXES',
   'RADIO',
+  'BIRTHDAY_MONTH',
+  'BIRTHDAY_DAY',
 ]
 
 export type FieldTypeUiItem = {
@@ -61,4 +69,6 @@ export const FIELD_TYPES_UI: FieldTypeUiItem[] = [
   { type: 'DATE', label: 'Date', icon: '📅' },
   { type: 'FILE_UPLOAD', label: 'File Upload', icon: '↑' },
   { type: 'LOCATION', label: 'Location', icon: '📍' },
+  { type: 'BIRTHDAY_MONTH', label: 'Birthday Month', icon: '🎂', defaultLabel: 'Birthday Month' },
+  { type: 'BIRTHDAY_DAY', label: 'Birthday Day', icon: '📅', defaultLabel: 'Birthday Day' },
 ]

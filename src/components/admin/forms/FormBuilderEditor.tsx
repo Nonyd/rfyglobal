@@ -23,7 +23,7 @@ import { SortableFieldCard } from './SortableFieldCard'
 import { FieldTypePicker } from './FieldTypePicker'
 import toast from 'react-hot-toast'
 import type { FormFieldInput } from '@/lib/validations/form'
-import type { AppFieldType } from '@/lib/form-field-metadata'
+import { BIRTHDAY_FIELD_TYPES, type AppFieldType } from '@/lib/form-field-metadata'
 import { AdminToggle } from '@/components/shared/Toggle'
 
 function apiErrorMessage(body: unknown): string {
@@ -108,7 +108,16 @@ export function FormBuilderEditor({ mode, initialData }: FormBuilderEditorProps)
   }
 
   const updateField = (key: string, updates: Partial<FormFieldInput>) => {
-    setFields((prev) => prev.map((f) => (f._key === key ? { ...f, ...updates } : f)))
+    setFields((prev) =>
+      prev.map((f) => {
+        if (f._key !== key) return f
+        const next = { ...f, ...updates }
+        if (BIRTHDAY_FIELD_TYPES.includes(next.type as AppFieldType)) {
+          next.required = false
+        }
+        return next
+      }),
+    )
   }
 
   const removeField = (key: string) => {

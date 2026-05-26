@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 import { AdminToggle } from '@/components/shared/Toggle'
 import type { FormFieldInput } from '@/lib/validations/form'
 import {
+  BIRTHDAY_FIELD_TYPES,
   FIELD_TYPE_LABELS,
   HAS_OPTIONS,
   NO_PLACEHOLDER,
@@ -31,6 +32,7 @@ export function SortableFieldCard({ field, onUpdate, onRemove }: SortableFieldCa
   }
 
   const typeKey = field.type as AppFieldType
+  const isBirthdayField = BIRTHDAY_FIELD_TYPES.includes(typeKey)
   const options = (field.options as string[] | undefined) ?? []
 
   const addOption = () => onUpdate({ options: [...options, `Option ${options.length + 1}`] })
@@ -131,12 +133,18 @@ export function SortableFieldCard({ field, onUpdate, onRemove }: SortableFieldCa
         </div>
       ) : null}
 
-      <AdminToggle
-        checked={field.required}
-        onChange={(val) => onUpdate({ required: val })}
-        label="Required"
-        size="sm"
-      />
+      {isBirthdayField ? (
+        <p className="text-xs font-body leading-relaxed" style={{ color: 'var(--a-text-muted)' }}>
+          This field is always optional — visitors choose whether to share their birthday.
+        </p>
+      ) : (
+        <AdminToggle
+          checked={field.required}
+          onChange={(val) => onUpdate({ required: val })}
+          label="Required"
+          size="sm"
+        />
+      )}
     </div>
   )
 }
