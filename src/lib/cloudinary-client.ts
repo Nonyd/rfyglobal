@@ -14,7 +14,7 @@ export type CloudinaryFolder =
   | 'testimony'
   | 'homeCarousel'
 
-export type ResourceType = 'image' | 'raw'
+export type ResourceType = 'image' | 'video' | 'raw'
 
 export interface CloudinaryUploadResult {
   url: string

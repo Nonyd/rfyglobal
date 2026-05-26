@@ -11,7 +11,7 @@ import { RotateCcw } from 'lucide-react'
 export interface CMSField {
   key: string
   label: string
-  type: 'text' | 'textarea' | 'image' | 'url' | 'toggle'
+  type: 'text' | 'textarea' | 'image' | 'video' | 'url' | 'toggle'
   placeholder?: string
   hint?: string
   /** Cloudinary folder for image uploads (default: cms) */
@@ -172,9 +172,9 @@ export function CMSEditor({ title, description, fields, initialValues, defaults 
                 </div>
               </div>
 
-              {field.type === 'image' ? (
+              {field.type === 'image' || field.type === 'video' ? (
                 <div className="space-y-3">
-                  {values[field.key] ? (
+                  {values[field.key] && field.type === 'image' ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={values[field.key]}
@@ -183,11 +183,23 @@ export function CMSEditor({ title, description, fields, initialValues, defaults 
                       style={{ borderColor: 'var(--a-border)' }}
                     />
                   ) : null}
+                  {values[field.key] && field.type === 'video' ? (
+                    <video
+                      src={values[field.key]}
+                      className="h-32 w-full max-w-md border object-cover"
+                      style={{ borderColor: 'var(--a-border)' }}
+                      muted
+                      playsInline
+                      controls
+                    />
+                  ) : null}
                   <UploadZone
                     folder={field.uploadFolder ?? 'cms'}
-                    accept="image"
+                    accept={field.type === 'video' ? 'video' : 'image'}
+                    resourceType={field.type === 'video' ? 'video' : undefined}
+                    maxFileSizeMB={field.type === 'video' ? 8 : undefined}
                     preview
-                    label="Upload new image"
+                    label={field.type === 'video' ? 'Upload MP4 video' : 'Upload new image'}
                     onUploadComplete={(files) => {
                       const url = files[0]?.url
                       if (url) setValues((prev) => ({ ...prev, [field.key]: url }))

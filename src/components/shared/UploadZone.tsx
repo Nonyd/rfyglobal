@@ -43,7 +43,7 @@ interface UploadZoneProps {
   maxFiles?: number
   /** Per-file size cap in MB. Files over this size are rejected client-side. */
   maxFileSizeMB?: number
-  accept?: 'image' | 'audio' | 'document'
+  accept?: 'image' | 'audio' | 'document' | 'video'
   label?: string
   /** Optional hint shown below the main label, e.g. "Max 100 files · 10MB per file". */
   helpText?: string
@@ -69,12 +69,14 @@ const ACCEPT_MAP = {
   image: 'image/*',
   audio: 'audio/mpeg,audio/mp3,audio/*',
   document: 'application/pdf,.doc,.docx',
+  video: 'video/mp4,video/*',
 }
 
 const RESOURCE_TYPE_MAP: Record<string, ResourceType> = {
   image: 'image',
   audio: 'raw',
   document: 'raw',
+  video: 'video',
 }
 
 const BATCH_SIZE = 5
@@ -109,7 +111,7 @@ export function UploadZone({
   const [fileStates, setFileStates] = useState<FileState[]>([])
   const [isDragging, setIsDragging] = useState(false)
 
-  const resolvedResourceType = resourceType ?? RESOURCE_TYPE_MAP[accept]
+  const resolvedResourceType = resourceType ?? RESOURCE_TYPE_MAP[accept] ?? 'image'
 
   const updateFileState = useCallback(
     (id: string, updates: Partial<FileState>) => {

@@ -15,11 +15,25 @@ const FIELDS: CMSField[] = [
   },
   { key: 'landing.hero.subtext', label: 'Hero Subtext', type: 'textarea', placeholder: 'A community of young men and women…' },
   {
-    key: 'landing.hero.portrait',
-    label: 'Hero Background Portrait',
+    key: 'landing.hero.bg_image',
+    label: 'Hero Background Image',
     type: 'image',
-    uploadFolder: 'portraits',
-    hint: 'Right-side background image on the homepage hero',
+    uploadFolder: 'cms',
+    hint: 'Recommended: 1920×1080px JPG, under 500KB. Dark worship/community atmosphere works best. Keep center-left clear for text.',
+  },
+  {
+    key: 'landing.hero.bg_video',
+    label: 'Hero Background Video (optional)',
+    type: 'video',
+    uploadFolder: 'cms',
+    hint: 'MP4, 1920×1080px, under 8MB, 15–30 seconds, loops seamlessly. Leave empty to use image only.',
+  },
+  {
+    key: 'landing.hero.bg_overlay',
+    label: 'Background Overlay Darkness',
+    type: 'text',
+    placeholder: '0.55',
+    hint: 'Number between 0 (transparent) and 1 (fully dark). Default: 0.55. Increase if text is hard to read.',
   },
   { key: 'landing.hero.cta.primary', label: 'Primary CTA Button', type: 'text', placeholder: 'Join the Community' },
   { key: 'landing.hero.cta.secondary', label: 'Secondary CTA Button', type: 'text', placeholder: 'Our Story' },
@@ -83,7 +97,7 @@ export default async function CMSLandingPage() {
   return (
     <CMSEditor
       title="Landing Page"
-      description="Hero copy and portrait, vision/mission section, confession excerpt, and bottom CTA"
+      description="Hero copy and background media, vision/mission section, confession excerpt, and bottom CTA"
       fields={FIELDS}
       initialValues={values}
       defaults={defaults}

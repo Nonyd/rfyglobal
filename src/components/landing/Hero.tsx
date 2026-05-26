@@ -1,9 +1,9 @@
 'use client'
 
-import { motion } from 'framer-motion'
-import Link from 'next/link'
+import { useRef, useEffect, useMemo, type CSSProperties } from 'react'
 import Image from 'next/image'
-import { useMemo, type CSSProperties } from 'react'
+import Link from 'next/link'
+import { gsap } from 'gsap'
 import { Navbar } from '@/components/layout/Navbar'
 
 type HeadlineLine = {
@@ -30,7 +30,7 @@ function heroHeadlineLines(headline1: string, headline2: string): HeadlineLine[]
 }
 
 function headlineStyle(style: HeadlineLine['style']): CSSProperties {
-  if (style === 'muted') return { color: 'rgba(248,248,248,0.25)' }
+  if (style === 'muted') return { color: 'rgba(255,255,255,0.45)' }
   if (style === 'outlined') {
     return {
       color: 'transparent',
@@ -40,9 +40,22 @@ function headlineStyle(style: HeadlineLine['style']): CSSProperties {
   return { color: '#FFFFFF' }
 }
 
+const SUBTEXT_DEFAULT =
+  'A community of young men and women singing songs of salvation, studying the Word, and getting others saved. Jesus to nations.'
+
 export function Hero({ content }: { content: Record<string, string> }) {
-  const portrait = (content['landing.hero.portrait'] || '/images/yadah-portrait.jpg').trim()
-  const words = useMemo(
+  const containerRef = useRef<HTMLElement>(null)
+  const textRef = useRef<HTMLDivElement>(null)
+
+  const eyebrow = content['landing.hero.eyebrow'] || 'Worship · Prayer · Study · Community'
+  const subtext = content['landing.hero.subtext'] || SUBTEXT_DEFAULT
+  const ctaPrimary = content['landing.hero.cta.primary'] || 'Join the Community'
+  const ctaSecondary = content['landing.hero.cta.secondary'] || 'Our Story'
+  const bgImage = (content['landing.hero.bg_image'] || '').trim()
+  const bgVideo = (content['landing.hero.bg_video'] || '').trim()
+  const overlayOpacity = parseFloat(content['landing.hero.bg_overlay'] || '0.55')
+
+  const headlineLines = useMemo(
     () =>
       heroHeadlineLines(
         content['landing.hero.headline1'] || 'There Is Room',
@@ -51,169 +64,182 @@ export function Hero({ content }: { content: Record<string, string> }) {
     [content],
   )
 
+  useEffect(() => {
+    if (!textRef.current) return
+
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ delay: 0.3 })
+
+      tl.from('[data-hero-eyebrow]', {
+        y: 20,
+        opacity: 0,
+        duration: 0.7,
+        ease: 'power3.out',
+      })
+        .from('[data-hero-line1]', { y: 40, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.4')
+        .from('[data-hero-line2]', { y: 40, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
+        .from('[data-hero-line3]', { y: 40, opacity: 0, duration: 0.8, ease: 'power3.out' }, '-=0.6')
+        .from('[data-hero-sub]', { y: 20, opacity: 0, duration: 0.7, ease: 'power3.out' }, '-=0.4')
+        .from('[data-hero-ctas]', { y: 20, opacity: 0, duration: 0.7, ease: 'power3.out' }, '-=0.4')
+    }, containerRef)
+
+    return () => ctx.revert()
+  }, [])
+
+  const overlayDark = Number.isFinite(overlayOpacity) ? overlayOpacity : 0.55
+
   return (
     <section
-      className="relative min-h-screen overflow-hidden flex flex-col"
-      style={{
-        background: `
-          radial-gradient(ellipse 70% 60% at 70% 40%, rgba(232,0,28,0.18) 0%, transparent 60%),
-          radial-gradient(ellipse 50% 50% at 20% 80%, rgba(10,22,40,0.9) 0%, transparent 60%),
-          linear-gradient(160deg, #1C1C1C 0%, #0a0000 60%, #0A1628 100%)
-        `,
-        color: 'var(--color-hero-text)',
-      }}
+      ref={containerRef}
+      className="relative flex min-h-screen w-full flex-col overflow-hidden"
+      style={{ background: '#000000' }}
     >
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          width: '42vw',
-          height: '100%',
-          background: 'linear-gradient(180deg, #E8001C 0%, #FF4500 100%)',
-          clipPath: 'polygon(18% 0, 100% 0, 100% 100%, 0% 100%)',
-          opacity: 0.07,
-          zIndex: 1,
-          pointerEvents: 'none',
-        }}
-      />
-      <motion.div
-        style={{
-          position: 'absolute',
-          top: 0,
-          right: 'calc(42vw - 3.24vw - 2px)',
-          width: '3px',
-          height: '100%',
-          background: 'linear-gradient(180deg, transparent, #E8001C, #FF4500, transparent)',
-          opacity: 0.6,
-          zIndex: 2,
-          pointerEvents: 'none',
-        }}
-      />
-
-      <Navbar />
-
-      <motion.div className="absolute inset-y-0 right-0 w-1/2 pointer-events-none hidden lg:block z-[3]">
-        <div
-          className="absolute inset-0 z-10"
-          style={{
-            background:
-              'linear-gradient(to right, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.5) 35%, rgba(0,0,0,0.2) 60%, transparent 100%)',
-          }}
-        />
-        <Image
-          src={portrait}
-          alt=""
-          fill
-          className="object-cover object-top opacity-30"
-          priority
-          unoptimized={portrait.endsWith('.svg')}
-        />
-      </motion.div>
-
-      <motion.div className="relative z-10 flex flex-col justify-center flex-1 px-6 lg:px-16 xl:px-24 pt-28 pb-20 max-w-7xl mx-auto w-full">
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-          className="label-text mb-10 pl-4"
-          style={{ borderLeft: '2px solid var(--color-accent)', color: 'rgba(255,255,255,0.6)' }}
+      {bgVideo ? (
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster={bgImage || undefined}
+          className="absolute inset-0 z-0 h-full w-full object-cover"
         >
-          {content['landing.hero.eyebrow'] || 'Worship · Prayer · Study · Community'}
-        </motion.p>
+          <source src={bgVideo} type="video/mp4" />
+        </video>
+      ) : null}
 
-        <div className="space-y-2 mb-12">
-          {words.map((word, i) => (
-            <motion.h1
-              key={i}
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.9, delay: word.delay, ease: [0.16, 1, 0.3, 1] }}
-              className="font-display font-bold leading-none uppercase"
+      {bgImage && !bgVideo ? (
+        <div className="absolute inset-0 z-0">
+          <Image
+            src={bgImage}
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+            unoptimized={bgImage.startsWith('/uploads/') || bgImage.endsWith('.svg')}
+          />
+        </div>
+      ) : null}
+
+      <div
+        className="absolute inset-0 z-[1]"
+        style={{
+          background: `linear-gradient(
+            105deg,
+            rgba(0,0,0,${Math.min(overlayDark + 0.2, 0.85)}) 0%,
+            rgba(0,0,0,${overlayDark}) 50%,
+            rgba(0,0,0,${Math.max(overlayDark - 0.1, 0.2)}) 100%
+          )`,
+        }}
+      />
+
+      <div
+        className="pointer-events-none absolute bottom-0 left-0 right-0 z-[2]"
+        style={{
+          height: '30%',
+          background: 'linear-gradient(to top, var(--color-bg), transparent)',
+        }}
+      />
+
+      <div className="relative z-10">
+        <Navbar />
+      </div>
+
+      <div
+        ref={textRef}
+        className="relative z-[5] flex flex-1 items-center"
+        style={{ padding: 'clamp(7rem, 12vw, 8rem) clamp(1.5rem, 5vw, 5rem) 6rem' }}
+      >
+        <div className="max-w-[720px]">
+          <p
+            data-hero-eyebrow
+            className="label-text mb-6 pl-4"
+            style={{
+              borderLeft: '2px solid var(--color-accent)',
+              color: 'var(--color-accent)',
+              margin: '0 0 1.5rem',
+            }}
+          >
+            {eyebrow}
+          </p>
+
+          <h1
+            className="font-display font-bold uppercase leading-[0.95] tracking-[-0.02em]"
+            style={{
+              fontSize: 'clamp(3rem, 9vw, 7rem)',
+              margin: '0 0 1.75rem',
+            }}
+          >
+            {headlineLines.map((line, i) => (
+              <span
+                key={i}
+                data-hero-line1={i === 0 ? '' : undefined}
+                data-hero-line2={i === 1 ? '' : undefined}
+                data-hero-line3={i === 2 ? '' : undefined}
+                className="block"
+                style={headlineStyle(line.style)}
+              >
+                {line.text}
+              </span>
+            ))}
+          </h1>
+
+          <div className="gold-line-left mb-10 w-48 origin-left" />
+
+          <p
+            data-hero-sub
+            className="font-body leading-relaxed"
+            style={{
+              fontSize: 'clamp(0.95rem, 2vw, 1.1rem)',
+              color: 'rgba(255,255,255,0.65)',
+              maxWidth: '520px',
+              margin: '0 0 2.5rem',
+            }}
+          >
+            {subtext}
+          </p>
+
+          <div data-hero-ctas className="flex flex-wrap items-center gap-4">
+            <Link href="/join" className="btn-primary">
+              {ctaPrimary}
+            </Link>
+            <Link
+              href="/about"
+              className="inline-flex items-center border px-8 py-4 font-body text-[11px] uppercase tracking-[0.2em] transition-all duration-300 hover:bg-white/5"
               style={{
-                fontSize: 'clamp(5rem, 14vw, 14rem)',
-                fontWeight: 700,
-                letterSpacing: '-0.02em',
-                ...headlineStyle(word.style),
+                borderColor: 'rgba(255,255,255,0.4)',
+                color: 'rgba(255,255,255,0.85)',
               }}
             >
-              {word.text}
-            </motion.h1>
-          ))}
+              {ctaSecondary}
+            </Link>
+          </div>
         </div>
+      </div>
 
-        <motion.div
-          initial={{ scaleX: 0, opacity: 0 }}
-          animate={{ scaleX: 1, opacity: 1 }}
-          transition={{ duration: 1.2, delay: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="gold-line-left w-48 mb-10 origin-left"
-        />
-
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.4 }}
-          className="font-body text-lg leading-relaxed max-w-lg mb-12"
-          style={{ color: 'rgba(255,255,255,0.65)' }}
-        >
-          {content['landing.hero.subtext'] ||
-            'A community of young men and women singing songs of salvation, studying the Word, and getting others saved.'}
-        </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 1.6 }}
-          className="flex flex-wrap gap-4"
-        >
-          <Link href="/join" className="btn-primary">
-            {content['landing.hero.cta.primary'] || 'Join the Community'}
-          </Link>
-          <Link
-            href="/about"
-            className="inline-flex items-center px-8 py-4 border font-body text-[11px] tracking-[0.2em] uppercase transition-all duration-300 hover:bg-white/5"
-            style={{ borderColor: 'rgba(255,255,255,0.4)', color: 'var(--color-hero-text)' }}
-          >
-            {content['landing.hero.cta.secondary'] || 'Our Story'}
-          </Link>
-        </motion.div>
-      </motion.div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2.5 }}
-        style={{
-          position: 'absolute',
-          bottom: '2.5rem',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '0.5rem',
-          zIndex: 10,
-        }}
+      <div
+        className="absolute bottom-8 left-1/2 z-[5] flex -translate-x-1/2 flex-col items-center gap-2"
+        style={{ opacity: 0.4 }}
       >
         <span
+          className="font-body uppercase"
           style={{
-            fontSize: '0.6rem',
-            letterSpacing: '0.2em',
-            color: 'rgba(255,255,255,0.4)',
-            textTransform: 'uppercase',
+            fontSize: '0.65rem',
+            letterSpacing: '0.25em',
+            color: '#FFFFFF',
           }}
         >
           Scroll
         </span>
-        <motion.div
+        <div
           style={{
             width: '1px',
-            height: '48px',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.4), transparent)',
+            height: '40px',
+            background: 'linear-gradient(to bottom, #FFFFFF, transparent)',
             animation: 'scroll-pulse 2s ease-in-out infinite',
           }}
         />
-      </motion.div>
+      </div>
     </section>
   )
 }
