@@ -2,13 +2,43 @@
 
 const CSP = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.paystack.co https://checkout.flutterwave.com https://static.cloudflareinsights.com;
-  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://api.fontshare.com;
-  font-src 'self' https://fonts.gstatic.com https://api.fontshare.com;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline'
+    https://js.paystack.co
+    https://checkout.flutterwave.com
+    https://static.cloudflareinsights.com
+    https://editor.unlayer.com
+    https://unlayer.com;
+  style-src 'self' 'unsafe-inline'
+    https://fonts.googleapis.com
+    https://api.fontshare.com
+    https://editor.unlayer.com;
+  font-src 'self'
+    https://fonts.gstatic.com
+    https://api.fontshare.com
+    https://editor.unlayer.com;
   img-src 'self' data: blob: https:;
   media-src 'self' https://res.cloudinary.com blob:;
-  frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://checkout.paystack.com https://checkout.flutterwave.com https://checkout.payaza.africa;
-  connect-src 'self' https://rfyglobal.org https://api.cloudinary.com https://api.paystack.co https://api.flutterwave.com https://api.payaza.africa https://fonts.gstatic.com https://api.fontshare.com https://static.cloudflareinsights.com;
+  frame-src 'self'
+    https://www.youtube.com
+    https://www.youtube-nocookie.com
+    https://player.vimeo.com
+    https://checkout.paystack.com
+    https://checkout.flutterwave.com
+    https://checkout.payaza.africa
+    https://editor.unlayer.com
+    https://unlayer.com;
+  connect-src 'self'
+    https://rfyglobal.org
+    https://api.cloudinary.com
+    https://api.paystack.co
+    https://api.flutterwave.com
+    https://api.payaza.africa
+    https://fonts.gstatic.com
+    https://api.fontshare.com
+    https://static.cloudflareinsights.com
+    https://editor.unlayer.com
+    https://unlayer.com
+    https://api.unlayer.com;
   worker-src 'self' blob:;
 `.replace(/\s{2,}/g, ' ').trim()
 
