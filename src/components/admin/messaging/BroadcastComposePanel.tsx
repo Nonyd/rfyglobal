@@ -46,9 +46,28 @@ export function BroadcastComposePanel({ open, onClose, onSent }: BroadcastCompos
   useEffect(() => {
     if (!open) return
     adminFetch('/api/admin/email-templates')
-      .then((r) => (r.ok ? r.json() : []))
-      .then((data: EmailTemplate[]) => setTemplates(Array.isArray(data) ? data : []))
-      .catch(() => setTemplates([]))
+      .then(async (r) => {
+        if (!r.ok) {
+          console.error('[broadcast] email-templates fetch failed:', r.status)
+          return []
+        }
+        const data: unknown = await r.json()
+        if (!Array.isArray(data)) {
+          console.error('[broadcast] email-templates response is not an array:', data)
+          return []
+        }
+        return data.map((t: { key?: string; name?: string; subject?: string; html?: string }) => ({
+          key: String(t.key ?? ''),
+          name: String(t.name ?? t.key ?? 'Template'),
+          subject: String(t.subject ?? ''),
+          html: String(t.html ?? ''),
+        })).filter((t) => t.key)
+      })
+      .then(setTemplates)
+      .catch((err) => {
+        console.error('[broadcast] email-templates fetch error:', err)
+        setTemplates([])
+      })
     adminFetch('/api/events')
       .then((r) => (r.ok ? r.json() : []))
       .then((data: EventOption[]) => setEvents(Array.isArray(data) ? data : []))

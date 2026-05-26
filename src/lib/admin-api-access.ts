@@ -47,3 +47,18 @@ export async function forbidUnlessCanAccess(
   }
   return null
 }
+
+/** Allow route when the user has any of the listed module permissions. */
+export async function forbidUnlessCanAccessAny(
+  session: Session | null,
+  moduleKeys: string[],
+): Promise<NextResponse | null> {
+  if (!session?.user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+  for (const key of moduleKeys) {
+    const denied = await forbidUnlessCanAccess(session, key)
+    if (!denied) return null
+  }
+  return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+}

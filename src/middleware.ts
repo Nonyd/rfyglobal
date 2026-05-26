@@ -129,6 +129,7 @@ export default auth(async (req) => {
       pathname.startsWith('/api/admin/testimony') ||
       pathname.startsWith('/api/admin/messages') ||
       pathname.startsWith('/api/admin/broadcast') ||
+      pathname.startsWith('/api/admin/email-templates') ||
       pathname.startsWith('/api/admin/live-chat')
 
     if (!skipEdgeModuleAcl) {
