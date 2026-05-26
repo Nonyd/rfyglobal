@@ -32,6 +32,7 @@ interface BroadcastComposePanelProps {
 export function BroadcastComposePanel({ open, onClose, onSent }: BroadcastComposePanelProps) {
   const [group, setGroup] = useState('')
   const [groupFilter, setGroupFilter] = useState('')
+  const [individualEmails, setIndividualEmails] = useState('')
   const [templateKey, setTemplateKey] = useState('')
   const [replyTo, setReplyTo] = useState('')
   const [subject, setSubject] = useState('')
@@ -93,11 +94,46 @@ export function BroadcastComposePanel({ open, onClose, onSent }: BroadcastCompos
       .catch(() => {})
   }, [templateKey])
 
+  const parseEmails = (text: string): string[] => {
+    const parts = text
+      .split(/[\s,;]+/g)
+      .map((p) => p.trim())
+      .filter(Boolean)
+    const out: string[] = []
+    const seen = new Set<string>()
+    for (const email of parts) {
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) continue
+      const key = email.toLowerCase()
+      if (seen.has(key)) continue
+      seen.add(key)
+      out.push(email)
+    }
+    return out
+  }
+
+  const emailToName = (email: string): string => {
+    const local = (email.split('@')[0] ?? '').trim()
+    const normalized = local.replace(/[._-]+/g, ' ').replace(/\s+/g, ' ').trim()
+    if (!normalized) return 'Friend'
+    return normalized
+      .split(' ')
+      .filter(Boolean)
+      .map((w) => (w.length ? `${w[0].toUpperCase()}${w.slice(1)}` : w))
+      .join(' ')
+  }
+
   useEffect(() => {
     if (!group) {
       setRecipientCount(0)
       return
     }
+
+    if (group === 'individual_emails') {
+      setLoadingCount(false)
+      setRecipientCount(parseEmails(individualEmails).length)
+      return
+    }
+
     if ((group === 'event_registrants' || group === 'form_submitters') && !groupFilter) {
       setRecipientCount(0)
       return
@@ -112,18 +148,25 @@ export function BroadcastComposePanel({ open, onClose, onSent }: BroadcastCompos
       .then((data: { count?: number }) => setRecipientCount(data.count ?? 0))
       .catch(() => setRecipientCount(0))
       .finally(() => setLoadingCount(false))
-  }, [group, groupFilter])
+  }, [group, groupFilter, individualEmails])
 
   const handleSend = async () => {
     if (!group || !subject.trim() || !body.trim()) {
       toast.error('Select recipients, subject, and message body')
       return
     }
+
+    const parsedIndividuals = group === 'individual_emails' ? parseEmails(individualEmails) : null
+    if (group === 'individual_emails' && (!parsedIndividuals || parsedIndividuals.length === 0)) {
+      toast.error('Enter at least one valid email address')
+      return
+    }
+
     if ((group === 'event_registrants' || group === 'form_submitters') && !groupFilter) {
       toast.error('Select a specific event or form')
       return
     }
-    if (recipientCount === 0) {
+    if (group !== 'individual_emails' && recipientCount === 0) {
       toast.error('No recipients found for this group')
       return
     }
@@ -143,6 +186,10 @@ export function BroadcastComposePanel({ open, onClose, onSent }: BroadcastCompos
           group,
           groupFilter: groupFilter || undefined,
           templateKey: templateKey || undefined,
+          recipients:
+            group === 'individual_emails'
+              ? (parsedIndividuals ?? []).map((email) => ({ email, name: emailToName(email) }))
+              : undefined,
         }),
       })
       const data = (await res.json()) as {
@@ -159,6 +206,7 @@ export function BroadcastComposePanel({ open, onClose, onSent }: BroadcastCompos
       )
       setGroup('')
       setGroupFilter('')
+      setIndividualEmails('')
       setTemplateKey('')
       setReplyTo('')
       setSubject('')
@@ -221,6 +269,7 @@ export function BroadcastComposePanel({ open, onClose, onSent }: BroadcastCompos
               onChange={(e) => {
                 setGroup(e.target.value)
                 setGroupFilter('')
+                  setIndividualEmails('')
               }}
               className={inputClass}
               style={inputStyle}
@@ -231,6 +280,7 @@ export function BroadcastComposePanel({ open, onClose, onSent }: BroadcastCompos
               <option value="prayer_requesters">Prayer Requesters</option>
               <option value="testimony_submitters">Testimony Submitters</option>
               <option value="form_submitters">Form Submitters (specific form)</option>
+                <option value="individual_emails">Individual Emails</option>
             </select>
           </div>
 
@@ -273,6 +323,25 @@ export function BroadcastComposePanel({ open, onClose, onSent }: BroadcastCompos
                   </option>
                 ))}
               </select>
+            </div>
+          )}
+
+          {group === 'individual_emails' && (
+            <div>
+              <label className={labelClass} style={labelStyle}>
+                Email addresses
+              </label>
+              <textarea
+                value={individualEmails}
+                onChange={(e) => setIndividualEmails(e.target.value)}
+                placeholder={`one@email.com, other@email.com\nor\none@email.com\nother@email.com`}
+                rows={6}
+                className="w-full resize-none border px-3 py-2 font-body text-sm outline-none"
+                style={inputStyle}
+              />
+              <p className="mt-1 font-body text-[10px]" style={{ color: 'var(--a-text-muted)' }}>
+                Enter one or multiple email addresses. Duplicate/invalid emails are ignored.
+              </p>
             </div>
           )}
 
@@ -362,7 +431,7 @@ Use {{name}} for their full name.`}
             onClick={() => void handleSend()}
             disabled={sending || !group || recipientCount === 0}
             className="flex w-full items-center justify-center gap-2 py-3 font-body text-xs font-semibold uppercase tracking-widest transition-all disabled:opacity-40"
-            style={{ background: 'var(--a-gold)', color: '#0F0F0F' }}
+            style={{ background: 'var(--a-gold)', color: 'var(--a-text-inverse)' }}
           >
             {sending ? (
               'Sending…'

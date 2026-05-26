@@ -4,5 +4,6 @@ export const BROADCAST_GROUP_LABELS: Record<string, string> = {
   prayer_requesters: 'Prayer Requesters',
   testimony_submitters: 'Testimony Submitters',
   form_submitters: 'Form Submitters',
+  individual_emails: 'Individual Emails',
 }
 

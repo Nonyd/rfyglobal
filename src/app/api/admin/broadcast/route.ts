@@ -10,6 +10,8 @@ import { personalizeBroadcastText, wrapInEmailTemplate } from '@/lib/broadcast-e
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
+type BroadcastOverrideRecipient = { email: string; name?: string }
+
 export async function GET() {
   const session = await auth()
   const denied = await forbidUnlessCanAccess(session, 'messages')
@@ -28,16 +30,62 @@ export async function POST(req: NextRequest) {
   const denied = await forbidUnlessCanAccess(session, 'messages')
   if (denied) return denied
 
-  const { subject, body, replyTo, group, groupFilter, templateKey } = await req.json()
-
-  if (!subject || !body || !group) {
-    return NextResponse.json({ error: 'subject, body and group are required' }, { status: 400 })
+  const {
+    subject,
+    body,
+    replyTo,
+    group,
+    groupFilter,
+    templateKey,
+    recipients,
+  } = (await req.json()) as {
+    subject?: string
+    body?: string
+    replyTo?: string | null
+    group?: string
+    groupFilter?: string | null
+    templateKey?: string
+    recipients?: BroadcastOverrideRecipient[]
   }
 
-  const recipients = await getBroadcastRecipients(group, groupFilter)
+  if (!subject || !body) {
+    return NextResponse.json({ error: 'subject and body are required' }, { status: 400 })
+  }
 
-  if (recipients.length === 0) {
-    return NextResponse.json({ error: 'No recipients found for this group' }, { status: 400 })
+  const normalizeEmail = (email: string) => email.trim()
+  const isProbablyEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+
+  let resolvedGroup = group?.trim() || undefined
+  let resolvedGroupFilter = groupFilter?.trim() || undefined
+
+  let resolvedRecipients: Array<{ email: string; name: string }> = []
+
+  if (Array.isArray(recipients) && recipients.length > 0) {
+    const seen = new Set<string>()
+    for (const r of recipients) {
+      const email = typeof r.email === 'string' ? normalizeEmail(r.email) : ''
+      if (!email || !isProbablyEmail(email)) continue
+      const key = email.toLowerCase()
+      if (seen.has(key)) continue
+      seen.add(key)
+      resolvedRecipients.push({ email, name: (r.name?.trim() || email) })
+    }
+
+    if (resolvedRecipients.length === 0) {
+      return NextResponse.json({ error: 'No valid recipient emails provided' }, { status: 400 })
+    }
+
+    // If the client is overriding recipients, we still store the group for audit/history purposes.
+    if (!resolvedGroup) resolvedGroup = 'individual_emails'
+    resolvedGroupFilter = undefined
+  } else {
+    if (!resolvedGroup) {
+      return NextResponse.json({ error: 'group or recipients are required' }, { status: 400 })
+    }
+    resolvedRecipients = await getBroadcastRecipients(resolvedGroup, resolvedGroupFilter)
+    if (resolvedRecipients.length === 0) {
+      return NextResponse.json({ error: 'No recipients found for this group' }, { status: 400 })
+    }
   }
 
   const message = await db.broadcastMessage.create({
@@ -45,10 +93,10 @@ export async function POST(req: NextRequest) {
       subject,
       body,
       replyTo: replyTo || null,
-      group,
-      groupFilter: groupFilter || null,
+      group: resolvedGroup,
+      groupFilter: resolvedGroupFilter || null,
       templateKey: templateKey || null,
-      recipientCount: recipients.length,
+      recipientCount: resolvedRecipients.length,
       status: 'sent',
       sentAt: new Date(),
     },
@@ -57,7 +105,7 @@ export async function POST(req: NextRequest) {
   let sent = 0
   let failed = 0
 
-  for (const recipient of recipients) {
+  for (const recipient of resolvedRecipients) {
     try {
       const personalizedBody = personalizeBroadcastText(body, recipient)
       const personalizedSubject = personalizeBroadcastText(subject, recipient)
@@ -82,7 +130,7 @@ export async function POST(req: NextRequest) {
   await db.broadcastMessage.update({
     where: { id: message.id },
     data: {
-      status: failed === recipients.length ? 'failed' : 'sent',
+      status: failed === resolvedRecipients.length ? 'failed' : 'sent',
       recipientCount: sent,
     },
   })
@@ -91,7 +139,7 @@ export async function POST(req: NextRequest) {
     success: true,
     sent,
     failed,
-    total: recipients.length,
+    total: resolvedRecipients.length,
     messageId: message.id,
   })
 }
