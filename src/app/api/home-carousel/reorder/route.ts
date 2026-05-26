@@ -4,35 +4,28 @@ import { db } from '@/lib/db'
 
 export const runtime = 'nodejs'
 
-type ReorderBody = {
-  ids: string[]
-}
-
 export async function POST(req: NextRequest) {
   const session = await auth()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const body = (await req.json()) as ReorderBody
+  const body = (await req.json()) as { ids: string[] }
   if (!Array.isArray(body.ids) || body.ids.length === 0) {
     return NextResponse.json({ error: 'ids array is required' }, { status: 400 })
   }
 
   await db.$transaction(
     body.ids.map((id, index) =>
-      db.galleryImage.update({
+      db.homeCarouselSlide.update({
         where: { id },
-        data: { showOnHome: true, homeOrder: index },
+        data: { order: index },
       }),
     ),
   )
 
-  const images = await db.galleryImage.findMany({
+  const slides = await db.homeCarouselSlide.findMany({
     where: { id: { in: body.ids } },
-    orderBy: { homeOrder: 'asc' },
-    include: {
-      galleryEvent: { select: { name: true, city: true, date: true } },
-    },
+    orderBy: { order: 'asc' },
   })
 
-  return NextResponse.json(images)
+  return NextResponse.json(slides)
 }

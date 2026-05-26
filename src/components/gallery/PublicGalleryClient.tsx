@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
+import { cn } from '@/lib/utils'
 
 export interface PublicGalleryImage {
   id: string
@@ -233,7 +234,7 @@ export function PublicGalleryClient({
     <div className="bg-void">
       <div className="mx-auto max-w-7xl px-6 pb-6 pt-4">
         <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
-          <p className="label-text">
+          <p className="font-body text-xs font-medium uppercase tracking-[0.25em] text-text-secondary">
             {images.length} of {total} photo{total === 1 ? '' : 's'}
           </p>
 
@@ -256,11 +257,12 @@ export function PublicGalleryClient({
                 setSelectMode((p) => !p)
                 setSelectedIds(new Set())
               }}
-              className="flex items-center gap-2 border px-4 py-2.5 font-body text-xs uppercase tracking-widest transition-all"
-              style={{
-                borderColor: selectMode ? 'rgba(139,0,0,0.5)' : 'rgba(255,255,255,0.15)',
-                color: selectMode ? '#8B0000' : 'rgba(248,248,248,0.6)',
-              }}
+              className={cn(
+                'flex items-center gap-2 border px-4 py-2.5 font-body text-xs uppercase tracking-widest transition-all',
+                selectMode
+                  ? 'border-crimson/50 text-crimson'
+                  : 'border-theme text-text-secondary hover:border-crimson/40 hover:text-text-primary',
+              )}
             >
               <CheckSquare size={12} />
               {selectMode ? 'Cancel' : 'Select Photos'}
@@ -269,10 +271,7 @@ export function PublicGalleryClient({
         </div>
 
         {selectMode && (
-          <p
-            className="mt-2 font-body text-[11px]"
-            style={{ color: 'rgba(248,248,248,0.4)' }}
-          >
+          <p className="mt-2 font-body text-[11px] text-text-muted">
             Select from currently loaded photos. Photos download individually.
           </p>
         )}
@@ -280,7 +279,7 @@ export function PublicGalleryClient({
         <div className="mt-6 flex flex-wrap gap-6">
           {months.length > 0 && (
             <div className="flex flex-wrap items-center gap-2">
-              <p className="label-text text-[10px] opacity-40">Month</p>
+              <p className="label-text text-[10px] text-text-muted">Month</p>
               <FilterPill
                 active={monthFilter === 'all'}
                 disabled={filtering}
@@ -301,7 +300,7 @@ export function PublicGalleryClient({
 
           {cities.length > 0 && (
             <div className="flex flex-wrap items-center gap-2">
-              <p className="label-text text-[10px] opacity-40">City</p>
+              <p className="label-text text-[10px] text-text-muted">City</p>
               <FilterPill
                 active={cityFilter === 'all'}
                 disabled={filtering}
@@ -439,14 +438,11 @@ export function PublicGalleryClient({
 
         {hasMore && images.length > 0 && (
           <div className="mt-16 flex flex-col items-center gap-3 pb-8">
-            <p className="label-text opacity-40">
+            <p className="font-body text-xs font-medium uppercase tracking-[0.25em] text-text-secondary">
               {images.length} of {total} photos
             </p>
 
-            <div
-              className="h-px w-48"
-              style={{ background: 'rgba(255,255,255,0.1)' }}
-            >
+            <div className="h-px w-48 bg-theme">
               <div
                 className="h-full transition-all duration-500"
                 style={{ width: `${progressPercent}%`, background: '#8B0000' }}
@@ -497,7 +493,9 @@ export function PublicGalleryClient({
         {!hasMore && images.length > 0 && (
           <div className="mt-16 flex flex-col items-center gap-3 pb-8">
             <div className="gold-line w-24 opacity-30" />
-            <p className="label-text opacity-30">All {total} photos loaded</p>
+            <p className="font-body text-xs font-medium uppercase tracking-[0.25em] text-text-muted">
+              All {total} photos loaded
+            </p>
           </div>
         )}
       </div>
@@ -648,12 +646,12 @@ function FilterPill({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="px-3 py-1 font-body text-xs tracking-wide transition-all disabled:opacity-40"
-      style={{
-        background: active ? '#8B0000' : 'transparent',
-        color: active ? '#FFFFFF' : 'rgba(248,248,248,0.6)',
-        border: active ? 'none' : '1px solid rgba(255,255,255,0.12)',
-      }}
+      className={cn(
+        'border px-3 py-1 font-body text-xs tracking-wide transition-all disabled:opacity-40',
+        active
+          ? 'border-crimson bg-crimson text-white'
+          : 'border-theme text-text-secondary hover:border-crimson/40 hover:text-text-primary',
+      )}
     >
       {label}
     </button>

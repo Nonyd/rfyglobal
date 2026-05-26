@@ -13,7 +13,7 @@ export default function AdminGalleryPage() {
           Gallery
         </h2>
         <p className="mt-1 font-body text-sm" style={{ color: 'var(--a-text-muted)' }}>
-          Group photos by event, choose homepage slideshow images, and manage every photo
+          Group photos by event, upload in batches, and manage every image
         </p>
       </div>
       <GalleryManager />

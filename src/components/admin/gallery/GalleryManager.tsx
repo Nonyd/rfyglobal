@@ -12,9 +12,7 @@ import {
   X,
   Upload,
   Images,
-  Home,
 } from 'lucide-react'
-import { HomeSlideshowPicker } from '@/components/admin/gallery/HomeSlideshowPicker'
 import { BulkActionBar } from '@/components/admin/shared/BulkActionBar'
 import { SelectCheckbox } from '@/components/admin/shared/SelectCheckbox'
 import {
@@ -65,8 +63,6 @@ export function GalleryManager() {
     null,
   )
   const [savingPhotos, setSavingPhotos] = useState(false)
-  const [homeRefresh, setHomeRefresh] = useState(0)
-
   const loadEvents = useCallback(async () => {
     try {
       const res = await adminFetch('/api/gallery/events')
@@ -200,24 +196,6 @@ export function GalleryManager() {
     }
   }
 
-  const toggleShowOnHome = async (image: ImageWithEvent) => {
-    const next = !image.showOnHome
-    const res = await adminFetch(`/api/gallery/${image.id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ showOnHome: next }),
-    })
-    if (res.ok) {
-      const updated = (await res.json()) as ImageWithEvent
-      setImages((prev) => prev.map((i) => (i.id === image.id ? { ...i, ...updated } : i)))
-      setHomeRefresh((n) => n + 1)
-      toast.success(next ? 'Added to homepage slideshow' : 'Removed from homepage slideshow')
-    } else {
-      const body = (await res.json().catch(() => ({}))) as { error?: string }
-      toast.error(body.error ?? 'Failed to update homepage slideshow')
-    }
-  }
-
   const toggleImageActive = async (image: ImageWithEvent) => {
     const res = await adminFetch(`/api/gallery/${image.id}`, {
       method: 'PATCH',
@@ -243,7 +221,6 @@ export function GalleryManager() {
       const updated = (await res.json()) as ImageWithEvent
       setImages((prev) => prev.map((i) => (i.id === id ? { ...i, ...updated } : i)))
       setEditImage(null)
-      if ('showOnHome' in updates) setHomeRefresh((n) => n + 1)
       await loadEvents()
       toast.success('Image updated')
     } else {
@@ -331,9 +308,7 @@ export function GalleryManager() {
   const allSelected = images.length > 0 && selectedIds.size === images.length
 
   return (
-    <div>
-      <HomeSlideshowPicker refreshToken={homeRefresh} />
-      <div className="relative flex min-h-[600px] flex-col gap-6 lg:flex-row">
+    <div className="relative flex min-h-[600px] flex-col gap-6 lg:flex-row">
       {/* ── LEFT: Events list ── */}
       <aside className="w-full shrink-0 space-y-2 lg:w-72">
         <div className="mb-4 flex items-center justify-between">
@@ -564,16 +539,6 @@ export function GalleryManager() {
                     </div>
                   )}
 
-                  {image.showOnHome && (
-                    <div
-                      className="absolute left-2 top-2 z-20 flex h-6 w-6 items-center justify-center"
-                      style={{ background: 'var(--a-gold)', color: '#fff' }}
-                      title="On homepage slideshow"
-                    >
-                      <Home size={12} />
-                    </div>
-                  )}
-
                   {!image.isActive && (
                     <div
                       className="absolute right-2 top-2 z-20 px-1.5 py-0.5 font-body text-[10px]"
@@ -609,27 +574,6 @@ export function GalleryManager() {
                       </p>
                     )}
                     <div className="mt-auto flex items-center justify-end gap-1">
-                      <button
-                        type="button"
-                        onClick={() => void toggleShowOnHome(image)}
-                        className="flex h-7 w-7 items-center justify-center transition-colors"
-                        style={{
-                          background: image.showOnHome ? 'var(--a-gold)' : 'rgba(255,255,255,0.15)',
-                          color: 'white',
-                        }}
-                        title={
-                          image.showOnHome
-                            ? 'Remove from homepage slideshow'
-                            : 'Add to homepage slideshow'
-                        }
-                        aria-label={
-                          image.showOnHome
-                            ? 'Remove from homepage slideshow'
-                            : 'Add to homepage slideshow'
-                        }
-                      >
-                        <Home size={12} />
-                      </button>
                       <button
                         type="button"
                         onClick={() => setEditImage(image)}
@@ -976,7 +920,6 @@ export function GalleryManager() {
           </SlideOver>
         )}
       </AnimatePresence>
-      </div>
     </div>
   )
 }
@@ -1146,7 +1089,6 @@ function EditImagePanel({
   const [caption, setCaption] = useState(image.caption ?? '')
   const [galleryEventId, setGalleryEventId] = useState(image.galleryEventId ?? '')
   const [isActive, setIsActive] = useState(image.isActive)
-  const [showOnHome, setShowOnHome] = useState(image.showOnHome)
   const [saving, setSaving] = useState(false)
 
   const handleSave = async () => {
@@ -1156,7 +1098,6 @@ function EditImagePanel({
         caption: caption.trim() || null,
         galleryEventId: galleryEventId || null,
         isActive,
-        showOnHome,
       })
     } finally {
       setSaving(false)
@@ -1253,26 +1194,6 @@ function EditImagePanel({
           onChange={(v) => setIsActive(v)}
           size="lg"
           aria-label="Toggle visibility"
-        />
-      </div>
-
-      <div className="flex items-center justify-between gap-3">
-        <div>
-          <span
-            className="font-body text-xs uppercase tracking-widest"
-            style={{ color: 'var(--a-text-secondary)' }}
-          >
-            Homepage slideshow
-          </span>
-          <p className="mt-1 font-body text-[11px]" style={{ color: 'var(--a-text-muted)' }}>
-            Show this image on the landing page carousel
-          </p>
-        </div>
-        <AdminToggle
-          checked={showOnHome}
-          onChange={(v) => setShowOnHome(v)}
-          size="lg"
-          aria-label="Toggle homepage slideshow"
         />
       </div>
 

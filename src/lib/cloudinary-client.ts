@@ -12,6 +12,7 @@ export type CloudinaryFolder =
   | 'portraits'
   | 'eventImage'
   | 'testimony'
+  | 'homeCarousel'
 
 export type ResourceType = 'image' | 'raw'
 

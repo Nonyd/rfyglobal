@@ -3,6 +3,12 @@ import { Settings2, Layout, User, Heart, FileText, Globe, BookOpen, HandHeart } 
 
 const CMS_SECTIONS = [
   { href: '/admin/cms/landing', label: 'Landing Page', desc: 'Hero copy, portrait, vision, mission, CTA', icon: Layout },
+  {
+    href: '/admin/cms/home-carousel',
+    label: 'Homepage Carousel',
+    desc: 'Landing carousel images and headings (Worship, Prayer, etc.)',
+    icon: Layout,
+  },
   { href: '/admin/cms/shepherd', label: 'From the Shepherd', desc: 'Yadah quote, photo, links', icon: User },
   {
     href: '/admin/cms/highlights',

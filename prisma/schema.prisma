@@ -298,11 +298,19 @@ model GalleryImage {
   city           String?
   takenAt        DateTime?
   order          Int           @default(0)
-  showOnHome     Boolean       @default(false)
-  homeOrder      Int           @default(0)
   isActive       Boolean       @default(true)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
+}
+
+model HomeCarouselSlide {
+  id        String   @id @default(cuid())
+  url       String
+  heading   String
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // ─── SITE CMS ───────────────────────────────────────────────────────

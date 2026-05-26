@@ -5,12 +5,12 @@ import { VisionSection } from '@/components/landing/VisionSection'
 import { ConfessionReveal } from '@/components/landing/ConfessionReveal'
 import { FromTheShepherd } from '@/components/landing/FromTheShepherd'
 import { CommunityHighlights } from '@/components/landing/CommunityHighlights'
-import { HomeGallerySlide } from '@/components/landing/HomeGallerySlide'
+import { HomeCarousel } from '@/components/landing/HomeCarousel'
 import { CTASection } from '@/components/landing/CTASection'
 import { Footer } from '@/components/layout/Footer'
 import { getContentMany } from '@/lib/content'
 import { HOME_CMS_KEYS } from '@/lib/cms-keys'
-import { getHomeGallerySlides } from '@/lib/gallery-home'
+import { getActiveHomeCarouselSlides } from '@/lib/home-carousel'
 import { getPageMetadata } from '@/lib/cms-metadata'
 import type { Metadata } from 'next'
 
@@ -25,9 +25,9 @@ export async function generateMetadata(): Promise<Metadata> {
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
-  const [content, gallerySlides] = await Promise.all([
+  const [content, carouselSlides] = await Promise.all([
     getContentMany([...HOME_CMS_KEYS]),
-    getHomeGallerySlides(),
+    getActiveHomeCarouselSlides(),
   ])
 
   return (
@@ -39,7 +39,7 @@ export default async function HomePage() {
       <ConfessionReveal content={content} />
       <FromTheShepherd content={content} />
       <CommunityHighlights content={content} />
-      <HomeGallerySlide slides={gallerySlides} content={content} />
+      <HomeCarousel slides={carouselSlides} content={content} />
       <CTASection content={content} />
       <Footer />
     </main>

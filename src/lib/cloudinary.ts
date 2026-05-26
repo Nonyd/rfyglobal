@@ -19,6 +19,7 @@ export const UPLOAD_FOLDERS = {
   portraits: 'rfyglobal/portraits',
   eventImage: 'rfyglobal/events',
   testimony: 'rfyglobal/testimonies',
+  homeCarousel: 'rfyglobal/home-carousel',
 } as const
 
 export function cloudinaryImageUrl(

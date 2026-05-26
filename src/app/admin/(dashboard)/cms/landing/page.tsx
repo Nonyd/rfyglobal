@@ -71,7 +71,7 @@ const FIELDS: CMSField[] = [
     key: 'landing.gallery.subtext',
     label: 'Gallery Slide Description',
     type: 'textarea',
-    hint: 'Shown beside the slideshow on the homepage. Pick images under Admin → Gallery.',
+    hint: 'Shown above the homepage carousel. Upload slides under Site CMS → Homepage Carousel.',
   },
   { key: 'landing.gallery.cta', label: 'Gallery Slide Button Text', type: 'text', placeholder: 'View full gallery' },
 ]
