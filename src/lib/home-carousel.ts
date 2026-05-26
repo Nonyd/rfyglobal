@@ -6,9 +6,21 @@ import type { HomeCarouselSlideRecord } from '@/lib/home-carousel-types'
 export type { HomeCarouselSlideRecord }
 
 export async function getActiveHomeCarouselSlides(): Promise<HomeCarouselSlideRecord[]> {
-  return db.homeCarouselSlide.findMany({
-    where: { isActive: true },
-    orderBy: [{ order: 'asc' }, { createdAt: 'asc' }],
-    select: { id: true, url: true, heading: true },
-  })
+  try {
+    return await db.homeCarouselSlide.findMany({
+      where: { isActive: true },
+      orderBy: [{ order: 'asc' }, { createdAt: 'asc' }],
+      select: { id: true, url: true, heading: true },
+    })
+  } catch (e: unknown) {
+    if (
+      e &&
+      typeof e === 'object' &&
+      'code' in e &&
+      (e as { code: string }).code === 'P2021'
+    ) {
+      return []
+    }
+    throw e
+  }
 }
