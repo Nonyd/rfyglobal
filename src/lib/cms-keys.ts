@@ -10,6 +10,8 @@ export const HOME_CMS_KEYS = [
   'landing.hero.bg_image',
   'landing.hero.bg_video',
   'landing.hero.bg_overlay',
+  'landing.hero.bg_position',
+  'landing.hero.bg_position_mobile',
   'landing.vision.label',
   'landing.vision.heading',
   'landing.vision.subheading',

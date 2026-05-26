@@ -217,6 +217,21 @@
     color: #a0a0a0 !important;
   }
 
+  /* Cookie banner — always dark panel; keep readable in light site theme */
+  .cookie-banner .cookie-banner__link {
+    color: #ff8a8a !important;
+  }
+
+  /* Hero background — CMS sets --hero-bg-position / --hero-bg-position-mobile on section */
+  .hero-bg-media {
+    object-position: var(--hero-bg-position-mobile, center);
+  }
+  @media (min-width: 1024px) {
+    .hero-bg-media {
+      object-position: var(--hero-bg-position, center);
+    }
+  }
+
   /* Post-submit confirmation panels */
   .form-success-panel {
     position: relative;
@@ -475,6 +490,11 @@ img, video, canvas {
   .public-light .text-mist { color: var(--color-text-secondary) !important; }
   [data-public-theme="light"] .text-fog,
   .public-light .text-fog { color: var(--color-text-muted) !important; }
+
+  [data-public-theme="light"] .cookie-banner .text-snow,
+  .public-light .cookie-banner .text-snow { color: #f8f8f8 !important; }
+  [data-public-theme="light"] .cookie-banner .text-mist,
+  .public-light .cookie-banner .text-mist { color: #a0a0a0 !important; }
 
   [data-public-theme="light"] .text-outline,
   .public-light .text-outline {

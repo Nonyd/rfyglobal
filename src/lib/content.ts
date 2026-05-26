@@ -15,6 +15,8 @@ const DEFAULTS: Record<string, string> = {
   'landing.hero.bg_image': '',
   'landing.hero.bg_video': '',
   'landing.hero.bg_overlay': '0.55',
+  'landing.hero.bg_position': 'center',
+  'landing.hero.bg_position_mobile': '70% center',
   'landing.vision.label': 'The Vision',
   'landing.vision.heading': 'Building a community',
   'landing.vision.mission.label': 'The Mission',

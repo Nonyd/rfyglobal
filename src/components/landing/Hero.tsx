@@ -53,6 +53,9 @@ export function Hero({ content }: { content: Record<string, string> }) {
   const bgImage = (content['landing.hero.bg_image'] || '').trim()
   const bgVideo = (content['landing.hero.bg_video'] || '').trim()
   const overlayOpacity = parseFloat(content['landing.hero.bg_overlay'] || '0.55')
+  const bgPosition = (content['landing.hero.bg_position'] || 'center').trim() || 'center'
+  const bgPositionMobile =
+    (content['landing.hero.bg_position_mobile'] || '70% center').trim() || '70% center'
 
   const headlineLines = useMemo(
     () =>
@@ -101,7 +104,13 @@ export function Hero({ content }: { content: Record<string, string> }) {
     <section
       ref={containerRef}
       className="relative flex min-h-screen w-full flex-col overflow-hidden"
-      style={{ background: '#000000' }}
+      style={
+        {
+          background: '#000000',
+          '--hero-bg-position': bgPosition,
+          '--hero-bg-position-mobile': bgPositionMobile,
+        } as CSSProperties
+      }
     >
       {bgVideo ? (
         <video
@@ -110,7 +119,7 @@ export function Hero({ content }: { content: Record<string, string> }) {
           loop
           playsInline
           poster={bgImage || undefined}
-          className="absolute inset-0 z-0 h-full w-full object-cover"
+          className="hero-bg-media absolute inset-0 z-0 h-full w-full object-cover"
         >
           <source src={bgVideo} type="video/mp4" />
         </video>
@@ -124,7 +133,7 @@ export function Hero({ content }: { content: Record<string, string> }) {
             fill
             priority
             sizes="100vw"
-            className="object-cover"
+            className="hero-bg-media object-cover"
             unoptimized={bgImage.startsWith('/uploads/') || bgImage.endsWith('.svg')}
           />
         </div>
