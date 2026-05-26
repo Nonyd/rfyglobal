@@ -9,15 +9,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { ArrowRight, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import type { HomeCarouselSlideRecord } from '@/lib/home-carousel-types'
 
-const carouselImageUrl = (url: string) =>
-  url.includes('cloudinary.com')
-    ? url.replace('/upload/', '/upload/w_1400,h_900,c_fill,f_auto,q_auto/')
-    : url
+const carouselImageUrl = (url: string) => url
 
-const lightboxImageUrl = (url: string) =>
-  url.includes('cloudinary.com')
-    ? url.replace('/upload/', '/upload/w_1920,f_auto,q_auto/')
-    : url
+const lightboxImageUrl = (url: string) => url
 
 type HomeCarouselProps = {
   slides: HomeCarouselSlideRecord[]

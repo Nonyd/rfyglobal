@@ -16,6 +16,10 @@
 # production
 /build
 
+# user uploads (migrated from Cloudinary)
+/public/uploads/
+scripts/cloudinary-url-map.json
+
 # misc
 .DS_Store
 *.pem

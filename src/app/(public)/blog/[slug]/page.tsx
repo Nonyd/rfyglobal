@@ -10,10 +10,7 @@ import { DEFAULT_OG_IMAGE } from '@/lib/seo'
 
 export const dynamic = 'force-dynamic'
 
-const coverFullUrl = (url: string) =>
-  url.includes('cloudinary.com')
-    ? url.replace('/upload/', '/upload/w_900,h_450,c_fill,f_auto,q_auto/')
-    : url
+const coverFullUrl = (url: string) => url
 
 export async function generateMetadata({
   params,

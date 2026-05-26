@@ -14,11 +14,9 @@ interface GalleryClientPageProps {
   months: string[]
 }
 
-const thumbnailUrl = (url: string) =>
-  url.includes('cloudinary.com') ? url.replace('/upload/', '/upload/w_600,f_auto,q_auto/') : url
+const thumbnailUrl = (url: string) => url
 
-const lightboxUrl = (url: string) =>
-  url.includes('cloudinary.com') ? url.replace('/upload/', '/upload/w_1200,f_auto,q_auto/') : url
+const lightboxUrl = (url: string) => url
 
 function formatMonth(month: string) {
   const [year, m] = month.split('-')

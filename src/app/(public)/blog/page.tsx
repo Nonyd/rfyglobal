@@ -17,10 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
   )
 }
 
-const coverThumbnailUrl = (url: string) =>
-  url.includes('cloudinary.com')
-    ? url.replace('/upload/', '/upload/w_600,h_300,c_fill,f_auto,q_auto/')
-    : url
+const coverThumbnailUrl = (url: string) => url
 
 export default async function BlogPage() {
   const [posts, cms] = await Promise.all([

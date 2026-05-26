@@ -1,3 +1,4 @@
+/** @deprecated Cloudinary is being replaced by local storage — see src/lib/upload-local.ts */
 import { v2 as cloudinary } from 'cloudinary'
 
 cloudinary.config({

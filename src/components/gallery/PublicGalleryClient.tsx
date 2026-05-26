@@ -45,20 +45,11 @@ interface PaginatedResponse {
   hasMore: boolean
 }
 
-const cinematicUrl = (url: string) =>
-  url.includes('cloudinary.com')
-    ? url.replace('/upload/', '/upload/w_1200,f_auto,q_auto/')
-    : url
+const cinematicUrl = (url: string) => url
 
-const thumbnailUrl = (url: string) =>
-  url.includes('cloudinary.com')
-    ? url.replace('/upload/', '/upload/w_700,f_auto,q_auto/')
-    : url
+const thumbnailUrl = (url: string) => url
 
-const downloadUrlFor = (url: string) =>
-  url.includes('cloudinary.com')
-    ? url.replace('/upload/', '/upload/fl_attachment/')
-    : url
+const downloadUrlFor = (url: string) => url
 
 const toDate = (value: string | Date | null | undefined): Date | null => {
   if (!value) return null

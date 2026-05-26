@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import path from 'path'
 import { strictRatelimit } from '@/lib/ratelimit'
-import { cloudinary, UPLOAD_FOLDERS } from '@/lib/cloudinary'
+import { uploadBase64Locally } from '@/lib/upload-local'
 import { z } from 'zod'
 
 export const runtime = 'nodejs'
@@ -24,20 +25,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 })
   }
 
+  const extFromMime = parsed.data.file.match(/^data:([^;]+);base64,/)?.[1]
+  const extMap: Record<string, string> = {
+    'image/jpeg': '.jpg',
+    'image/png': '.png',
+    'image/webp': '.webp',
+    'image/gif': '.gif',
+  }
+  const originalName = `testimony${extFromMime && extMap[extFromMime] ? extMap[extFromMime] : '.jpg'}`
+
   try {
-    const result = await cloudinary.uploader.upload(parsed.data.file, {
-      folder: UPLOAD_FOLDERS.testimony,
-      resource_type: 'image',
-      transformation: [{ quality: 'auto', fetch_format: 'auto' }],
-    })
+    const result = await uploadBase64Locally(parsed.data.file, originalName, 'testimonies')
 
     return NextResponse.json({
-      url: result.secure_url,
-      publicId: result.public_id,
-      width: result.width,
-      height: result.height,
-      format: result.format,
-      bytes: result.bytes,
+      url: result.url,
+      publicId: result.filename,
+      width: null,
+      height: null,
+      format: path.extname(originalName).replace('.', ''),
+      bytes: result.size,
     })
   } catch (err: unknown) {
     console.error('[testimony upload]', err)
