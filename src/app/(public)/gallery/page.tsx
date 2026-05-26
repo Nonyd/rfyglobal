@@ -1,79 +1,79 @@
 import type { Metadata } from 'next'
 import { db } from '@/lib/db'
 import { PublicPageHeader, PublicPageShell } from '@/components/layout/PublicPageShell'
-import { PublicGalleryClient } from '@/components/gallery/PublicGalleryClient'
+import { GalleryClient } from '@/components/gallery/GalleryClient'
+import type { GalleryEvent } from '@/components/gallery/GalleryClient'
 import { getContentMany } from '@/lib/content'
 import { getPageMetadata, pageHeaderFromContent } from '@/lib/cms-metadata'
 
 export async function generateMetadata(): Promise<Metadata> {
   return getPageMetadata(
-    'Gallery — Moments from Room For You Gatherings',
-    'Photos from Room For You community gatherings with Minister Yadah. Real people. Real community. Real encounters with God.',
+    'Gallery | Room For You',
+    'Photos from our gatherings, events and community moments.',
     '/gallery',
   )
 }
 
 export const dynamic = 'force-dynamic'
 
-const PAGE_SIZE = 20
+const PAGE_SIZE = 24
 
-const monthKey = (d: Date) =>
-  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
+const activeImageWhere = { isActive: true } as const
+
+async function fetchGalleryEvents(): Promise<GalleryEvent[]> {
+  const rows = await db.galleryEvent.findMany({
+    where: {
+      isActive: true,
+      images: { some: { isActive: true } },
+    },
+    orderBy: { date: 'desc' },
+    select: {
+      id: true,
+      name: true,
+      images: {
+        where: { isActive: true },
+        select: { id: true },
+      },
+    },
+  })
+
+  return rows.map((row) => ({
+    id: row.id,
+    name: row.name,
+    _count: { images: row.images.length },
+  }))
+}
 
 export default async function GalleryPage() {
-  const where = { isActive: true } as const
-
-  const [images, total, filterRows, cms] = await Promise.all([
-    db.galleryImage.findMany({
-      where,
-      orderBy: [{ takenAt: 'desc' }, { createdAt: 'desc' }],
-      take: PAGE_SIZE,
-      include: {
-        galleryEvent: { select: { name: true, city: true, date: true } },
-      },
-    }),
-    db.galleryImage.count({ where }),
-    db.galleryImage.findMany({
-      where,
-      select: {
-        city: true,
-        takenAt: true,
-        createdAt: true,
-        galleryEvent: { select: { city: true, date: true } },
-      },
-    }),
+  const [initialData, total, events, cms] = await Promise.all([
+    db.galleryImage
+      .findMany({
+        where: activeImageWhere,
+        orderBy: [{ takenAt: 'desc' }, { order: 'asc' }, { createdAt: 'desc' }],
+        take: PAGE_SIZE,
+        select: {
+          id: true,
+          url: true,
+          caption: true,
+          galleryEventId: true,
+        },
+      })
+      .catch(() => []),
+    db.galleryImage.count({ where: activeImageWhere }).catch(() => 0),
+    fetchGalleryEvents().catch(() => [] as GalleryEvent[]),
     getContentMany(['pages.gallery.eyebrow', 'pages.gallery.title', 'pages.gallery.subtitle']),
   ])
 
   const header = pageHeaderFromContent(cms, 'gallery')
 
-  const cities = Array.from(
-    new Set(
-      filterRows
-        .map((r) => r.galleryEvent?.city ?? r.city)
-        .filter((c): c is string => Boolean(c)),
-    ),
-  ).sort()
-
-  const months = Array.from(
-    new Set(
-      filterRows
-        .map((r) => r.takenAt ?? r.galleryEvent?.date ?? r.createdAt)
-        .filter((d): d is Date => Boolean(d))
-        .map((d) => monthKey(new Date(d))),
-    ),
-  )
-    .sort()
-    .reverse()
-
   return (
     <PublicPageShell mainClassName="pb-20 md:pb-24">
       <PublicPageHeader {...header} />
-      <PublicGalleryClient
-        initialImages={images}
+      <GalleryClient
+        initialImages={initialData}
         initialTotal={total}
-        cities={cities}
-        months={months}
+        allTotal={total}
+        events={events}
         pageSize={PAGE_SIZE}
       />
     </PublicPageShell>

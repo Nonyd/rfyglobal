@@ -6,7 +6,35 @@ import { logActivity } from '@/lib/activity'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const summary = new URL(req.url).searchParams.get('summary') === 'true'
+
+  if (summary) {
+    const rows = await db.galleryEvent.findMany({
+      where: {
+        isActive: true,
+        images: { some: { isActive: true } },
+      },
+      orderBy: { date: 'desc' },
+      select: {
+        id: true,
+        name: true,
+        images: {
+          where: { isActive: true },
+          select: { id: true },
+        },
+      },
+    })
+
+    return NextResponse.json(
+      rows.map((row) => ({
+        id: row.id,
+        name: row.name,
+        _count: { images: row.images.length },
+      })),
+    )
+  }
+
   const events = await db.galleryEvent.findMany({
     where: { isActive: true },
     orderBy: { date: 'desc' },
