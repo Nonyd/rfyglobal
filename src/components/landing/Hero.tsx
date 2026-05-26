@@ -6,6 +6,12 @@ import Link from 'next/link'
 import { gsap } from 'gsap'
 import { Navbar } from '@/components/layout/Navbar'
 
+const HERO_GRADIENT = `
+  radial-gradient(ellipse 70% 60% at 70% 40%, rgba(232,0,28,0.18) 0%, transparent 60%),
+  radial-gradient(ellipse 50% 50% at 20% 80%, rgba(10,22,40,0.9) 0%, transparent 60%),
+  linear-gradient(160deg, #1C1C1C 0%, #0a0000 60%, #0A1628 100%)
+`
+
 type HeadlineLine = {
   text: string
   style: 'muted' | 'outlined' | 'solid'
@@ -30,7 +36,7 @@ function heroHeadlineLines(headline1: string, headline2: string): HeadlineLine[]
 }
 
 function headlineStyle(style: HeadlineLine['style']): CSSProperties {
-  if (style === 'muted') return { color: 'rgba(255,255,255,0.45)' }
+  if (style === 'muted') return { color: 'rgba(248,248,248,0.25)' }
   if (style === 'outlined') {
     return {
       color: 'transparent',
@@ -52,6 +58,7 @@ export function Hero({ content }: { content: Record<string, string> }) {
   const ctaSecondary = content['landing.hero.cta.secondary'] || 'Our Story'
   const bgImage = (content['landing.hero.bg_image'] || '').trim()
   const bgVideo = (content['landing.hero.bg_video'] || '').trim()
+  const hasMedia = Boolean(bgVideo || bgImage)
   const overlayOpacity = parseFloat(content['landing.hero.bg_overlay'] || '0.55')
   const bgPosition = (content['landing.hero.bg_position'] || 'center').trim() || 'center'
   const bgPositionMobile =
@@ -74,19 +81,20 @@ export function Hero({ content }: { content: Record<string, string> }) {
     if (reducedMotion) return
 
     const selector =
-      '[data-hero-eyebrow], [data-hero-line1], [data-hero-line2], [data-hero-line3], [data-hero-sub], [data-hero-ctas]'
+      '[data-hero-eyebrow], [data-hero-line1], [data-hero-line2], [data-hero-line3], [data-hero-sub], [data-hero-ctas], [data-hero-gold-line]'
 
     const ctx = gsap.context(() => {
       gsap.set(root.querySelectorAll(selector), { opacity: 1 })
 
-      const tl = gsap.timeline({ delay: 0.3 })
+      const tl = gsap.timeline({ delay: 0.1 })
 
-      tl.from('[data-hero-eyebrow]', { y: 20, duration: 0.7, ease: 'power3.out' })
-        .from('[data-hero-line1]', { y: 40, duration: 0.8, ease: 'power3.out' }, '-=0.4')
-        .from('[data-hero-line2]', { y: 40, duration: 0.8, ease: 'power3.out' }, '-=0.6')
-        .from('[data-hero-line3]', { y: 40, duration: 0.8, ease: 'power3.out' }, '-=0.6')
-        .from('[data-hero-sub]', { y: 20, duration: 0.7, ease: 'power3.out' }, '-=0.4')
-        .from('[data-hero-ctas]', { y: 20, duration: 0.7, ease: 'power3.out' }, '-=0.4')
+      tl.from('[data-hero-eyebrow]', { opacity: 0, duration: 0.8, ease: 'power2.out' })
+        .from('[data-hero-line1]', { y: 40, duration: 0.9, ease: [0.16, 1, 0.3, 1] }, '-=0.5')
+        .from('[data-hero-line2]', { y: 40, duration: 0.9, ease: [0.16, 1, 0.3, 1] }, '-=0.7')
+        .from('[data-hero-line3]', { y: 40, duration: 0.9, ease: [0.16, 1, 0.3, 1] }, '-=0.7')
+        .from('[data-hero-gold-line]', { scaleX: 0, opacity: 0, duration: 1.2, ease: [0.16, 1, 0.3, 1] }, '-=0.3')
+        .from('[data-hero-sub]', { y: 20, opacity: 0, duration: 0.8, ease: 'power2.out' }, '-=0.5')
+        .from('[data-hero-ctas]', { y: 20, opacity: 0, duration: 0.8, ease: 'power2.out' }, '-=0.5')
     }, root)
 
     return () => {
@@ -103,10 +111,11 @@ export function Hero({ content }: { content: Record<string, string> }) {
   return (
     <section
       ref={containerRef}
-      className="relative flex min-h-screen w-full flex-col overflow-hidden"
+      className="relative flex min-h-screen flex-col overflow-hidden"
       style={
         {
-          background: '#000000',
+          background: hasMedia ? '#000000' : HERO_GRADIENT,
+          color: 'var(--color-hero-text)',
           '--hero-bg-position': bgPosition,
           '--hero-bg-position-mobile': bgPositionMobile,
         } as CSSProperties
@@ -139,111 +148,109 @@ export function Hero({ content }: { content: Record<string, string> }) {
         </div>
       ) : null}
 
+      {hasMedia ? (
+        <div
+          className="pointer-events-none absolute inset-0 z-[1]"
+          style={{
+            background: `linear-gradient(
+              105deg,
+              rgba(0,0,0,${Math.min(overlayDark + 0.2, 0.85)}) 0%,
+              rgba(0,0,0,${overlayDark}) 45%,
+              rgba(0,0,0,${Math.max(overlayDark - 0.15, 0.25)}) 100%
+            )`,
+          }}
+        />
+      ) : null}
+
       <div
-        className="absolute inset-0 z-[1]"
+        className="pointer-events-none absolute right-0 top-0 z-[2]"
         style={{
-          background: `linear-gradient(
-            105deg,
-            rgba(0,0,0,${Math.min(overlayDark + 0.2, 0.85)}) 0%,
-            rgba(0,0,0,${overlayDark}) 50%,
-            rgba(0,0,0,${Math.max(overlayDark - 0.1, 0.2)}) 100%
-          )`,
+          width: '42vw',
+          height: '100%',
+          background: 'linear-gradient(180deg, #E8001C 0%, #FF4500 100%)',
+          clipPath: 'polygon(18% 0, 100% 0, 100% 100%, 0% 100%)',
+          opacity: 0.07,
+        }}
+      />
+      <div
+        className="pointer-events-none absolute top-0 z-[2]"
+        style={{
+          right: 'calc(42vw - 3.24vw - 2px)',
+          width: '3px',
+          height: '100%',
+          background: 'linear-gradient(180deg, transparent, #E8001C, #FF4500, transparent)',
+          opacity: 0.6,
         }}
       />
 
-      <div
-        className="pointer-events-none absolute bottom-0 left-0 right-0 z-[2]"
-        style={{
-          height: '30%',
-          background: 'linear-gradient(to top, var(--color-bg), transparent)',
-        }}
-      />
+      <Navbar />
 
-      <div className="relative z-10">
-        <Navbar />
-      </div>
+      <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-1 flex-col justify-center px-6 pb-20 pt-28 lg:px-16 xl:px-24">
+        <p
+          data-hero-eyebrow
+          className="label-text mb-10 pl-4"
+          style={{ borderLeft: '2px solid var(--color-accent)', color: 'rgba(255,255,255,0.6)' }}
+        >
+          {eyebrow}
+        </p>
 
-      <div
-        className="relative z-[5] flex flex-1 items-center"
-        style={{ padding: 'clamp(7rem, 12vw, 8rem) clamp(1.5rem, 5vw, 5rem) 6rem' }}
-      >
-        <div className="max-w-[720px]">
-          <p
-            data-hero-eyebrow
-            className="label-text mb-6 pl-4"
-            style={{
-              borderLeft: '2px solid var(--color-accent)',
-              color: 'var(--color-accent)',
-              margin: '0 0 1.5rem',
-            }}
-          >
-            {eyebrow}
-          </p>
-
-          <h1
-            className="font-display font-bold uppercase leading-[0.95] tracking-[-0.02em]"
-            style={{
-              fontSize: 'clamp(3rem, 9vw, 7rem)',
-              margin: '0 0 1.75rem',
-            }}
-          >
-            {headlineLines.map((line, i) => (
-              <span
-                key={i}
-                data-hero-line1={i === 0 ? '' : undefined}
-                data-hero-line2={i === 1 ? '' : undefined}
-                data-hero-line3={i === 2 ? '' : undefined}
-                className="block"
-                style={headlineStyle(line.style)}
-              >
-                {line.text}
-              </span>
-            ))}
-          </h1>
-
-          <div className="gold-line-left mb-10 w-48 origin-left" />
-
-          <p
-            data-hero-sub
-            className="font-body leading-relaxed"
-            style={{
-              fontSize: 'clamp(0.95rem, 2vw, 1.1rem)',
-              color: 'rgba(255,255,255,0.65)',
-              maxWidth: '520px',
-              margin: '0 0 2.5rem',
-            }}
-          >
-            {subtext}
-          </p>
-
-          <div data-hero-ctas className="flex flex-wrap items-center gap-4">
-            <Link href="/join" className="btn-primary">
-              {ctaPrimary}
-            </Link>
-            <Link
-              href="/about"
-              className="inline-flex items-center border px-8 py-4 font-body text-[11px] uppercase tracking-[0.2em] transition-all duration-300 hover:bg-white/5"
+        <div className="mb-12 space-y-2">
+          {headlineLines.map((line, i) => (
+            <h1
+              key={i}
+              data-hero-line1={i === 0 ? '' : undefined}
+              data-hero-line2={i === 1 ? '' : undefined}
+              data-hero-line3={i === 2 ? '' : undefined}
+              className="font-display font-bold uppercase leading-none"
               style={{
-                borderColor: 'rgba(255,255,255,0.4)',
-                color: 'rgba(255,255,255,0.85)',
+                fontSize: 'clamp(5rem, 14vw, 14rem)',
+                fontWeight: 700,
+                letterSpacing: '-0.02em',
+                ...headlineStyle(line.style),
               }}
             >
-              {ctaSecondary}
-            </Link>
-          </div>
+              {line.text}
+            </h1>
+          ))}
+        </div>
+
+        <div
+          data-hero-gold-line
+          className="gold-line-left mb-10 w-48 origin-left"
+        />
+
+        <p
+          data-hero-sub
+          className="mb-12 max-w-lg font-body text-lg leading-relaxed"
+          style={{ color: 'rgba(255,255,255,0.65)' }}
+        >
+          {subtext}
+        </p>
+
+        <div data-hero-ctas className="flex flex-wrap gap-4">
+          <Link href="/join" className="btn-primary">
+            {ctaPrimary}
+          </Link>
+          <Link
+            href="/about"
+            className="inline-flex items-center border px-8 py-4 font-body text-[11px] uppercase tracking-[0.2em] transition-all duration-300 hover:bg-white/5"
+            style={{ borderColor: 'rgba(255,255,255,0.4)', color: 'var(--color-hero-text)' }}
+          >
+            {ctaSecondary}
+          </Link>
         </div>
       </div>
 
       <div
-        className="absolute bottom-8 left-1/2 z-[5] flex -translate-x-1/2 flex-col items-center gap-2"
-        style={{ opacity: 0.4 }}
+        className="absolute bottom-10 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2"
+        style={{ opacity: 1 }}
       >
         <span
           className="font-body uppercase"
           style={{
-            fontSize: '0.65rem',
-            letterSpacing: '0.25em',
-            color: '#FFFFFF',
+            fontSize: '0.6rem',
+            letterSpacing: '0.2em',
+            color: 'rgba(255,255,255,0.4)',
           }}
         >
           Scroll
@@ -251,8 +258,8 @@ export function Hero({ content }: { content: Record<string, string> }) {
         <div
           style={{
             width: '1px',
-            height: '40px',
-            background: 'linear-gradient(to bottom, #FFFFFF, transparent)',
+            height: '48px',
+            background: 'linear-gradient(180deg, rgba(255,255,255,0.4), transparent)',
             animation: 'scroll-pulse 2s ease-in-out infinite',
           }}
         />
