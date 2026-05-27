@@ -216,6 +216,10 @@
   .form-success-panel--dark .text-mist {
     color: #a0a0a0 !important;
   }
+  .dark-surface .label-text,
+  .form-success-panel--dark .label-text {
+    color: rgba(255, 255, 255, 0.55) !important;
+  }
 
   /* Cookie banner — always dark panel; keep readable in light site theme */
   .cookie-banner .cookie-banner__link {
@@ -495,6 +499,20 @@ img, video, canvas {
   .public-light .cookie-banner .text-snow { color: #f8f8f8 !important; }
   [data-public-theme="light"] .cookie-banner .text-mist,
   .public-light .cookie-banner .text-mist { color: #a0a0a0 !important; }
+
+  /* Dark modals/panels on light site — beat legacy .text-snow/.text-mist remaps */
+  [data-public-theme="light"] .dark-surface .text-snow,
+  .public-light .dark-surface .text-snow,
+  [data-public-theme="light"] .form-success-panel--dark .text-snow,
+  .public-light .form-success-panel--dark .text-snow { color: #f8f8f8 !important; }
+  [data-public-theme="light"] .dark-surface .text-mist,
+  .public-light .dark-surface .text-mist,
+  [data-public-theme="light"] .form-success-panel--dark .text-mist,
+  .public-light .form-success-panel--dark .text-mist { color: #a0a0a0 !important; }
+  [data-public-theme="light"] .dark-surface .label-text,
+  .public-light .dark-surface .label-text,
+  [data-public-theme="light"] .form-success-panel--dark .label-text,
+  .public-light .form-success-panel--dark .label-text { color: rgba(255, 255, 255, 0.55) !important; }
 
   [data-public-theme="light"] .text-outline,
   .public-light .text-outline {

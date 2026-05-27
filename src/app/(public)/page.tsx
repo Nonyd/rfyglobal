@@ -1,4 +1,5 @@
 import { Hero } from '@/components/landing/Hero'
+import { FeaturedEvent } from '@/components/landing/FeaturedEvent'
 import { ScriptureStrip } from '@/components/landing/ScriptureStrip'
 import { StatsSection } from '@/components/landing/StatsSection'
 import { VisionSection } from '@/components/landing/VisionSection'
@@ -25,7 +26,9 @@ export async function generateMetadata(): Promise<Metadata> {
 export const dynamic = 'force-dynamic'
 
 export default async function HomePage() {
-  const [content, galleryImages] = await Promise.all([
+  const now = new Date()
+
+  const [content, galleryImages, nextEvent] = await Promise.all([
     getContentMany([...HOME_CMS_KEYS]),
     db.galleryImage
       .findMany({
@@ -35,12 +38,35 @@ export default async function HomePage() {
         select: { id: true, url: true, caption: true },
       })
       .catch(() => []),
+    db.event
+      .findFirst({
+        where: {
+          isActive: true,
+          date: { gte: now },
+        },
+        orderBy: { date: 'asc' },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          date: true,
+          time: true,
+          city: true,
+          venue: true,
+          imageUrl: true,
+          slug: true,
+          registrationFeeNgn: true,
+          registrationFeeUsd: true,
+        },
+      })
+      .catch(() => null),
   ])
 
   return (
     <main>
       <Hero content={content} />
       <ScriptureStrip />
+      {nextEvent ? <FeaturedEvent event={nextEvent} /> : null}
       {content['stats.enabled'] !== 'false' ? <StatsSection content={content} /> : null}
       <VisionSection content={content} />
       <ConfessionReveal content={content} />
