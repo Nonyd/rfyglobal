@@ -13,7 +13,10 @@ import { getContentMany } from '@/lib/content'
 import { HOME_CMS_KEYS } from '@/lib/cms-keys'
 import { db } from '@/lib/db'
 import { getPageMetadata } from '@/lib/cms-metadata'
+import { ensureDefaultEventFields } from '@/lib/event-form-fields'
+import { getPaystackCredentials } from '@/lib/credentials'
 import type { Metadata } from 'next'
+import type { EventFormField } from '@prisma/client'
 
 export async function generateMetadata(): Promise<Metadata> {
   return getPageMetadata(
@@ -62,11 +65,32 @@ export default async function HomePage() {
       .catch(() => null),
   ])
 
+  let registrationFields: EventFormField[] = []
+  let paystackEnabled = false
+  if (nextEvent) {
+    await ensureDefaultEventFields(nextEvent.id)
+    const [fields, paystack] = await Promise.all([
+      db.eventFormField.findMany({
+        where: { eventId: nextEvent.id, isActive: true },
+        orderBy: { order: 'asc' },
+      }),
+      getPaystackCredentials(),
+    ])
+    registrationFields = fields
+    paystackEnabled = paystack?.isActive ?? false
+  }
+
   return (
     <main>
       <Hero content={content} />
       <ScriptureStrip />
-      {nextEvent ? <FeaturedEvent event={nextEvent} /> : null}
+      {nextEvent ? (
+        <FeaturedEvent
+          event={nextEvent}
+          fields={registrationFields}
+          paystackEnabled={paystackEnabled}
+        />
+      ) : null}
       {content['stats.enabled'] !== 'false' ? <StatsSection content={content} /> : null}
       <VisionSection content={content} />
       <ConfessionReveal content={content} />

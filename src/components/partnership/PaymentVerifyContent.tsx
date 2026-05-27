@@ -67,20 +67,20 @@ export function PaymentVerifyContent() {
       {status === 'loading' && (
         <div className="space-y-6">
           <div className="w-12 h-12 border-2 border-crimson border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="font-body text-white/50">Verifying your gift…</p>
+          <p className="font-body text-text-secondary">Verifying your gift…</p>
         </div>
       )}
 
       {status === 'pending' && (
         <div className="space-y-6">
           <div className="w-12 h-12 border-2 border-crimson border-t-transparent rounded-full animate-spin mx-auto" />
-          <h1 className="font-display text-3xl text-white">Almost there</h1>
-          <p className="text-white/50 font-body leading-relaxed max-w-sm mx-auto">
+          <h1 className="font-display text-3xl text-text-primary">Almost there</h1>
+          <p className="font-body leading-relaxed text-text-secondary max-w-sm mx-auto">
             We are confirming your payment. This can take a moment. This page will update automatically.
           </p>
           <Link
             href="/"
-            className="inline-block px-6 py-2 border border-white/20 text-white/60 font-body text-sm hover:border-crimson/40 hover:text-white transition-colors"
+            className="inline-block border border-theme px-6 py-2 font-body text-sm text-text-secondary transition-colors hover:border-crimson/40 hover:text-text-primary"
           >
             Back to Home
           </Link>
@@ -89,22 +89,22 @@ export function PaymentVerifyContent() {
 
       {status === 'success' && (
         <div className="space-y-6">
-          <div className="w-16 h-16 rounded-full border-2 border-crimson flex items-center justify-center mx-auto">
-            <span className="text-crimson text-2xl">✓</span>
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-crimson">
+            <span className="text-2xl text-crimson">✓</span>
           </div>
           <div className="h-px bg-gradient-to-r from-transparent via-crimson/40 to-transparent" />
-          <h1 className="font-display text-4xl text-white">Thank You.</h1>
-          <p className="text-white/50 font-body leading-relaxed max-w-sm mx-auto">
+          <h1 className="font-display text-4xl text-text-primary">Thank You.</h1>
+          <p className="mx-auto max-w-sm font-body leading-relaxed text-text-secondary">
             Your partnership gift has been received. You are sowing into the Kingdom. God sees every seed
             planted in faith.
           </p>
-          <p className="text-crimson/70 font-display text-lg italic">
+          <p className="font-display text-lg italic text-crimson">
             &quot;…God loves a cheerful giver.&quot; — 2 Cor 9:7
           </p>
           <div className="h-px bg-gradient-to-r from-transparent via-crimson/40 to-transparent" />
           <Link
             href="/"
-            className="inline-block px-8 py-3 border border-crimson text-crimson font-body text-sm tracking-widest uppercase hover:bg-crimson hover:text-white transition-all duration-300"
+            className="inline-block border border-crimson px-8 py-3 font-body text-sm uppercase tracking-widest text-crimson transition-all duration-300 hover:bg-crimson hover:text-text-inverse"
           >
             Back to Home
           </Link>
@@ -113,16 +113,16 @@ export function PaymentVerifyContent() {
 
       {(status === 'failed' || status === 'error') && (
         <div className="space-y-6">
-          <div className="w-16 h-16 rounded-full border-2 border-red-brand/60 flex items-center justify-center mx-auto">
-            <span className="text-red-brand text-2xl">×</span>
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full border-2 border-red-brand/60">
+            <span className="text-2xl text-red-brand">×</span>
           </div>
-          <h1 className="font-display text-3xl text-white">Payment Unsuccessful</h1>
-          <p className="text-white/50 font-body">
+          <h1 className="font-display text-3xl text-text-primary">Payment Unsuccessful</h1>
+          <p className="font-body text-text-secondary">
             We could not confirm your payment. Please try again or contact us.
           </p>
           <Link
             href="/partner"
-            className="btn-crimson-solid inline-block px-8 py-3 bg-crimson font-body text-sm tracking-widest uppercase hover:bg-crimson-light transition-all duration-300"
+            className="btn-crimson-solid inline-block bg-crimson px-8 py-3 font-body text-sm uppercase tracking-widest text-text-inverse transition-all duration-300 hover:bg-crimson-light"
           >
             Try Again
           </Link>

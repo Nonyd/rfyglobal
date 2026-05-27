@@ -38,39 +38,37 @@ export function Toggle({
         aria-checked={checked}
         aria-label={ariaLabel}
         onClick={() => onChange(!checked)}
-        className="relative shrink-0 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(139,0,0,0.45)] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0F0F0F]"
+        className="rfy-toggle-track relative shrink-0 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(139,0,0,0.45)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-bg)]"
         style={{
           width: `${width}px`,
           height: `${height}px`,
           borderRadius: `${height / 2}px`,
           background: checked
-            ? 'linear-gradient(135deg, #8B0000, #A00000)'
-            : 'rgba(255,255,255,0.1)',
-          border: checked ? '1px solid rgba(139,0,0,0.5)' : '1px solid rgba(255,255,255,0.15)',
-          boxShadow: checked
-            ? '0 0 12px rgba(139,0,0,0.25)'
-            : 'inset 0 1px 3px rgba(0,0,0,0.3)',
+            ? 'linear-gradient(135deg, var(--color-accent), var(--color-accent-hover))'
+            : 'var(--color-surface-2)',
+          border: checked
+            ? '1px solid var(--color-accent-border)'
+            : '1px solid var(--color-border-strong)',
+          boxShadow: checked ? '0 0 12px var(--color-accent-glow)' : 'inset 0 1px 2px rgba(0,0,0,0.08)',
         }}
       >
         <span
-          className="absolute transition-transform duration-300 ease-out"
+          className="rfy-toggle-thumb absolute transition-transform duration-300 ease-out"
           style={{
             width: `${thumbSize}px`,
             height: `${thumbSize}px`,
             borderRadius: '50%',
-            background: checked ? '#0F0F0F' : 'rgba(255,255,255,0.6)',
+            background: checked ? 'var(--color-hero-bg, #111111)' : '#FFFFFF',
             top: `${thumbOffset}px`,
             left: `${thumbOffset}px`,
             transform: checked ? `translateX(${translateX}px)` : 'translateX(0)',
-            boxShadow: checked ? '0 1px 3px rgba(0,0,0,0.4)' : '0 1px 3px rgba(0,0,0,0.3)',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
           }}
         />
       </button>
 
       {label ? (
-        <span className="font-body text-sm" style={{ color: 'rgba(255,255,255,0.7)' }}>
-          {label}
-        </span>
+        <span className="rfy-toggle-label font-body text-sm text-text-secondary">{label}</span>
       ) : null}
     </label>
   )

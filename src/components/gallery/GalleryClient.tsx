@@ -2,8 +2,17 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, Loader2, Download, Check } from 'lucide-react'
 import Image from 'next/image'
+import toast from 'react-hot-toast'
+import {
+  downloadGalleryImage,
+  downloadGalleryImagesZip,
+} from '@/lib/gallery-download'
+import {
+  normalizeUploadSrc,
+  shouldBypassImageOptimization,
+} from '@/lib/image-display'
 
 export interface GalleryImage {
   id: string
@@ -49,7 +58,61 @@ export function GalleryClient({
   const [hasMore, setHasMore] = useState(initialImages.length < initialTotal)
   const [activeEvent, setActiveEvent] = useState<string | null>(null)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(() => new Set())
+  const [downloading, setDownloading] = useState(false)
   const loaderRef = useRef<HTMLDivElement>(null)
+
+  const selectedImages = images.filter((img) => selectedIds.has(img.id))
+
+  const toggleSelected = (id: string, e?: React.MouseEvent | React.KeyboardEvent) => {
+    e?.stopPropagation()
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const selectAllShown = () => {
+    setSelectedIds(new Set(images.map((img) => img.id)))
+  }
+
+  const clearSelection = () => setSelectedIds(new Set())
+
+  const handleDownloadOne = async (image: GalleryImage, e?: React.MouseEvent) => {
+    e?.stopPropagation()
+    if (downloading) return
+    setDownloading(true)
+    try {
+      await downloadGalleryImage(image)
+      toast.success('Download started')
+    } catch (err) {
+      console.error('[gallery] download failed', err)
+      toast.error('Could not download this photo. Please try again.')
+    } finally {
+      setDownloading(false)
+    }
+  }
+
+  const handleDownloadSelected = async () => {
+    if (selectedImages.length === 0 || downloading) return
+    setDownloading(true)
+    try {
+      if (selectedImages.length === 1) {
+        await downloadGalleryImage(selectedImages[0]!)
+        toast.success('Download started')
+      } else {
+        await downloadGalleryImagesZip(selectedImages)
+        toast.success(`Downloaded ${selectedImages.length} photos`)
+      }
+    } catch (err) {
+      console.error('[gallery] bulk download failed', err)
+      toast.error('Could not download selected photos. Please try again.')
+    } finally {
+      setDownloading(false)
+    }
+  }
 
   const loadMore = useCallback(async () => {
     if (loading || !hasMore) return
@@ -84,6 +147,7 @@ export function GalleryClient({
     setPage(1)
     setLoading(true)
     setLightboxIndex(null)
+    setSelectedIds(new Set())
 
     try {
       const params = new URLSearchParams({ page: '1', limit: String(pageSize) })
@@ -219,17 +283,101 @@ export function GalleryClient({
           </div>
         )}
 
-        <p
+        <div
           style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: '0.8rem',
-            color: 'var(--color-text-muted)',
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '1rem',
             marginBottom: '2rem',
-            letterSpacing: '0.05em',
           }}
         >
-          Showing {images.length} of {total} photos
-        </p>
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '0.8rem',
+              color: 'var(--color-text-muted)',
+              margin: 0,
+              letterSpacing: '0.05em',
+            }}
+          >
+            Showing {images.length} of {total} photos
+            {selectedIds.size > 0 ? ` · ${selectedIds.size} selected` : ''}
+          </p>
+
+          {images.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <button
+                type="button"
+                onClick={selectAllShown}
+                disabled={downloading}
+                style={{
+                  padding: '0.45rem 1rem',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.75rem',
+                  fontWeight: 500,
+                  letterSpacing: '0.05em',
+                  border: '1px solid var(--color-border)',
+                  background: 'transparent',
+                  color: 'var(--color-text-secondary)',
+                  cursor: downloading ? 'not-allowed' : 'pointer',
+                  opacity: downloading ? 0.5 : 1,
+                }}
+              >
+                Select all shown
+              </button>
+              {selectedIds.size > 0 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={clearSelection}
+                    disabled={downloading}
+                    style={{
+                      padding: '0.45rem 1rem',
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '0.75rem',
+                      fontWeight: 500,
+                      letterSpacing: '0.05em',
+                      border: '1px solid var(--color-border)',
+                      background: 'transparent',
+                      color: 'var(--color-text-secondary)',
+                      cursor: downloading ? 'not-allowed' : 'pointer',
+                      opacity: downloading ? 0.5 : 1,
+                    }}
+                  >
+                    Clear selection
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void handleDownloadSelected()}
+                    disabled={downloading}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.4rem',
+                      padding: '0.45rem 1rem',
+                      fontFamily: 'var(--font-body)',
+                      fontSize: '0.75rem',
+                      fontWeight: 600,
+                      letterSpacing: '0.05em',
+                      border: '1px solid var(--color-accent)',
+                      background: 'var(--color-accent)',
+                      color: 'var(--color-text-inverse)',
+                      cursor: downloading ? 'wait' : 'pointer',
+                      opacity: downloading ? 0.7 : 1,
+                    }}
+                  >
+                    <Download size={14} />
+                    {downloading
+                      ? 'Preparing…'
+                      : `Download selected (${selectedIds.size})`}
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+        </div>
 
         {images.length === 0 && !loading ? (
           <p
@@ -254,82 +402,145 @@ export function GalleryClient({
             }
             className="gallery-masonry"
           >
-            {images.map((image, index) => (
-              <motion.div
-                key={image.id}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{
-                  duration: 0.5,
-                  delay: (index % pageSize) * 0.03,
-                  ease: [0.32, 0.72, 0, 1],
-                }}
-                onClick={() => setLightboxIndex(index)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault()
-                    setLightboxIndex(index)
-                  }
-                }}
-                role="button"
-                tabIndex={0}
-                style={{
-                  breakInside: 'avoid',
-                  marginBottom: '1rem',
-                  position: 'relative',
-                  cursor: 'pointer',
-                  overflow: 'hidden',
-                  border: '1px solid var(--color-border)',
-                  display: 'block',
-                }}
-              >
-                <div style={{ position: 'relative', width: '100%' }}>
-                  <Image
-                    src={image.url}
-                    alt={image.caption ?? `Gallery photo ${index + 1}`}
-                    width={600}
-                    height={400}
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    style={{
-                      width: '100%',
-                      height: 'auto',
-                      display: 'block',
-                      transition: 'transform 0.4s ease',
-                    }}
-                    className="gallery-img"
-                    loading="lazy"
-                  />
-                  <div
-                    className="gallery-overlay"
-                    style={{
-                      position: 'absolute',
-                      inset: 0,
-                      background: 'rgba(0,0,0,0)',
-                      transition: 'background 0.3s ease',
-                      display: 'flex',
-                      alignItems: 'flex-end',
-                      padding: '1rem',
-                    }}
-                  >
-                    {image.caption && (
-                      <p
-                        className="gallery-caption"
-                        style={{
-                          fontFamily: 'var(--font-body)',
-                          fontSize: '0.75rem',
-                          color: 'rgba(255,255,255,0)',
-                          margin: 0,
-                          lineHeight: 1.4,
-                          transition: 'color 0.3s ease',
-                        }}
-                      >
-                        {image.caption}
-                      </p>
-                    )}
+            {images.map((image, index) => {
+              const isSelected = selectedIds.has(image.id)
+              return (
+                <motion.div
+                  key={image.id}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: (index % pageSize) * 0.03,
+                    ease: [0.32, 0.72, 0, 1],
+                  }}
+                  onClick={() => setLightboxIndex(index)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault()
+                      setLightboxIndex(index)
+                    }
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  style={{
+                    breakInside: 'avoid',
+                    marginBottom: '1rem',
+                    position: 'relative',
+                    cursor: 'pointer',
+                    overflow: 'hidden',
+                    border: isSelected
+                      ? '2px solid var(--color-accent)'
+                      : '1px solid var(--color-border)',
+                    display: 'block',
+                    boxShadow: isSelected ? '0 0 0 1px var(--color-accent)' : undefined,
+                  }}
+                >
+                  <div style={{ position: 'relative', width: '100%' }}>
+                    <button
+                      type="button"
+                      aria-label={isSelected ? 'Deselect photo' : 'Select photo'}
+                      aria-pressed={isSelected}
+                      onClick={(e) => toggleSelected(image.id, e)}
+                      style={{
+                        position: 'absolute',
+                        top: '0.5rem',
+                        left: '0.5rem',
+                        zIndex: 3,
+                        width: '28px',
+                        height: '28px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: '1px solid',
+                        borderColor: isSelected
+                          ? 'var(--color-accent)'
+                          : 'rgba(255,255,255,0.5)',
+                        background: isSelected
+                          ? 'var(--color-accent)'
+                          : 'rgba(0,0,0,0.45)',
+                        color: isSelected ? 'var(--color-text-inverse)' : '#fff',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {isSelected ? <Check size={14} strokeWidth={3} /> : null}
+                    </button>
+
+                    <button
+                      type="button"
+                      aria-label="Download photo"
+                      className="gallery-download-btn"
+                      onClick={(e) => void handleDownloadOne(image, e)}
+                      disabled={downloading}
+                      style={{
+                        position: 'absolute',
+                        top: '0.5rem',
+                        right: '0.5rem',
+                        zIndex: 3,
+                        width: '28px',
+                        height: '28px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        border: '1px solid rgba(255,255,255,0.5)',
+                        background: 'rgba(0,0,0,0.45)',
+                        color: '#fff',
+                        cursor: downloading ? 'wait' : 'pointer',
+                        opacity: downloading ? 0.6 : 1,
+                      }}
+                    >
+                      <Download size={14} />
+                    </button>
+
+                    <Image
+                      src={normalizeUploadSrc(image.url)}
+                      alt={image.caption ?? `Gallery photo ${index + 1}`}
+                      width={600}
+                      height={400}
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                        display: 'block',
+                        transition: 'transform 0.4s ease',
+                      }}
+                      className="gallery-img"
+                      loading="lazy"
+                      unoptimized={shouldBypassImageOptimization(image.url)}
+                    />
+                    <div
+                      className="gallery-overlay"
+                      style={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'rgba(0,0,0,0)',
+                        transition: 'background 0.3s ease',
+                        display: 'flex',
+                        alignItems: 'flex-end',
+                        padding: '1rem',
+                        pointerEvents: 'none',
+                      }}
+                    >
+                      {image.caption && (
+                        <p
+                          className="gallery-caption"
+                          style={{
+                            fontFamily: 'var(--font-body)',
+                            fontSize: '0.75rem',
+                            color: 'rgba(255,255,255,0)',
+                            margin: 0,
+                            lineHeight: 1.4,
+                            transition: 'color 0.3s ease',
+                          }}
+                        >
+                          {image.caption}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              )
+            })}
           </div>
         )}
 
@@ -395,6 +606,17 @@ export function GalleryClient({
         .gallery-masonry > div:hover .gallery-caption {
           color: rgba(255,255,255,0.85) !important;
         }
+        .gallery-download-btn {
+          opacity: 0;
+          transition: opacity 0.2s ease;
+        }
+        .gallery-masonry > div:hover .gallery-download-btn,
+        .gallery-masonry > div:focus-within .gallery-download-btn {
+          opacity: 1;
+        }
+        @media (max-width: 1024px) {
+          .gallery-download-btn { opacity: 1; }
+        }
       `}</style>
 
       <AnimatePresence>
@@ -429,12 +651,43 @@ export function GalleryClient({
               }}
             >
               <Image
-                src={currentImage.url}
+                src={normalizeUploadSrc(currentImage.url)}
                 alt={currentImage.caption ?? 'Gallery photo'}
                 fill
                 sizes="900px"
                 style={{ objectFit: 'contain' }}
+                unoptimized={shouldBypassImageOptimization(currentImage.url)}
               />
+
+              <button
+                type="button"
+                aria-label="Download photo"
+                disabled={downloading}
+                onClick={(e) => void handleDownloadOne(currentImage, e)}
+                style={{
+                  position: 'absolute',
+                  top: '0.75rem',
+                  left: '0.75rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '0.4rem',
+                  padding: '0.5rem 0.85rem',
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.7rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  borderRadius: '2px',
+                  background: 'rgba(0,0,0,0.55)',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  color: '#fff',
+                  cursor: downloading ? 'wait' : 'pointer',
+                  zIndex: 2,
+                }}
+              >
+                <Download size={14} />
+                Download
+              </button>
 
               {currentImage.caption && (
                 <p

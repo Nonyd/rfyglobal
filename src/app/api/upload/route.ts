@@ -37,14 +37,27 @@ export async function POST(req: NextRequest) {
   const extFromMime = file.match(/^data:([^;]+);base64,/)?.[1]
   const extMap: Record<string, string> = {
     'image/jpeg': '.jpg',
+    'image/jpg': '.jpg',
     'image/png': '.png',
     'image/webp': '.webp',
+    'image/avif': '.avif',
     'image/gif': '.gif',
     'image/svg+xml': '.svg',
     'application/pdf': '.pdf',
     'audio/mpeg': '.mp3',
     'audio/mp4': '.m4a',
     'video/mp4': '.mp4',
+  }
+
+  const mime = extFromMime?.toLowerCase()
+  if (mime === 'image/heic' || mime === 'image/heif') {
+    return NextResponse.json(
+      {
+        error:
+          'HEIC/HEIF photos are not supported. Please export as JPEG or PNG (e.g. Settings → Camera → Formats → Most Compatible on iPhone).',
+      },
+      { status: 400 },
+    )
   }
   const fallbackExt = resourceType === 'raw' ? '.bin' : resourceType === 'video' ? '.mp4' : '.jpg'
   const originalName = `upload${extFromMime && extMap[extFromMime] ? extMap[extFromMime] : fallbackExt}`

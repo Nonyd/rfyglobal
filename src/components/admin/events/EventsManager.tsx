@@ -23,6 +23,10 @@ import { formatDate } from '@/lib/utils'
 import { getEventStatus } from '@/lib/event-utils'
 import { cn } from '@/lib/utils'
 import { UploadZone } from '@/components/shared/UploadZone'
+import {
+  normalizeUploadSrc,
+  shouldBypassImageOptimization,
+} from '@/lib/image-display'
 import { AdminToggle } from '@/components/shared/Toggle'
 import { useBulkSelect } from '@/hooks/useBulkSelect'
 import { BulkActionBar } from '@/components/admin/shared/BulkActionBar'
@@ -338,7 +342,7 @@ export function EventsManager() {
       venue: e.venue,
       date: `${y}-${m}-${day}`,
       time: e.time ?? '',
-      imageUrl: e.imageUrl ?? '',
+      imageUrl: e.imageUrl ? normalizeUploadSrc(e.imageUrl) : '',
       registrationFeeNgn: e.registrationFeeNgn ?? '',
       registrationFeeUsd: e.registrationFeeUsd ?? '',
       redirectUrl: e.redirectUrl ?? '',
@@ -366,7 +370,7 @@ export function EventsManager() {
       venue: form.venue.trim(),
       date: dateIso,
       time: form.time.trim() || undefined,
-      imageUrl: form.imageUrl.trim() || '',
+      imageUrl: form.imageUrl.trim() ? normalizeUploadSrc(form.imageUrl.trim()) : '',
       registrationFeeNgn: parseFee(form.registrationFeeNgn),
       registrationFeeUsd: parseFee(form.registrationFeeUsd),
       redirectUrl: form.redirectUrl.trim() ? form.redirectUrl.trim() : null,
@@ -665,11 +669,12 @@ export function EventsManager() {
                 <div className="space-y-3">
                   <div className="relative h-40 w-full overflow-hidden border" style={{ borderColor: 'var(--a-border)' }}>
                     <Image
-                      src={form.imageUrl}
+                      src={normalizeUploadSrc(form.imageUrl)}
                       alt=""
                       fill
                       className="object-cover"
                       sizes="(max-width: 28rem) 100vw, 400px"
+                      unoptimized={shouldBypassImageOptimization(form.imageUrl)}
                     />
                   </div>
                   <button

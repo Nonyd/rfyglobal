@@ -9,6 +9,10 @@ import { format } from 'date-fns'
 import type { Event, EventFormField } from '@prisma/client'
 import { EventRegistrationModal } from '@/components/events/EventRegistrationModal'
 import { isEventLive, isEventPast, isEventStillActive } from '@/lib/event-utils'
+import {
+  normalizeUploadSrc,
+  shouldBypassImageOptimization,
+} from '@/lib/image-display'
 
 interface SingleEventClientProps {
   event: Event
@@ -68,12 +72,13 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
             >
               {event.imageUrl ? (
                 <Image
-                  src={event.imageUrl}
+                  src={normalizeUploadSrc(event.imageUrl)}
                   alt={event.title}
                   fill
                   className="object-cover object-top"
                   priority
                   sizes="(max-width: 1024px) 100vw, 380px"
+                  unoptimized={shouldBypassImageOptimization(event.imageUrl)}
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -269,11 +274,12 @@ export function SingleEventClient({ event, otherEvents, fields, paystackEnabled 
                     >
                       {e.imageUrl ? (
                         <Image
-                          src={e.imageUrl}
+                          src={normalizeUploadSrc(e.imageUrl)}
                           alt={e.title}
                           fill
                           className="object-cover object-top transition-transform duration-500 group-hover:scale-105"
                           sizes="(max-width: 768px) 100vw, 33vw"
+                          unoptimized={shouldBypassImageOptimization(e.imageUrl)}
                         />
                       ) : (
                         <div className="absolute inset-0 flex items-center justify-center">

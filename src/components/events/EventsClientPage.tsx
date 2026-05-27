@@ -5,6 +5,10 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { isEventLive } from '@/lib/event-utils'
+import {
+  normalizeUploadSrc,
+  shouldBypassImageOptimization,
+} from '@/lib/image-display'
 
 export interface PublicEvent {
   id: string
@@ -76,12 +80,13 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
               >
                 {event.imageUrl ? (
                   <Image
-                    src={event.imageUrl}
+                    src={normalizeUploadSrc(event.imageUrl)}
                     alt={event.title}
                     fill
                     priority={index === 0}
                     className="object-cover object-top group-hover:scale-105 transition-transform duration-500"
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    unoptimized={shouldBypassImageOptimization(event.imageUrl)}
                   />
                 ) : (
                   <div className="flex items-center justify-center h-full">
