@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import path from 'path'
 import { auth } from '@/lib/auth'
 import {
   deleteFromStorage,

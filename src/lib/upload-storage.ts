@@ -21,7 +21,7 @@ export interface UploadResult {
 }
 
 /** Prefer Cloudinary in production (Vercel); local disk is for dev only. */
-export function useCloudinaryStorage(): boolean {
+export function isCloudinaryStorageEnabled(): boolean {
   if (process.env.UPLOAD_STORAGE === 'local') return false
   if (process.env.UPLOAD_STORAGE === 'cloudinary') return true
   return Boolean(
@@ -41,7 +41,7 @@ export async function uploadBase64ToStorage(
     throw new Error('Invalid folder')
   }
 
-  if (useCloudinaryStorage()) {
+  if (isCloudinaryStorageEnabled()) {
     const cloudFolder = UPLOAD_FOLDERS[folder]
     const result = await cloudinary.uploader.upload(base64, {
       folder: cloudFolder,
@@ -78,7 +78,7 @@ export async function deleteFromStorage(
 ): Promise<void> {
   const resourceType = opts.resourceType ?? 'image'
 
-  if (useCloudinaryStorage()) {
+  if (isCloudinaryStorageEnabled()) {
     const id = opts.publicId?.trim()
     if (!id || id.startsWith('/uploads/')) {
       throw new Error('Cloudinary publicId required')

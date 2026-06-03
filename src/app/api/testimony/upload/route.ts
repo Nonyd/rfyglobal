@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import path from 'path'
 import { strictRatelimit } from '@/lib/ratelimit'
 import { uploadBase64ToStorage } from '@/lib/upload-storage'
 import { z } from 'zod'
