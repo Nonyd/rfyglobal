@@ -1,6 +1,5 @@
-// Files are stored at: /home/sonshubco/rfyglobal.org/public/uploads/
-// Served at: https://rfyglobal.org/uploads/[subdir]/[filename]
-// Apache proxies / to Next.js which serves public/ as static files
+// Dev-only fallback when UPLOAD_STORAGE=local or Cloudinary env is unset.
+// Not durable on Vercel/serverless — production uses Cloudinary via upload-storage.ts.
 
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'

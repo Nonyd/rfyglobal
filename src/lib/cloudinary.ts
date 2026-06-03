@@ -1,4 +1,4 @@
-/** @deprecated Cloudinary is being replaced by local storage — see src/lib/upload-local.ts */
+/** Production uploads (Vercel). Local disk fallback: src/lib/upload-local.ts + src/lib/upload-storage.ts */
 import { v2 as cloudinary } from 'cloudinary'
 
 cloudinary.config({

@@ -2,11 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import path from 'path'
 import { auth } from '@/lib/auth'
 import {
-  deleteFileLocally,
-  uploadBase64Locally,
-  UPLOAD_FOLDER_SUBDIRS,
-  type UploadFolderKey,
-} from '@/lib/upload-local'
+  deleteFromStorage,
+  uploadBase64ToStorage,
+  type UploadResourceType,
+} from '@/lib/upload-storage'
+import { UPLOAD_FOLDER_SUBDIRS, type UploadFolderKey } from '@/lib/upload-local'
 
 export const runtime = 'nodejs'
 
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   const { file, folder, resourceType = 'image' } = body as {
     file: string
     folder: UploadFolderKey
-    resourceType?: 'image' | 'video' | 'raw'
+    resourceType?: UploadResourceType
   }
 
   if (!file || !folder) {
@@ -33,7 +33,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid folder' }, { status: 400 })
   }
 
-  const subDir = UPLOAD_FOLDER_SUBDIRS[folder]
   const extFromMime = file.match(/^data:([^;]+);base64,/)?.[1]
   const extMap: Record<string, string> = {
     'image/jpeg': '.jpg',
@@ -63,18 +62,18 @@ export async function POST(req: NextRequest) {
   const originalName = `upload${extFromMime && extMap[extFromMime] ? extMap[extFromMime] : fallbackExt}`
 
   try {
-    const result = await uploadBase64Locally(file, originalName, subDir)
+    const result = await uploadBase64ToStorage(file, originalName, folder, resourceType)
 
     return NextResponse.json({
       url: result.url,
-      publicId: result.filename,
-      width: null,
-      height: null,
-      format: path.extname(originalName).replace('.', ''),
-      bytes: result.size,
+      publicId: result.publicId,
+      width: result.width,
+      height: result.height,
+      format: result.format,
+      bytes: result.bytes,
     })
   } catch (err: unknown) {
-    console.error('[Local upload error]', err)
+    console.error('[Upload error]', err)
     return NextResponse.json(
       { error: err instanceof Error ? err.message : 'Upload failed' },
       { status: 500 },
@@ -86,22 +85,20 @@ export async function DELETE(req: NextRequest) {
   const session = await auth()
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { publicId, url } = await req.json()
-  const targetUrl =
-    typeof url === 'string' && url.startsWith('/uploads/')
-      ? url
-      : typeof publicId === 'string' && publicId.startsWith('/uploads/')
-        ? publicId
-        : null
-
-  if (!targetUrl) {
-    return NextResponse.json({ error: 'Local upload url required' }, { status: 400 })
+  const body = (await req.json()) as {
+    publicId?: string
+    url?: string
+    resourceType?: UploadResourceType
   }
 
   try {
-    await deleteFileLocally(targetUrl)
+    await deleteFromStorage(body)
     return NextResponse.json({ success: true })
-  } catch {
-    return NextResponse.json({ error: 'Failed to delete' }, { status: 500 })
+  } catch (err: unknown) {
+    console.error('[Upload delete error]', err)
+    return NextResponse.json(
+      { error: err instanceof Error ? err.message : 'Failed to delete' },
+      { status: 400 },
+    )
   }
 }

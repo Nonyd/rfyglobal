@@ -3,7 +3,6 @@
 import { adminFetch } from '@/lib/admin-fetch'
 import { useCallback, useEffect, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import Image from 'next/image'
 import type { EventFormField, EventRegistration } from '@prisma/client'
 import {
   Plus,
@@ -23,10 +22,7 @@ import { formatDate } from '@/lib/utils'
 import { getEventStatus } from '@/lib/event-utils'
 import { cn } from '@/lib/utils'
 import { UploadZone } from '@/components/shared/UploadZone'
-import {
-  normalizeUploadSrc,
-  shouldBypassImageOptimization,
-} from '@/lib/image-display'
+import { normalizeUploadSrc } from '@/lib/image-display'
 import { AdminToggle } from '@/components/shared/Toggle'
 import { useBulkSelect } from '@/hooks/useBulkSelect'
 import { BulkActionBar } from '@/components/admin/shared/BulkActionBar'
@@ -668,13 +664,11 @@ export function EventsManager() {
               {form.imageUrl ? (
                 <div className="space-y-3">
                   <div className="relative h-40 w-full overflow-hidden border" style={{ borderColor: 'var(--a-border)' }}>
-                    <Image
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
                       src={normalizeUploadSrc(form.imageUrl)}
                       alt=""
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 28rem) 100vw, 400px"
-                      unoptimized={shouldBypassImageOptimization(form.imageUrl)}
+                      className="h-full w-full object-cover"
                     />
                   </div>
                   <button

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import path from 'path'
 import { strictRatelimit } from '@/lib/ratelimit'
-import { uploadBase64Locally } from '@/lib/upload-local'
+import { uploadBase64ToStorage } from '@/lib/upload-storage'
 import { z } from 'zod'
 
 export const runtime = 'nodejs'
@@ -35,15 +35,15 @@ export async function POST(req: NextRequest) {
   const originalName = `testimony${extFromMime && extMap[extFromMime] ? extMap[extFromMime] : '.jpg'}`
 
   try {
-    const result = await uploadBase64Locally(parsed.data.file, originalName, 'testimonies')
+    const result = await uploadBase64ToStorage(parsed.data.file, originalName, 'testimony', 'image')
 
     return NextResponse.json({
       url: result.url,
-      publicId: result.filename,
-      width: null,
-      height: null,
-      format: path.extname(originalName).replace('.', ''),
-      bytes: result.size,
+      publicId: result.publicId,
+      width: result.width,
+      height: result.height,
+      format: result.format,
+      bytes: result.bytes,
     })
   } catch (err: unknown) {
     console.error('[testimony upload]', err)
