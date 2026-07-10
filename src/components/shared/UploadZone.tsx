@@ -67,7 +67,8 @@ interface FileState {
 
 const ACCEPT_MAP = {
   image: 'image/*',
-  audio: 'audio/mpeg,audio/mp3,audio/*',
+  audio:
+    'audio/mpeg,audio/mp3,audio/mp4,audio/x-m4a,audio/m4a,audio/aac,audio/wav,audio/x-caf,audio/webm,.mp3,.m4a,.aac,.caf,.wav',
   document: 'application/pdf,.doc,.docx',
   video: 'video/mp4,video/*',
 }

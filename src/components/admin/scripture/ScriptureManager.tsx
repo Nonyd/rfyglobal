@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Plus, Edit, Trash2, Volume2, Calendar, Shuffle, X, Upload } from 'lucide-react'
 import { UploadZone } from '@/components/shared/UploadZone'
+import { AudioRecorder } from '@/components/shared/AudioRecorder'
 import { AdminToggle } from '@/components/shared/Toggle'
 import { formatDate } from '@/lib/utils'
 import { cn } from '@/lib/utils'
@@ -511,7 +512,7 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
 
                 <div>
                   <label className="mb-2 block font-body text-xs uppercase tracking-widest" style={{ color: 'var(--a-text-muted)' }}>
-                    Audio Explanation (MP3)
+                    Audio Explanation
                   </label>
                   {audioUrl ? (
                     <div className="flex items-center gap-3 border p-3" style={{ borderColor: 'var(--a-gold-border)', background: 'var(--a-gold-light)' }}>
@@ -532,17 +533,41 @@ export function ScriptureManager({ initialScriptures }: ScriptureManagerProps) {
                       </button>
                     </div>
                   ) : (
-                    <UploadZone
-                      folder="scriptureAudio"
-                      accept="audio"
-                      resourceType="raw"
-                      label="Upload audio explanation (MP3, max 32MB)"
-                      onUploadComplete={(files) => {
-                        if (files[0]?.url) setAudioUrl(files[0].url)
-                        toast.success('Audio uploaded')
-                      }}
-                      onUploadError={(err) => toast.error(`Upload failed: ${err.message}`)}
-                    />
+                    <div className="space-y-3">
+                      <UploadZone
+                        folder="scriptureAudio"
+                        accept="audio"
+                        resourceType="raw"
+                        maxFileSizeMB={32}
+                        label="Upload audio (MP3, M4A from iPhone Voice Memos, WAV)"
+                        helpText="Max 32MB"
+                        onUploadComplete={(files) => {
+                          if (files[0]?.url) setAudioUrl(files[0].url)
+                          toast.success('Audio uploaded')
+                        }}
+                        onUploadError={(err) => toast.error(`Upload failed: ${err.message}`)}
+                      />
+                      <div className="flex items-center gap-3">
+                        <div className="h-px flex-1" style={{ background: 'var(--a-border)' }} />
+                        <span
+                          className="font-body text-[10px] uppercase tracking-widest"
+                          style={{ color: 'var(--a-text-muted)' }}
+                        >
+                          or
+                        </span>
+                        <div className="h-px flex-1" style={{ background: 'var(--a-border)' }} />
+                      </div>
+                      <AudioRecorder
+                        folder="scriptureAudio"
+                        resourceType="raw"
+                        maxFileSizeMB={32}
+                        onUploadComplete={(url) => {
+                          setAudioUrl(url)
+                          toast.success('Recording uploaded')
+                        }}
+                        onUploadError={(err) => toast.error(err.message)}
+                      />
+                    </div>
                   )}
                 </div>
 
