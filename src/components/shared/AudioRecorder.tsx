@@ -15,7 +15,6 @@ interface AudioRecorderProps {
 }
 
 type RecorderPhase = 'idle' | 'requesting' | 'recording' | 'preview' | 'uploading'
-type MicPermissionState = 'unknown' | 'prompt' | 'granted' | 'denied'
 
 const MIME_CANDIDATES = [
   'audio/webm;codecs=opus',
@@ -66,7 +65,6 @@ export function AudioRecorder({
   className,
 }: AudioRecorderProps) {
   const [phase, setPhase] = useState<RecorderPhase>('idle')
-  const [micPermission, setMicPermission] = useState<MicPermissionState>('unknown')
   const [elapsed, setElapsed] = useState(0)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null)
@@ -99,28 +97,6 @@ export function AudioRecorder({
   }, [])
 
   useEffect(() => {
-    if (typeof navigator === 'undefined' || !navigator.permissions?.query) return
-
-    let mounted = true
-    navigator.permissions
-      .query({ name: 'microphone' as PermissionName })
-      .then((status) => {
-        if (!mounted) return
-        setMicPermission(status.state as MicPermissionState)
-        status.onchange = () => {
-          if (mounted) setMicPermission(status.state as MicPermissionState)
-        }
-      })
-      .catch(() => {
-        // Permissions API unsupported for microphone in this browser — rely on getUserMedia.
-      })
-
-    return () => {
-      mounted = false
-    }
-  }, [])
-
-  useEffect(() => {
     return () => {
       stopTimer()
       stopStream()
@@ -138,7 +114,6 @@ export function AudioRecorder({
       setRecordedMime('')
       chunksRef.current = []
       streamRef.current = stream
-      setMicPermission('granted')
 
       const recorder = new MediaRecorder(stream, { mimeType })
       mediaRecorderRef.current = recorder
@@ -211,7 +186,6 @@ export function AudioRecorder({
 
         if (err instanceof DOMException) {
           if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-            setMicPermission('denied')
             onUploadError?.(
               new Error(
                 'Microphone access was denied. Click the lock/site icon in your browser address bar, allow microphone access, then try again.',
