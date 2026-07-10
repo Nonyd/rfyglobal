@@ -14,7 +14,8 @@ interface AudioRecorderProps {
   className?: string
 }
 
-type RecorderPhase = 'idle' | 'recording' | 'preview' | 'uploading'
+type RecorderPhase = 'idle' | 'requesting' | 'recording' | 'preview' | 'uploading'
+type MicPermissionState = 'unknown' | 'prompt' | 'granted' | 'denied'
 
 const MIME_CANDIDATES = [
   'audio/webm;codecs=opus',
@@ -54,6 +55,7 @@ export function AudioRecorder({
   className,
 }: AudioRecorderProps) {
   const [phase, setPhase] = useState<RecorderPhase>('idle')
+  const [micPermission, setMicPermission] = useState<MicPermissionState>('unknown')
   const [elapsed, setElapsed] = useState(0)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
   const [recordedBlob, setRecordedBlob] = useState<Blob | null>(null)
@@ -86,6 +88,28 @@ export function AudioRecorder({
   }, [])
 
   useEffect(() => {
+    if (typeof navigator === 'undefined' || !navigator.permissions?.query) return
+
+    let mounted = true
+    navigator.permissions
+      .query({ name: 'microphone' as PermissionName })
+      .then((status) => {
+        if (!mounted) return
+        setMicPermission(status.state as MicPermissionState)
+        status.onchange = () => {
+          if (mounted) setMicPermission(status.state as MicPermissionState)
+        }
+      })
+      .catch(() => {
+        // Permissions API unsupported for microphone in this browser — rely on getUserMedia.
+      })
+
+    return () => {
+      mounted = false
+    }
+  }, [])
+
+  useEffect(() => {
     return () => {
       stopTimer()
       stopStream()
@@ -96,26 +120,14 @@ export function AudioRecorder({
     }
   }, [clearPreviewUrl, stopStream, stopTimer])
 
-  const startRecording = useCallback(async () => {
-    if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
-      onUploadError?.(new Error('Recording is not supported in this browser'))
-      return
-    }
-
-    const mimeType = getRecorderMimeType()
-    if (!mimeType) {
-      onUploadError?.(new Error('Audio recording is not supported in this browser'))
-      return
-    }
-
-    try {
+  const beginRecording = useCallback(
+    (stream: MediaStream, mimeType: string) => {
       clearPreviewUrl()
       setRecordedBlob(null)
       setRecordedMime('')
       chunksRef.current = []
-
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       streamRef.current = stream
+      setMicPermission('granted')
 
       const recorder = new MediaRecorder(stream, { mimeType })
       mediaRecorderRef.current = recorder
@@ -149,19 +161,55 @@ export function AudioRecorder({
       setElapsed(0)
       setPhase('recording')
       timerRef.current = setInterval(() => setElapsed((s) => s + 1), 1000)
-    } catch (err: unknown) {
-      stopTimer()
-      stopStream()
-      setPhase('idle')
-      const message =
-        err instanceof DOMException && err.name === 'NotAllowedError'
-          ? 'Microphone access was denied. Allow microphone permission and try again.'
-          : err instanceof Error
-            ? err.message
-            : 'Could not start recording'
-      onUploadError?.(new Error(message))
+    },
+    [clearPreviewUrl, onUploadError, stopStream, stopTimer],
+  )
+
+  const handleRecordClick = useCallback(() => {
+    if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
+      onUploadError?.(new Error('Recording is not supported in this browser'))
+      return
     }
-  }, [clearPreviewUrl, onUploadError, stopStream, stopTimer])
+
+    const mimeType = getRecorderMimeType()
+    if (!mimeType) {
+      onUploadError?.(new Error('Audio recording is not supported in this browser'))
+      return
+    }
+
+    // Call getUserMedia immediately in the click handler so the browser permission
+    // prompt is tied to the user gesture (required by Chrome, Safari, etc.).
+    setPhase('requesting')
+
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then((stream) => beginRecording(stream, mimeType))
+      .catch((err: unknown) => {
+        stopTimer()
+        stopStream()
+        setPhase('idle')
+
+        if (err instanceof DOMException) {
+          if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+            setMicPermission('denied')
+            onUploadError?.(
+              new Error(
+                'Microphone access was denied. Click the lock/site icon in your browser address bar, allow microphone access, then try again.',
+              ),
+            )
+            return
+          }
+          if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+            onUploadError?.(new Error('No microphone was found on this device.'))
+            return
+          }
+        }
+
+        onUploadError?.(
+          new Error(err instanceof Error ? err.message : 'Could not access microphone'),
+        )
+      })
+  }, [beginRecording, onUploadError, stopStream, stopTimer])
 
   const stopRecording = useCallback(() => {
     const recorder = mediaRecorderRef.current
@@ -257,7 +305,7 @@ export function AudioRecorder({
       {phase === 'idle' && (
         <button
           type="button"
-          onClick={() => void startRecording()}
+          onClick={handleRecordClick}
           className="flex w-full items-center justify-center gap-2 border py-3 font-body text-sm transition-all"
           style={{
             borderColor: 'var(--a-border)',
@@ -277,6 +325,13 @@ export function AudioRecorder({
           <Mic size={16} />
           Record audio directly
         </button>
+      )}
+
+      {phase === 'requesting' && (
+        <div className="flex items-center justify-center gap-2 py-3 font-body text-sm" style={{ color: 'var(--a-text-muted)' }}>
+          <Loader2 size={16} className="animate-spin" />
+          Allow microphone access in your browser…
+        </div>
       )}
 
       {phase === 'recording' && (
@@ -312,7 +367,10 @@ export function AudioRecorder({
           <div className="flex gap-2">
             <button
               type="button"
-              onClick={discardRecording}
+              onClick={() => {
+                discardRecording()
+                handleRecordClick()
+              }}
               className="flex flex-1 items-center justify-center gap-2 border py-2.5 font-body text-xs transition-all"
               style={{ borderColor: 'var(--a-border)', color: 'var(--a-text-muted)' }}
             >
