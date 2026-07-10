@@ -25,6 +25,17 @@ const MIME_CANDIDATES = [
   'audio/ogg',
 ]
 
+function isMicrophoneAllowedByPolicy(): boolean {
+  if (typeof document === 'undefined') return true
+  const doc = document as Document & {
+    permissionsPolicy?: { allowsFeature: (feature: string) => boolean }
+    featurePolicy?: { allowsFeature: (feature: string) => boolean }
+  }
+  const policy = doc.permissionsPolicy ?? doc.featurePolicy
+  if (!policy?.allowsFeature) return true
+  return policy.allowsFeature('microphone')
+}
+
 function getRecorderMimeType(): string {
   if (typeof MediaRecorder === 'undefined') return ''
   for (const type of MIME_CANDIDATES) {
@@ -168,6 +179,15 @@ export function AudioRecorder({
   const handleRecordClick = useCallback(() => {
     if (typeof navigator === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
       onUploadError?.(new Error('Recording is not supported in this browser'))
+      return
+    }
+
+    if (!isMicrophoneAllowedByPolicy()) {
+      onUploadError?.(
+        new Error(
+          'Microphone is blocked by this site’s security settings. Contact your administrator or refresh after the site is updated.',
+        ),
+      )
       return
     }
 
