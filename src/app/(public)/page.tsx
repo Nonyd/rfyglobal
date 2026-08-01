@@ -1,5 +1,6 @@
 import { Hero } from '@/components/landing/Hero'
 import { FeaturedEvent } from '@/components/landing/FeaturedEvent'
+import { PastEditions } from '@/components/landing/PastEditions'
 import { ScriptureStrip } from '@/components/landing/ScriptureStrip'
 import { StatsSection } from '@/components/landing/StatsSection'
 import { VisionSection } from '@/components/landing/VisionSection'
@@ -31,7 +32,7 @@ export const dynamic = 'force-dynamic'
 export default async function HomePage() {
   const now = new Date()
 
-  const [content, galleryImages, nextEvent] = await Promise.all([
+  const [content, galleryImages, nextEvent, liveVideos] = await Promise.all([
     getContentMany([...HOME_CMS_KEYS]),
     db.galleryImage
       .findMany({
@@ -63,6 +64,22 @@ export default async function HomePage() {
         },
       })
       .catch(() => null),
+    db.rfyLiveVideo
+      .findMany({
+        where: { isActive: true },
+        orderBy: { publishedAt: 'desc' },
+        take: 3,
+        select: {
+          id: true,
+          youtubeVideoId: true,
+          title: true,
+          thumbnailUrl: true,
+          publishedAt: true,
+          durationSec: true,
+          viewCount: true,
+        },
+      })
+      .catch(() => []),
   ])
 
   let registrationFields: EventFormField[] = []
@@ -91,6 +108,7 @@ export default async function HomePage() {
           paystackEnabled={paystackEnabled}
         />
       ) : null}
+      {liveVideos.length > 0 ? <PastEditions videos={liveVideos} /> : null}
       {content['stats.enabled'] !== 'false' ? <StatsSection content={content} /> : null}
       <VisionSection content={content} />
       <ConfessionReveal content={content} />

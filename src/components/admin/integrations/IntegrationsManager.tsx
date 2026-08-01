@@ -2,7 +2,7 @@
 
 import { adminFetch } from '@/lib/admin-fetch'
 import { useState, useEffect } from 'react'
-import { ChevronDown, ChevronUp, Save, Settings, Shield } from 'lucide-react'
+import { ChevronDown, ChevronUp, RefreshCw, Save, Settings, Shield, Youtube } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { AdminToggle } from '@/components/shared/Toggle'
 import { cn } from '@/lib/utils'
@@ -104,9 +104,13 @@ const PAYMENT_SERVICE_IDS = ['paystack', 'flutterwave', 'payaza']
 
 interface IntegrationsManagerProps {
   initialData: Record<string, Record<string, unknown>>
+  initialPlaylistId?: string
 }
 
-export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
+export function IntegrationsManager({
+  initialData,
+  initialPlaylistId = '',
+}: IntegrationsManagerProps) {
   const [expanded, setExpanded] = useState<string | null>(null)
   const [values, setValues] = useState<Record<string, Record<string, string>>>(
     Object.fromEntries(
@@ -136,6 +140,9 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
   const [saving, setSaving] = useState<string | null>(null)
   const [paymentSettings, setPaymentSettings] = useState({ usdEnabled: false })
   const [savingPaymentSettings, setSavingPaymentSettings] = useState(false)
+  const [playlistId, setPlaylistId] = useState(initialPlaylistId)
+  const [savingPlaylist, setSavingPlaylist] = useState(false)
+  const [syncingLive, setSyncingLive] = useState(false)
 
   useEffect(() => {
     adminFetch('/api/admin/payment-settings')
@@ -145,6 +152,41 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
       )
       .catch(() => {})
   }, [])
+
+  const savePlaylistId = async () => {
+    setSavingPlaylist(true)
+    try {
+      const res = await adminFetch('/api/admin/rfy-settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key: 'rfy_live_playlist_id', value: playlistId.trim() }),
+      })
+      if (!res.ok) throw new Error('Failed')
+      toast.success('RFY Live playlist ID saved')
+    } catch {
+      toast.error('Failed to save playlist ID')
+    } finally {
+      setSavingPlaylist(false)
+    }
+  }
+
+  const syncLivePlaylist = async () => {
+    setSyncingLive(true)
+    try {
+      const res = await adminFetch('/api/admin/rfy-live/sync', { method: 'POST' })
+      const data = (await res.json()) as { synced?: number; error?: string }
+      if (!res.ok) throw new Error(data.error || 'Sync failed')
+      if (data.error) {
+        toast.error(data.error)
+        return
+      }
+      toast.success(`Synced ${data.synced ?? 0} video${data.synced === 1 ? '' : 's'}`)
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Sync failed')
+    } finally {
+      setSyncingLive(false)
+    }
+  }
 
   const savePaymentSetting = async (key: 'usdEnabled', value: boolean) => {
     const prev = paymentSettings.usdEnabled
@@ -268,6 +310,82 @@ export function IntegrationsManager({ initialData }: IntegrationsManagerProps) {
             disabled={savingPaymentSettings}
             aria-label="USD Payments"
           />
+        </div>
+      </div>
+
+      <div
+        className="mb-3 border p-5"
+        style={{ borderColor: 'var(--a-border)', background: 'var(--a-surface)' }}
+      >
+        <div className="mb-4 flex items-center gap-3">
+          <div
+            className="flex h-9 w-9 items-center justify-center"
+            style={{ background: 'var(--a-bg)' }}
+          >
+            <Youtube size={16} style={{ color: 'var(--a-gold)' }} />
+          </div>
+          <div>
+            <p className="font-body text-sm font-semibold" style={{ color: 'var(--a-text)' }}>
+              Room For You Live
+            </p>
+            <p className="font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
+              YouTube playlist for past live editions on the homepage and /live
+            </p>
+          </div>
+        </div>
+
+        <div className="border-t pt-4" style={{ borderColor: 'var(--a-border)' }}>
+          <label
+            className="mb-2 block font-body text-xs font-medium uppercase tracking-widest"
+            style={{ color: 'var(--a-text-secondary)' }}
+            htmlFor="rfy-live-playlist-id"
+          >
+            RFY Live Playlist ID
+          </label>
+          <input
+            id="rfy-live-playlist-id"
+            type="text"
+            value={playlistId}
+            onChange={(e) => setPlaylistId(e.target.value)}
+            placeholder="PLxxxxxxxxxxxxxxxxxx"
+            autoComplete="off"
+            spellCheck={false}
+            className="w-full border px-4 py-3 font-mono text-sm transition-colors focus:outline-none"
+            style={{
+              background: 'var(--a-bg)',
+              borderColor: 'var(--a-border)',
+              color: 'var(--a-text)',
+            }}
+            onFocus={(e) => (e.target.style.borderColor = 'var(--a-gold)')}
+            onBlur={(e) => (e.target.style.borderColor = 'var(--a-border)')}
+          />
+          <p className="mt-1 font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
+            YouTube playlist ID for past Room For You live editions. Find it in the playlist URL:
+            youtube.com/playlist?list=XXXXX
+          </p>
+
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              onClick={() => void savePlaylistId()}
+              disabled={savingPlaylist}
+              className="flex items-center gap-2 px-5 py-2.5 text-sm font-body font-medium transition-colors disabled:opacity-40"
+              style={{ background: 'var(--a-gold)', color: 'var(--a-text-inverse)' }}
+            >
+              <Save size={14} />
+              {savingPlaylist ? 'Saving...' : 'Save Playlist ID'}
+            </button>
+            <button
+              type="button"
+              onClick={() => void syncLivePlaylist()}
+              disabled={syncingLive}
+              className="flex items-center gap-2 border px-5 py-2.5 text-sm font-body font-medium transition-colors disabled:opacity-40"
+              style={{ borderColor: 'var(--a-border)', color: 'var(--a-text)' }}
+            >
+              <RefreshCw size={14} className={syncingLive ? 'animate-spin' : undefined} />
+              {syncingLive ? 'Syncing...' : 'Sync Now'}
+            </button>
+          </div>
         </div>
       </div>
 

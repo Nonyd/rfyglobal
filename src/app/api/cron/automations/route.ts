@@ -19,6 +19,7 @@ import {
   runNewYearAutomation,
   runEasterAutomation,
 } from '@/lib/automation-runners/special-dates'
+import { syncRfyLivePlaylist } from '@/lib/rfy-youtube-sync'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -35,7 +36,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const results: Record<string, string> = {}
+  const results: Record<string, unknown> = {}
 
   if (await isAutomationEnabled('birthday')) {
     results.birthday = await runBirthdayAutomation()
@@ -63,6 +64,13 @@ export async function GET(req: NextRequest) {
 
   if (await isAutomationEnabled('easter')) {
     results.easter = await runEasterAutomation()
+  }
+
+  try {
+    const youtubeResult = await syncRfyLivePlaylist()
+    results.youtube = youtubeResult
+  } catch (e) {
+    results.youtube = { error: String(e) }
   }
 
   return NextResponse.json({

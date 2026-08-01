@@ -15,7 +15,12 @@ const NON_SECRET_KEYS = new Set([
 ])
 
 export default async function IntegrationsPage() {
-  const records = await db.credential.findMany({ orderBy: { service: 'asc' } })
+  const [records, playlistSetting] = await Promise.all([
+    db.credential.findMany({ orderBy: { service: 'asc' } }),
+    db.rfySetting
+      .findUnique({ where: { key: 'rfy_live_playlist_id' } })
+      .catch(() => null),
+  ])
   const initialData = Object.fromEntries(
     records.map((record) => {
       try {
@@ -35,5 +40,10 @@ export default async function IntegrationsPage() {
     })
   )
 
-  return <IntegrationsManager initialData={initialData} />
+  const initialPlaylistId =
+    playlistSetting?.value || process.env.RFY_LIVE_PLAYLIST_ID || ''
+
+  return (
+    <IntegrationsManager initialData={initialData} initialPlaylistId={initialPlaylistId} />
+  )
 }

@@ -85,6 +85,8 @@ const nextConfig = {
       { protocol: 'https', hostname: 'res.cloudinary.com' },
       { protocol: 'https', hostname: 'rfyglobal.org', pathname: '/uploads/**' },
       { protocol: 'https', hostname: 'www.rfyglobal.org', pathname: '/uploads/**' },
+      { protocol: 'https', hostname: 'i.ytimg.com' },
+      { protocol: 'https', hostname: 'img.youtube.com' },
     ],
     /** Allow CMS uploads that are SVGs on Cloudinary; without this, next/image rejects many remote SVGs. */
     dangerouslyAllowSVG: true,
