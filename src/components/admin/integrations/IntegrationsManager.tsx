@@ -163,7 +163,7 @@ export function IntegrationsManager({
     setYoutubeSettings((prev) => ({ ...prev, [key]: value }))
   }
 
-  const saveYoutubeSettings = async () => {
+  const saveYoutubeSettings = async (opts?: { silent?: boolean }) => {
     setSavingYoutube(true)
     try {
       const res = await adminFetch('/api/admin/rfy-settings', {
@@ -178,9 +178,11 @@ export function IntegrationsManager({
         }),
       })
       if (!res.ok) throw new Error('Failed')
-      toast.success('YouTube Live settings saved')
+      if (!opts?.silent) toast.success('YouTube Live settings saved')
+      return true
     } catch {
       toast.error('Failed to save YouTube settings')
+      return false
     } finally {
       setSavingYoutube(false)
     }
@@ -189,8 +191,15 @@ export function IntegrationsManager({
   const syncLivePlaylist = async () => {
     setSyncingLive(true)
     try {
+      // Persist current form values first so Sync uses what the admin just typed
+      const saved = await saveYoutubeSettings({ silent: true })
+      if (!saved) return
+
       const res = await adminFetch('/api/admin/rfy-live/sync', { method: 'POST' })
-      const data = (await res.json()) as { synced?: number; error?: string }
+      const data = (await res.json().catch(() => ({}))) as {
+        synced?: number
+        error?: string
+      }
       if (!res.ok) throw new Error(data.error || 'Sync failed')
       if (data.error) {
         toast.error(data.error)

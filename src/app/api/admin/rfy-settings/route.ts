@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { maskSecret } from '@/lib/encryption'
+import { normalizeApiKey, normalizePlaylistId } from '@/lib/rfy-youtube-sync'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -22,6 +23,12 @@ const ENV_FALLBACKS: Record<SettingKey, string> = {
 
 function isAllowedKey(key: string): key is SettingKey {
   return (ALLOWED_KEYS as readonly string[]).includes(key)
+}
+
+function normalizeSettingValue(key: SettingKey, raw: string): string {
+  if (key === 'youtube_api_key') return normalizeApiKey(raw)
+  if (key === 'rfy_live_playlist_id') return normalizePlaylistId(raw)
+  return raw.trim().replace(/^["']|["']$/g, '')
 }
 
 export async function GET() {
@@ -64,10 +71,10 @@ export async function POST(req: NextRequest) {
       if (!isAllowedKey(rawKey)) continue
       if (typeof rawValue !== 'string') continue
 
-      let value = rawValue.trim()
+      let value = normalizeSettingValue(rawKey, rawValue)
 
       // Don't overwrite secrets when the client still has a masked value
-      if (rawKey === 'youtube_api_key' && value.includes('•')) {
+      if (rawKey === 'youtube_api_key' && (rawValue.includes('•') || value.includes('•'))) {
         const existing = await db.rfySetting.findUnique({ where: { key: rawKey } })
         if (existing?.value) continue
         // If no DB value yet but env exists, keep env — skip writing masked junk
@@ -93,17 +100,19 @@ export async function POST(req: NextRequest) {
 
   // Single key save (legacy)
   const key = body.key?.trim()
-  const value = typeof body.value === 'string' ? body.value.trim() : ''
+  const rawValue = typeof body.value === 'string' ? body.value : ''
 
   if (!key || !isAllowedKey(key)) {
     return NextResponse.json({ error: 'Invalid setting key' }, { status: 400 })
   }
 
-  if (key === 'youtube_api_key' && value.includes('•')) {
+  if (key === 'youtube_api_key' && rawValue.includes('•')) {
     const existing = await db.rfySetting.findUnique({ where: { key } })
     if (existing) return NextResponse.json(existing)
     return NextResponse.json({ error: 'Enter a new API key to update' }, { status: 400 })
   }
+
+  const value = normalizeSettingValue(key, rawValue)
 
   const record = await db.rfySetting.upsert({
     where: { key },
