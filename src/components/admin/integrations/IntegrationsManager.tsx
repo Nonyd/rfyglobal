@@ -102,14 +102,20 @@ const SERVICES: ServiceConfig[] = [
 ]
 const PAYMENT_SERVICE_IDS = ['paystack', 'flutterwave', 'payaza']
 
+export type YoutubeLiveSettings = {
+  apiKey: string
+  channelId: string
+  playlistId: string
+}
+
 interface IntegrationsManagerProps {
   initialData: Record<string, Record<string, unknown>>
-  initialPlaylistId?: string
+  initialYoutube?: YoutubeLiveSettings
 }
 
 export function IntegrationsManager({
   initialData,
-  initialPlaylistId = '',
+  initialYoutube = { apiKey: '', channelId: '', playlistId: '' },
 }: IntegrationsManagerProps) {
   const [expanded, setExpanded] = useState<string | null>(null)
   const [values, setValues] = useState<Record<string, Record<string, string>>>(
@@ -140,8 +146,8 @@ export function IntegrationsManager({
   const [saving, setSaving] = useState<string | null>(null)
   const [paymentSettings, setPaymentSettings] = useState({ usdEnabled: false })
   const [savingPaymentSettings, setSavingPaymentSettings] = useState(false)
-  const [playlistId, setPlaylistId] = useState(initialPlaylistId)
-  const [savingPlaylist, setSavingPlaylist] = useState(false)
+  const [youtubeSettings, setYoutubeSettings] = useState<YoutubeLiveSettings>(initialYoutube)
+  const [savingYoutube, setSavingYoutube] = useState(false)
   const [syncingLive, setSyncingLive] = useState(false)
 
   useEffect(() => {
@@ -153,20 +159,30 @@ export function IntegrationsManager({
       .catch(() => {})
   }, [])
 
-  const savePlaylistId = async () => {
-    setSavingPlaylist(true)
+  const updateYoutubeField = (key: keyof YoutubeLiveSettings, value: string) => {
+    setYoutubeSettings((prev) => ({ ...prev, [key]: value }))
+  }
+
+  const saveYoutubeSettings = async () => {
+    setSavingYoutube(true)
     try {
       const res = await adminFetch('/api/admin/rfy-settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ key: 'rfy_live_playlist_id', value: playlistId.trim() }),
+        body: JSON.stringify({
+          settings: {
+            youtube_api_key: youtubeSettings.apiKey.trim(),
+            youtube_channel_id: youtubeSettings.channelId.trim(),
+            rfy_live_playlist_id: youtubeSettings.playlistId.trim(),
+          },
+        }),
       })
       if (!res.ok) throw new Error('Failed')
-      toast.success('RFY Live playlist ID saved')
+      toast.success('YouTube Live settings saved')
     } catch {
-      toast.error('Failed to save playlist ID')
+      toast.error('Failed to save YouTube settings')
     } finally {
-      setSavingPlaylist(false)
+      setSavingYoutube(false)
     }
   }
 
@@ -329,51 +345,113 @@ export function IntegrationsManager({
               Room For You Live
             </p>
             <p className="font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
-              YouTube playlist for past live editions on the homepage and /live
+              YouTube Data API settings for past live editions on the homepage and /live
             </p>
           </div>
         </div>
 
-        <div className="border-t pt-4" style={{ borderColor: 'var(--a-border)' }}>
-          <label
-            className="mb-2 block font-body text-xs font-medium uppercase tracking-widest"
-            style={{ color: 'var(--a-text-secondary)' }}
-            htmlFor="rfy-live-playlist-id"
-          >
-            RFY Live Playlist ID
-          </label>
-          <input
-            id="rfy-live-playlist-id"
-            type="text"
-            value={playlistId}
-            onChange={(e) => setPlaylistId(e.target.value)}
-            placeholder="PLxxxxxxxxxxxxxxxxxx"
-            autoComplete="off"
-            spellCheck={false}
-            className="w-full border px-4 py-3 font-mono text-sm transition-colors focus:outline-none"
-            style={{
-              background: 'var(--a-bg)',
-              borderColor: 'var(--a-border)',
-              color: 'var(--a-text)',
-            }}
-            onFocus={(e) => (e.target.style.borderColor = 'var(--a-gold)')}
-            onBlur={(e) => (e.target.style.borderColor = 'var(--a-border)')}
-          />
-          <p className="mt-1 font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
-            YouTube playlist ID for past Room For You live editions. Find it in the playlist URL:
-            youtube.com/playlist?list=XXXXX
-          </p>
+        <div className="space-y-4 border-t pt-4" style={{ borderColor: 'var(--a-border)' }}>
+          <div>
+            <label
+              className="mb-2 block font-body text-xs font-medium uppercase tracking-widest"
+              style={{ color: 'var(--a-text-secondary)' }}
+              htmlFor="youtube-api-key"
+            >
+              YouTube API Key
+            </label>
+            <input
+              id="youtube-api-key"
+              type="password"
+              value={youtubeSettings.apiKey}
+              onChange={(e) => updateYoutubeField('apiKey', e.target.value)}
+              placeholder="AIza..."
+              autoComplete="off"
+              spellCheck={false}
+              className="w-full border px-4 py-3 font-mono text-sm transition-colors focus:outline-none"
+              style={{
+                background: 'var(--a-bg)',
+                borderColor: 'var(--a-border)',
+                color: 'var(--a-text)',
+              }}
+              onFocus={(e) => (e.target.style.borderColor = 'var(--a-gold)')}
+              onBlur={(e) => (e.target.style.borderColor = 'var(--a-border)')}
+            />
+            <p className="mt-1 font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
+              Google Cloud YouTube Data API v3 key. Masked after save — type a new value to update.
+            </p>
+          </div>
 
-          <div className="mt-4 flex flex-wrap items-center gap-3">
+          <div>
+            <label
+              className="mb-2 block font-body text-xs font-medium uppercase tracking-widest"
+              style={{ color: 'var(--a-text-secondary)' }}
+              htmlFor="youtube-channel-id"
+            >
+              YouTube Channel ID
+            </label>
+            <input
+              id="youtube-channel-id"
+              type="text"
+              value={youtubeSettings.channelId}
+              onChange={(e) => updateYoutubeField('channelId', e.target.value)}
+              placeholder="UCxxxxxxxxxxxxxxxxxx"
+              autoComplete="off"
+              spellCheck={false}
+              className="w-full border px-4 py-3 font-mono text-sm transition-colors focus:outline-none"
+              style={{
+                background: 'var(--a-bg)',
+                borderColor: 'var(--a-border)',
+                color: 'var(--a-text)',
+              }}
+              onFocus={(e) => (e.target.style.borderColor = 'var(--a-gold)')}
+              onBlur={(e) => (e.target.style.borderColor = 'var(--a-border)')}
+            />
+            <p className="mt-1 font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
+              Same channel as Yadahworld (default: UCvNAZbtM-sWGJs0jlA-Tbag).
+            </p>
+          </div>
+
+          <div>
+            <label
+              className="mb-2 block font-body text-xs font-medium uppercase tracking-widest"
+              style={{ color: 'var(--a-text-secondary)' }}
+              htmlFor="rfy-live-playlist-id"
+            >
+              RFY Live Playlist ID
+            </label>
+            <input
+              id="rfy-live-playlist-id"
+              type="text"
+              value={youtubeSettings.playlistId}
+              onChange={(e) => updateYoutubeField('playlistId', e.target.value)}
+              placeholder="PLxxxxxxxxxxxxxxxxxx"
+              autoComplete="off"
+              spellCheck={false}
+              className="w-full border px-4 py-3 font-mono text-sm transition-colors focus:outline-none"
+              style={{
+                background: 'var(--a-bg)',
+                borderColor: 'var(--a-border)',
+                color: 'var(--a-text)',
+              }}
+              onFocus={(e) => (e.target.style.borderColor = 'var(--a-gold)')}
+              onBlur={(e) => (e.target.style.borderColor = 'var(--a-border)')}
+            />
+            <p className="mt-1 font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
+              Playlist for past Room For You live editions. From the URL:
+              youtube.com/playlist?list=XXXXX
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3 pt-1">
             <button
               type="button"
-              onClick={() => void savePlaylistId()}
-              disabled={savingPlaylist}
+              onClick={() => void saveYoutubeSettings()}
+              disabled={savingYoutube}
               className="flex items-center gap-2 px-5 py-2.5 text-sm font-body font-medium transition-colors disabled:opacity-40"
               style={{ background: 'var(--a-gold)', color: 'var(--a-text-inverse)' }}
             >
               <Save size={14} />
-              {savingPlaylist ? 'Saving...' : 'Save Playlist ID'}
+              {savingYoutube ? 'Saving...' : 'Save YouTube Settings'}
             </button>
             <button
               type="button"

@@ -5,19 +5,27 @@ export { formatDuration }
 
 const YOUTUBE_API_BASE = 'https://www.googleapis.com/youtube/v3'
 
-function getApiKey(): string {
-  return process.env.YOUTUBE_API_KEY ?? ''
+async function getSetting(key: string, envFallback = ''): Promise<string> {
+  try {
+    const setting = await db.rfySetting.findUnique({ where: { key } })
+    const value = setting?.value?.trim()
+    if (value) return value
+  } catch {
+    // fall through to env
+  }
+  return envFallback.trim()
+}
+
+async function getApiKey(): Promise<string> {
+  return getSetting('youtube_api_key', process.env.YOUTUBE_API_KEY ?? '')
 }
 
 async function getPlaylistId(): Promise<string | null> {
-  try {
-    const setting = await db.rfySetting.findUnique({
-      where: { key: 'rfy_live_playlist_id' },
-    })
-    return setting?.value || process.env.RFY_LIVE_PLAYLIST_ID || null
-  } catch {
-    return process.env.RFY_LIVE_PLAYLIST_ID || null
-  }
+  const value = await getSetting(
+    'rfy_live_playlist_id',
+    process.env.RFY_LIVE_PLAYLIST_ID ?? '',
+  )
+  return value || null
 }
 
 function parseISODuration(iso: string): number {
@@ -51,7 +59,7 @@ type YoutubeVideosResponse = {
 }
 
 export async function syncRfyLivePlaylist(): Promise<{ synced: number; error?: string }> {
-  const apiKey = getApiKey()
+  const apiKey = await getApiKey()
   const playlistId = await getPlaylistId()
 
   if (!apiKey) return { synced: 0, error: 'No YouTube API key configured' }
