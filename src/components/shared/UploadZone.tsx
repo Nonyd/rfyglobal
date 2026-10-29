@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import type { CloudinaryFolder, ResourceType } from '@/lib/cloudinary-client'
+import type { UploadFolder, ResourceType } from '@/lib/upload-client'
 import { Upload, X, CheckCircle, AlertCircle, Image as ImageIcon, Music, FileText } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import toast from 'react-hot-toast'
@@ -23,7 +23,7 @@ export interface UploadPartialResult {
 }
 
 interface UploadZoneProps {
-  folder: CloudinaryFolder
+  folder: UploadFolder
   resourceType?: ResourceType
   /**
    * Fired once at the end of a batch with all successfully uploaded files.

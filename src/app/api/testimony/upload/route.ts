@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   const originalName = `testimony${extFromMime && extMap[extFromMime] ? extMap[extFromMime] : '.jpg'}`
 
   try {
-    const result = await uploadBase64ToStorage(parsed.data.file, originalName, 'testimony', 'image')
+    const result = await uploadBase64ToStorage(parsed.data.file, originalName, 'testimony')
 
     return NextResponse.json({
       url: result.url,

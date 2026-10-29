@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react'
 
-export type CloudinaryFolder =
+export type UploadFolder =
   | 'blogCover'
   | 'blogInline'
   | 'scriptureAudio'
@@ -16,7 +16,7 @@ export type CloudinaryFolder =
 
 export type ResourceType = 'image' | 'video' | 'raw'
 
-export interface CloudinaryUploadResult {
+export interface UploadClientResult {
   url: string
   publicId: string
   width?: number
@@ -25,26 +25,26 @@ export interface CloudinaryUploadResult {
   bytes?: number
 }
 
-interface UseCloudinaryUploadOptions {
-  folder: CloudinaryFolder
+interface UseUploadOptions {
+  folder: UploadFolder
   resourceType?: ResourceType
   onProgress?: (progress: number) => void
-  onComplete?: (result: CloudinaryUploadResult) => void
+  onComplete?: (result: UploadClientResult) => void
   onError?: (error: string) => void
 }
 
-export function useCloudinaryUpload({
+export function useUpload({
   folder,
   resourceType = 'image',
   onProgress,
   onComplete,
   onError,
-}: UseCloudinaryUploadOptions) {
+}: UseUploadOptions) {
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
 
   const upload = useCallback(
-    async (file: File): Promise<CloudinaryUploadResult | null> => {
+    async (file: File): Promise<UploadClientResult | null> => {
       setUploading(true)
       setProgress(0)
 
@@ -73,7 +73,7 @@ export function useCloudinaryUpload({
           throw new Error(err.error ?? 'Upload failed')
         }
 
-        const result: CloudinaryUploadResult = await res.json()
+        const result: UploadClientResult = await res.json()
         setProgress(100)
         onProgress?.(100)
         onComplete?.(result)
@@ -90,8 +90,8 @@ export function useCloudinaryUpload({
   )
 
   const uploadMany = useCallback(
-    async (files: File[]): Promise<CloudinaryUploadResult[]> => {
-      const results: CloudinaryUploadResult[] = []
+    async (files: File[]): Promise<UploadClientResult[]> => {
+      const results: UploadClientResult[] = []
       for (const file of files) {
         const result = await upload(file)
         if (result) results.push(result)

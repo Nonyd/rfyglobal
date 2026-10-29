@@ -29,7 +29,6 @@ const CSP = `
     https://unlayer.com;
   connect-src 'self'
     https://rfyglobal.org
-    https://api.cloudinary.com
     https://api.paystack.co
     https://api.flutterwave.com
     https://api.payaza.africa
@@ -82,13 +81,14 @@ const nextConfig = {
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'images.unsplash.com' },
+      // Legacy: DB rows uploaded before Cloudinary was removed may still point here.
       { protocol: 'https', hostname: 'res.cloudinary.com' },
       { protocol: 'https', hostname: 'rfyglobal.org', pathname: '/uploads/**' },
       { protocol: 'https', hostname: 'www.rfyglobal.org', pathname: '/uploads/**' },
       { protocol: 'https', hostname: 'i.ytimg.com' },
       { protocol: 'https', hostname: 'img.youtube.com' },
     ],
-    /** Allow CMS uploads that are SVGs on Cloudinary; without this, next/image rejects many remote SVGs. */
+    /** Allow CMS uploads that are SVGs; without this, next/image rejects them. */
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     formats: ['image/avif', 'image/webp'],

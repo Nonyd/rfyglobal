@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
   const originalName = `upload${extFromMime && extMap[extFromMime] ? extMap[extFromMime] : fallbackExt}`
 
   try {
-    const result = await uploadBase64ToStorage(file, originalName, folder, resourceType)
+    const result = await uploadBase64ToStorage(file, originalName, folder)
 
     return NextResponse.json({
       url: result.url,

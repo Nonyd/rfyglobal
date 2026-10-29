@@ -1,5 +1,4 @@
-// Dev-only fallback when UPLOAD_STORAGE=local or Cloudinary env is unset.
-// Not durable on Vercel/serverless — production uses Cloudinary via upload-storage.ts.
+// Writes uploads to disk under public/uploads/<folder>. Sole upload backend (Cloudinary removed).
 
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'

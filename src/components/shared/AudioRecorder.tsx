@@ -2,11 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Mic, Square, RotateCcw, Upload as UploadIcon, Loader2 } from 'lucide-react'
-import type { CloudinaryFolder, ResourceType } from '@/lib/cloudinary-client'
+import type { UploadFolder, ResourceType } from '@/lib/upload-client'
 import { cn } from '@/lib/utils'
 
 interface AudioRecorderProps {
-  folder: CloudinaryFolder
+  folder: UploadFolder
   resourceType?: ResourceType
   maxFileSizeMB?: number
   onUploadComplete: (url: string) => void

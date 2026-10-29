@@ -81,7 +81,7 @@ export default function PrivacyPolicyPage() {
           <section>
             <h2 className="font-display text-snow text-2xl mb-4">4. Data Storage and Security</h2>
             <p className="font-body text-mist leading-relaxed">
-              Your data is stored securely on servers provided by Neon (PostgreSQL) and hosted via Vercel. We implement
+              Your data and uploaded media are stored securely on our own dedicated server. We implement
               industry-standard security measures including encryption in transit (HTTPS) and at rest. Payment
               credentials are encrypted using AES-256-GCM before storage and are never returned in plain text. Despite
               our best efforts, no method of transmission over the Internet is 100% secure.
@@ -118,7 +118,7 @@ export default function PrivacyPolicyPage() {
             <h2 className="font-display text-snow text-2xl mb-4">6. Third-Party Services</h2>
             <p className="font-body text-mist leading-relaxed">
               We use the following third-party services which have their own privacy policies: Brevo (email delivery),
-              Paystack, Flutterwave, and Payaza (payment processing), Cloudinary (media storage), and Vercel (hosting).
+              Paystack, Flutterwave, and Payaza (payment processing).
               We encourage you to review their respective privacy policies.
             </p>
           </section>

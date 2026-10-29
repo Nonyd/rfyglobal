@@ -3,7 +3,7 @@
 import { adminFetch } from '@/lib/admin-fetch'
 import { useState } from 'react'
 import { UploadZone } from '@/components/shared/UploadZone'
-import type { CloudinaryFolder } from '@/lib/cloudinary-client'
+import type { UploadFolder } from '@/lib/upload-client'
 import { cn } from '@/lib/utils'
 import toast from 'react-hot-toast'
 import { RotateCcw } from 'lucide-react'
@@ -14,8 +14,8 @@ export interface CMSField {
   type: 'text' | 'textarea' | 'image' | 'video' | 'url' | 'toggle'
   placeholder?: string
   hint?: string
-  /** Cloudinary folder for image uploads (default: cms) */
-  uploadFolder?: CloudinaryFolder
+  /** Upload folder for image uploads (default: cms) */
+  uploadFolder?: UploadFolder
 }
 
 interface CMSEditorProps {

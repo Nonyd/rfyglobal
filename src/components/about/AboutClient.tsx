@@ -28,17 +28,7 @@ export function AboutClient({ content }: { content: Record<string, string> }) {
   const fallbackPortrait = '/images/yadah-portrait.svg'
   const portrait = rawImage || fallbackPortrait
 
-  /**
-   * CMS uploads are usually https://res.cloudinary.com/.../image/upload/...
-   * Apply light transforms for raster photos only. Skip for SVGs (optimizer/Cloudinary crop quirks).
-   * Avoid `g_face` — it can fail when no face is detected, which breaks the image on the page.
-   */
-  const isRasterCloudinary =
-    /^https?:\/\/res\.cloudinary\.com\//i.test(portrait) && !/\.svg(\?|#|$)/i.test(portrait.split('?')[0])
-
-  const portraitUrl = isRasterCloudinary
-    ? portrait.replace('/upload/', '/upload/w_600,h_700,c_fill,f_auto,q_auto/')
-    : portrait
+  const portraitUrl = portrait
 
   const portraitUnoptimized = /\.svg(\?|#|$)/i.test(portraitUrl)
   const bioParagraphs = content['about.yadah.bio'].split(/\n\n+/).filter(Boolean)
