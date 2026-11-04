@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { gsap } from 'gsap'
 import { Navbar } from '@/components/layout/Navbar'
+import { shouldBypassImageOptimization } from '@/lib/image-display'
 
 const HERO_GRADIENT = `
   radial-gradient(ellipse 70% 60% at 70% 40%, rgba(232,0,28,0.18) 0%, transparent 60%),
@@ -86,15 +87,17 @@ export function Hero({ content }: { content: Record<string, string> }) {
     const ctx = gsap.context(() => {
       gsap.set(root.querySelectorAll(selector), { opacity: 1 })
 
-      const tl = gsap.timeline({ delay: 0.1 })
+      // Motion only, no fade-from-zero on the text or CTAs: the server-rendered hero stays readable and
+      // clickable from first paint, even on slow phones where hydration is late. Whole sequence ≈ 1s.
+      const tl = gsap.timeline()
 
-      tl.from('[data-hero-eyebrow]', { opacity: 0, duration: 0.8, ease: 'power2.out' })
-        .from('[data-hero-line1]', { y: 40, duration: 0.9, ease: 'power3.out' }, '-=0.5')
-        .from('[data-hero-line2]', { y: 40, duration: 0.9, ease: 'power3.out' }, '-=0.7')
-        .from('[data-hero-line3]', { y: 40, duration: 0.9, ease: 'power3.out' }, '-=0.7')
-        .from('[data-hero-gold-line]', { scaleX: 0, opacity: 0, duration: 1.2, ease: 'power3.out' }, '-=0.3')
-        .from('[data-hero-sub]', { y: 20, opacity: 0, duration: 0.8, ease: 'power2.out' }, '-=0.5')
-        .from('[data-hero-ctas]', { y: 20, opacity: 0, duration: 0.8, ease: 'power2.out' }, '-=0.5')
+      tl.from('[data-hero-eyebrow]', { opacity: 0, duration: 0.5, ease: 'power2.out' })
+        .from('[data-hero-line1]', { y: 30, duration: 0.6, ease: 'power3.out' }, 0)
+        .from('[data-hero-line2]', { y: 30, duration: 0.6, ease: 'power3.out' }, 0.1)
+        .from('[data-hero-line3]', { y: 30, duration: 0.6, ease: 'power3.out' }, 0.2)
+        .from('[data-hero-gold-line]', { scaleX: 0, duration: 0.8, ease: 'power3.out' }, 0.3)
+        .from('[data-hero-sub]', { y: 16, duration: 0.6, ease: 'power2.out' }, 0.3)
+        .from('[data-hero-ctas]', { y: 16, duration: 0.6, ease: 'power2.out' }, 0.4)
     }, root)
 
     return () => {
@@ -143,7 +146,7 @@ export function Hero({ content }: { content: Record<string, string> }) {
             priority
             sizes="100vw"
             className="hero-bg-media object-cover"
-            unoptimized={bgImage.startsWith('/uploads/') || bgImage.endsWith('.svg')}
+            unoptimized={shouldBypassImageOptimization(bgImage)}
           />
         </div>
       ) : null}

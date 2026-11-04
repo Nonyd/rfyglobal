@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { format } from 'date-fns'
 import { isEventLive } from '@/lib/event-utils'
+import { NextGatheringNotice, type LastGathering } from '@/components/events/NextGatheringNotice'
 import {
   normalizeUploadSrc,
   shouldBypassImageOptimization,
@@ -25,9 +26,10 @@ export interface PublicEvent {
 interface EventsClientPageProps {
   events: PublicEvent[]
   cities: string[]
+  lastGathering?: LastGathering | null
 }
 
-export function EventsClientPage({ events, cities }: EventsClientPageProps) {
+export function EventsClientPage({ events, cities, lastGathering }: EventsClientPageProps) {
   const [activeCity, setActiveCity] = useState('All')
 
   const filtered =
@@ -55,7 +57,9 @@ export function EventsClientPage({ events, cities }: EventsClientPageProps) {
         </div>
       )}
 
-      {filtered.length === 0 ? (
+      {events.length === 0 ? (
+        <NextGatheringNotice lastGathering={lastGathering} />
+      ) : filtered.length === 0 ? (
         <div className="py-24 text-center">
           <p className="font-display text-2xl italic text-text-muted">
             No upcoming events in {activeCity} yet.

@@ -33,7 +33,8 @@ export function CookieBanner() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 24 }}
           transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-          className="fixed bottom-6 left-4 right-4 md:left-auto md:right-6 md:max-w-md z-[300]"
+          /* bottom-24 keeps it above the floating chat button (56px at bottom: 24px). */
+          className="fixed bottom-24 left-4 right-4 md:left-auto md:right-6 md:max-w-md z-[300]"
         >
           <div
             className="dark-surface cookie-banner p-5 flex flex-col gap-4"
@@ -46,8 +47,8 @@ export function CookieBanner() {
             <div>
               <p className="font-display text-snow text-base font-semibold mb-1">We use cookies</p>
               <p className="font-body text-mist text-xs leading-relaxed">
-                We use cookies to remember your preferences and improve your experience. By using this site,
-                you agree to our{' '}
+                We use cookies to remember your preferences and improve your experience. You can accept or
+                decline non-essential cookies. Read our{' '}
                 <Link
                   href="/cookies"
                   className="cookie-banner__link underline transition-opacity hover:opacity-80"

@@ -2,14 +2,16 @@ import { buildBirthdayEmail } from '@/lib/automation-email-html'
 import { db } from '@/lib/db'
 import { getTemplateHtml, getTemplateSubject, sendEmail } from '@/lib/brevo'
 import { EMAIL_SENDERS } from '@/lib/email-senders'
+import { automationToday, claimDailyRun } from '@/lib/automations'
 
 export { buildBirthdayEmail }
 
 export async function runBirthdayAutomation(): Promise<string> {
   try {
-    const today = new Date()
-    const todayMonth = today.getMonth() + 1
-    const todayDay = today.getDate()
+    const { month: todayMonth, day: todayDay } = automationToday()
+    if (!(await claimDailyRun('birthday'))) {
+      return 'Birthday wishes already sent today — skipped'
+    }
 
     const submissions = await db.formSubmission.findMany({
       include: { values: true },
@@ -56,7 +58,9 @@ export async function runBirthdayAutomation(): Promise<string> {
       if (!isBirthday && dobValue?.value) {
         const dob = new Date(dobValue.value)
         if (!isNaN(dob.getTime())) {
-          if (dob.getMonth() + 1 === todayMonth && dob.getDate() === todayDay) {
+          // Date-only values ("1998-05-14") parse as UTC midnight; read them back in UTC so the server
+          // timezone can't shift the day.
+          if (dob.getUTCMonth() + 1 === todayMonth && dob.getUTCDate() === todayDay) {
             isBirthday = true
           }
         }

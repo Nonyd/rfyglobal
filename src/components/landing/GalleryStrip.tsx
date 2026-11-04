@@ -87,7 +87,9 @@ export function GalleryStrip({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: 'top top',
-          end: () => `+=${getTotalWidth() * 1.2}`,
+          // Track moves faster than the page scrolls, capped at ~1.5 screens of pinned scrolling
+          // (was 1.2× the track width ≈ 5–6 screens, which felt stuck).
+          end: () => `+=${Math.min(getTotalWidth() * 0.5, window.innerHeight * 1.5)}`,
           scrub: 1.2,
           pin: true,
           anticipatePin: 1,

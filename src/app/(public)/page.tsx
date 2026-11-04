@@ -10,6 +10,7 @@ import { CommunityHighlights } from '@/components/landing/CommunityHighlights'
 import { GalleryStrip } from '@/components/landing/GalleryStrip'
 import { CTASection } from '@/components/landing/CTASection'
 import { Footer } from '@/components/layout/Footer'
+import { NextGatheringNotice } from '@/components/events/NextGatheringNotice'
 import { getContentMany } from '@/lib/content'
 import { HOME_CMS_KEYS } from '@/lib/cms-keys'
 import { db } from '@/lib/db'
@@ -27,12 +28,14 @@ export async function generateMetadata(): Promise<Metadata> {
   )
 }
 
-export const dynamic = 'force-dynamic'
+// Cached and regenerated in the background at most once a minute (was force-dynamic: every visit hit the DB
+// before the first byte). Admin edits show up within ~60s.
+export const revalidate = 60
 
 export default async function HomePage() {
   const now = new Date()
 
-  const [content, galleryImages, nextEvent, liveVideos] = await Promise.all([
+  const [content, galleryImages, nextEvent, liveVideos, lastGathering] = await Promise.all([
     getContentMany([...HOME_CMS_KEYS]),
     db.galleryImage
       .findMany({
@@ -80,6 +83,13 @@ export default async function HomePage() {
         },
       })
       .catch(() => []),
+    db.event
+      .findFirst({
+        where: { isActive: true, date: { lt: now } },
+        orderBy: { date: 'desc' },
+        select: { title: true, date: true, city: true },
+      })
+      .catch(() => null),
   ])
 
   let registrationFields: EventFormField[] = []
@@ -107,7 +117,9 @@ export default async function HomePage() {
           fields={registrationFields}
           paystackEnabled={paystackEnabled}
         />
-      ) : null}
+      ) : (
+        <NextGatheringNotice lastGathering={lastGathering} compact />
+      )}
       {liveVideos.length > 0 ? <PastEditions videos={liveVideos} /> : null}
       {content['stats.enabled'] !== 'false' ? <StatsSection content={content} /> : null}
       <VisionSection content={content} />

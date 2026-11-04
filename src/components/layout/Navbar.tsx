@@ -49,7 +49,7 @@ export function Navbar() {
   const onHomeHero = pathname === '/' && !scrolled
   const useLightNav = !onHomeHero && !isDark
   const logoLarge = !scrolled && (onHomeHero || (!isDark && pathname !== '/'))
-  const logoSrc = onHomeHero || isDark ? '/images/logo-white.png' : '/images/logo-dark.png'
+  const logoSrc = onHomeHero || isDark ? '/images/logo-white-nav.png' : '/images/logo-dark-nav.png'
   const linkColor = (href: string) => {
     if (pathname === href) return 'var(--color-accent)'
     if (onHomeHero) return 'rgba(255,255,255,0.65)'
@@ -76,7 +76,7 @@ export function Navbar() {
               src={logoSrc}
               alt="Room For You"
               style={{
-                height: logoLarge ? '60px' : '48px',
+                height: logoLarge ? '48px' : '40px',
                 width: 'auto',
                 objectFit: 'contain',
                 display: 'block',
@@ -165,9 +165,9 @@ export function Navbar() {
                 style={{ borderColor: 'var(--color-border)' }}
               >
                 <img
-                  src={isDark ? '/images/logo-white.png' : '/images/logo-dark.png'}
+                  src={isDark ? '/images/logo-white-nav.png' : '/images/logo-dark-nav.png'}
                   alt="Room For You"
-                  style={{ height: '40px', width: 'auto', objectFit: 'contain' }}
+                  style={{ height: '36px', width: 'auto', objectFit: 'contain' }}
                 />
                 <button
                   type="button"

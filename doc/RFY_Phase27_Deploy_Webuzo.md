@@ -372,7 +372,7 @@ const http = require('http')
 const crypto = require('crypto')
 const { exec } = require('child_process')
 
-const SECRET = 'rfyglobal-deploy-2026'
+const SECRET = process.env.DEPLOY_WEBHOOK_SECRET // redacted: old value was committed here; rotated
 const PORT = 9002
 
 function verifySignature(payload, signature) {
@@ -510,7 +510,7 @@ Go to **GitHub → `rfyglobal` repo → Settings → Webhooks → Add webhook**:
 
 - **Payload URL:** `https://rfyglobal.org/deploy`
 - **Content type:** `application/json`
-- **Secret:** `rfyglobal-deploy-2026`
+- **Secret:** value of `DEPLOY_WEBHOOK_SECRET` on the server (the old value was committed here and must be rotated)
 - **Which events:** Just the `push` event
 - Click **Add webhook**
 

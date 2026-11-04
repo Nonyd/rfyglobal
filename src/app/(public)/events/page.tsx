@@ -17,12 +17,20 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function EventsPage() {
-  const [events, cms] = await Promise.all([
+  const cutoff = getEventActiveCutoff()
+  const [events, cms, lastGathering] = await Promise.all([
     db.event.findMany({
-    where: { isActive: true, date: { gte: getEventActiveCutoff() } },
-    orderBy: { date: 'asc' },
-  }),
+      where: { isActive: true, date: { gte: cutoff } },
+      orderBy: { date: 'asc' },
+    }),
     getContentMany(['pages.events.eyebrow', 'pages.events.title', 'pages.events.subtitle']),
+    db.event
+      .findFirst({
+        where: { isActive: true, date: { lt: cutoff } },
+        orderBy: { date: 'desc' },
+        select: { title: true, date: true, city: true },
+      })
+      .catch(() => null),
   ])
 
   const cities = Array.from(new Set(events.map((e) => e.city))).sort()
@@ -32,7 +40,7 @@ export default async function EventsPage() {
     <PublicPageShell mainClassName="pb-20 md:pb-24">
       <PublicPageHeader {...header} />
 
-      <EventsClientPage events={events} cities={cities} />
+      <EventsClientPage events={events} cities={cities} lastGathering={lastGathering} />
     </PublicPageShell>
   )
 }

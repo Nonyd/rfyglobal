@@ -47,7 +47,10 @@ if (!cloudName || !apiKey || !apiSecret) {
   process.exit(1)
 }
 
-const UPLOADS_BASE = path.join(__dirname, '..', 'public', 'uploads')
+// Same location the app reads from (src/lib/upload-local.ts).
+const UPLOADS_BASE = process.env.UPLOAD_DIR?.trim()
+  ? path.resolve(process.env.UPLOAD_DIR.trim())
+  : path.join(__dirname, '..', 'public', 'uploads')
 const RESOURCE_TYPES = ['image', 'raw', 'video']
 
 async function fetchCloudinaryResources(resourceType, nextCursor = null) {

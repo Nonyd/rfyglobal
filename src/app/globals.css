@@ -403,24 +403,26 @@
     transform: translateY(-4px);
   }
 
-  .reveal {
+  /* Hidden state only applies once ScrollRevealInit has run (adds html.reveal-ready), so content is
+     never invisible without JS or before hydration. */
+  .reveal-ready .reveal {
     opacity: 0;
-    transform: translateY(40px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
+    transform: translateY(24px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
   }
-  .reveal-left {
+  .reveal-ready .reveal-left {
     opacity: 0;
-    transform: translateX(-40px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
+    transform: translateX(-24px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
   }
-  .reveal-right {
+  .reveal-ready .reveal-right {
     opacity: 0;
-    transform: translateX(40px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
+    transform: translateX(24px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
   }
-  .reveal.visible,
-  .reveal-left.visible,
-  .reveal-right.visible {
+  .reveal-ready .reveal.visible,
+  .reveal-ready .reveal-left.visible,
+  .reveal-ready .reveal-right.visible {
     opacity: 1;
     transform: translate(0);
   }

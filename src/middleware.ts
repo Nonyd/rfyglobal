@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import type { Session } from 'next-auth'
-import { auth } from '@/lib/auth'
+import NextAuth, { type Session } from 'next-auth'
+import { authConfig } from '@/lib/auth.config'
 import { canAccess } from '@/lib/permissions'
 import { limitAdminLoginByIp } from '@/lib/rate-limit-login'
 
@@ -9,8 +9,8 @@ const LOGIN_RATE_LIMIT_TIMEOUT_MS = 1500
 type NextAuthRequest = NextRequest & { auth: Session | null }
 
 /**
- * Middleware runs on the Edge; Prisma in the Auth session callback often cannot run there, so `req.auth`
- * may fall back to a stale JWT `role`. The `/api/auth/session` route runs on Node and hydrates role from
+ * Middleware runs on the Edge with the Prisma-free `authConfig`, so `req.auth` only carries the JWT `role`,
+ * which can be stale. The `/api/auth/session` route runs on Node and hydrates role from
  * the DB — use it for ACL so SUPER_ADMIN / role changes match the admin UI.
  */
 async function roleForAdminAcl(req: NextAuthRequest): Promise<string> {
@@ -61,6 +61,9 @@ const ROUTE_PERMISSIONS: Record<string, string> = {
 const SORTED_ADMIN_ROUTES = Object.entries(ROUTE_PERMISSIONS).sort(
   (a, b) => b[0].length - a[0].length,
 )
+
+// Edge-safe instance: JWT only, no Prisma. Role freshness comes from roleForAdminAcl() below.
+const { auth } = NextAuth(authConfig)
 
 export default auth(async (req) => {
   const { pathname } = req.nextUrl

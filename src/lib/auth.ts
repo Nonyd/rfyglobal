@@ -1,16 +1,10 @@
 import NextAuth from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
-import type { Role } from '@prisma/client'
+import { authConfig } from '@/lib/auth.config'
 import { db } from '@/lib/db'
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  trustHost: true,
-  pages: {
-    signIn: '/admin/login',
-  },
-  session: {
-    strategy: 'jwt',
-  },
+  ...authConfig,
   providers: [
     Credentials({
       name: 'credentials',
@@ -69,29 +63,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.sub = user.id
-        if ('role' in user && user.role) {
-          token.role = user.role
-        }
-      }
-      return token
-    },
-    async session({ session, token }) {
-      if (!session.user || !token.sub) return session
-
-      // Always hydrate from JWT first so the session is never empty if the DB is slow or errors.
-      // Without id/role here, middleware sees no user → redirect loop back to /admin/login.
-      session.user.id = token.sub
-      if (typeof token.role === 'string') {
-        session.user.role = token.role as Role
-      }
-
-      if (token.sub === 'env-admin') {
-        session.user.role = 'ADMIN'
-        return session
-      }
+    ...authConfig.callbacks,
+    async session(params) {
+      // Hydrate from JWT first (edge-safe config) so the session is never empty if the DB is slow or errors.
+      const session = await authConfig.callbacks.session(params)
+      const { token } = params
+      if (!session.user || !token.sub || token.sub === 'env-admin') return session
 
       try {
         const user = await db.user.findUnique({

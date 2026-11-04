@@ -1,10 +1,18 @@
-// Writes uploads to disk under public/uploads/<folder>. Sole upload backend (Cloudinary removed).
+// Writes uploads to disk under UPLOADS_DIR/<folder>. Sole upload backend (Cloudinary removed).
+// Files are served at /uploads/... by src/app/uploads/[...path]/route.ts.
 
 import { writeFile, mkdir } from 'fs/promises'
 import path from 'path'
 import { existsSync } from 'fs'
 
-const UPLOADS_DIR = path.join(process.cwd(), 'public', 'uploads')
+/**
+ * Production: set UPLOAD_DIR to a folder outside the deploy root (e.g. /var/www/rfyglobal-uploads) so
+ * deploys (`git reset --hard`, `git clean`) can never touch media. Falls back to public/uploads for dev
+ * and for servers that have not moved their files yet (Next serves public/ files itself in that case).
+ */
+const UPLOADS_DIR = process.env.UPLOAD_DIR?.trim()
+  ? path.resolve(process.env.UPLOAD_DIR.trim())
+  : path.join(process.cwd(), 'public', 'uploads')
 
 async function ensureUploadsDir(subDir?: string) {
   const dir = subDir ? path.join(UPLOADS_DIR, subDir) : UPLOADS_DIR
@@ -49,10 +57,22 @@ export async function uploadBase64Locally(
   return uploadFileLocally(buffer, originalName, subDir)
 }
 
+/**
+ * Maps a path relative to /uploads/ onto disk, or null if it would escape UPLOADS_DIR
+ * (`..`, absolute paths) or names a dotfile.
+ */
+export function resolveUploadPath(relativePath: string): string | null {
+  const segments = relativePath.split(/[\\/]+/).filter(Boolean)
+  if (segments.length === 0 || segments.some((s) => s === '..' || s.startsWith('.'))) return null
+  const filepath = path.resolve(UPLOADS_DIR, ...segments)
+  if (!filepath.startsWith(UPLOADS_DIR + path.sep)) return null
+  return filepath
+}
+
 export async function deleteFileLocally(url: string): Promise<void> {
   try {
-    const relativePath = url.replace(/^\/uploads\//, '')
-    const filepath = path.join(UPLOADS_DIR, relativePath)
+    const filepath = resolveUploadPath(url.replace(/^\/uploads\//, ''))
+    if (!filepath) throw new Error(`Refusing to delete outside uploads dir: ${url}`)
     const { unlink } = await import('fs/promises')
     await unlink(filepath)
   } catch (error) {
@@ -60,7 +80,7 @@ export async function deleteFileLocally(url: string): Promise<void> {
   }
 }
 
-/** Maps admin upload folder keys to local subdirectories under public/uploads/ */
+/** Maps admin upload folder keys to subdirectories of UPLOADS_DIR */
 export const UPLOAD_FOLDER_SUBDIRS = {
   blogCover: 'blog/covers',
   blogInline: 'blog/inline',

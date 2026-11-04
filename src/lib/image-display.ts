@@ -1,16 +1,15 @@
 /**
- * Helpers for displaying user-uploaded files from public/uploads/.
- * Local paths must bypass next/image optimization (see Hero.tsx).
+ * Helpers for displaying user-uploaded files served at /uploads/ (see src/app/uploads/[...path]/route.ts).
+ * Local uploads go through next/image optimization: originals are often multi-MB camera JPEGs.
  */
 
 export function isLocalUploadPath(src: string): boolean {
   return src.startsWith('/uploads/')
 }
 
-/** Use with next/image `unoptimized` for local uploads and SVGs. */
+/** Use with next/image `unoptimized`. Only SVGs skip the optimizer. */
 export function shouldBypassImageOptimization(src: string): boolean {
   if (!src) return false
-  if (isLocalUploadPath(src)) return true
   const pathOnly = src.split('?')[0] ?? src
   return /\.svg$/i.test(pathOnly)
 }
