@@ -15,6 +15,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/admin/study': 'Study Portal',
   '/admin/events': 'Events',
   '/admin/gallery': 'Gallery',
+  '/admin/media': 'Media',
   '/admin/forms': 'Forms',
   '/admin/members': 'Community Members',
   '/admin/automation': 'Automation',

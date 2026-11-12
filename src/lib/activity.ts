@@ -14,6 +14,7 @@ export type ActivityModule =
   | 'Partnership'
   | 'Users'
   | 'Settings'
+  | 'Media'
 
 export async function logActivity({
   userId,

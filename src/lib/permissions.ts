@@ -22,6 +22,7 @@ type Permission =
   | 'notifications'
   | 'email-templates'
   | 'live-chat'
+  | 'media'
 
 const ROLE_PERMISSIONS: Record<string, Permission[]> = {
   SUPER_ADMIN: [
@@ -48,6 +49,7 @@ const ROLE_PERMISSIONS: Record<string, Permission[]> = {
     'notifications',
     'email-templates',
     'live-chat',
+    'media',
   ],
   ADMIN: [
     'scripture',
@@ -66,9 +68,10 @@ const ROLE_PERMISSIONS: Record<string, Permission[]> = {
     'notifications',
     'email-templates',
     'live-chat',
+    'media',
   ],
   EDITOR: ['scripture', 'blog', 'study', 'notifications'],
-  MEDIA_ADMIN: ['gallery', 'notifications'],
+  MEDIA_ADMIN: ['gallery', 'media', 'notifications'],
 }
 
 function normalizeRoleKey(role: string): string {
@@ -111,6 +114,7 @@ export function canAccess(role: string, module: string): boolean {
     notifications: 'notifications',
     'email-templates': 'email-templates',
     'live-chat': 'live-chat',
+    media: 'media',
   }
   const permission = moduleMap[module]
   if (!permission) return false

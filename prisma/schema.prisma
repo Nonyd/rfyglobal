@@ -586,3 +586,22 @@ model RfySetting {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+// ── MEDIA (shareable audio, /listen/[slug]) ───────────────────
+model AudioTrack {
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  title        String
+  description  String?  @db.Text
+  url          String
+  originalName String
+  mimeType     String
+  bytes        Int
+  isPublished  Boolean  @default(true)
+  plays        Int      @default(0)
+  uploadedById String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([createdAt])
+}

@@ -47,6 +47,7 @@ const ROUTE_PERMISSIONS: Record<string, string> = {
   '/admin/forms': 'forms',
   '/admin/members': 'members',
   '/admin/gallery': 'gallery',
+  '/admin/media': 'media',
   '/admin/scripture': 'scripture',
   '/admin/blog': 'blog',
   '/admin/study': 'study',

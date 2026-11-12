@@ -92,6 +92,7 @@ export const UPLOAD_FOLDER_SUBDIRS = {
   eventImage: 'events',
   testimony: 'testimonies',
   homeCarousel: 'home-carousel',
+  mediaAudio: 'media/audio',
 } as const
 
 export type UploadFolderKey = keyof typeof UPLOAD_FOLDER_SUBDIRS

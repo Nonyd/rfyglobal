@@ -29,6 +29,7 @@ import {
   Bell,
   Mail,
   MessageCircle,
+  AudioLines,
 } from 'lucide-react'
 import { canAccess } from '@/lib/permissions'
 import { badgeCountForNav, useAdminNotificationBadges, type NavBadgeKey } from '@/hooks/useAdminNotificationBadges'
@@ -69,6 +70,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: 'Study', href: '/admin/study', icon: GraduationCap },
       { label: 'Events', href: '/admin/events', icon: Calendar, badgeKey: 'events' },
       { label: 'Gallery', href: '/admin/gallery', icon: Images },
+      { label: 'Media', href: '/admin/media', icon: AudioLines },
       { label: 'Forms', href: '/admin/forms', icon: ClipboardList },
       { label: 'Testimonies', href: '/admin/testimonies', icon: Star, badgeKey: 'testimonies' },
       { label: 'FAQs', href: '/admin/faq', icon: HelpCircle },

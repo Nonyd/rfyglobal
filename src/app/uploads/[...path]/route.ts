@@ -4,6 +4,7 @@ import path from 'path'
 import { Readable } from 'stream'
 import { NextRequest, NextResponse } from 'next/server'
 import { resolveUploadPath } from '@/lib/upload-local'
+import { AUDIO_TYPES } from '@/lib/audio-media'
 
 /**
  * Serves uploaded media from UPLOADS_DIR (outside the deploy root in production) at the same
@@ -14,6 +15,8 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 const CONTENT_TYPES: Record<string, string> = {
+  // Every format the admin Media module accepts; the entries below override where they overlap.
+  ...AUDIO_TYPES,
   '.jpg': 'image/jpeg',
   '.jpeg': 'image/jpeg',
   '.png': 'image/png',
