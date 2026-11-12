@@ -6,7 +6,7 @@ import path from 'path'
 import { existsSync } from 'fs'
 
 /**
- * Production: set UPLOAD_DIR to a folder outside the deploy root (e.g. /var/www/rfyglobal-uploads) so
+ * Production: set UPLOAD_DIR to a folder outside the deploy root (e.g. /home/sonshubco/rfyglobal-uploads) so
  * deploys (`git reset --hard`, `git clean`) can never touch media. Falls back to public/uploads for dev
  * and for servers that have not moved their files yet (Next serves public/ files itself in that case).
  */

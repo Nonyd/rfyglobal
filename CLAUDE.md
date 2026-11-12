@@ -19,7 +19,8 @@ YouTube "Past Editions" archive (`/live`).
 
 ## Hosting & deploy
 
-- Webuzo VPS 159.198.47.232, app root `/var/www/rfyglobal`, sits beside yadahworld on the same box.
+- Webuzo VPS 159.198.47.232 (SSH host `sonshub-vps`, root), app root `/home/sonshubco/rfyglobal.org` (owner
+  `sonshubco`), sits beside yadahworld on the same box. Apache proxy rules: `/var/webuzo-data/apache2/custom/domains/rfyglobal.org.conf`.
 - Cloudflare → Apache (`docs/apache-vhost.conf`) → Next.js on **3001** (PM2 `rfyglobal`) and the GitHub webhook
   on **9002** (PM2 `rfyglobal-webhook`). Both apps are defined in `ecosystem.config.js` (single fork process).
 - Push to main → `scripts/webhook-server.js` (secret from `DEPLOY_WEBHOOK_SECRET`) → `scripts/deploy.sh`: reset to

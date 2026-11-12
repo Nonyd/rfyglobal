@@ -8,7 +8,7 @@ const { execFile } = require('child_process')
 
 const SECRET = process.env.DEPLOY_WEBHOOK_SECRET
 const PORT = Number(process.env.DEPLOY_WEBHOOK_PORT || 9002)
-const DEPLOY_SCRIPT = '/var/www/rfyglobal/scripts/deploy.sh'
+const DEPLOY_SCRIPT = '/home/sonshubco/rfyglobal.org/scripts/deploy.sh'
 const LOG_FILE = '/var/log/rfyglobal-deploy.log'
 
 if (!SECRET) {

@@ -9,7 +9,7 @@
 # - Uploaded media lives in $UPLOAD_DIR outside this folder, so reset/clean can't delete it.
 set -euo pipefail
 
-APP_DIR=/var/www/rfyglobal
+APP_DIR=/home/sonshubco/rfyglobal.org
 PM2_APP=rfyglobal
 
 if [ "${RFY_DEPLOY_FROM_TMP:-}" != "1" ]; then
