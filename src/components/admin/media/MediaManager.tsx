@@ -148,7 +148,7 @@ export function MediaManager() {
   const pickFile = (f: File | undefined | null) => {
     if (!f) return
     if (!isAcceptedAudio(f.name)) {
-      toast.error('That file type is not supported. Use MP3, M4A, WAV, AAC, OGG, OPUS, FLAC and similar.')
+      toast.error('That file type is not supported. Use MP3, MPEG, M4A, WAV, AAC, OGG, OPUS, FLAC and similar.')
       return
     }
     if (f.size > AUDIO_MAX_BYTES) {
@@ -247,7 +247,7 @@ export function MediaManager() {
             </p>
           )}
           <p className="font-body text-xs" style={{ color: 'var(--a-text-muted)' }}>
-            MP3, M4A, WAV, AAC, OGG, OPUS, FLAC, WEBM, AIFF, AMR, WMA · up to 1 GB
+            MP3, MPEG, M4A, WAV, AAC, OGG, OPUS, FLAC, WEBM, AIFF, AMR, WMA · up to 1 GB
           </p>
           <input
             ref={fileInput}

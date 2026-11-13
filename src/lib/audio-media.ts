@@ -10,6 +10,13 @@ export const AUDIO_MAX_BYTES = 1024 * 1024 * 1024
 /** Extension → Content-Type for every audio format we accept and serve. */
 export const AUDIO_TYPES: Record<string, string> = {
   '.mp3': 'audio/mpeg',
+  // MPEG audio under other names (.mpeg/.mpg files from recorders and converters are usually MPEG audio).
+  '.mpeg': 'audio/mpeg',
+  '.mpg': 'audio/mpeg',
+  '.mpga': 'audio/mpeg',
+  '.mpa': 'audio/mpeg',
+  '.mp2': 'audio/mpeg',
+  '.m2a': 'audio/mpeg',
   '.m4a': 'audio/mp4',
   '.m4b': 'audio/mp4',
   '.mp4': 'audio/mp4',
@@ -29,8 +36,11 @@ export const AUDIO_TYPES: Record<string, string> = {
   '.3gp': 'audio/3gpp',
 }
 
-/** Formats most browsers cannot play inline; the listen page offers a download instead. */
-export const AUDIO_NOT_BROWSER_PLAYABLE = new Set(['.aif', '.aiff', '.amr', '.wma', '.caf', '.3gp'])
+/**
+ * Formats some browsers cannot play inline; the listen page adds a "download it" hint. .mpeg/.mpg can also be
+ * MPEG video, which an audio player can't decode.
+ */
+export const AUDIO_NOT_BROWSER_PLAYABLE = new Set(['.aif', '.aiff', '.amr', '.wma', '.caf', '.3gp', '.mpeg', '.mpg'])
 
 /** Lower-case extension of a filename, including the dot, or '' if none. */
 export function audioExtension(fileName: string): string {

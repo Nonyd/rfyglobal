@@ -36,6 +36,7 @@ test('audio media helpers: slugs, types and upload ids', () => {
   assert.equal(audioExtension('Worship.MP3'), '.mp3')
   assert.equal(audioExtension('no-extension'), '')
   assert.ok(isAcceptedAudio('voice.opus') && isAcceptedAudio('take.FLAC') && isAcceptedAudio('memo.m4a'))
+  assert.ok(isAcceptedAudio('sermon.mpeg') && isAcceptedAudio('Service.MPG') && isAcceptedAudio('clip.mpga') && isAcceptedAudio('old.mp2'))
   assert.ok(!isAcceptedAudio('virus.exe') && !isAcceptedAudio('photo.jpg') && !isAcceptedAudio('page.html'))
   assert.equal(titleFromFileName('2026_11_sunday-service.mp3'), '2026 11 sunday service')
   assert.ok(isValidUploadId('0123456789abcdef0123456789abcdef'))
